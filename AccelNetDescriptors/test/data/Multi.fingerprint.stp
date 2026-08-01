@@ -1,0 +1,18 @@
+DESCR
+ Chebyshev plus LJ parser fixture
+END DESCR
+
+ATOM O
+
+ENV 2
+Ti
+O
+
+RMIN 0.35d0
+
+BASIS type=multi
+2
+Chebyshev
+radial_Rc = 6.5 radial_N = 20 angular_Rc = 5.0 angular_N = 6 version=0
+LJ
+radial_Rc = 6.5

@@ -1,0 +1,9 @@
+name = "AccelNetModelConverter"
+uuid = "c4674b65-89c2-4df1-a745-6a385fa395bd"
+version = "0.1.0"
+
+[deps]
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
+[compat]
+julia = "1.10"

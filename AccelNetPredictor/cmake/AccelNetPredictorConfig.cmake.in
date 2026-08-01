@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+find_dependency(AccelNetDescriptors CONFIG)
+include("${CMAKE_CURRENT_LIST_DIR}/AccelNetPredictorTargets.cmake")
+
+if(TARGET AccelNetPredictor::AccelNetPredictor AND NOT TARGET AccelNet::AccelNet)
+    add_library(AccelNet::AccelNet INTERFACE IMPORTED)
+    set_property(TARGET AccelNet::AccelNet PROPERTY INTERFACE_LINK_LIBRARIES
+        AccelNetPredictor::AccelNetPredictor)
+endif()

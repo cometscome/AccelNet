@@ -1,0 +1,8 @@
+number_of_elements 1
+elements H
+atom_energy H 0.5
+cutoff_type 1
+global_hidden_layers_short 0
+global_nodes_short
+global_activation_short l
+symfunction_short H 2 H 1.0 0.0 3.0

@@ -1,0 +1,14 @@
+DESCR
+ Lennard-Jones descriptor parser fixture
+END DESCR
+
+ATOM Ti
+
+ENV 2
+Ti
+O
+
+RMIN 0.35d0
+
+BASIS type=LJ
+radial_Rc = 6.5
