@@ -74,6 +74,24 @@ build/accelnet-predict-benchmark 2 Ti.fingerprint.stp O.fingerprint.stp \
   Ti.nn.ascii O.nn.ascii structure.xsf 1000
 ```
 
+The benchmark can also load an n2p2 model directory directly. This compares
+the Fortran evaluation using exactly the same `input.nn`, `scaling.data`, and
+weights as n2p2:
+
+```sh
+build/accelnet-predict-benchmark --n2p2 /path/to/model structure.xsf 1000
+```
+
+For a controlled type-9 comparison in the same binary, append `direct`,
+`moment`, or `auto`:
+
+```sh
+build/accelnet-predict-benchmark --n2p2 /path/to/model structure.xsf 1000 direct
+build/accelnet-predict-benchmark --n2p2 /path/to/model structure.xsf 1000 moment
+```
+
+Model loading and XSF parsing are outside the reported in-memory API timings.
+
 The Fortran library also accepts an already-loaded structure, avoiding XSF
 I/O. The force array is caller-owned and can be reused between calls:
 

@@ -3,7 +3,9 @@ module accelnet_descriptor_models
     use accelnet_descriptors, only: descriptor_config, evaluate_atom, evaluate_atom_with_derivatives, &
                                     contract_atom_derivatives
     use accelnet_lj, only: lj_config, evaluate_lj_values, evaluate_lj_values_derivatives
-    use accelnet_behler, only: behler_config, evaluate_behler_values, evaluate_behler_values_derivatives
+    use accelnet_behler, only: behler_config, evaluate_behler_values, evaluate_behler_values_derivatives, &
+                              contract_behler_derivatives, behler_supports_direct_contraction, &
+                              set_behler_g5_evaluation
     implicit none
     private
 
@@ -38,8 +40,19 @@ module accelnet_descriptor_models
     public :: evaluate_model_values
     public :: evaluate_model_values_derivatives
     public :: contract_model_derivatives, model_supports_direct_contraction
+    public :: set_model_g5_evaluation
 
 contains
+
+    subroutine set_model_g5_evaluation(model, mode)
+        type(descriptor_model), intent(inout) :: model
+        integer, intent(in) :: mode
+        integer :: component
+        if (.not. allocated(model%behler)) return
+        do component = 1, size(model%behler)
+            call set_behler_g5_evaluation(model%behler(component)%config, mode)
+        end do
+    end subroutine set_model_g5_evaluation
 
     integer function model_num_descriptors(self) result(n)
         class(descriptor_model), intent(in) :: self
@@ -178,10 +191,15 @@ contains
 
     pure logical function model_supports_direct_contraction(model) result(supported)
         type(descriptor_model), intent(in) :: model
-        ! A second geometry pass is profitable for the compact Chebyshev
-        ! recurrence, but repeats too much work for three-body Behler G4/G5.
-        supported = allocated(model%chebyshev) .and. .not. allocated(model%lj) .and. &
-                    .not. allocated(model%behler)
+        integer :: component
+        supported = .not. allocated(model%lj) .and. &
+                    (allocated(model%chebyshev) .or. allocated(model%behler))
+        if (allocated(model%behler)) then
+            do component = 1, size(model%behler)
+                supported = supported .and. &
+                    behler_supports_direct_contraction(model%behler(component)%config)
+            end do
+        end if
     end function model_supports_direct_contraction
 
     subroutine contract_model_derivatives(model, displacements, neighbor_species, coefficients, &
@@ -195,7 +213,7 @@ contains
         integer :: component, first, last
 
         if (.not. model_supports_direct_contraction(model)) &
-            error stop "direct derivative contraction is not implemented for LJ models"
+            error stop "direct derivative contraction is not implemented for this model"
         if (size(coefficients) < model%num_outputs) error stop "model coefficient array too small"
         if (size(contracted_neighbors, 1) /= 3 .or. &
             size(contracted_neighbors, 2) < size(neighbor_species)) error stop "model contracted array too small"
@@ -206,6 +224,17 @@ contains
                 first = model%chebyshev(component)%output_offset + 1
                 last = first + model%chebyshev(component)%config%num_descriptors() - 1
                 call contract_atom_derivatives(model%chebyshev(component)%config, displacements, &
+                    neighbor_species, coefficients(first:last), component_center, component_neighbors)
+                contracted_center = contracted_center + component_center
+                contracted_neighbors(:, 1:size(neighbor_species)) = &
+                    contracted_neighbors(:, 1:size(neighbor_species)) + component_neighbors
+            end do
+        end if
+        if (allocated(model%behler)) then
+            do component = 1, size(model%behler)
+                first = model%behler(component)%output_offset + 1
+                last = first + model%behler(component)%config%num_descriptors() - 1
+                call contract_behler_derivatives(model%behler(component)%config, displacements, &
                     neighbor_species, coefficients(first:last), component_center, component_neighbors)
                 contracted_center = contracted_center + component_center
                 contracted_neighbors(:, 1:size(neighbor_species)) = &

@@ -34,6 +34,8 @@ target_link_libraries(accelnet-setup-descriptor PRIVATE AccelNetDescriptors)
 add_executable(benchmark-g4-derivative benchmark/benchmark_g4_derivative.f90)
 target_compile_options(benchmark-g4-derivative PRIVATE
     $<$<Fortran_COMPILER_ID:GNU>:-O3;-ffree-line-length-none>)
+add_executable(benchmark-g5-scaling benchmark/benchmark_g5_scaling.f90)
+target_link_libraries(benchmark-g5-scaling PRIVATE AccelNetDescriptors)
 
 if(ACCELNET_DESCRIPTORS_BUILD_TESTING)
     enable_testing()

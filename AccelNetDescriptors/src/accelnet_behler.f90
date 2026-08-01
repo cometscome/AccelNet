@@ -5,6 +5,11 @@ module accelnet_behler
     private
 
     real(real64), parameter :: EPS_DISTANCE = 1.0e-12_real64
+    integer, parameter :: DEFAULT_G5_MOMENT_VALUE_THRESHOLD = 56
+    integer, parameter :: DEFAULT_G5_MOMENT_FORCE_THRESHOLD = 32
+    integer, parameter, public :: G5_EVALUATION_AUTO = 0
+    integer, parameter, public :: G5_EVALUATION_DIRECT = 1
+    integer, parameter, public :: G5_EVALUATION_MOMENT = 2
 
     type :: g1_parameter
         integer :: species = 0, output = 0, cutoff_group = 0
@@ -24,7 +29,7 @@ module accelnet_behler
         integer :: next_in_pair = 0
         integer :: integer_zeta = 0
         real(real64) :: rc = 0.0_real64, lambda = 0.0_real64
-        real(real64) :: zeta = 0.0_real64, eta = 0.0_real64
+        real(real64) :: zeta = 0.0_real64, eta = 0.0_real64, rs = 0.0_real64
         real(real64) :: derivative_prefactor = 0.0_real64
     end type
     type :: g4_parameter_group
@@ -55,12 +60,20 @@ module accelnet_behler
     type, public :: behler_config
         integer :: num_species = 0
         integer :: number_of_descriptors = 0
+        integer :: maximum_g5_integer_zeta = 0
+        integer :: number_of_g5_moments = 0
+        integer :: g5_evaluation_mode = G5_EVALUATION_AUTO
+        integer :: g5_moment_value_threshold = DEFAULT_G5_MOMENT_VALUE_THRESHOLD
+        integer :: g5_moment_force_threshold = DEFAULT_G5_MOMENT_FORCE_THRESHOLD
         real(real64) :: maximum_cutoff = 0.0_real64
         real(real64) :: maximum_angular_cutoff = 0.0_real64
         real(real64) :: maximum_g4_cutoff = 0.0_real64
         real(real64), allocatable :: cutoff_radii(:)
         real(real64), allocatable :: radial_eta(:), radial_shift(:)
-        real(real64), allocatable :: angular_eta(:)
+        real(real64), allocatable :: angular_eta(:), angular_shift(:)
+        integer, allocatable :: g5_moment_x_power(:), g5_moment_y_power(:), g5_moment_z_power(:)
+        integer, allocatable :: g5_moment_first(:), g5_moment_last(:)
+        real(real64), allocatable :: g5_moment_multinomial(:)
         integer, allocatable :: g4_pair_first(:), g4_pair_last(:)
         integer, allocatable :: g5_pair_first(:), g5_pair_last(:)
         type(g4_parameter_group), allocatable :: g4_groups(:)
@@ -79,6 +92,8 @@ module accelnet_behler
 
     public :: initialize_behler_config, add_g1, add_g2, add_g3, add_g4, add_g5
     public :: evaluate_behler_values, evaluate_behler_values_derivatives
+    public :: contract_behler_derivatives, behler_supports_direct_contraction
+    public :: set_behler_g5_evaluation, set_behler_g5_moment_threshold
 
 contains
 
@@ -96,6 +111,40 @@ contains
         class(behler_config), intent(in) :: self
         n = self%number_of_descriptors
     end function
+
+    subroutine set_behler_g5_evaluation(config, mode)
+        type(behler_config), intent(inout) :: config
+        integer, intent(in) :: mode
+        if (mode < G5_EVALUATION_AUTO .or. mode > G5_EVALUATION_MOMENT) &
+            error stop "invalid G5 evaluation mode"
+        config%g5_evaluation_mode = mode
+    end subroutine set_behler_g5_evaluation
+
+    subroutine set_behler_g5_moment_threshold(config, value_threshold, force_threshold)
+        type(behler_config), intent(inout) :: config
+        integer, intent(in) :: value_threshold, force_threshold
+        if (value_threshold < 2 .or. force_threshold < 2) &
+            error stop "G5 moment neighbor thresholds must be at least two"
+        config%g5_moment_value_threshold = value_threshold
+        config%g5_moment_force_threshold = force_threshold
+    end subroutine set_behler_g5_moment_threshold
+
+    pure logical function use_g5_moments(config, distances, for_force) result(use_moments)
+        type(behler_config), intent(in) :: config
+        real(real64), intent(in) :: distances(:)
+        logical, intent(in) :: for_force
+        integer :: threshold
+        use_moments = config%maximum_g5_integer_zeta > 0 .and. &
+            config%g5_evaluation_mode /= G5_EVALUATION_DIRECT
+        if (for_force) then
+            threshold = config%g5_moment_force_threshold
+        else
+            threshold = config%g5_moment_value_threshold
+        end if
+        if (use_moments .and. config%g5_evaluation_mode == G5_EVALUATION_AUTO) &
+            use_moments = count(distances > EPS_DISTANCE .and. &
+                distances <= config%maximum_angular_cutoff) >= threshold
+    end function use_g5_moments
 
     subroutine validate_radial(config, species, rc)
         type(behler_config), intent(in) :: config
@@ -177,10 +226,11 @@ contains
         config%maximum_cutoff = max(config%maximum_cutoff, rc)
     end subroutine
 
-    subroutine add_g4(config, species1, species2, rc, lambda, zeta, eta)
+    subroutine add_g4(config, species1, species2, rc, lambda, zeta, eta, rs)
         type(behler_config), intent(inout) :: config
         integer, intent(in) :: species1, species2
         real(real64), intent(in) :: rc, lambda, zeta, eta
+        real(real64), intent(in), optional :: rs
         type(angular_parameter) :: parameter
         call validate_angular(config, species1, species2, rc)
         config%number_of_descriptors = config%number_of_descriptors + 1
@@ -191,10 +241,12 @@ contains
         parameter%lambda = lambda
         parameter%zeta = zeta
         parameter%eta = eta
+        if (present(rs)) parameter%rs = rs
         parameter%integer_zeta = integer_zeta_kind(zeta)
         parameter%derivative_prefactor = 0.5_real64*zeta*lambda
         call find_or_add_value(config%cutoff_radii, rc, parameter%cutoff_group)
-        call find_or_add_value(config%angular_eta, eta, parameter%exponential_group)
+        call find_or_add_pair(config%angular_eta, config%angular_shift, eta, parameter%rs, &
+                              parameter%exponential_group)
         if (allocated(config%g4)) then
             config%g4 = [config%g4, parameter]
         else
@@ -209,10 +261,11 @@ contains
         config%maximum_g4_cutoff = max(config%maximum_g4_cutoff, rc)
     end subroutine
 
-    subroutine add_g5(config, species1, species2, rc, lambda, zeta, eta)
+    subroutine add_g5(config, species1, species2, rc, lambda, zeta, eta, rs)
         type(behler_config), intent(inout) :: config
         integer, intent(in) :: species1, species2
         real(real64), intent(in) :: rc, lambda, zeta, eta
+        real(real64), intent(in), optional :: rs
         type(angular_parameter) :: parameter
         call validate_angular(config, species1, species2, rc)
         config%number_of_descriptors = config%number_of_descriptors + 1
@@ -223,10 +276,12 @@ contains
         parameter%lambda = lambda
         parameter%zeta = zeta
         parameter%eta = eta
+        if (present(rs)) parameter%rs = rs
         parameter%integer_zeta = integer_zeta_kind(zeta)
         parameter%derivative_prefactor = 0.5_real64*zeta*lambda
         call find_or_add_value(config%cutoff_radii, rc, parameter%cutoff_group)
-        call find_or_add_value(config%angular_eta, eta, parameter%exponential_group)
+        call find_or_add_pair(config%angular_eta, config%angular_shift, eta, parameter%rs, &
+                              parameter%exponential_group)
         if (allocated(config%g5)) then
             config%g5 = [config%g5, parameter]
         else
@@ -236,9 +291,80 @@ contains
                                config%num_species, species1, species2)
         call append_g4_group(config%g5_groups(unordered_pair_index(config%num_species, species1, species2)), &
                              parameter)
+        if (parameter%integer_zeta > config%maximum_g5_integer_zeta) &
+            call initialize_g5_moment_basis(config, parameter%integer_zeta)
         config%maximum_cutoff = max(config%maximum_cutoff, rc)
         config%maximum_angular_cutoff = max(config%maximum_angular_cutoff, rc)
     end subroutine
+
+    subroutine initialize_g5_moment_basis(config, maximum_zeta)
+        type(behler_config), intent(inout) :: config
+        integer, intent(in) :: maximum_zeta
+        integer :: q, a, b, c, entry, maximum_moments
+        if (maximum_zeta <= config%maximum_g5_integer_zeta) return
+        maximum_moments = (maximum_zeta + 1)*(maximum_zeta + 2)*(maximum_zeta + 3)/6
+        if (allocated(config%g5_moment_x_power)) then
+            deallocate(config%g5_moment_x_power, config%g5_moment_y_power, config%g5_moment_z_power, &
+                       config%g5_moment_first, config%g5_moment_last, config%g5_moment_multinomial)
+        end if
+        allocate(config%g5_moment_x_power(maximum_moments), &
+                 config%g5_moment_y_power(maximum_moments), &
+                 config%g5_moment_z_power(maximum_moments), &
+                 config%g5_moment_multinomial(maximum_moments), &
+                 config%g5_moment_first(maximum_zeta + 1), &
+                 config%g5_moment_last(maximum_zeta + 1))
+        entry = 0
+        do q = 0, maximum_zeta
+            config%g5_moment_first(q + 1) = entry + 1
+            do a = 0, q
+                do b = 0, q - a
+                    c = q - a - b
+                    entry = entry + 1
+                    config%g5_moment_x_power(entry) = a
+                    config%g5_moment_y_power(entry) = b
+                    config%g5_moment_z_power(entry) = c
+                    config%g5_moment_multinomial(entry) = factorial_real(q)/ &
+                        (factorial_real(a)*factorial_real(b)*factorial_real(c))
+                end do
+            end do
+            config%g5_moment_last(q + 1) = entry
+        end do
+        config%maximum_g5_integer_zeta = maximum_zeta
+        config%number_of_g5_moments = entry
+    end subroutine initialize_g5_moment_basis
+
+    pure real(real64) function factorial_real(n) result(value)
+        integer, intent(in) :: n
+        integer :: i
+        value = 1.0_real64
+        do i = 2, n
+            value = value*real(i, real64)
+        end do
+    end function factorial_real
+
+    pure real(real64) function binomial_real(n, k) result(value)
+        integer, intent(in) :: n, k
+        value = factorial_real(n)/(factorial_real(k)*factorial_real(n - k))
+    end function binomial_real
+
+    pure real(real64) function moment_monomial(unit_vector, x_power, y_power, z_power) result(value)
+        real(real64), intent(in) :: unit_vector(3)
+        integer, intent(in) :: x_power, y_power, z_power
+        value = unit_vector(1)**x_power*unit_vector(2)**y_power*unit_vector(3)**z_power
+    end function moment_monomial
+
+    pure subroutine moment_monomial_gradient(unit_vector, x_power, y_power, z_power, gradient)
+        real(real64), intent(in) :: unit_vector(3)
+        integer, intent(in) :: x_power, y_power, z_power
+        real(real64), intent(out) :: gradient(3)
+        gradient = 0.0_real64
+        if (x_power > 0) gradient(1) = real(x_power, real64)*unit_vector(1)**(x_power - 1)* &
+            unit_vector(2)**y_power*unit_vector(3)**z_power
+        if (y_power > 0) gradient(2) = real(y_power, real64)*unit_vector(1)**x_power* &
+            unit_vector(2)**(y_power - 1)*unit_vector(3)**z_power
+        if (z_power > 0) gradient(3) = real(z_power, real64)*unit_vector(1)**x_power* &
+            unit_vector(2)**y_power*unit_vector(3)**(z_power - 1)
+    end subroutine moment_monomial_gradient
 
     subroutine find_or_add_value(values, candidate, index)
         real(real64), allocatable, intent(inout) :: values(:)
@@ -507,6 +633,306 @@ contains
                            derivative_center, derivative_neighbors)
     end subroutine
 
+    pure logical function behler_supports_direct_contraction(config) result(supported)
+        type(behler_config), intent(in) :: config
+        supported = .not. allocated(config%g4)
+    end function behler_supports_direct_contraction
+
+    subroutine contract_behler_derivatives(config, displacements, neighbor_species, coefficients, &
+                                           contracted_center, contracted_neighbors)
+        type(behler_config), intent(in) :: config
+        real(real64), intent(in) :: displacements(:, :), coefficients(:)
+        integer, intent(in) :: neighbor_species(:)
+        real(real64), intent(out) :: contracted_center(3), contracted_neighbors(:, :)
+        integer :: nneighbors, ncutoff, nradial_exp, nangular_exp
+        integer :: j, k, p, pair, group, cutoff_index, exponential_index, descriptor
+        real(real64) :: distance_j, distance_k, cutoff_j, cutoff_k, exponential
+        real(real64) :: radial_value, radial_derivative, cosine_jk, product
+        real(real64) :: angular_term, angular_derivative, weight
+        real(real64) :: vector_j(3), vector_k(3), dcosine_j(3), dcosine_k(3)
+        real(real64) :: derivative(3), derivative_j(3), derivative_k(3)
+        real(real64) :: pair_derivative_j(3), pair_derivative_k(3)
+        real(real64) :: distances(size(neighbor_species)), unit_vectors(3, size(neighbor_species))
+        real(real64) :: cutoffs(size(neighbor_species), max(1, allocated_size(config%cutoff_radii)))
+        real(real64) :: cutoff_derivatives(size(neighbor_species), max(1, allocated_size(config%cutoff_radii)))
+        real(real64) :: radial_exponentials(size(neighbor_species), max(1, allocated_size(config%radial_eta)))
+        real(real64) :: angular_exponentials(size(neighbor_species), max(1, allocated_size(config%angular_eta)))
+        real(real64) :: products(max(1, allocated_size(config%angular_eta)), &
+                                 max(1, allocated_size(config%cutoff_radii)))
+        real(real64) :: radial_j(3, max(1, allocated_size(config%angular_eta)), &
+                                max(1, allocated_size(config%cutoff_radii)))
+        real(real64) :: radial_k(3, max(1, allocated_size(config%angular_eta)), &
+                                max(1, allocated_size(config%cutoff_radii)))
+        real(real64) :: angular_values(max(1, allocated_size_angular(config%g5)))
+        real(real64) :: angular_derivatives(max(1, allocated_size_angular(config%g5)))
+        logical :: use_integer_moments
+
+        if (.not. behler_supports_direct_contraction(config)) &
+            error stop "direct Behler contraction does not support G4"
+        if (size(coefficients) < config%number_of_descriptors) &
+            error stop "Behler coefficient array too small"
+        if (size(contracted_neighbors, 1) /= 3 .or. &
+            size(contracted_neighbors, 2) < size(neighbor_species)) &
+            error stop "Behler contracted array too small"
+
+        nneighbors = size(neighbor_species)
+        ncutoff = allocated_size(config%cutoff_radii)
+        nradial_exp = allocated_size(config%radial_eta)
+        nangular_exp = allocated_size(config%angular_eta)
+        contracted_center = 0.0_real64
+        contracted_neighbors(:, 1:nneighbors) = 0.0_real64
+        unit_vectors = 0.0_real64
+
+        do j = 1, nneighbors
+            distances(j) = sqrt(dot_product(displacements(:, j), displacements(:, j)))
+            if (distances(j) > EPS_DISTANCE) unit_vectors(:, j) = displacements(:, j)/distances(j)
+            do group = 1, ncutoff
+                cutoffs(j, group) = cutoff_value(distances(j), config%cutoff_radii(group))
+                cutoff_derivatives(j, group) = cutoff_derivative(distances(j), config%cutoff_radii(group))
+            end do
+            do group = 1, nradial_exp
+                radial_exponentials(j, group) = exp(-config%radial_eta(group)* &
+                    (distances(j) - config%radial_shift(group))**2)
+            end do
+            do group = 1, nangular_exp
+                angular_exponentials(j, group) = exp(-config%angular_eta(group)* &
+                    (distances(j) - config%angular_shift(group))**2)
+            end do
+        end do
+
+        do j = 1, nneighbors
+            distance_j = distances(j)
+            if (distance_j <= EPS_DISTANCE) cycle
+            vector_j = unit_vectors(:, j)
+            associate(parameters => config%g1_groups(neighbor_species(j)))
+            do p = 1, parameters%count
+                if (distance_j > parameters%rc(p)) cycle
+                derivative = coefficients(parameters%output(p))* &
+                    cutoff_derivatives(j, parameters%cutoff_group(p))*vector_j
+                contracted_neighbors(:, j) = contracted_neighbors(:, j) + derivative
+                contracted_center = contracted_center - derivative
+            end do
+            end associate
+            associate(parameters => config%g2_groups(neighbor_species(j)))
+            do p = 1, parameters%count
+                if (distance_j > parameters%rc(p)) cycle
+                cutoff_j = cutoffs(j, parameters%cutoff_group(p))
+                exponential = radial_exponentials(j, parameters%exponential_group(p))
+                radial_derivative = exponential*(cutoff_derivatives(j, parameters%cutoff_group(p)) - &
+                    2.0_real64*parameters%eta(p)*(distance_j - parameters%rs(p))*cutoff_j)
+                derivative = coefficients(parameters%output(p))*radial_derivative*vector_j
+                contracted_neighbors(:, j) = contracted_neighbors(:, j) + derivative
+                contracted_center = contracted_center - derivative
+            end do
+            end associate
+            associate(parameters => config%g3_groups(neighbor_species(j)))
+            do p = 1, parameters%count
+                if (distance_j > parameters%rc(p)) cycle
+                cutoff_j = cutoffs(j, parameters%cutoff_group(p))
+                radial_value = cos(parameters%kappa(p)*distance_j)
+                radial_derivative = cutoff_derivatives(j, parameters%cutoff_group(p))*radial_value - &
+                    parameters%kappa(p)*cutoff_j*sin(parameters%kappa(p)*distance_j)
+                derivative = coefficients(parameters%output(p))*radial_derivative*vector_j
+                contracted_neighbors(:, j) = contracted_neighbors(:, j) + derivative
+                contracted_center = contracted_center - derivative
+            end do
+            end associate
+        end do
+
+        if (.not. allocated(config%g5)) return
+        use_integer_moments = use_g5_moments(config, distances, .true.)
+        if (use_integer_moments) call contract_g5_integer_moments(config, distances, unit_vectors, &
+            neighbor_species, cutoffs, cutoff_derivatives, angular_exponentials, coefficients, &
+            contracted_center, contracted_neighbors)
+        do j = 1, nneighbors
+            distance_j = distances(j)
+            if (distance_j <= EPS_DISTANCE .or. distance_j > config%maximum_angular_cutoff) cycle
+            vector_j = unit_vectors(:, j)
+            do k = j + 1, nneighbors
+                distance_k = distances(k)
+                if (distance_k <= EPS_DISTANCE .or. distance_k > config%maximum_angular_cutoff) cycle
+                pair = unordered_pair_index(config%num_species, neighbor_species(j), neighbor_species(k))
+                associate(parameters => config%g5_groups(pair))
+                if (parameters%count == 0) cycle
+                vector_k = unit_vectors(:, k)
+                cosine_jk = max(-1.0_real64, min(1.0_real64, dot_product(vector_j, vector_k)))
+                dcosine_j = (vector_k - cosine_jk*vector_j)/distance_j
+                dcosine_k = (vector_j - cosine_jk*vector_k)/distance_k
+                do exponential_index = 1, nangular_exp
+                    do cutoff_index = 1, ncutoff
+                        cutoff_j = cutoffs(j, cutoff_index)
+                        cutoff_k = cutoffs(k, cutoff_index)
+                        products(exponential_index, cutoff_index) = &
+                            angular_exponentials(j, exponential_index)*cutoff_j* &
+                            angular_exponentials(k, exponential_index)*cutoff_k
+                        radial_derivative = angular_exponentials(j, exponential_index)* &
+                            (cutoff_derivatives(j, cutoff_index) - &
+                             2.0_real64*config%angular_eta(exponential_index)* &
+                             (distance_j - config%angular_shift(exponential_index))*cutoff_j)
+                        radial_j(:, exponential_index, cutoff_index) = radial_derivative*vector_j* &
+                            angular_exponentials(k, exponential_index)*cutoff_k
+                        radial_derivative = angular_exponentials(k, exponential_index)* &
+                            (cutoff_derivatives(k, cutoff_index) - &
+                             2.0_real64*config%angular_eta(exponential_index)* &
+                             (distance_k - config%angular_shift(exponential_index))*cutoff_k)
+                        radial_k(:, exponential_index, cutoff_index) = &
+                            angular_exponentials(j, exponential_index)*cutoff_j*radial_derivative*vector_k
+                    end do
+                end do
+                do group = 1, parameters%angular_count
+                    if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0) cycle
+                    call angular_power(cosine_jk, parameters%angular_lambda(group), &
+                        parameters%angular_zeta(group), parameters%angular_integer_zeta(group), &
+                        parameters%angular_derivative_prefactor(group), angular_values(group), &
+                        angular_derivatives(group))
+                end do
+                pair_derivative_j = 0.0_real64
+                pair_derivative_k = 0.0_real64
+                do p = 1, parameters%count
+                    group = parameters%angular_group(p)
+                    if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0) cycle
+                    if (distance_j > parameters%rc(p) .or. distance_k > parameters%rc(p)) cycle
+                    cutoff_index = parameters%cutoff_group(p)
+                    exponential_index = parameters%exponential_group(p)
+                    descriptor = parameters%output(p)
+                    product = products(exponential_index, cutoff_index)
+                    angular_term = angular_values(group)
+                    angular_derivative = angular_derivatives(group)
+                    weight = 2.0_real64*coefficients(descriptor)
+                    derivative_j = weight*(angular_derivative*dcosine_j*product + &
+                        angular_term*radial_j(:, exponential_index, cutoff_index))
+                    derivative_k = weight*(angular_derivative*dcosine_k*product + &
+                        angular_term*radial_k(:, exponential_index, cutoff_index))
+                    pair_derivative_j = pair_derivative_j + derivative_j
+                    pair_derivative_k = pair_derivative_k + derivative_k
+                end do
+                contracted_neighbors(:, j) = contracted_neighbors(:, j) + pair_derivative_j
+                contracted_neighbors(:, k) = contracted_neighbors(:, k) + pair_derivative_k
+                contracted_center = contracted_center - pair_derivative_j - pair_derivative_k
+                end associate
+            end do
+        end do
+    end subroutine contract_behler_derivatives
+
+    subroutine contract_g5_integer_moments(config, distances, unit_vectors, neighbor_species, cutoffs, &
+                                           cutoff_derivatives, angular_exponentials, coefficients, &
+                                           contracted_center, contracted_neighbors)
+        type(behler_config), intent(in) :: config
+        real(real64), intent(in) :: distances(:), unit_vectors(:, :), cutoffs(:, :)
+        real(real64), intent(in) :: cutoff_derivatives(:, :), angular_exponentials(:, :), coefficients(:)
+        integer, intent(in) :: neighbor_species(:)
+        real(real64), intent(inout) :: contracted_center(3), contracted_neighbors(:, :)
+        integer :: nneighbors, ncutoff, nangular_exp
+        integer :: j, p, entry, q, species, species1, species2, cutoff_index, exponential_index
+        integer :: x_power, y_power, z_power
+        real(real64) :: h, polynomial_coefficient, radial_derivative
+        real(real64) :: dh(3), gradient_u(3), dphi(3), derivative(3)
+        real(real64) :: moments(max(1, config%number_of_g5_moments), &
+                                max(1, allocated_size(config%cutoff_radii)), &
+                                max(1, allocated_size(config%angular_eta)), config%num_species)
+        real(real64) :: moment_adjoints(max(1, config%number_of_g5_moments), &
+                                        max(1, allocated_size(config%cutoff_radii)), &
+                                        max(1, allocated_size(config%angular_eta)), config%num_species)
+        real(real64) :: self_adjoints(max(1, allocated_size(config%cutoff_radii)), &
+                                      max(1, allocated_size(config%angular_eta)), config%num_species)
+        real(real64) :: monomials(max(1, config%number_of_g5_moments))
+        real(real64) :: monomial_gradients(3, max(1, config%number_of_g5_moments))
+
+        nneighbors = size(neighbor_species)
+        ncutoff = allocated_size(config%cutoff_radii)
+        nangular_exp = allocated_size(config%angular_eta)
+        moments = 0.0_real64
+        do j = 1, nneighbors
+            if (distances(j) <= EPS_DISTANCE .or. distances(j) > config%maximum_angular_cutoff) cycle
+            do exponential_index = 1, nangular_exp
+                do cutoff_index = 1, ncutoff
+                    h = angular_exponentials(j, exponential_index)*cutoffs(j, cutoff_index)
+                    if (h == 0.0_real64) cycle
+                    do entry = 1, config%number_of_g5_moments
+                        moments(entry, cutoff_index, exponential_index, neighbor_species(j)) = &
+                            moments(entry, cutoff_index, exponential_index, neighbor_species(j)) + h* &
+                            moment_monomial(unit_vectors(:, j), config%g5_moment_x_power(entry), &
+                                            config%g5_moment_y_power(entry), &
+                                            config%g5_moment_z_power(entry))
+                    end do
+                end do
+            end do
+        end do
+
+        moment_adjoints = 0.0_real64
+        self_adjoints = 0.0_real64
+        do p = 1, size(config%g5)
+            if (config%g5(p)%integer_zeta <= 0) cycle
+            species1 = config%g5(p)%species1
+            species2 = config%g5(p)%species2
+            cutoff_index = config%g5(p)%cutoff_group
+            exponential_index = config%g5(p)%exponential_group
+            do q = 0, config%g5(p)%integer_zeta
+                polynomial_coefficient = coefficients(config%g5(p)%output)* &
+                    2.0_real64**(1 - config%g5(p)%integer_zeta)* &
+                    binomial_real(config%g5(p)%integer_zeta, q)*config%g5(p)%lambda**q
+                do entry = config%g5_moment_first(q + 1), config%g5_moment_last(q + 1)
+                    if (species1 == species2) then
+                        moment_adjoints(entry, cutoff_index, exponential_index, species1) = &
+                            moment_adjoints(entry, cutoff_index, exponential_index, species1) + &
+                            polynomial_coefficient*config%g5_moment_multinomial(entry)* &
+                            moments(entry, cutoff_index, exponential_index, species1)
+                    else
+                        moment_adjoints(entry, cutoff_index, exponential_index, species1) = &
+                            moment_adjoints(entry, cutoff_index, exponential_index, species1) + &
+                            polynomial_coefficient*config%g5_moment_multinomial(entry)* &
+                            moments(entry, cutoff_index, exponential_index, species2)
+                        moment_adjoints(entry, cutoff_index, exponential_index, species2) = &
+                            moment_adjoints(entry, cutoff_index, exponential_index, species2) + &
+                            polynomial_coefficient*config%g5_moment_multinomial(entry)* &
+                            moments(entry, cutoff_index, exponential_index, species1)
+                    end if
+                end do
+                if (species1 == species2) self_adjoints(cutoff_index, exponential_index, species1) = &
+                    self_adjoints(cutoff_index, exponential_index, species1) - 0.5_real64*polynomial_coefficient
+            end do
+        end do
+
+        do j = 1, nneighbors
+            if (distances(j) <= EPS_DISTANCE .or. distances(j) > config%maximum_angular_cutoff) cycle
+            species = neighbor_species(j)
+            do entry = 1, config%number_of_g5_moments
+                x_power = config%g5_moment_x_power(entry)
+                y_power = config%g5_moment_y_power(entry)
+                z_power = config%g5_moment_z_power(entry)
+                monomials(entry) = moment_monomial(unit_vectors(:, j), x_power, y_power, z_power)
+                call moment_monomial_gradient(unit_vectors(:, j), x_power, y_power, z_power, gradient_u)
+                monomial_gradients(:, entry) = (gradient_u - dot_product(unit_vectors(:, j), gradient_u)* &
+                    unit_vectors(:, j))/distances(j)
+            end do
+            derivative = 0.0_real64
+            do exponential_index = 1, nangular_exp
+                do cutoff_index = 1, ncutoff
+                    h = angular_exponentials(j, exponential_index)*cutoffs(j, cutoff_index)
+                    if (h == 0.0_real64) cycle
+                    radial_derivative = angular_exponentials(j, exponential_index)* &
+                        (cutoff_derivatives(j, cutoff_index) - &
+                         2.0_real64*config%angular_eta(exponential_index)* &
+                         (distances(j) - config%angular_shift(exponential_index))*cutoffs(j, cutoff_index))
+                    dh = radial_derivative*unit_vectors(:, j)
+                    derivative = derivative + 2.0_real64*self_adjoints(cutoff_index, exponential_index, species)*h*dh
+                    do entry = 1, config%number_of_g5_moments
+                        dphi = dh*monomials(entry) + h*monomial_gradients(:, entry)
+                        derivative = derivative + moment_adjoints(entry, cutoff_index, exponential_index, species)*dphi
+                    end do
+                end do
+            end do
+            contracted_neighbors(:, j) = contracted_neighbors(:, j) + derivative
+            contracted_center = contracted_center - derivative
+        end do
+    end subroutine contract_g5_integer_moments
+
+    pure integer function allocated_size_angular(values) result(n)
+        type(angular_parameter), allocatable, intent(in) :: values(:)
+        n = 0
+        if (allocated(values)) n = size(values)
+    end function allocated_size_angular
+
     subroutine evaluate_core(config, displacements, neighbor_species, values, do_derivatives, &
                              derivative_center, derivative_neighbors)
         type(behler_config), intent(in) :: config
@@ -570,7 +996,8 @@ contains
                     (distances(j) - config%radial_shift(group))**2)
             end do
             do group = 1, nangular_exp
-                angular_exponentials(j, group) = exp(-config%angular_eta(group)*distances(j)**2)
+                angular_exponentials(j, group) = exp(-config%angular_eta(group)* &
+                    (distances(j) - config%angular_shift(group))**2)
             end do
         end do
 
@@ -654,9 +1081,11 @@ contains
                             g5_products(group, output) = qj*qk
                             if (do_derivatives) then
                                 dqj = angular_exponentials(j, group)*(cutoff_derivatives(j, output) - &
-                                    2.0_real64*config%angular_eta(group)*rj*fcj)
+                                    2.0_real64*config%angular_eta(group)* &
+                                    (rj - config%angular_shift(group))*fcj)
                                 dqk = angular_exponentials(k, group)*(cutoff_derivatives(k, output) - &
-                                    2.0_real64*config%angular_eta(group)*rk*fck)
+                                    2.0_real64*config%angular_eta(group)* &
+                                    (rk - config%angular_shift(group))*fck)
                                 g5_radial_j(:, group, output) = dqj*uj*qk
                                 g5_radial_k(:, group, output) = qj*dqk*uk
                             end if
@@ -672,7 +1101,8 @@ contains
                             cutoff_derivative(rjk, config%cutoff_radii(group))
                     end do
                     do group = 1, nangular_exp
-                        pair_exponentials(group) = exp(-config%angular_eta(group)*rjk*rjk)
+                        pair_exponentials(group) = exp(-config%angular_eta(group)* &
+                            (rjk - config%angular_shift(group))**2)
                     end do
                     do group = 1, nangular_exp
                         do output = 1, ncutoff
@@ -683,11 +1113,14 @@ contains
                             g4_products(group, output) = qj*qk*qjk
                             if (do_derivatives) then
                                 dqj = angular_exponentials(j, group)*(cutoff_derivatives(j, output) - &
-                                    2.0_real64*config%angular_eta(group)*rj*fcj)
+                                    2.0_real64*config%angular_eta(group)* &
+                                    (rj - config%angular_shift(group))*fcj)
                                 dqk = angular_exponentials(k, group)*(cutoff_derivatives(k, output) - &
-                                    2.0_real64*config%angular_eta(group)*rk*fck)
+                                    2.0_real64*config%angular_eta(group)* &
+                                    (rk - config%angular_shift(group))*fck)
                                 dqjk = pair_exponentials(group)*(pair_cutoff_derivatives(output) - &
-                                    2.0_real64*config%angular_eta(group)*rjk*fcjk)
+                                    2.0_real64*config%angular_eta(group)* &
+                                    (rjk - config%angular_shift(group))*fcjk)
                                 g4_radial_j(:, group, output) = dqj*uj*qk*qjk - qj*qk*dqjk*ujk
                                 g4_radial_k(:, group, output) = qj*dqk*uk*qjk + qj*qk*dqjk*ujk
                             end if
@@ -791,7 +1224,8 @@ contains
                             cutoff_derivative(distance_jk, config%cutoff_radii(group))
                     end do
                     do group = 1, nangular_exp
-                        pair_exponentials(group) = exp(-config%angular_eta(group)*distance_jk_squared)
+                        pair_exponentials(group) = exp(-config%angular_eta(group)* &
+                            (distance_jk - config%angular_shift(group))**2)
                     end do
                     do exponential_index = 1, nangular_exp
                         do cutoff_index = 1, ncutoff
@@ -805,11 +1239,14 @@ contains
                                 exp_j*cutoff_j*exp_k*cutoff_k*exp_jk*cutoff_jk
                             if (do_derivatives) then
                                 dcutoff_j = cutoff_derivatives(jj, cutoff_index) - &
-                                    2.0_real64*config%angular_eta(exponential_index)*distance_j*cutoff_j
+                                    2.0_real64*config%angular_eta(exponential_index)* &
+                                    (distance_j - config%angular_shift(exponential_index))*cutoff_j
                                 dcutoff_k = cutoff_derivatives(kk, cutoff_index) - &
-                                    2.0_real64*config%angular_eta(exponential_index)*distance_k*cutoff_k
+                                    2.0_real64*config%angular_eta(exponential_index)* &
+                                    (distance_k - config%angular_shift(exponential_index))*cutoff_k
                                 dcutoff_jk = pair_cutoff_derivatives(cutoff_index) - &
-                                    2.0_real64*config%angular_eta(exponential_index)*distance_jk*cutoff_jk
+                                    2.0_real64*config%angular_eta(exponential_index)* &
+                                    (distance_jk - config%angular_shift(exponential_index))*cutoff_jk
                                 g4_radial_j(:, exponential_index, cutoff_index) = &
                                     exp_j*dcutoff_j*vector_j*exp_k*cutoff_k*exp_jk*cutoff_jk - &
                                     exp_j*cutoff_j*exp_k*cutoff_k*exp_jk*dcutoff_jk*vector_jk
@@ -907,6 +1344,10 @@ contains
             real(real64) :: derivative_j(3), derivative_k(3)
             real(real64) :: angular_values(max(1, size(config%g5)))
             real(real64) :: angular_derivatives(max(1, size(config%g5)))
+            logical :: use_integer_moments
+
+            use_integer_moments = .not. do_derivatives .and. use_g5_moments(config, distances, .false.)
+            if (use_integer_moments) call evaluate_g5_integer_moments()
 
             do jj = 1, nneighbors
                 distance_j = distances(jj)
@@ -935,9 +1376,11 @@ contains
                             g5_products(exponential_index, cutoff_index) = exp_j*cutoff_j*exp_k*cutoff_k
                             if (do_derivatives) then
                                 dcutoff_j = cutoff_derivatives(jj, cutoff_index) - &
-                                    2.0_real64*config%angular_eta(exponential_index)*distance_j*cutoff_j
+                                    2.0_real64*config%angular_eta(exponential_index)* &
+                                    (distance_j - config%angular_shift(exponential_index))*cutoff_j
                                 dcutoff_k = cutoff_derivatives(kk, cutoff_index) - &
-                                    2.0_real64*config%angular_eta(exponential_index)*distance_k*cutoff_k
+                                    2.0_real64*config%angular_eta(exponential_index)* &
+                                    (distance_k - config%angular_shift(exponential_index))*cutoff_k
                                 g5_radial_j(:, exponential_index, cutoff_index) = &
                                     exp_j*dcutoff_j*vector_j*exp_k*cutoff_k
                                 g5_radial_k(:, exponential_index, cutoff_index) = &
@@ -947,6 +1390,7 @@ contains
                     end do
 
                     do group = 1, parameters%angular_count
+                        if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0) cycle
                         if (do_derivatives) then
                             call angular_power(cosine_jk, parameters%angular_lambda(group), &
                                 parameters%angular_zeta(group), parameters%angular_integer_zeta(group), &
@@ -959,12 +1403,13 @@ contains
                     end do
 
                     do pp = 1, parameters%count
+                        group = parameters%angular_group(pp)
+                        if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0) cycle
                         if (distance_j > parameters%rc(pp) .or. distance_k > parameters%rc(pp)) cycle
                         cutoff_index = parameters%cutoff_group(pp)
                         exponential_index = parameters%exponential_group(pp)
                         descriptor = parameters%output(pp)
                         product = g5_products(exponential_index, cutoff_index)
-                        group = parameters%angular_group(pp)
                         angular_term = angular_values(group)
                         values(descriptor) = values(descriptor) + 2.0_real64*angular_term*product
                         if (do_derivatives) then
@@ -985,6 +1430,57 @@ contains
                 end do
             end do
         end subroutine evaluate_g5_only
+
+        subroutine evaluate_g5_integer_moments()
+            integer :: jj, pp, entry, q, species1, species2, cutoff_index, exponential_index
+            real(real64) :: h, pair_moment, polynomial_coefficient
+            real(real64) :: moments(max(1, config%number_of_g5_moments), max(1, ncutoff), &
+                                    max(1, nangular_exp), config%num_species)
+            real(real64) :: self_terms(max(1, ncutoff), max(1, nangular_exp), config%num_species)
+
+            moments = 0.0_real64
+            self_terms = 0.0_real64
+            do jj = 1, nneighbors
+                if (distances(jj) <= EPS_DISTANCE .or. distances(jj) > config%maximum_angular_cutoff) cycle
+                do exponential_index = 1, nangular_exp
+                    do cutoff_index = 1, ncutoff
+                        h = angular_exponentials(jj, exponential_index)*cutoffs(jj, cutoff_index)
+                        if (h == 0.0_real64) cycle
+                        self_terms(cutoff_index, exponential_index, neighbor_species(jj)) = &
+                            self_terms(cutoff_index, exponential_index, neighbor_species(jj)) + h*h
+                        do entry = 1, config%number_of_g5_moments
+                            moments(entry, cutoff_index, exponential_index, neighbor_species(jj)) = &
+                                moments(entry, cutoff_index, exponential_index, neighbor_species(jj)) + h* &
+                                moment_monomial(unit_vectors(:, jj), config%g5_moment_x_power(entry), &
+                                                config%g5_moment_y_power(entry), &
+                                                config%g5_moment_z_power(entry))
+                        end do
+                    end do
+                end do
+            end do
+
+            do pp = 1, size(config%g5)
+                if (config%g5(pp)%integer_zeta <= 0) cycle
+                species1 = config%g5(pp)%species1
+                species2 = config%g5(pp)%species2
+                cutoff_index = config%g5(pp)%cutoff_group
+                exponential_index = config%g5(pp)%exponential_group
+                do q = 0, config%g5(pp)%integer_zeta
+                    pair_moment = 0.0_real64
+                    do entry = config%g5_moment_first(q + 1), config%g5_moment_last(q + 1)
+                        pair_moment = pair_moment + config%g5_moment_multinomial(entry)* &
+                            moments(entry, cutoff_index, exponential_index, species1)* &
+                            moments(entry, cutoff_index, exponential_index, species2)
+                    end do
+                    if (species1 == species2) pair_moment = 0.5_real64*(pair_moment - &
+                        self_terms(cutoff_index, exponential_index, species1))
+                    polynomial_coefficient = 2.0_real64**(1 - config%g5(pp)%integer_zeta)* &
+                        binomial_real(config%g5(pp)%integer_zeta, q)*config%g5(pp)%lambda**q
+                    values(config%g5(pp)%output) = values(config%g5(pp)%output) + &
+                        polynomial_coefficient*pair_moment
+                end do
+            end do
+        end subroutine evaluate_g5_integer_moments
 
         subroutine add_gradient(coefficient, neighbor, gradient)
             integer, intent(in) :: coefficient, neighbor

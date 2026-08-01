@@ -37,3 +37,10 @@ target_link_libraries(my_program PRIVATE AccelNet::AccelNet)
 Reference comparisons against the historical source tree are disabled by
 default. Enable them with `-DACCELNET_BUILD_REFERENCE_TESTS=ON` and, when
 needed, set `ACCELNET_ORIGINAL_DIR` explicitly.
+
+## LAMMPS
+
+Compile-only interfaces for LAMMPS 4Feb2020 and 29Aug2024 Update 4 are provided
+in [`interfaces/lammps`](interfaces/lammps/README.md).  Both expose AccelNet as
+`pair_style accelnet`; trained potentials and calculation data are not included
+in the interface directories.

@@ -196,9 +196,6 @@ contains
         do species = 1, size(settings%species)
             if (.not. allocated(settings%functions(species)%values)) &
                 error stop "n2p2 model has no symmetry functions for one or more species"
-            if (any(settings%functions(species)%values%kind /= 2 .and. &
-                    abs(settings%functions(species)%values%shift) > 1.0e-14_real64)) &
-                error stop "shifted angular n2p2 symmetry functions are not supported"
         end do
     end subroutine validate_settings
 
@@ -294,9 +291,9 @@ contains
             case(2)
                 call add_g2(config, sf%neighbor1, sf%cutoff, sf%shift, sf%eta)
             case(3)
-                call add_g4(config, sf%neighbor1, sf%neighbor2, sf%cutoff, sf%lambda, sf%zeta, sf%eta)
+                call add_g4(config, sf%neighbor1, sf%neighbor2, sf%cutoff, sf%lambda, sf%zeta, sf%eta, sf%shift)
             case(9)
-                call add_g5(config, sf%neighbor1, sf%neighbor2, sf%cutoff, sf%lambda, sf%zeta, sf%eta)
+                call add_g5(config, sf%neighbor1, sf%neighbor2, sf%cutoff, sf%lambda, sf%zeta, sf%eta, sf%shift)
             end select
         end do
         call add_behler(setup%model, config)

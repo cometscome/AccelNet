@@ -1,0 +1,20 @@
+diff --git a/cmake/CMakeLists.txt b/cmake/CMakeLists.txt
+--- a/cmake/CMakeLists.txt
++++ b/cmake/CMakeLists.txt
+@@ -252,6 +252,7 @@
+ option(CMAKE_VERBOSE_MAKEFILE "Generate verbose Makefiles" OFF)
+ 
+ set(STANDARD_PACKAGES
++  ACCELNET
+   ADIOS
+   AMOEBA
+   ASPHERE
+@@ -588,7 +589,7 @@ if(WITH_FFMPEG)
+   endif()
+ endif()
+ 
+-foreach(PKG_WITH_INCL KSPACE PYTHON ML-IAP VORONOI COLVARS ML-HDNNP MDI MOLFILE NETCDF
++foreach(PKG_WITH_INCL ACCELNET KSPACE PYTHON ML-IAP VORONOI COLVARS ML-HDNNP MDI MOLFILE NETCDF
+         PLUMED QMMM ML-QUIP SCAFACOS MACHDYN VTK KIM COMPRESS ML-PACE LEPTON RHEO)
+   if(PKG_${PKG_WITH_INCL})
+     include(Packages/${PKG_WITH_INCL})

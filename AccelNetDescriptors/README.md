@@ -167,6 +167,16 @@ coefficient order for manually constructed models. The setup reader creates
 one model per central species and applies AccelNet's coefficient ordering
 automatically.
 
+Integer-exponent G5/type-9 functions support exact Cartesian-moment
+evaluation, including nonzero radial shifts. The `auto` mode uses direct
+neighbor pairs for small environments and moments for larger environments;
+the default crossover estimate is configurable and is not a universal
+constant. Measure the crossover for a descriptor configuration with:
+
+```sh
+build/benchmark-g5-scaling 500
+```
+
 The LJ implementation deliberately initializes every atom's output and
 provides derivatives. The AccelNet LJ reference currently does neither
 reliably; reference tests therefore zero its value buffer before each atom

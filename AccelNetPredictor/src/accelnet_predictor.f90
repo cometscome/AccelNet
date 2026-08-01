@@ -4,7 +4,7 @@ module accelnet_predictor
         initialize_config, read_xsf, build_neighbor_list
     use accelnet_descriptor_models, only: evaluate_model_values, evaluate_model_values_derivatives, &
         contract_model_derivatives, model_supports_direct_contraction, &
-        add_chebyshev, add_lj, add_behler
+        add_chebyshev, add_lj, add_behler, set_model_g5_evaluation
     use accelnet_lj, only: lj_config, initialize_lj_config
     use accelnet_behler, only: behler_config, initialize_behler_config, &
         add_g1, add_g2, add_g3, add_g4, add_g5
@@ -30,6 +30,7 @@ module accelnet_predictor
         generic :: predict_energy => predict_energy_file, predict_energy_structure
         procedure :: predict_energy_forces_file
         procedure :: predict_energy_forces_structure
+        procedure :: set_g5_evaluation => predictor_set_g5_evaluation
         generic :: predict_energy_forces => predict_energy_forces_file, predict_energy_forces_structure
     end type predictor_model
     public :: load_predictor, load_predictor_from_networks, load_predictor_from_network_data, &
@@ -37,6 +38,16 @@ module accelnet_predictor
     public :: reload_predictor, reload_predictor_from_networks, reload_predictor_from_n2p2
 
 contains
+    subroutine predictor_set_g5_evaluation(self, mode)
+        class(predictor_model), intent(inout) :: self
+        integer, intent(in) :: mode
+        integer :: species
+        if (.not. allocated(self%setups)) return
+        do species = 1, size(self%setups)
+            call set_model_g5_evaluation(self%setups(species)%model, mode)
+        end do
+    end subroutine predictor_set_g5_evaluation
+
     subroutine load_predictor_from_n2p2(model_directory, model)
         character(len=*), intent(in) :: model_directory
         class(predictor_model), intent(out) :: model
