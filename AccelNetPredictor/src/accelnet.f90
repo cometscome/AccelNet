@@ -2,7 +2,8 @@ module accelnet
     use iso_c_binding, only: c_bool, c_char, c_double, c_f_pointer, c_int, c_null_char, c_ptr
     use iso_fortran_env, only: real64
     use accelnet_descriptors, only: atomic_structure, neighbor_data, descriptor_config, &
-        build_neighbor_list, initialize_config, evaluate_atom, chebyshev_values
+        build_neighbor_list, initialize_config, evaluate_atom, chebyshev_values, &
+        CHEBYSHEV_EVALUATION_AUTO, CHEBYSHEV_EVALUATION_DIRECT, CHEBYSHEV_EVALUATION_MOMENT
     use accelnet_descriptor_models, only: evaluate_model_values, evaluate_model_values_derivatives, &
         contract_model_derivatives, model_supports_direct_contraction
     use accelnet_legacy_lcl, only: lcl_nmax_nbdist
@@ -33,6 +34,12 @@ module accelnet
     integer(c_int), bind(C, name="ACCELNET_G5_MOMENT"), public :: ACCELNET_G5_MOMENT = G5_EVALUATION_MOMENT
     integer(c_int), bind(C, name="ACCELNET_G5_MOMENT_FORCE"), public :: ACCELNET_G5_MOMENT_FORCE = &
         G5_EVALUATION_MOMENT_FORCE
+    integer(c_int), bind(C, name="ACCELNET_CHEBYSHEV_AUTO"), public :: ACCELNET_CHEBYSHEV_AUTO = &
+        CHEBYSHEV_EVALUATION_AUTO
+    integer(c_int), bind(C, name="ACCELNET_CHEBYSHEV_DIRECT"), public :: ACCELNET_CHEBYSHEV_DIRECT = &
+        CHEBYSHEV_EVALUATION_DIRECT
+    integer(c_int), bind(C, name="ACCELNET_CHEBYSHEV_MOMENT"), public :: ACCELNET_CHEBYSHEV_MOMENT = &
+        CHEBYSHEV_EVALUATION_MOMENT
 
     integer(c_int), bind(C, name="accelnet_nsf_max"), public :: accelnet_nsf_max = 0_c_int
     integer(c_int), bind(C, name="accelnet_nnb_max"), public :: accelnet_nnb_max = 0_c_int
@@ -43,6 +50,7 @@ module accelnet
     logical :: is_loaded = .false.
     integer :: number_of_types = 0
     integer :: chebyshev_version = 0
+    integer :: chebyshev_evaluation_mode = CHEBYSHEV_EVALUATION_AUTO
     character(len=TYPE_LENGTH), allocatable :: atom_types(:)
     type(atomic_network), allocatable :: pending_networks(:)
     logical, allocatable :: potential_loaded(:)
@@ -59,6 +67,7 @@ module accelnet
     public :: accelnet_init, accelnet_final, accelnet_all_loaded
     public :: accelnet_load_potential, accelnet_print_info
     public :: accelnet_set_chebyshev_version
+    public :: accelnet_set_chebyshev_evaluation, accelnet_get_chebyshev_evaluation
     public :: accelnet_set_g5_evaluation
     public :: accelnet_atomic_energy, accelnet_atomic_energy_and_forces
     public :: accelnet_convert_atom_types, accelnet_free_atom_energy
@@ -88,6 +97,7 @@ contains
         atom_types = species
         potential_loaded = .false.
         chebyshev_version = 0
+        chebyshev_evaluation_mode = CHEBYSHEV_EVALUATION_AUTO
         is_initialized = .true.
         is_loaded = .false.
         call reset_public_ranges()
@@ -117,6 +127,7 @@ contains
         number_of_types = 0
         is_initialized = .false.
         is_loaded = .false.
+        chebyshev_evaluation_mode = CHEBYSHEV_EVALUATION_AUTO
         call reset_public_ranges()
     end subroutine accelnet_final
 
@@ -139,6 +150,25 @@ contains
             chebyshev_version = version
         end if
     end subroutine accelnet_set_chebyshev_version
+
+    subroutine accelnet_set_chebyshev_evaluation(mode, stat) bind(C)
+        integer(c_int), value, intent(in) :: mode
+        integer(c_int), intent(out) :: stat
+        stat = ACCELNET_OK
+        if (.not. is_initialized) then
+            stat = ACCELNET_ERR_INIT
+        else if (mode < CHEBYSHEV_EVALUATION_AUTO .or. mode > CHEBYSHEV_EVALUATION_MOMENT) then
+            stat = ACCELNET_ERR_ARGUMENT
+        else
+            chebyshev_evaluation_mode = int(mode)
+            if (is_loaded .and. allocated(global_model)) &
+                call global_model%set_chebyshev_evaluation(chebyshev_evaluation_mode)
+        end if
+    end subroutine accelnet_set_chebyshev_evaluation
+
+    integer(c_int) function accelnet_get_chebyshev_evaluation() bind(C)
+        accelnet_get_chebyshev_evaluation = int(chebyshev_evaluation_mode, c_int)
+    end function accelnet_get_chebyshev_evaluation
 
     subroutine accelnet_set_g5_evaluation(mode, stat) bind(C)
         integer(c_int), value, intent(in) :: mode
@@ -198,6 +228,7 @@ contains
             if (allocated(global_model)) deallocate(global_model)
             allocate(global_model)
             call load_predictor_from_network_data(pending_networks, global_model, chebyshev_version)
+            call global_model%set_chebyshev_evaluation(chebyshev_evaluation_mode)
             is_loaded = .true.
             accelnet_Rc_min = global_model%minimum_distance
             accelnet_Rc_max = global_model%maximum_cutoff
@@ -242,6 +273,8 @@ contains
             return
         end if
         write(*, "(A,I0)") "AccelNet species: ", number_of_types
+        write(*, "(2A)") "Chebyshev evaluation: ", &
+            trim(chebyshev_evaluation_name(chebyshev_evaluation_mode))
         do species = 1, number_of_types
             write(*, "(I0,2A,L1)") species, " ", trim(atom_types(species)), potential_loaded(species)
         end do
@@ -252,6 +285,19 @@ contains
             write(*, "(A,I0)") "Maximum neighbors: ", accelnet_nnb_max
         end if
     end subroutine accelnet_print_info
+
+    pure function chebyshev_evaluation_name(mode) result(name)
+        integer, intent(in) :: mode
+        character(len=6) :: name
+        select case (mode)
+        case (CHEBYSHEV_EVALUATION_DIRECT)
+            name = "direct"
+        case (CHEBYSHEV_EVALUATION_MOMENT)
+            name = "moment"
+        case default
+            name = "auto"
+        end select
+    end function chebyshev_evaluation_name
 
     real(c_double) function accelnet_free_atom_energy(type_id) bind(C)
         integer(c_int), value, intent(in) :: type_id

@@ -129,6 +129,7 @@ character(len=2) :: species(2) = ["Ti", "O"]
 integer :: stat
 
 call accelnet_init(species, stat)
+call accelnet_set_chebyshev_evaluation(ACCELNET_CHEBYSHEV_MOMENT, stat)
 call accelnet_load_potential(1, "Ti.nn.ascii", stat, is_ascii=.true.)
 call accelnet_load_potential(2, "O.nn.ascii", stat, is_ascii=.true.)
 call accelnet_atomic_energy(coo_i, type_i, n_j, coo_j, type_j, energy_i, stat)
@@ -143,6 +144,22 @@ images and the original one-based atom index for each image. Select Chebyshev
 compatibility version 0, 1, or 10 with
 `accelnet_set_chebyshev_version` before loading the last potential; version 0
 is the default.
+
+Choose the Chebyshev angular evaluation algorithm at runtime with
+`accelnet_set_chebyshev_evaluation`. The accepted constants are
+`ACCELNET_CHEBYSHEV_AUTO`, `ACCELNET_CHEBYSHEV_DIRECT`, and
+`ACCELNET_CHEBYSHEV_MOMENT`. The selection may be made before or after model
+loading and can be queried with `accelnet_get_chebyshev_evaluation()`. `AUTO`
+is the default and uses direct pairs below 16 angular neighbors and exact
+Cartesian moments from 16 neighbors onward. `DIRECT` and `MOMENT` force the
+corresponding path regardless of neighbor count.
+
+The C ABI provides the same interface:
+
+```c
+accelnet_set_chebyshev_evaluation(ACCELNET_CHEBYSHEV_DIRECT, &stat);
+int mode = accelnet_get_chebyshev_evaluation();
+```
 
 The exported limits `accelnet_nsf_max`, `accelnet_nnb_max`,
 `accelnet_Rc_min`, and `accelnet_Rc_max` have the same purpose as their aenet

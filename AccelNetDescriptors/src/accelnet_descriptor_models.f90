@@ -1,7 +1,7 @@
 module accelnet_descriptor_models
     use iso_fortran_env, only: real64
     use accelnet_descriptors, only: descriptor_config, evaluate_atom, evaluate_atom_with_derivatives, &
-                                    contract_atom_derivatives
+                                    contract_atom_derivatives, set_chebyshev_evaluation
     use accelnet_lj, only: lj_config, evaluate_lj_values, evaluate_lj_values_derivatives
     use accelnet_behler, only: behler_config, evaluate_behler_values, evaluate_behler_values_derivatives, &
                               contract_behler_derivatives, behler_supports_direct_contraction, &
@@ -41,8 +41,19 @@ module accelnet_descriptor_models
     public :: evaluate_model_values_derivatives
     public :: contract_model_derivatives, model_supports_direct_contraction
     public :: set_model_g5_evaluation
+    public :: set_model_chebyshev_evaluation
 
 contains
+
+    subroutine set_model_chebyshev_evaluation(model, mode)
+        type(descriptor_model), intent(inout) :: model
+        integer, intent(in) :: mode
+        integer :: component
+        if (.not. allocated(model%chebyshev)) return
+        do component = 1, size(model%chebyshev)
+            call set_chebyshev_evaluation(model%chebyshev(component)%config, mode)
+        end do
+    end subroutine set_model_chebyshev_evaluation
 
     subroutine set_model_g5_evaluation(model, mode)
         type(descriptor_model), intent(inout) :: model

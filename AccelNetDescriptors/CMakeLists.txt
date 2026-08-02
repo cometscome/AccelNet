@@ -5,14 +5,6 @@ include(CMakePackageConfigHelpers)
 
 option(ACCELNET_DESCRIPTORS_BUILD_TESTING "Build tests" ON)
 option(ACCELNET_DESCRIPTORS_BUILD_REFERENCE "Build comparisons against an untouched AccelNet tree" ON)
-set(ACCELNET_CHEBYSHEV_BACKEND "auto" CACHE STRING
-    "Chebyshev angular backend: auto, direct, or moment")
-set_property(CACHE ACCELNET_CHEBYSHEV_BACKEND PROPERTY STRINGS auto direct moment)
-string(TOLOWER "${ACCELNET_CHEBYSHEV_BACKEND}" ACCELNET_CHEBYSHEV_BACKEND_NORMALIZED)
-if(NOT ACCELNET_CHEBYSHEV_BACKEND_NORMALIZED MATCHES "^(auto|direct|moment)$")
-    message(FATAL_ERROR
-        "ACCELNET_CHEBYSHEV_BACKEND must be auto, direct, or moment")
-endif()
 set(ACCELNET_ORIGINAL_DIR
     "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNet-a76ec3a83c8b0246328e9cca4817cc0afc84c925"
     CACHE PATH "Path to the untouched AccelNet source tree")
@@ -25,8 +17,6 @@ add_library(AccelNetDescriptors
     src/accelnet_descriptor_models.f90
     src/accelnet_setup.f90
 )
-set_source_files_properties(src/accelnet_descriptors.f90 PROPERTIES
-    Fortran_PREPROCESS ON)
 add_library(AccelNetDescriptors::AccelNetDescriptors ALIAS AccelNetDescriptors)
 set_target_properties(AccelNetDescriptors PROPERTIES
     Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/modules")
@@ -36,13 +26,6 @@ target_include_directories(AccelNetDescriptors PUBLIC
 target_compile_options(AccelNetDescriptors PRIVATE
     $<$<Fortran_COMPILER_ID:GNU>:-O3;-ffree-line-length-none>
     $<$<Fortran_COMPILER_ID:Intel,IntelLLVM>:-O3>)
-if(ACCELNET_CHEBYSHEV_BACKEND_NORMALIZED STREQUAL "direct")
-    target_compile_definitions(AccelNetDescriptors PRIVATE
-        ACCELNET_CHEBYSHEV_FORCE_DIRECT=1)
-elseif(ACCELNET_CHEBYSHEV_BACKEND_NORMALIZED STREQUAL "moment")
-    target_compile_definitions(AccelNetDescriptors PRIVATE
-        ACCELNET_CHEBYSHEV_FORCE_MOMENT=1)
-endif()
 
 add_executable(accelnet-descriptor app/descriptor_generate.f90)
 target_link_libraries(accelnet-descriptor PRIVATE AccelNetDescriptors)

@@ -50,7 +50,8 @@ using namespace MathConst;
 /* ---------------------------------------------------------------------- */
 
 PairAccelNet::PairAccelNet(LAMMPS *lmp) : Pair(lmp), cut_global(0.0), stat(0),
-  initialized(false), atom_types(NULL), pot_files(NULL)
+  chebyshev_mode(ACCELNET_CHEBYSHEV_AUTO), initialized(false),
+  atom_types(NULL), pot_files(NULL)
 {
   
 }
@@ -160,17 +161,32 @@ void PairAccelNet::allocate()
 
 void PairAccelNet::settings(int narg, char **arg)
 {
-  if (narg != atom->ntypes) error->all(FLERR,"# of pair_style inputs != atoms->ntypes");
+  int model_offset = 0;
+  chebyshev_mode = ACCELNET_CHEBYSHEV_AUTO;
+  if (narg == atom->ntypes + 1) {
+    model_offset = 1;
+    if (strcmp(arg[0],"auto") == 0)
+      chebyshev_mode = ACCELNET_CHEBYSHEV_AUTO;
+    else if (strcmp(arg[0],"direct") == 0)
+      chebyshev_mode = ACCELNET_CHEBYSHEV_DIRECT;
+    else if (strcmp(arg[0],"moment") == 0)
+      chebyshev_mode = ACCELNET_CHEBYSHEV_MOMENT;
+    else
+      error->all(FLERR,"AccelNet evaluation mode must be auto, direct, or moment");
+  } else if (narg != atom->ntypes) {
+    error->all(FLERR,"pair_style accelnet requires [auto|direct|moment] and one potential per atom type");
+  }
 
   memory->create(atom_types, atom->ntypes, 17, "pair:atom_types");
   memory->create(pot_files, atom->ntypes, 1025, "pair:pot_files");
 
-  for (int i = 0; i < narg; i++) {
-    if (strlen(arg[i]) > 1024)
+  for (int i = 0; i < atom->ntypes; i++) {
+    const char *potential = arg[i + model_offset];
+    if (strlen(potential) > 1024)
       error->all(FLERR,"AccelNet potential path is too long");
-    snprintf(pot_files[i],1025,"%s",arg[i]);
+    snprintf(pot_files[i],1025,"%s",potential);
 
-    std::string filename(arg[i]);
+    std::string filename(potential);
     std::string::size_type slash = filename.find_last_of("/\\");
     std::string basename = slash == std::string::npos ? filename : filename.substr(slash+1);
     std::string::size_type dot = basename.find('.');
@@ -226,6 +242,13 @@ void PairAccelNet::init_style()
       snprintf(error_buffer,sizeof(error_buffer),"AccelNet error code: %d",stat);
       error->all(FLERR,error_buffer);
   }
+  accelnet_set_chebyshev_evaluation(chebyshev_mode, &stat);
+  if (stat != ACCELNET_OK ||
+      accelnet_get_chebyshev_evaluation() != chebyshev_mode) {
+    snprintf(error_buffer,sizeof(error_buffer),
+             "AccelNet failed to select Chebyshev evaluation mode (error code: %d)",stat);
+    error->all(FLERR,error_buffer);
+  }
   if (!accelnet_all_loaded()) {    
     for (int i = 0; i < atom->ntypes; i++) {
       accelnet_load_potential(i+1, pot_files[i], &stat);
@@ -240,6 +263,12 @@ void PairAccelNet::init_style()
   }
 
   cut_global = accelnet_Rc_max;
+  if (comm->me == 0) {
+    const char *mode_name = chebyshev_mode == ACCELNET_CHEBYSHEV_DIRECT ? "direct" :
+                            chebyshev_mode == ACCELNET_CHEBYSHEV_MOMENT ? "moment" : "auto";
+    if (screen) fprintf(screen,"AccelNet Chebyshev evaluation mode: %s\n",mode_name);
+    if (logfile) fprintf(logfile,"AccelNet Chebyshev evaluation mode: %s\n",mode_name);
+  }
   
 }
 

@@ -18,6 +18,9 @@ Build shared libraries instead with `-DBUILD_SHARED_LIBS=ON`.
 
 The API follows aenet's atomic-environment calling style, with `accelnet_*`
 procedure names. See `AccelNetPredictor/README.md` for Fortran and C examples.
+Chebyshev angular evaluation is runtime-selectable through
+`accelnet_set_chebyshev_evaluation`: `AUTO` chooses by neighbor count, while
+`DIRECT` and `MOMENT` force the corresponding exact algorithm.
 
 ## Install
 

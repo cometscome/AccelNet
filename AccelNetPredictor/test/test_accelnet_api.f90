@@ -14,7 +14,7 @@ program test_accelnet_api
     real(c_double), allocatable :: nbcoo(:,:), nbdist(:), values(:), x(:), y(:)
     integer(c_int), allocatable :: nblist(:), nbtype(:)
     integer(c_int) :: stat, nnb, capacity, atom, nvalues
-    integer :: converted(2), input_ids(2)
+    integer :: converted(2), input_ids(2), evaluation_mode
     logical :: loaded
     real(real64) :: reference_energy, api_energy, atomic_energy, force_energy
 
@@ -34,6 +34,16 @@ program test_accelnet_api
     call require(.not. loaded, "all_loaded before load")
     call accelnet_set_chebyshev_version(0_c_int, stat)
     call require(stat == ACCELNET_OK, "Chebyshev version")
+    call require(accelnet_get_chebyshev_evaluation() == ACCELNET_CHEBYSHEV_AUTO, &
+        "Chebyshev default mode")
+    call accelnet_set_chebyshev_evaluation(ACCELNET_CHEBYSHEV_DIRECT, stat)
+    call require(stat == ACCELNET_OK .and. &
+        accelnet_get_chebyshev_evaluation() == ACCELNET_CHEBYSHEV_DIRECT, &
+        "Chebyshev direct before load")
+    call accelnet_set_chebyshev_evaluation(3_c_int, stat)
+    call require(stat == ACCELNET_ERR_ARGUMENT, "invalid Chebyshev mode")
+    call accelnet_set_chebyshev_evaluation(ACCELNET_CHEBYSHEV_MOMENT, stat)
+    call require(stat == ACCELNET_OK, "Chebyshev moment before load")
     call accelnet_set_g5_evaluation(ACCELNET_G5_DIRECT, stat)
     call require(stat == ACCELNET_ERR_INIT, "G5 mode before load")
     call accelnet_load_potential(1, trim(network_files(1)), stat, is_ascii=.true.)
@@ -42,6 +52,14 @@ program test_accelnet_api
     call require(stat == ACCELNET_OK, "load O")
     loaded = accelnet_all_loaded()
     call require(loaded, "all_loaded after load")
+    call require(accelnet_get_chebyshev_evaluation() == ACCELNET_CHEBYSHEV_MOMENT, &
+        "Chebyshev moment after load")
+    call accelnet_set_chebyshev_evaluation(ACCELNET_CHEBYSHEV_DIRECT, stat)
+    call require(stat == ACCELNET_OK .and. &
+        accelnet_get_chebyshev_evaluation() == ACCELNET_CHEBYSHEV_DIRECT, &
+        "Chebyshev direct after load")
+    call accelnet_set_chebyshev_evaluation(ACCELNET_CHEBYSHEV_AUTO, stat)
+    call require(stat == ACCELNET_OK, "Chebyshev auto after load")
     call accelnet_set_g5_evaluation(ACCELNET_G5_DIRECT, stat)
     call require(stat == ACCELNET_OK, "G5 direct mode")
     call accelnet_set_g5_evaluation(ACCELNET_G5_MOMENT_FORCE, stat)
@@ -64,26 +82,32 @@ program test_accelnet_api
         int(structure%species,c_int), structure%positions, .true._c_bool, .true._c_bool)
     capacity = max(accelnet_nnb_max, int(structure%natoms,c_int))
     allocate(nbcoo(3,capacity), nbdist(capacity), nblist(capacity), nbtype(capacity))
-    allocate(api_forces(3,structure%natoms)); api_forces = 0.0_real64
-    api_energy = 0.0_real64
-    force_energy = 0.0_real64
-    do atom = 1, structure%natoms
-        nnb = capacity
-        call accelnet_nbl_neighbors(int(atom,c_int), nnb, nbcoo, nbdist, nblist, nbtype)
-        call accelnet_atomic_energy(structure%positions(:,atom), int(structure%species(atom),c_int), &
-            nnb, nbcoo(:,1:nnb), nbtype(1:nnb), atomic_energy, stat)
-        call require(stat == ACCELNET_OK, "atomic energy")
-        api_energy = api_energy + atomic_energy
-        call accelnet_atomic_energy_and_forces(structure%positions(:,atom), &
-            int(structure%species(atom),c_int), int(atom,c_int), nnb, nbcoo(:,1:nnb), &
-            nbtype(1:nnb), nblist(1:nnb), int(structure%natoms,c_int), atomic_energy, api_forces, stat)
-        call require(stat == ACCELNET_OK, "atomic energy and forces")
-        force_energy = force_energy + atomic_energy
+    allocate(api_forces(3,structure%natoms))
+    do evaluation_mode = ACCELNET_CHEBYSHEV_AUTO, ACCELNET_CHEBYSHEV_MOMENT
+        call accelnet_set_chebyshev_evaluation(int(evaluation_mode,c_int), stat)
+        call require(stat == ACCELNET_OK .and. &
+            accelnet_get_chebyshev_evaluation() == evaluation_mode, "select Chebyshev evaluation mode")
+        api_forces = 0.0_real64
+        api_energy = 0.0_real64
+        force_energy = 0.0_real64
+        do atom = 1, structure%natoms
+            nnb = capacity
+            call accelnet_nbl_neighbors(int(atom,c_int), nnb, nbcoo, nbdist, nblist, nbtype)
+            call accelnet_atomic_energy(structure%positions(:,atom), int(structure%species(atom),c_int), &
+                nnb, nbcoo(:,1:nnb), nbtype(1:nnb), atomic_energy, stat)
+            call require(stat == ACCELNET_OK, "atomic energy")
+            api_energy = api_energy + atomic_energy
+            call accelnet_atomic_energy_and_forces(structure%positions(:,atom), &
+                int(structure%species(atom),c_int), int(atom,c_int), nnb, nbcoo(:,1:nnb), &
+                nbtype(1:nnb), nblist(1:nnb), int(structure%natoms,c_int), atomic_energy, api_forces, stat)
+            call require(stat == ACCELNET_OK, "atomic energy and forces")
+            force_energy = force_energy + atomic_energy
+        end do
+        call require(abs(api_energy-reference_energy) < 1.0e-9_real64, "energy parity by mode")
+        call require(abs(force_energy-reference_energy) < 1.0e-9_real64, "force-call energy parity by mode")
+        call require(maxval(abs(api_forces-reference_forces)) < 1.0e-9_real64, "force parity by mode")
     end do
     call accelnet_nbl_final()
-    call require(abs(api_energy-reference_energy) < 1.0e-9_real64, "energy parity")
-    call require(abs(force_energy-reference_energy) < 1.0e-9_real64, "force-call energy parity")
-    call require(maxval(abs(api_forces-reference_forces)) < 1.0e-9_real64, "force parity")
 
     call accelnet_final(stat)
     loaded = accelnet_all_loaded()

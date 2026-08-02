@@ -125,8 +125,14 @@ contains
           do local_cutoff = CUTOFF_HARD, CUTOFF_FRACTIONAL
             call initialize_config(moment_config, 2, 4.0_real64, 4, 3.5_real64, 6, &
                 version=version, central_type_index=2, cutoff_type=local_cutoff, cutoff_alpha=0.2_real64)
+            call set_chebyshev_evaluation(moment_config, CHEBYSHEV_EVALUATION_DIRECT)
+            if (chebyshev_uses_moments(moment_config, nneighbors)) &
+                call fail("forced direct selected moment path")
             call evaluate_atom_with_derivatives(moment_config, r, local_species, direct_values, &
                                                 direct_center, direct_neighbors)
+            call set_chebyshev_evaluation(moment_config, CHEBYSHEV_EVALUATION_MOMENT)
+            if (.not. chebyshev_uses_moments(moment_config, 1)) &
+                call fail("forced moment selected direct path")
             call evaluate_atom(moment_config, r, local_species, moment_values)
             if (maxval(abs(moment_values - direct_values)) > 2.0e-11_real64) &
                 call fail("moment values differ from direct pair values")
@@ -142,6 +148,10 @@ contains
                                       expected, 2.0e-11_real64)
                 end do
             end do
+            call set_chebyshev_evaluation(moment_config, CHEBYSHEV_EVALUATION_AUTO)
+            if (chebyshev_uses_moments(moment_config, 15) .or. &
+                .not. chebyshev_uses_moments(moment_config, 16)) &
+                call fail("automatic Chebyshev threshold")
           end do
         end do
     end subroutine test_moment_path

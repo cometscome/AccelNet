@@ -190,6 +190,13 @@ coefficient order for manually constructed models. The setup reader creates
 one model per central species and applies AccelNet's coefficient ordering
 automatically.
 
+Chebyshev angular evaluation has three runtime modes. `AUTO` uses direct pair
+enumeration below 16 angular neighbors and exact Cartesian moments otherwise;
+`DIRECT` and `MOMENT` force one path for every environment. Use
+`set_chebyshev_evaluation(config, mode)` with
+`CHEBYSHEV_EVALUATION_AUTO`, `CHEBYSHEV_EVALUATION_DIRECT`, or
+`CHEBYSHEV_EVALUATION_MOMENT`.
+
 Integer-exponent G5/type-9 functions support exact Cartesian-moment
 evaluation, including nonzero radial shifts. Selection deliberately uses only
 two fixed bounds: moment evaluation is used with at least 16 neighbors and for

@@ -77,6 +77,15 @@ pair_style accelnet H.ann O.ann
 pair_coeff * *
 ```
 
+The 4Feb2020 interface can force the Chebyshev angular algorithm by placing a
+mode before the potential files. Omitting it selects `auto`.
+
+```lammps
+pair_style accelnet auto H.ann O.ann
+pair_style accelnet direct H.ann O.ann
+pair_style accelnet moment H.ann O.ann
+```
+
 The 29Aug2024 interface also accepts an optional G5 evaluation mode after all
 potential files:
 

@@ -7,16 +7,10 @@ module accelnet_descriptors
     real(real64), parameter :: PI_ACCELNET = 3.14159265358979_real64
     real(real64), parameter :: EPS_DISTANCE = 1.0e-12_real64
     real(real64), parameter :: NEIGHBOR_SKIN = 1.0e-3_real64
-#if defined(ACCELNET_CHEBYSHEV_FORCE_DIRECT)
-    ! Never reach the moment branch for any practical neighbor count.
-    integer, parameter :: MOMENT_MIN_ANGULAR_NEIGHBORS = huge(0)
-#elif defined(ACCELNET_CHEBYSHEV_FORCE_MOMENT)
-    ! Always use the Cartesian-moment reformulation, including small lists.
-    integer, parameter :: MOMENT_MIN_ANGULAR_NEIGHBORS = 0
-#else
-    ! Production default: direct is cheaper for very small environments.
     integer, parameter :: MOMENT_MIN_ANGULAR_NEIGHBORS = 16
-#endif
+    integer, parameter, public :: CHEBYSHEV_EVALUATION_AUTO = 0
+    integer, parameter, public :: CHEBYSHEV_EVALUATION_DIRECT = 1
+    integer, parameter, public :: CHEBYSHEV_EVALUATION_MOMENT = 2
 
     integer, parameter, public :: CUTOFF_HARD = 0
     integer, parameter, public :: CUTOFF_COS = 1
@@ -38,6 +32,7 @@ module accelnet_descriptors
         integer :: angular_order = 0
         integer :: num_species = 0
         integer :: version = 0
+        integer :: evaluation_mode = CHEBYSHEV_EVALUATION_AUTO
         integer :: central_type_index = 0
         real(real64), allocatable :: species_weights(:)
         integer :: number_of_angular_moments = 0
@@ -77,8 +72,30 @@ module accelnet_descriptors
     public :: write_descriptor_file
     public :: cutoff_value, cutoff_derivative, validate_cutoff_parameters
     public :: chebyshev_values, chebyshev_values_derivatives
+    public :: set_chebyshev_evaluation, chebyshev_uses_moments
 
 contains
+
+    subroutine set_chebyshev_evaluation(config, mode)
+        type(descriptor_config), intent(inout) :: config
+        integer, intent(in) :: mode
+        if (mode < CHEBYSHEV_EVALUATION_AUTO .or. mode > CHEBYSHEV_EVALUATION_MOMENT) &
+            error stop "Chebyshev evaluation mode must be auto, direct, or moment"
+        config%evaluation_mode = mode
+    end subroutine set_chebyshev_evaluation
+
+    pure logical function chebyshev_uses_moments(config, angular_neighbors) result(use_moments)
+        type(descriptor_config), intent(in) :: config
+        integer, intent(in) :: angular_neighbors
+        select case (config%evaluation_mode)
+        case (CHEBYSHEV_EVALUATION_DIRECT)
+            use_moments = .false.
+        case (CHEBYSHEV_EVALUATION_MOMENT)
+            use_moments = .true.
+        case default
+            use_moments = angular_neighbors >= MOMENT_MIN_ANGULAR_NEIGHBORS
+        end select
+    end function chebyshev_uses_moments
 
     subroutine initialize_config(config, num_species, radial_rc, radial_order, &
                                  angular_rc, angular_order, version, central_type_index, &
@@ -783,7 +800,7 @@ contains
                     values(radial2:radial2 + nr - 1) = values(radial2:radial2 + nr - 1) + sj*temp_radial
                 end if
             end if
-            if (angular_neighbors >= MOMENT_MIN_ANGULAR_NEIGHBORS) cycle
+            if (chebyshev_uses_moments(config, angular_neighbors)) cycle
             if (rj > config%angular_rc .or. rj < EPS_DISTANCE) cycle
             if (config%num_species > 1) sj = config%species_weights(neighbor_species(j))
             do k = j + 1, size(neighbor_species)
@@ -803,7 +820,7 @@ contains
                 end if
             end do
         end do
-        if (angular_neighbors >= MOMENT_MIN_ANGULAR_NEIGHBORS) then
+        if (chebyshev_uses_moments(config, angular_neighbors)) then
             if (config%num_species > 1) then
                 call evaluate_angular_moment_values(config, displacements, neighbor_species, distances, &
                     angular_cutoffs, values(angular1:angular1 + na - 1), &
@@ -1110,7 +1127,7 @@ contains
                 contracted_center = contracted_center - derivative_j
             end if
 
-            if (angular_neighbors >= MOMENT_MIN_ANGULAR_NEIGHBORS) cycle
+            if (chebyshev_uses_moments(config, angular_neighbors)) cycle
             if (rj > config%angular_rc .or. rj < EPS_DISTANCE) cycle
             sj = config%species_weights(neighbor_species(j))
             do k = j + 1, size(neighbor_species)
@@ -1146,7 +1163,7 @@ contains
                 contracted_center = contracted_center - derivative_j - derivative_k
             end do
         end do
-        if (angular_neighbors >= MOMENT_MIN_ANGULAR_NEIGHBORS) then
+        if (chebyshev_uses_moments(config, angular_neighbors)) then
             if (config%num_species > 1) then
                 call contract_angular_moment_derivatives(config, displacements, neighbor_species, distances, &
                     angular_cutoffs, angular_cutoff_derivatives, coefficients(angular1:angular1 + na - 1), &
