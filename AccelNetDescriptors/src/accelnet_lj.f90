@@ -1,5 +1,7 @@
 module accelnet_lj
     use iso_fortran_env, only: real64
+    use accelnet_descriptors, only: cutoff_value, cutoff_derivative, &
+        validate_cutoff_parameters, CUTOFF_HARD
     implicit none
     private
 
@@ -8,6 +10,8 @@ module accelnet_lj
     type, public :: lj_config
         real(real64) :: radial_rc = 0.0_real64
         integer :: num_species = 0
+        integer :: cutoff_type = CUTOFF_HARD
+        real(real64) :: cutoff_alpha = 0.0_real64
     contains
         procedure :: num_descriptors => lj_num_descriptors
     end type lj_config
@@ -18,15 +22,20 @@ module accelnet_lj
 
 contains
 
-    subroutine initialize_lj_config(config, num_species, radial_rc)
+    subroutine initialize_lj_config(config, num_species, radial_rc, cutoff_type, cutoff_alpha)
         type(lj_config), intent(out) :: config
         integer, intent(in) :: num_species
         real(real64), intent(in) :: radial_rc
+        integer, intent(in), optional :: cutoff_type
+        real(real64), intent(in), optional :: cutoff_alpha
 
         if (num_species < 1) error stop "LJ num_species must be positive"
         if (radial_rc <= 0.0_real64) error stop "LJ radial_rc must be positive"
         config%num_species = num_species
         config%radial_rc = radial_rc
+        if (present(cutoff_type)) config%cutoff_type = cutoff_type
+        if (present(cutoff_alpha)) config%cutoff_alpha = cutoff_alpha
+        call validate_cutoff_parameters(config%cutoff_type, config%cutoff_alpha)
     end subroutine initialize_lj_config
 
     integer function lj_num_descriptors(self) result(n)
@@ -40,7 +49,7 @@ contains
         integer, intent(in) :: neighbor_species(:)
         real(real64), intent(out) :: values(:)
         integer :: j, species_index, output_index
-        real(real64) :: r2, inverse_r2, inverse_r6, inverse_r12, cutoff2
+        real(real64) :: r2, inverse_r2, inverse_r6, inverse_r12, cutoff2, distance, cutoff
 
         if (size(displacements, 1) /= 3) error stop "LJ displacements must have shape (3,n)"
         if (size(displacements, 2) /= size(neighbor_species)) error stop "LJ neighbor arrays differ"
@@ -57,9 +66,11 @@ contains
                 inverse_r2 = 1.0_real64/r2
                 inverse_r6 = inverse_r2*inverse_r2*inverse_r2
                 inverse_r12 = inverse_r6*inverse_r6
+                distance = sqrt(r2)
+                cutoff = cutoff_value(distance, config%radial_rc, config%cutoff_type, config%cutoff_alpha)
                 output_index = 1 + 2*(species_index - 1)
-                values(output_index) = values(output_index) + inverse_r6
-                values(output_index + 1) = values(output_index + 1) + inverse_r12
+                values(output_index) = values(output_index) + cutoff*inverse_r6
+                values(output_index + 1) = values(output_index + 1) + cutoff*inverse_r12
             end if
         end do
     end subroutine evaluate_lj_values
@@ -74,6 +85,7 @@ contains
         real(real64), intent(out) :: derivative_neighbors(:, :, :)
         integer :: j, species_index, output_index
         real(real64) :: r2, inverse_r2, inverse_r6, inverse_r12, cutoff2
+        real(real64) :: distance, cutoff, cutoff_gradient(3), dcutoff
         real(real64) :: derivative6(3), derivative12(3)
 
         if (size(derivative_center, 1) < 3 .or. &
@@ -97,11 +109,18 @@ contains
                 inverse_r2 = 1.0_real64/r2
                 inverse_r6 = inverse_r2*inverse_r2*inverse_r2
                 inverse_r12 = inverse_r6*inverse_r6
+                distance = sqrt(r2)
+                cutoff = cutoff_value(distance, config%radial_rc, config%cutoff_type, config%cutoff_alpha)
+                dcutoff = cutoff_derivative(distance, config%radial_rc, &
+                    config%cutoff_type, config%cutoff_alpha)
+                cutoff_gradient = dcutoff*displacements(:, j)/distance
                 output_index = 1 + 2*(species_index - 1)
-                values(output_index) = values(output_index) + inverse_r6
-                values(output_index + 1) = values(output_index + 1) + inverse_r12
-                derivative6 = -6.0_real64*inverse_r6*inverse_r2*displacements(:, j)
-                derivative12 = -12.0_real64*inverse_r12*inverse_r2*displacements(:, j)
+                values(output_index) = values(output_index) + cutoff*inverse_r6
+                values(output_index + 1) = values(output_index + 1) + cutoff*inverse_r12
+                derivative6 = -6.0_real64*cutoff*inverse_r6*inverse_r2*displacements(:, j) + &
+                    inverse_r6*cutoff_gradient
+                derivative12 = -12.0_real64*cutoff*inverse_r12*inverse_r2*displacements(:, j) + &
+                    inverse_r12*cutoff_gradient
                 derivative_neighbors(:, output_index, j) = derivative6
                 derivative_neighbors(:, output_index + 1, j) = derivative12
                 derivative_center(:, output_index) = derivative_center(:, output_index) - derivative6

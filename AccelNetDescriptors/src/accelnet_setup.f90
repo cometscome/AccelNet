@@ -1,6 +1,6 @@
 module accelnet_setup
     use iso_fortran_env, only: real64
-    use accelnet_descriptors, only: descriptor_config, initialize_config
+    use accelnet_descriptors, only: descriptor_config, initialize_config, validate_cutoff_parameters
     use accelnet_lj, only: lj_config, initialize_lj_config
     use accelnet_behler
     use accelnet_descriptor_models
@@ -84,7 +84,8 @@ contains
         character(len=*), intent(in) :: global_species(:)
         type(descriptor_setup), intent(out) :: setup
         character(len=LINE_LENGTH) :: line, keyword
-        integer :: unit, ios, i, number_of_kinds, number_of_functions
+        integer :: unit, ios, i, number_of_kinds, number_of_functions, cutoff_type
+        real(real64) :: cutoff_alpha
         logical :: eof
 
         open(newunit=unit, file=filename, status="old", action="read", iostat=ios)
@@ -118,11 +119,11 @@ contains
                 call parse_basis_header(unit, line, setup)
             case ("symmfunc", "functions")
                 call require_environment(setup)
-                call validate_behler_header(line)
+                call parse_behler_header(line, cutoff_type, cutoff_alpha)
                 call read_valid_line(unit, line, eof)
                 if (eof) error stop "missing Behler function count"
                 read(line, *) number_of_functions
-                call parse_behler_block(unit, line, number_of_functions, setup)
+                call parse_behler_block(unit, line, number_of_functions, cutoff_type, cutoff_alpha, setup)
             case default
                 error stop "unknown keyword in AccelNet setup file"
             end select
@@ -132,32 +133,44 @@ contains
         if (setup%model%num_descriptors() < 1) error stop "setup contains no supported descriptors"
     end subroutine read_accelnet_setup
 
-    subroutine validate_behler_header(line)
+    subroutine parse_behler_header(line, cutoff_type, cutoff_alpha)
         character(len=*), intent(in) :: line
+        integer, intent(out) :: cutoff_type
+        real(real64), intent(out) :: cutoff_alpha
         character(len=LINE_LENGTH) :: function_type
         call get_string_value(line, "type", function_type)
         if (lowercase(trim(function_type)) /= "behler2011") &
             error stop "unsupported SYMMFUNC type in AccelNet setup"
-    end subroutine validate_behler_header
+        call get_integer_value(line, "cutoff_type", cutoff_type, 1)
+        call get_real_value(line, "cutoff_alpha", cutoff_alpha, 0.0_real64)
+        call validate_cutoff_parameters(cutoff_type, cutoff_alpha)
+    end subroutine parse_behler_header
 
     subroutine parse_basis_header(unit, header, setup)
         integer, intent(in) :: unit
         character(len=*), intent(in) :: header
         type(descriptor_setup), intent(inout) :: setup
         character(len=LINE_LENGTH) :: basis_type, line
-        integer :: number_of_kinds, i
+        integer :: number_of_kinds, i, cutoff_type
+        real(real64) :: cutoff_alpha
         logical :: eof
 
         call get_string_value(header, "type", basis_type)
+        call get_integer_value(header, "cutoff_type", cutoff_type, -1)
+        call get_real_value(header, "cutoff_alpha", cutoff_alpha, 0.0_real64)
         select case(lowercase(trim(basis_type)))
         case ("chebyshev")
+            if (cutoff_type < 0) cutoff_type = 1
+            call validate_cutoff_parameters(cutoff_type, cutoff_alpha)
             call read_valid_line(unit, line, eof)
             if (eof) error stop "missing Chebyshev parameter line"
-            call add_chebyshev_from_line(line, setup)
+            call add_chebyshev_from_line(line, setup, cutoff_type, cutoff_alpha)
         case ("lj")
+            if (cutoff_type < 0) cutoff_type = 0
+            call validate_cutoff_parameters(cutoff_type, cutoff_alpha)
             call read_valid_line(unit, line, eof)
             if (eof) error stop "missing LJ parameter line"
-            call add_lj_from_line(line, setup)
+            call add_lj_from_line(line, setup, cutoff_type, cutoff_alpha)
         case ("multi")
             call read_valid_line(unit, line, eof)
             if (eof) error stop "missing multi basis count"
@@ -169,9 +182,17 @@ contains
                 if (eof) error stop "missing multi basis parameters"
                 select case(lowercase(trim(adjustl(basis_type))))
                 case ("chebyshev")
-                    call add_chebyshev_from_line(line, setup)
+                    if (cutoff_type < 0) then
+                        call add_chebyshev_from_line(line, setup, 1, cutoff_alpha)
+                    else
+                        call add_chebyshev_from_line(line, setup, cutoff_type, cutoff_alpha)
+                    end if
                 case ("lj")
-                    call add_lj_from_line(line, setup)
+                    if (cutoff_type < 0) then
+                        call add_lj_from_line(line, setup, 0, cutoff_alpha)
+                    else
+                        call add_lj_from_line(line, setup, cutoff_type, cutoff_alpha)
+                    end if
                 case default
                     error stop "unsupported basis inside AccelNet multi setup"
                 end select
@@ -181,9 +202,11 @@ contains
         end select
     end subroutine parse_basis_header
 
-    subroutine add_chebyshev_from_line(line, setup)
+    subroutine add_chebyshev_from_line(line, setup, cutoff_type, cutoff_alpha)
         character(len=*), intent(in) :: line
         type(descriptor_setup), intent(inout) :: setup
+        integer, intent(in) :: cutoff_type
+        real(real64), intent(in) :: cutoff_alpha
         type(descriptor_config) :: config
         real(real64) :: radial_rc, angular_rc
         integer :: radial_order, angular_order, version
@@ -193,23 +216,28 @@ contains
         call get_integer_value(line, "angular_N", angular_order, 4)
         call get_integer_value(line, "version", version, 0)
         call initialize_config(config, size(setup%environment_species), radial_rc, radial_order, &
-                               angular_rc, angular_order, version, setup%central_global_species)
+                               angular_rc, angular_order, version, setup%central_global_species, &
+                               cutoff_type, cutoff_alpha)
         call add_chebyshev(setup%model, config)
     end subroutine add_chebyshev_from_line
 
-    subroutine add_lj_from_line(line, setup)
+    subroutine add_lj_from_line(line, setup, cutoff_type, cutoff_alpha)
         character(len=*), intent(in) :: line
         type(descriptor_setup), intent(inout) :: setup
+        integer, intent(in) :: cutoff_type
+        real(real64), intent(in) :: cutoff_alpha
         type(lj_config) :: config
         real(real64) :: radial_rc
         call get_real_value(line, "radial_Rc", radial_rc, 0.0_real64)
         if (radial_rc <= 0.0_real64) error stop "LJ setup requires radial_Rc"
-        call initialize_lj_config(config, size(setup%environment_species), radial_rc)
+        call initialize_lj_config(config, size(setup%environment_species), radial_rc, &
+            cutoff_type, cutoff_alpha)
         call add_lj(setup%model, config)
     end subroutine add_lj_from_line
 
-    subroutine parse_behler_block(unit, line, number_of_functions, setup)
-        integer, intent(in) :: unit, number_of_functions
+    subroutine parse_behler_block(unit, line, number_of_functions, cutoff_type, cutoff_alpha, setup)
+        integer, intent(in) :: unit, number_of_functions, cutoff_type
+        real(real64), intent(in) :: cutoff_alpha
         character(len=*), intent(inout) :: line
         type(descriptor_setup), intent(inout) :: setup
         type(raw_behler_function), allocatable :: functions(:)
@@ -245,7 +273,7 @@ contains
             end select
             if (functions(i)%rc <= 0.0_real64) error stop "Behler function requires positive Rc"
         end do
-        call initialize_behler_config(config, size(setup%environment_species))
+        call initialize_behler_config(config, size(setup%environment_species), cutoff_type, cutoff_alpha)
         call add_sorted_behler_functions(config, functions)
         call add_behler(setup%model, config)
     end subroutine parse_behler_block

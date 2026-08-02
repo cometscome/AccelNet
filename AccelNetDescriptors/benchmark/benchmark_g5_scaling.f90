@@ -2,7 +2,7 @@ program benchmark_g5_scaling
     use iso_fortran_env, only: real64
     use accelnet_behler, only: behler_config, initialize_behler_config, add_g5, &
         evaluate_behler_values, contract_behler_derivatives, set_behler_g5_evaluation, &
-        G5_EVALUATION_DIRECT, G5_EVALUATION_MOMENT
+        G5_EVALUATION_DIRECT, G5_EVALUATION_MOMENT_FORCE
     implicit none
 
     integer, parameter :: neighbor_counts(*) = [4, 8, 12, 16, 24, 32, 48, 64, 96, 128]
@@ -77,7 +77,7 @@ program benchmark_g5_scaling
         call cpu_time(end_time)
         direct_force_time = (end_time - start_time)/real(repeats, real64)
 
-        call set_behler_g5_evaluation(config, G5_EVALUATION_MOMENT)
+        call set_behler_g5_evaluation(config, G5_EVALUATION_MOMENT_FORCE)
         call evaluate_behler_values(config, displacements(:, 1:nneighbors), species(1:nneighbors), values)
         call contract_behler_derivatives(config, displacements(:, 1:nneighbors), species(1:nneighbors), &
             coefficients, contracted_center, contracted_neighbors(:, 1:nneighbors))

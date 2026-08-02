@@ -42,12 +42,14 @@ julia --project=. bin/accelnet-model-converter.jl accelnet-to-n2p2 \
   /path/to/n2p2-output Ti.nn O.nn
 ```
 
-両実装ともBehler–Parrinello 2G types 2, 3, 9、cosine cutoff、affine scaling、
+両実装ともBehler–Parrinello 2G types 2, 3, 9、n2p2 cutoff types 0--8、
+およびAccelNet拡張のfractional cutoff type 9に対応します。
+`0 <= cutoff_alpha < 1`（type 9では`0 < cutoff_alpha < 1`）、affine scaling、
 活性化関数、energy normalization、atomic reference energiesに対応します。
 n2p2とænetの対称関数順序に合わせ、第一層の重みとscaling配列も並べ替えます。
 
 Chebyshev, LJ, 4G/charge, weighted/compact or shifted-angular symmetry
-functions, non-cosine cutoffs, `normalize_nodes`, and per-element n2p2
+functions, `normalize_nodes`, and per-element n2p2
 topologies are rejected rather than approximated.
 
 Run tests:

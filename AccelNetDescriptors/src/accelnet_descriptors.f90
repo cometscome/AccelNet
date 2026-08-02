@@ -7,11 +7,33 @@ module accelnet_descriptors
     real(real64), parameter :: PI_ACCELNET = 3.14159265358979_real64
     real(real64), parameter :: EPS_DISTANCE = 1.0e-12_real64
     real(real64), parameter :: NEIGHBOR_SKIN = 1.0e-3_real64
+#if defined(ACCELNET_CHEBYSHEV_FORCE_DIRECT)
+    ! Never reach the moment branch for any practical neighbor count.
+    integer, parameter :: MOMENT_MIN_ANGULAR_NEIGHBORS = huge(0)
+#elif defined(ACCELNET_CHEBYSHEV_FORCE_MOMENT)
+    ! Always use the Cartesian-moment reformulation, including small lists.
+    integer, parameter :: MOMENT_MIN_ANGULAR_NEIGHBORS = 0
+#else
+    ! Production default: direct is cheaper for very small environments.
     integer, parameter :: MOMENT_MIN_ANGULAR_NEIGHBORS = 16
+#endif
+
+    integer, parameter, public :: CUTOFF_HARD = 0
+    integer, parameter, public :: CUTOFF_COS = 1
+    integer, parameter, public :: CUTOFF_TANHU = 2
+    integer, parameter, public :: CUTOFF_TANH = 3
+    integer, parameter, public :: CUTOFF_EXP = 4
+    integer, parameter, public :: CUTOFF_POLY1 = 5
+    integer, parameter, public :: CUTOFF_POLY2 = 6
+    integer, parameter, public :: CUTOFF_POLY3 = 7
+    integer, parameter, public :: CUTOFF_POLY4 = 8
+    integer, parameter, public :: CUTOFF_FRACTIONAL = 9
 
     type, public :: descriptor_config
         real(real64) :: radial_rc = 0.0_real64
         real(real64) :: angular_rc = 0.0_real64
+        integer :: cutoff_type = CUTOFF_COS
+        real(real64) :: cutoff_alpha = 0.0_real64
         integer :: radial_order = 0
         integer :: angular_order = 0
         integer :: num_species = 0
@@ -53,17 +75,19 @@ module accelnet_descriptors
     public :: contract_atom_derivatives
     public :: evaluate_structure
     public :: write_descriptor_file
-    public :: cutoff_value, cutoff_derivative
+    public :: cutoff_value, cutoff_derivative, validate_cutoff_parameters
     public :: chebyshev_values, chebyshev_values_derivatives
 
 contains
 
     subroutine initialize_config(config, num_species, radial_rc, radial_order, &
-                                 angular_rc, angular_order, version, central_type_index)
+                                 angular_rc, angular_order, version, central_type_index, &
+                                 cutoff_type, cutoff_alpha)
         type(descriptor_config), intent(out) :: config
         integer, intent(in) :: num_species, radial_order, angular_order
         real(real64), intent(in) :: radial_rc, angular_rc
-        integer, intent(in), optional :: version, central_type_index
+        integer, intent(in), optional :: version, central_type_index, cutoff_type
+        real(real64), intent(in), optional :: cutoff_alpha
         integer :: i, spin
 
         if (num_species < 1) error stop "num_species must be positive"
@@ -77,6 +101,9 @@ contains
         config%radial_order = radial_order
         config%angular_rc = angular_rc
         config%angular_order = angular_order
+        if (present(cutoff_type)) config%cutoff_type = cutoff_type
+        if (present(cutoff_alpha)) config%cutoff_alpha = cutoff_alpha
+        call validate_cutoff_parameters(config%cutoff_type, config%cutoff_alpha)
         config%version = 0
         if (present(version)) config%version = version
         if (config%version /= 0 .and. config%version /= 1 .and. config%version /= 10) &
@@ -176,24 +203,126 @@ contains
         n = self%offsets(iatom + 1) - self%offsets(iatom)
     end function count_for_atom
 
-    pure real(real64) function cutoff_value(distance, rc) result(value)
+    subroutine validate_cutoff_parameters(cutoff_type, alpha)
+        integer, intent(in) :: cutoff_type
+        real(real64), intent(in) :: alpha
+        if (cutoff_type < CUTOFF_HARD .or. cutoff_type > CUTOFF_FRACTIONAL) &
+            error stop "cutoff type must be between 0 and 9"
+        if (alpha < 0.0_real64 .or. alpha >= 1.0_real64) &
+            error stop "cutoff alpha must satisfy 0 <= alpha < 1"
+        if (cutoff_type == CUTOFF_FRACTIONAL .and. alpha <= 0.0_real64) &
+            error stop "fractional cutoff alpha=h/Rc must be positive"
+    end subroutine validate_cutoff_parameters
+
+    pure real(real64) function cutoff_value(distance, rc, cutoff_type, alpha) result(value)
         real(real64), intent(in) :: distance, rc
+        integer, intent(in), optional :: cutoff_type
+        real(real64), intent(in), optional :: alpha
+        integer :: kind
+        real(real64) :: inner, inverse_width, x, t, width
+        kind = CUTOFF_COS
+        if (present(cutoff_type)) kind = cutoff_type
+        if (kind == CUTOFF_HARD) then
+            value = merge(1.0_real64, 0.0_real64, distance <= rc)
+            return
+        end if
         if (distance >= rc) then
             value = 0.0_real64
-        else
-            value = 0.5_real64*(cos(PI_ACCELNET/rc*distance) + 1.0_real64)
+            return
         end if
+        select case(kind)
+        case(CUTOFF_TANHU, CUTOFF_TANH)
+            t = tanh(1.0_real64 - distance/rc)
+            value = t*t*t
+            if (kind == CUTOFF_TANH) value = value/tanh(1.0_real64)**3
+        case(CUTOFF_FRACTIONAL)
+            width = rc
+            if (present(alpha)) width = alpha*rc
+            x = (distance - rc)/width
+            value = x*x/(1.0_real64 + x*x)
+        case default
+            inner = 0.0_real64
+            if (present(alpha)) inner = alpha*rc
+            if (distance < inner) then
+                value = 1.0_real64
+                return
+            end if
+            inverse_width = 1.0_real64/(rc - inner)
+            x = (distance - inner)*inverse_width
+            select case(kind)
+            case(CUTOFF_COS)
+                value = 0.5_real64*(cos(PI_ACCELNET*x) + 1.0_real64)
+            case(CUTOFF_EXP)
+                value = exp(1.0_real64 + 1.0_real64/(x*x - 1.0_real64))
+            case(CUTOFF_POLY1)
+                value = (2.0_real64*x - 3.0_real64)*x*x + 1.0_real64
+            case(CUTOFF_POLY2)
+                value = ((15.0_real64 - 6.0_real64*x)*x - 10.0_real64)*x*x*x + 1.0_real64
+            case(CUTOFF_POLY3)
+                value = (x*(x*(20.0_real64*x - 70.0_real64) + 84.0_real64) - 35.0_real64)*x**4 + 1.0_real64
+            case(CUTOFF_POLY4)
+                value = (x*(x*((315.0_real64 - 70.0_real64*x)*x - 540.0_real64) + &
+                    420.0_real64) - 126.0_real64)*x**5 + 1.0_real64
+            case default
+                value = 0.0_real64
+            end select
+        end select
     end function cutoff_value
 
-    pure real(real64) function cutoff_derivative(distance, rc) result(value)
+    pure real(real64) function cutoff_derivative(distance, rc, cutoff_type, alpha) result(value)
         real(real64), intent(in) :: distance, rc
-        real(real64) :: a
+        integer, intent(in), optional :: cutoff_type
+        real(real64), intent(in), optional :: alpha
+        integer :: kind
+        real(real64) :: inner, inverse_width, x, t, core_derivative, width
+        kind = CUTOFF_COS
+        if (present(cutoff_type)) kind = cutoff_type
         if (distance >= rc) then
             value = 0.0_real64
-        else
-            a = PI_ACCELNET/rc
-            value = -0.5_real64*a*sin(a*distance)
+            return
         end if
+        select case(kind)
+        case(CUTOFF_HARD)
+            value = 0.0_real64
+        case(CUTOFF_TANHU, CUTOFF_TANH)
+            t = tanh(1.0_real64 - distance/rc)
+            value = 3.0_real64*t*t*(t*t - 1.0_real64)/rc
+            if (kind == CUTOFF_TANH) value = value/tanh(1.0_real64)**3
+        case(CUTOFF_FRACTIONAL)
+            width = rc
+            if (present(alpha)) width = alpha*rc
+            x = (distance - rc)/width
+            value = 2.0_real64*x/(width*(1.0_real64 + x*x)**2)
+        case default
+            inner = 0.0_real64
+            if (present(alpha)) inner = alpha*rc
+            if (distance < inner) then
+                value = 0.0_real64
+                return
+            end if
+            inverse_width = 1.0_real64/(rc - inner)
+            x = (distance - inner)*inverse_width
+            select case(kind)
+            case(CUTOFF_COS)
+                core_derivative = -0.5_real64*PI_ACCELNET*sin(PI_ACCELNET*x)
+            case(CUTOFF_EXP)
+                t = 1.0_real64/(x*x - 1.0_real64)
+                core_derivative = -2.0_real64*x*t*t*exp(1.0_real64 + t)
+            case(CUTOFF_POLY1)
+                core_derivative = x*(6.0_real64*x - 6.0_real64)
+            case(CUTOFF_POLY2)
+                core_derivative = x*x*((60.0_real64 - 30.0_real64*x)*x - 30.0_real64)
+            case(CUTOFF_POLY3)
+                core_derivative = x**3*(x*(x*(140.0_real64*x - 420.0_real64) + &
+                    420.0_real64) - 140.0_real64)
+            case(CUTOFF_POLY4)
+                core_derivative = x**4*(x*(x*((2520.0_real64 - 630.0_real64*x)*x - &
+                    3780.0_real64) + 2520.0_real64) - 630.0_real64)
+            case default
+                core_derivative = 0.0_real64
+            end select
+            value = inverse_width*core_derivative
+        end select
     end function cutoff_derivative
 
     pure subroutine chebyshev_values(r, r0, r1, order, values)
@@ -635,8 +764,10 @@ contains
 
         do j = 1, size(neighbor_species)
             distances(j) = sqrt(dot_product(displacements(:, j), displacements(:, j)))
-            radial_cutoffs(j) = cutoff_value(distances(j), config%radial_rc)
-            angular_cutoffs(j) = cutoff_value(distances(j), config%angular_rc)
+            radial_cutoffs(j) = cutoff_value(distances(j), config%radial_rc, &
+                config%cutoff_type, config%cutoff_alpha)
+            angular_cutoffs(j) = cutoff_value(distances(j), config%angular_rc, &
+                config%cutoff_type, config%cutoff_alpha)
         end do
         angular_neighbors = count(distances <= config%angular_rc .and. distances > EPS_DISTANCE)
 
@@ -726,10 +857,14 @@ contains
         do j = 1, size(neighbor_species)
             distances(j) = sqrt(dot_product(displacements(:, j), displacements(:, j)))
             if (distances(j) > EPS_DISTANCE) unit_vectors(:, j) = displacements(:, j)/distances(j)
-            radial_cutoffs(j) = cutoff_value(distances(j), config%radial_rc)
-            angular_cutoffs(j) = cutoff_value(distances(j), config%angular_rc)
-            radial_cutoff_derivatives(j) = cutoff_derivative(distances(j), config%radial_rc)
-            angular_cutoff_derivatives(j) = cutoff_derivative(distances(j), config%angular_rc)
+            radial_cutoffs(j) = cutoff_value(distances(j), config%radial_rc, &
+                config%cutoff_type, config%cutoff_alpha)
+            angular_cutoffs(j) = cutoff_value(distances(j), config%angular_rc, &
+                config%cutoff_type, config%cutoff_alpha)
+            radial_cutoff_derivatives(j) = cutoff_derivative(distances(j), config%radial_rc, &
+                config%cutoff_type, config%cutoff_alpha)
+            angular_cutoff_derivatives(j) = cutoff_derivative(distances(j), config%angular_rc, &
+                config%cutoff_type, config%cutoff_alpha)
         end do
 
         do j = 1, size(neighbor_species)
@@ -944,10 +1079,14 @@ contains
         do j = 1, size(neighbor_species)
             distances(j) = sqrt(dot_product(displacements(:, j), displacements(:, j)))
             if (distances(j) > EPS_DISTANCE) unit_vectors(:, j) = displacements(:, j)/distances(j)
-            radial_cutoffs(j) = cutoff_value(distances(j), config%radial_rc)
-            angular_cutoffs(j) = cutoff_value(distances(j), config%angular_rc)
-            radial_cutoff_derivatives(j) = cutoff_derivative(distances(j), config%radial_rc)
-            angular_cutoff_derivatives(j) = cutoff_derivative(distances(j), config%angular_rc)
+            radial_cutoffs(j) = cutoff_value(distances(j), config%radial_rc, &
+                config%cutoff_type, config%cutoff_alpha)
+            angular_cutoffs(j) = cutoff_value(distances(j), config%angular_rc, &
+                config%cutoff_type, config%cutoff_alpha)
+            radial_cutoff_derivatives(j) = cutoff_derivative(distances(j), config%radial_rc, &
+                config%cutoff_type, config%cutoff_alpha)
+            angular_cutoff_derivatives(j) = cutoff_derivative(distances(j), config%angular_rc, &
+                config%cutoff_type, config%cutoff_alpha)
         end do
         angular_neighbors = count(distances <= config%angular_rc .and. distances > EPS_DISTANCE)
 

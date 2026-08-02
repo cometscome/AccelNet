@@ -28,10 +28,12 @@ build/accelnet-predict --n2p2 /path/to/model structure.xsf
 From Fortran, use `load_predictor_from_n2p2(model_directory, model)` or reload
 an existing object with `call model%reload_from_n2p2(model_directory)`.
 Imported models currently support 2G symmetry-function types 2, 3, and 9,
-cosine `cutoff_type 1` with `cutoff_alpha 0`, all n2p2 activation functions,
+all n2p2 `cutoff_type` values 0 through 8 and AccelNet's fractional extension
+as type 9, with `0 <= cutoff_alpha < 1` (`cutoff_alpha > 0` for type 9),
+all n2p2 activation functions,
 the standard scaling modes, data-set energy normalization, and atomic energy
 offsets. Per-element network topologies, `normalize_nodes`, weighted/compact
-symmetry functions, non-cosine cutoffs, and 4G/charge models are rejected with
+symmetry functions, and 4G/charge models are rejected with
 an error rather than evaluated with different semantics. XSF coordinates and
 the parameters in `input.nn` must use the same physical length unit; returned
 energies and forces use the model's physical energy and length units.
@@ -268,6 +270,10 @@ Chebyshev, LJ, and Behler2011 fingerprints embedded in NN files are
 reconstructed by the predictor. Standard ænet NN metadata does not store the
 Chebyshev implementation version, so `predict.in` carries this additional
 tag while remaining backward compatible with existing files that omit it.
+Extended networks store `cutoff_type` and `cutoff_alpha` in descriptor
+parameter rows 5 and 6 for all three descriptor families. Older networks with
+fewer rows retain their historical defaults: cosine for Chebyshev and
+Behler2011, and hard truncation for LJ.
 For Behler2011 networks, embedded functions are placed in ænet's canonical
 species/function ordering rather than their textual metadata order, matching
 the input order used by the trained neural network and scaling arrays.

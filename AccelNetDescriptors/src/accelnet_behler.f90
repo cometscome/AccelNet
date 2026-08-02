@@ -1,15 +1,16 @@
 module accelnet_behler
-    use iso_fortran_env, only: real64
-    use accelnet_descriptors, only: cutoff_value, cutoff_derivative
+    use iso_fortran_env, only: error_unit, real64
+    use accelnet_descriptors, only: cutoff_value, cutoff_derivative, validate_cutoff_parameters, CUTOFF_COS
     implicit none
     private
 
     real(real64), parameter :: EPS_DISTANCE = 1.0e-12_real64
-    integer, parameter :: DEFAULT_G5_MOMENT_VALUE_THRESHOLD = 56
-    integer, parameter :: DEFAULT_G5_MOMENT_FORCE_THRESHOLD = 32
+    integer, parameter, public :: MIN_G5_MOMENT_NEIGHBORS = 16
+    integer, parameter, public :: MAX_G5_MOMENT_ORDER = 10
     integer, parameter, public :: G5_EVALUATION_AUTO = 0
     integer, parameter, public :: G5_EVALUATION_DIRECT = 1
     integer, parameter, public :: G5_EVALUATION_MOMENT = 2
+    integer, parameter, public :: G5_EVALUATION_MOMENT_FORCE = 3
 
     type :: g1_parameter
         integer :: species = 0, output = 0, cutoff_group = 0
@@ -59,12 +60,13 @@ module accelnet_behler
 
     type, public :: behler_config
         integer :: num_species = 0
+        integer :: cutoff_type = CUTOFF_COS
+        real(real64) :: cutoff_alpha = 0.0_real64
         integer :: number_of_descriptors = 0
         integer :: maximum_g5_integer_zeta = 0
         integer :: number_of_g5_moments = 0
         integer :: g5_evaluation_mode = G5_EVALUATION_AUTO
-        integer :: g5_moment_value_threshold = DEFAULT_G5_MOMENT_VALUE_THRESHOLD
-        integer :: g5_moment_force_threshold = DEFAULT_G5_MOMENT_FORCE_THRESHOLD
+        logical :: g5_high_order_warning_emitted = .false.
         real(real64) :: maximum_cutoff = 0.0_real64
         real(real64) :: maximum_angular_cutoff = 0.0_real64
         real(real64) :: maximum_g4_cutoff = 0.0_real64
@@ -93,15 +95,20 @@ module accelnet_behler
     public :: initialize_behler_config, add_g1, add_g2, add_g3, add_g4, add_g5
     public :: evaluate_behler_values, evaluate_behler_values_derivatives
     public :: contract_behler_derivatives, behler_supports_direct_contraction
-    public :: set_behler_g5_evaluation, set_behler_g5_moment_threshold
+    public :: set_behler_g5_evaluation
 
 contains
 
-    subroutine initialize_behler_config(config, num_species)
+    subroutine initialize_behler_config(config, num_species, cutoff_type, cutoff_alpha)
         type(behler_config), intent(out) :: config
         integer, intent(in) :: num_species
+        integer, intent(in), optional :: cutoff_type
+        real(real64), intent(in), optional :: cutoff_alpha
         if (num_species < 1) error stop "Behler num_species must be positive"
         config%num_species = num_species
+        if (present(cutoff_type)) config%cutoff_type = cutoff_type
+        if (present(cutoff_alpha)) config%cutoff_alpha = cutoff_alpha
+        call validate_cutoff_parameters(config%cutoff_type, config%cutoff_alpha)
         allocate(config%g4_groups(num_species*(num_species + 1)/2))
         allocate(config%g5_groups(num_species*(num_species + 1)/2))
         allocate(config%g1_groups(num_species), config%g2_groups(num_species), config%g3_groups(num_species))
@@ -115,35 +122,20 @@ contains
     subroutine set_behler_g5_evaluation(config, mode)
         type(behler_config), intent(inout) :: config
         integer, intent(in) :: mode
-        if (mode < G5_EVALUATION_AUTO .or. mode > G5_EVALUATION_MOMENT) &
+        if (mode < G5_EVALUATION_AUTO .or. mode > G5_EVALUATION_MOMENT_FORCE) &
             error stop "invalid G5 evaluation mode"
         config%g5_evaluation_mode = mode
     end subroutine set_behler_g5_evaluation
-
-    subroutine set_behler_g5_moment_threshold(config, value_threshold, force_threshold)
-        type(behler_config), intent(inout) :: config
-        integer, intent(in) :: value_threshold, force_threshold
-        if (value_threshold < 2 .or. force_threshold < 2) &
-            error stop "G5 moment neighbor thresholds must be at least two"
-        config%g5_moment_value_threshold = value_threshold
-        config%g5_moment_force_threshold = force_threshold
-    end subroutine set_behler_g5_moment_threshold
 
     pure logical function use_g5_moments(config, distances, for_force) result(use_moments)
         type(behler_config), intent(in) :: config
         real(real64), intent(in) :: distances(:)
         logical, intent(in) :: for_force
-        integer :: threshold
         use_moments = config%maximum_g5_integer_zeta > 0 .and. &
             config%g5_evaluation_mode /= G5_EVALUATION_DIRECT
-        if (for_force) then
-            threshold = config%g5_moment_force_threshold
-        else
-            threshold = config%g5_moment_value_threshold
-        end if
-        if (use_moments .and. config%g5_evaluation_mode == G5_EVALUATION_AUTO) &
+        if (use_moments .and. config%g5_evaluation_mode /= G5_EVALUATION_MOMENT_FORCE) &
             use_moments = count(distances > EPS_DISTANCE .and. &
-                distances <= config%maximum_angular_cutoff) >= threshold
+                distances <= config%maximum_angular_cutoff) >= MIN_G5_MOMENT_NEIGHBORS
     end function use_g5_moments
 
     subroutine validate_radial(config, species, rc)
@@ -291,8 +283,15 @@ contains
                                config%num_species, species1, species2)
         call append_g4_group(config%g5_groups(unordered_pair_index(config%num_species, species1, species2)), &
                              parameter)
-        if (parameter%integer_zeta > config%maximum_g5_integer_zeta) &
+        if (parameter%integer_zeta > 0 .and. parameter%integer_zeta <= MAX_G5_MOMENT_ORDER .and. &
+            parameter%integer_zeta > config%maximum_g5_integer_zeta) &
             call initialize_g5_moment_basis(config, parameter%integer_zeta)
+        if (parameter%integer_zeta > MAX_G5_MOMENT_ORDER .and. .not. config%g5_high_order_warning_emitted) then
+            write(error_unit, "(A,I0,A,I0,A)") "WARNING: G5 zeta=", parameter%integer_zeta, &
+                " exceeds the moment maximum order ", MAX_G5_MOMENT_ORDER, &
+                "; high-order descriptors will use direct evaluation."
+            config%g5_high_order_warning_emitted = .true.
+        end if
         config%maximum_cutoff = max(config%maximum_cutoff, rc)
         config%maximum_angular_cutoff = max(config%maximum_angular_cutoff, rc)
     end subroutine
@@ -687,8 +686,10 @@ contains
             distances(j) = sqrt(dot_product(displacements(:, j), displacements(:, j)))
             if (distances(j) > EPS_DISTANCE) unit_vectors(:, j) = displacements(:, j)/distances(j)
             do group = 1, ncutoff
-                cutoffs(j, group) = cutoff_value(distances(j), config%cutoff_radii(group))
-                cutoff_derivatives(j, group) = cutoff_derivative(distances(j), config%cutoff_radii(group))
+                cutoffs(j, group) = cutoff_value(distances(j), config%cutoff_radii(group), &
+                    config%cutoff_type, config%cutoff_alpha)
+                cutoff_derivatives(j, group) = cutoff_derivative(distances(j), config%cutoff_radii(group), &
+                    config%cutoff_type, config%cutoff_alpha)
             end do
             do group = 1, nradial_exp
                 radial_exponentials(j, group) = exp(-config%radial_eta(group)* &
@@ -780,7 +781,8 @@ contains
                     end do
                 end do
                 do group = 1, parameters%angular_count
-                    if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0) cycle
+                    if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0 .and. &
+                        parameters%angular_integer_zeta(group) <= MAX_G5_MOMENT_ORDER) cycle
                     call angular_power(cosine_jk, parameters%angular_lambda(group), &
                         parameters%angular_zeta(group), parameters%angular_integer_zeta(group), &
                         parameters%angular_derivative_prefactor(group), angular_values(group), &
@@ -790,7 +792,8 @@ contains
                 pair_derivative_k = 0.0_real64
                 do p = 1, parameters%count
                     group = parameters%angular_group(p)
-                    if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0) cycle
+                    if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0 .and. &
+                        parameters%angular_integer_zeta(group) <= MAX_G5_MOMENT_ORDER) cycle
                     if (distance_j > parameters%rc(p) .or. distance_k > parameters%rc(p)) cycle
                     cutoff_index = parameters%cutoff_group(p)
                     exponential_index = parameters%exponential_group(p)
@@ -862,7 +865,8 @@ contains
         moment_adjoints = 0.0_real64
         self_adjoints = 0.0_real64
         do p = 1, size(config%g5)
-            if (config%g5(p)%integer_zeta <= 0) cycle
+            if (config%g5(p)%integer_zeta <= 0 .or. &
+                config%g5(p)%integer_zeta > MAX_G5_MOMENT_ORDER) cycle
             species1 = config%g5(p)%species1
             species2 = config%g5(p)%species2
             cutoff_index = config%g5(p)%cutoff_group
@@ -987,9 +991,11 @@ contains
             distances(j) = sqrt(dot_product(displacements(:, j), displacements(:, j)))
             if (distances(j) > EPS_DISTANCE) unit_vectors(:, j) = displacements(:, j)/distances(j)
             do group = 1, ncutoff
-                cutoffs(j, group) = cutoff_value(distances(j), config%cutoff_radii(group))
+                cutoffs(j, group) = cutoff_value(distances(j), config%cutoff_radii(group), &
+                    config%cutoff_type, config%cutoff_alpha)
                 if (do_derivatives) cutoff_derivatives(j, group) = &
-                    cutoff_derivative(distances(j), config%cutoff_radii(group))
+                    cutoff_derivative(distances(j), config%cutoff_radii(group), &
+                    config%cutoff_type, config%cutoff_alpha)
             end do
             do group = 1, nradial_exp
                 radial_exponentials(j, group) = exp(-config%radial_eta(group)* &
@@ -1096,9 +1102,11 @@ contains
                     rjk = sqrt(rjk_squared)
                     if (do_derivatives) ujk = displacement_jk/rjk
                     do group = 1, ncutoff
-                        pair_cutoffs(group) = cutoff_value(rjk, config%cutoff_radii(group))
+                        pair_cutoffs(group) = cutoff_value(rjk, config%cutoff_radii(group), &
+                            config%cutoff_type, config%cutoff_alpha)
                         if (do_derivatives) pair_cutoff_derivatives(group) = &
-                            cutoff_derivative(rjk, config%cutoff_radii(group))
+                            cutoff_derivative(rjk, config%cutoff_radii(group), &
+                            config%cutoff_type, config%cutoff_alpha)
                     end do
                     do group = 1, nangular_exp
                         pair_exponentials(group) = exp(-config%angular_eta(group)* &
@@ -1219,9 +1227,11 @@ contains
                     end if
 
                     do group = 1, ncutoff
-                        pair_cutoffs(group) = cutoff_value(distance_jk, config%cutoff_radii(group))
+                        pair_cutoffs(group) = cutoff_value(distance_jk, config%cutoff_radii(group), &
+                            config%cutoff_type, config%cutoff_alpha)
                         if (do_derivatives) pair_cutoff_derivatives(group) = &
-                            cutoff_derivative(distance_jk, config%cutoff_radii(group))
+                            cutoff_derivative(distance_jk, config%cutoff_radii(group), &
+                            config%cutoff_type, config%cutoff_alpha)
                     end do
                     do group = 1, nangular_exp
                         pair_exponentials(group) = exp(-config%angular_eta(group)* &
@@ -1390,7 +1400,8 @@ contains
                     end do
 
                     do group = 1, parameters%angular_count
-                        if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0) cycle
+                        if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0 .and. &
+                            parameters%angular_integer_zeta(group) <= MAX_G5_MOMENT_ORDER) cycle
                         if (do_derivatives) then
                             call angular_power(cosine_jk, parameters%angular_lambda(group), &
                                 parameters%angular_zeta(group), parameters%angular_integer_zeta(group), &
@@ -1404,7 +1415,8 @@ contains
 
                     do pp = 1, parameters%count
                         group = parameters%angular_group(pp)
-                        if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0) cycle
+                        if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0 .and. &
+                            parameters%angular_integer_zeta(group) <= MAX_G5_MOMENT_ORDER) cycle
                         if (distance_j > parameters%rc(pp) .or. distance_k > parameters%rc(pp)) cycle
                         cutoff_index = parameters%cutoff_group(pp)
                         exponential_index = parameters%exponential_group(pp)
@@ -1460,7 +1472,8 @@ contains
             end do
 
             do pp = 1, size(config%g5)
-                if (config%g5(pp)%integer_zeta <= 0) cycle
+                if (config%g5(pp)%integer_zeta <= 0 .or. &
+                    config%g5(pp)%integer_zeta > MAX_G5_MOMENT_ORDER) cycle
                 species1 = config%g5(pp)%species1
                 species2 = config%g5(pp)%species2
                 cutoff_index = config%g5(pp)%cutoff_group

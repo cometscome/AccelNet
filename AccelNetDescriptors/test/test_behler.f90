@@ -4,7 +4,7 @@ program test_behler
     use accelnet_descriptor_models
     implicit none
 
-    type(behler_config) :: config, g4_config, g5_config, moment_config
+    type(behler_config) :: config, g4_config, g5_config, moment_config, oversized_moment_config
     type(descriptor_model) :: model
     real(real64) :: displacements(3, 3), shifted(3, 3)
     integer :: species(3)
@@ -18,12 +18,12 @@ program test_behler
     real(real64) :: g5_center(3, 2), g5_neighbors(3, 2, 3)
     real(real64) :: contracted_center(3), contracted_neighbors(3, 3)
     real(real64) :: contraction_coefficients(2)
-    real(real64) :: moment_displacements(3, 20), moment_values(4), moment_direct_values(4)
-    real(real64) :: moment_center(3, 4), moment_neighbors(3, 4, 20)
+    real(real64) :: moment_displacements(3, 20), moment_values(5), moment_direct_values(5)
+    real(real64) :: moment_center(3, 5), moment_neighbors(3, 5, 20)
     real(real64) :: moment_contracted_center(3), moment_contracted_neighbors(3, 20)
-    real(real64) :: moment_coefficients(4), radius, azimuth, polar
+    real(real64) :: moment_coefficients(5), radius, azimuth, polar
     integer :: moment_species(20)
-    integer :: neighbor, component, coefficient
+    integer :: neighbor, component, coefficient, cutoff_kind
     real(real64), parameter :: step = 1.0e-6_real64
 
     call initialize_behler_config(config, 2)
@@ -116,12 +116,6 @@ program test_behler
             error stop "G5 direct neighbor contraction failed"
     end do
 
-    call initialize_behler_config(moment_config, 2)
-    call add_g5(moment_config, 1, 1, 4.5_real64, 1.0_real64, 1.0_real64, 0.15_real64, 0.20_real64)
-    call add_g5(moment_config, 1, 2, 4.5_real64, -1.0_real64, 2.0_real64, 0.25_real64, 0.55_real64)
-    call add_g5(moment_config, 1, 2, 4.0_real64, 1.0_real64, 3.0_real64, 0.35_real64, 0.80_real64)
-    call add_g5(moment_config, 2, 2, 4.0_real64, -1.0_real64, 4.0_real64, 0.45_real64, 1.10_real64)
-    call set_behler_g5_evaluation(moment_config, G5_EVALUATION_MOMENT)
     do neighbor = 1, 20
         radius = 1.0_real64 + 0.11_real64*real(mod(neighbor, 17), real64)
         azimuth = 0.73_real64*real(neighbor, real64)
@@ -130,23 +124,56 @@ program test_behler
             sin(polar)*sin(azimuth), cos(polar)]
         moment_species(neighbor) = 1 + mod(neighbor, 2)
     end do
-    call evaluate_behler_values(moment_config, moment_displacements, moment_species, moment_values)
-    call evaluate_behler_values_derivatives(moment_config, moment_displacements, moment_species, &
-        moment_direct_values, moment_center, moment_neighbors)
-    if (maxval(abs(moment_values - moment_direct_values)) > 2.0e-12_real64) then
-        write(*, "(A,4(ES16.8,1X))") "G5 moment value error: ", moment_values - moment_direct_values
-        error stop "G5 moment values differ from direct pairs"
-    end if
-    moment_coefficients = [0.7_real64, -0.3_real64, 0.2_real64, -0.5_real64]
-    call contract_behler_derivatives(moment_config, moment_displacements, moment_species, &
-        moment_coefficients, moment_contracted_center, moment_contracted_neighbors)
-    if (maxval(abs(moment_contracted_center - matmul(moment_center, moment_coefficients))) > 2.0e-11_real64) &
-        error stop "G5 moment center contraction differs from direct pairs"
-    do neighbor = 1, 20
-        if (maxval(abs(moment_contracted_neighbors(:, neighbor) - &
-            matmul(moment_neighbors(:, :, neighbor), moment_coefficients))) > 2.0e-11_real64) &
-            error stop "G5 moment neighbor contraction differs from direct pairs"
+    moment_displacements(:, 1) = 0.5_real64*moment_displacements(:, 1)/ &
+        sqrt(sum(moment_displacements(:, 1)**2))
+    moment_displacements(:, 19) = 4.2_real64*moment_displacements(:, 19)/ &
+        sqrt(sum(moment_displacements(:, 19)**2))
+    moment_displacements(:, 20) = 4.6_real64*moment_displacements(:, 20)/ &
+        sqrt(sum(moment_displacements(:, 20)**2))
+    moment_coefficients = [0.7_real64, -0.3_real64, 0.2_real64, -0.5_real64, 0.4_real64]
+    do cutoff_kind = 0, 8
+        call initialize_behler_config(moment_config, 2, cutoff_kind, 0.25_real64)
+        call add_g5(moment_config, 1, 1, 4.5_real64, 1.0_real64, 1.0_real64, 0.15_real64, 0.20_real64)
+        call add_g5(moment_config, 1, 2, 4.5_real64, -1.0_real64, 2.0_real64, 0.25_real64, 0.55_real64)
+        call add_g5(moment_config, 1, 2, 4.0_real64, 1.0_real64, 3.0_real64, 0.35_real64, 0.80_real64)
+        call add_g5(moment_config, 2, 2, 4.0_real64, -1.0_real64, 10.0_real64, 0.45_real64, 1.10_real64)
+        call add_g5(moment_config, 1, 1, 4.5_real64, 1.0_real64, 11.0_real64, 0.20_real64, 0.35_real64)
+        call set_behler_g5_evaluation(moment_config, G5_EVALUATION_MOMENT)
+        call evaluate_behler_values(moment_config, moment_displacements(:, :15), moment_species(:15), moment_values)
+        call set_behler_g5_evaluation(moment_config, G5_EVALUATION_DIRECT)
+        call evaluate_behler_values(moment_config, moment_displacements(:, :15), moment_species(:15), &
+            moment_direct_values)
+        if (any(moment_values /= moment_direct_values)) &
+            error stop "G5 moment path was used below the 16-neighbor bound"
+        call set_behler_g5_evaluation(moment_config, G5_EVALUATION_MOMENT)
+        call evaluate_behler_values(moment_config, moment_displacements, moment_species, moment_values)
+        call evaluate_behler_values_derivatives(moment_config, moment_displacements, moment_species, &
+            moment_direct_values, moment_center, moment_neighbors)
+        if (maxval(abs(moment_values - moment_direct_values)) > 2.0e-11_real64) then
+            write(*, "(A,I0,A,5(ES16.8,1X))") "G5 moment cutoff ", cutoff_kind, &
+                " value error: ", moment_values - moment_direct_values
+            error stop "G5 moment values differ from direct pairs"
+        end if
+        call contract_behler_derivatives(moment_config, moment_displacements, moment_species, &
+            moment_coefficients, moment_contracted_center, moment_contracted_neighbors)
+        if (maxval(abs(moment_contracted_center - matmul(moment_center, moment_coefficients))) > 3.0e-10_real64) &
+            error stop "G5 moment center contraction differs from direct pairs"
+        do neighbor = 1, 20
+            if (maxval(abs(moment_contracted_neighbors(:, neighbor) - &
+                matmul(moment_neighbors(:, :, neighbor), moment_coefficients))) > 3.0e-10_real64) &
+                error stop "G5 moment neighbor contraction differs from direct pairs"
+        end do
     end do
+
+    call initialize_behler_config(oversized_moment_config, 2)
+    call add_g5(oversized_moment_config, 1, 1, 4.5_real64, 1.0_real64, 28.0_real64, 0.1_real64)
+    if (.not. oversized_moment_config%g5_high_order_warning_emitted) &
+        error stop "high-order G5 direct fallback warning was not recorded"
+    if (oversized_moment_config%maximum_g5_integer_zeta /= 0 .or. &
+        oversized_moment_config%number_of_g5_moments /= 0) &
+        error stop "high-order G5 unexpectedly allocated a moment basis"
+    if (MIN_G5_MOMENT_NEIGHBORS /= 16 .or. MAX_G5_MOMENT_ORDER /= 10) &
+        error stop "G5 moment selection bounds changed unexpectedly"
 
     call add_behler(model, config)
     allocate(model_values(model%num_descriptors()))

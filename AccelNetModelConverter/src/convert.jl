@@ -13,7 +13,8 @@ function n2p2_to_accelnet(input_directory::AbstractString, output_directory::Abs
             reorder_values(model.maxima[symbol], source, target),
             reorder_values(model.shifts[symbol], source, target),
             reorder_values(model.scales[symbol], source, target), 0.1,
-            maximum(function_.cutoff for function_ in source), model.conv_energy, model.mean_energy)
+            maximum(function_.cutoff for function_ in source), model.conv_energy, model.mean_energy,
+            model.cutoff_type, model.cutoff_alpha)
         path = joinpath(output_directory, "$symbol.nn.ascii")
         write_atomic_network(path, network)
         push!(written, path)
@@ -34,8 +35,11 @@ function validate_network_set(networks::Vector{AtomicNetwork})
         network.atomic_references == first_network.atomic_references &&
         network.nodes == first_network.nodes && network.activations == first_network.activations &&
         network.energy_scale == first_network.energy_scale &&
-        network.energy_shift == first_network.energy_shift ||
+            network.energy_shift == first_network.energy_shift ||
             throw(ConversionError("AccelNet networks have inconsistent global metadata"))
+        network.cutoff_type == first_network.cutoff_type &&
+            network.cutoff_alpha == first_network.cutoff_alpha ||
+            throw(ConversionError("AccelNet networks use inconsistent descriptor cutoffs"))
     end
     return sort(copy(first_network.species); by=symbol -> ATOMIC_NUMBER[symbol])
 end
@@ -71,7 +75,8 @@ function accelnet_to_n2p2(network_paths::Vector{<:AbstractString}, output_direct
         append!(settings, [@sprintf("mean_energy %.17e", first_network.energy_shift),
                            @sprintf("conv_energy %.17e", first_network.energy_scale), "conv_length 1.0"])
     end
-    append!(settings, ["cutoff_type 1", "cutoff_alpha 0.0", "scale_symmetry_functions_sigma",
+    append!(settings, [@sprintf("cutoff_type %d %.17e", first_network.cutoff_type,
+            first_network.cutoff_alpha), "scale_symmetry_functions_sigma",
         "scale_min_short 0.0", "scale_max_short 1.0",
         "global_hidden_layers_short $(length(first_network.nodes)-2)",
         "global_nodes_short $(join(first_network.nodes[2:end-1], ' '))",

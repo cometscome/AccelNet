@@ -76,3 +76,15 @@ For both versions, the LAMMPS input syntax is:
 pair_style accelnet H.ann O.ann
 pair_coeff * *
 ```
+
+The 29Aug2024 interface also accepts an optional G5 evaluation mode after all
+potential files:
+
+```lammps
+pair_style accelnet O.nn Ti.nn g5 direct
+pair_style accelnet O.nn Ti.nn g5 moment
+```
+
+`direct` disables the integer-zeta G5 moment path. `moment` forces that path
+without applying the automatic neighbor-count threshold. Omitting the option,
+or selecting `g5 auto`, preserves the default automatic behavior.

@@ -96,6 +96,8 @@ struct AtomicNetwork
     maximum_radius::Float64
     energy_scale::Float64
     energy_shift::Float64
+    cutoff_type::Int
+    cutoff_alpha::Float64
 end
 
 struct N2P2Model
@@ -111,4 +113,6 @@ struct N2P2Model
     weights::Dict{String,Vector{Float64}}
     mean_energy::Float64
     conv_energy::Float64
+    cutoff_type::Int
+    cutoff_alpha::Float64
 end

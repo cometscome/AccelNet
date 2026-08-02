@@ -20,6 +20,8 @@ fixture = joinpath(@__DIR__, "fixtures", "n2p2")
         @test converted.atomic_references == original.atomic_references
         @test converted.mean_energy == original.mean_energy
         @test converted.conv_energy == original.conv_energy
+        @test ti.cutoff_type == original.cutoff_type == converted.cutoff_type == 9
+        @test ti.cutoff_alpha == original.cutoff_alpha == converted.cutoff_alpha == 0.3
         for symbol in original.species
             @test converted.functions[symbol] == original.functions[symbol]
             @test converted.shifts[symbol] == original.shifts[symbol]

@@ -16,6 +16,7 @@ void accelnet_init(int ntypes, char *atom_types[], int *stat);
 void accelnet_final(int *stat);
 void accelnet_print_info(void);
 void accelnet_set_chebyshev_version(int version, int *stat);
+void accelnet_set_g5_evaluation(int mode, int *stat);
 void accelnet_load_potential(int type_id, char *filename, int *stat);
 void accelnet_load_potential_ascii(int type_id, char *filename, int *stat);
 ACCELNET_BOOL accelnet_all_loaded(void);
@@ -62,6 +63,11 @@ extern int ACCELNET_TYPELEN;
 extern int ACCELNET_PATHLEN;
 extern ACCELNET_BOOL ACCELNET_TRUE;
 extern ACCELNET_BOOL ACCELNET_FALSE;
+
+extern int ACCELNET_G5_AUTO;
+extern int ACCELNET_G5_DIRECT;
+extern int ACCELNET_G5_MOMENT;
+extern int ACCELNET_G5_MOMENT_FORCE;
 
 extern int accelnet_nsf_max;
 extern int accelnet_nnb_max;

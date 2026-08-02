@@ -2,6 +2,7 @@ program test_setup_parser
     use iso_fortran_env, only: real64
     use accelnet_descriptors
     use accelnet_behler
+    use accelnet_lj
     use accelnet_descriptor_models
     use accelnet_setup
     implicit none
@@ -12,12 +13,14 @@ program test_setup_parser
     type(descriptor_setup) :: chebyshev_setup, lj_setup, behler_setup, multi_setup
     type(descriptor_setup) :: version1_setup, version10_setup
     type(descriptor_config) :: manual_chebyshev
+    type(lj_config) :: manual_lj
     type(behler_config) :: manual_behler
     type(descriptor_model) :: manual_model
     real(real64) :: displacements(3, 3)
     integer :: global_neighbors(3), local_neighbors(3)
     real(real64), allocatable :: parsed_values(:), manual_values(:)
     real(real64) :: parsed_chebyshev(56), manual_chebyshev_values(56)
+    real(real64) :: parsed_lj(4), manual_lj_values(4)
 
     if (command_argument_count() /= 6) error stop "usage: test_setup_parser CHEB LJ BEHLER MULTI V1 V10"
     call get_command_argument(1, chebyshev_file)
@@ -52,7 +55,7 @@ program test_setup_parser
     displacements(:, 3) = [0.2_real64, -0.5_real64, 1.5_real64]
 
     ! AccelNet orders Behler coefficients by species, then G kind, not by file order.
-    call initialize_behler_config(manual_behler, 2)
+    call initialize_behler_config(manual_behler, 2, CUTOFF_POLY3, 0.2_real64)
     call add_g1(manual_behler, 1, 4.5_real64)
     call add_g3(manual_behler, 1, 4.5_real64, 1.2_real64)
     call add_g4(manual_behler, 1, 2, 4.5_real64, 1.0_real64, 2.0_real64, 0.15_real64)
@@ -69,10 +72,16 @@ program test_setup_parser
     end if
 
     call initialize_config(manual_chebyshev, 2, 6.5_real64, 20, 5.0_real64, 6, &
-                           version=1, central_type_index=1)
+                           version=1, central_type_index=1, cutoff_type=CUTOFF_POLY3, &
+                           cutoff_alpha=0.2_real64)
     call evaluate_model_values(version1_setup%model, displacements, local_neighbors, parsed_chebyshev)
     call evaluate_atom(manual_chebyshev, displacements, local_neighbors, manual_chebyshev_values)
     if (any(parsed_chebyshev /= manual_chebyshev_values)) error stop "parsed Chebyshev version 1 differs"
+
+    call initialize_lj_config(manual_lj, 2, 6.5_real64, CUTOFF_POLY4, 0.3_real64)
+    call evaluate_model_values(lj_setup%model, displacements, local_neighbors, parsed_lj)
+    call evaluate_lj_values(manual_lj, displacements, local_neighbors, manual_lj_values)
+    if (any(parsed_lj /= manual_lj_values)) error stop "parsed LJ cutoff differs"
 
     call initialize_config(manual_chebyshev, 2, 6.5_real64, 20, 5.0_real64, 6, &
                            version=10, central_type_index=1)

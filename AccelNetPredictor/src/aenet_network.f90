@@ -12,6 +12,8 @@ module aenet_network
         character(len=16), allocatable :: environment_names(:)
         integer, allocatable :: descriptor_kinds(:), descriptor_environments(:, :)
         real(real64), allocatable :: descriptor_parameters(:, :)
+        integer :: descriptor_cutoff_type = 1
+        real(real64) :: descriptor_cutoff_alpha = 0.0_real64
         integer :: nlayers = 0
         integer :: maxnodes = 0
         integer, allocatable :: nodes(:), activation(:), weight_offsets(:)
@@ -34,15 +36,18 @@ contains
     subroutine write_aenet_network_ascii(filename, network)
         character(len=*), intent(in) :: filename
         type(atomic_network), intent(in) :: network
-        integer :: unit, ios, nsf, nparam, nvalues, i
+        integer :: unit, ios, nsf, nparam, nvalues, i, layer
         integer, allocatable :: value_offsets(:)
         real(real64), allocatable :: minima(:), maxima(:), moments(:)
 
         nsf = size(network%descriptor_kinds)
         nparam = size(network%descriptor_parameters, 1)
-        nvalues = network%maxnodes*network%nlayers
         allocate(value_offsets(network%nlayers), minima(nsf), maxima(nsf), moments(nsf))
-        value_offsets = network%weight_offsets
+        value_offsets(1) = 0
+        do layer = 1, network%nlayers - 1
+            value_offsets(layer + 1) = value_offsets(layer) + network%nodes(layer) + 1
+        end do
+        nvalues = value_offsets(network%nlayers) + network%nodes(network%nlayers)
         do i = 1, nsf
             if (network%descriptor_scale(i) == 0.0_real64) &
                 error stop "cannot write a network with zero descriptor scale"
@@ -134,6 +139,7 @@ contains
         allocate(integers(max(nsf, 2*nsf)), reals(max(1, nsf, nparam*nsf)))
         read(unit, *) network%descriptor_kinds
         read(unit, *) network%descriptor_parameters
+        call recover_cutoff_metadata(network)
         read(unit, *) network%descriptor_environments
         read(unit, *) neval
         allocate(averages(nsf), moments(nsf), network%descriptor_shift(nsf), &
@@ -216,6 +222,7 @@ contains
                  network%descriptor_environments(2, nsf), minima(nsf), maxima(nsf), &
                  network%descriptor_shift(nsf), network%descriptor_scale(nsf), moments(nsf))
         read(unit) network%descriptor_kinds; read(unit) network%descriptor_parameters
+        call recover_cutoff_metadata(network)
         read(unit) network%descriptor_environments; read(unit) neval
         read(unit) minima; read(unit) maxima; read(unit) network%descriptor_shift; read(unit) moments
         read(unit) training_file; read(unit) normalized; read(unit) network%energy_scale
@@ -234,6 +241,24 @@ contains
             end if
         end do
     end subroutine read_aenet_network_binary
+
+    subroutine recover_cutoff_metadata(network)
+        type(atomic_network), intent(inout) :: network
+        integer :: nparam
+        if (trim(lowercase(network%descriptor_name)) == "lj") then
+            network%descriptor_cutoff_type = 0
+        else
+            network%descriptor_cutoff_type = 1
+        end if
+        network%descriptor_cutoff_alpha = 0.0_real64
+        nparam = size(network%descriptor_parameters, 1)
+        if (nparam < 6) return
+        network%descriptor_cutoff_type = nint(network%descriptor_parameters(5, 1))
+        network%descriptor_cutoff_alpha = network%descriptor_parameters(6, 1)
+        if (any(nint(network%descriptor_parameters(5, :)) /= network%descriptor_cutoff_type) .or. &
+            any(network%descriptor_parameters(6, :) /= network%descriptor_cutoff_alpha)) &
+            error stop "embedded descriptors use inconsistent cutoff metadata"
+    end subroutine recover_cutoff_metadata
 
     subroutine evaluate_network(self, input, output)
         class(atomic_network), intent(in) :: self
@@ -335,4 +360,15 @@ contains
         case default; error stop "unsupported aenet activation"
         end select
     end function activation_derivative
+
+    pure function lowercase(input) result(output)
+        character(len=*), intent(in) :: input
+        character(len=len(input)) :: output
+        integer :: i, code
+        output = input
+        do i = 1, len(input)
+            code = iachar(input(i:i))
+            if (code >= iachar('A') .and. code <= iachar('Z')) output(i:i) = achar(code + 32)
+        end do
+    end function lowercase
 end module aenet_network

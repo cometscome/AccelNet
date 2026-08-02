@@ -51,7 +51,7 @@ using namespace MathConst;
 /* ---------------------------------------------------------------------- */
 
 PairAccelNet::PairAccelNet(LAMMPS *lmp) : Pair(lmp), cut_global(0.0), stat(0),
-  initialized(false), atom_types(NULL), pot_files(NULL)
+  g5_evaluation_mode(ACCELNET_G5_AUTO), initialized(false), atom_types(NULL), pot_files(NULL)
 {
   manybody_flag = 1;
   one_coeff = 1;
@@ -161,12 +161,28 @@ void PairAccelNet::allocate()
 
 void PairAccelNet::settings(int narg, char **arg)
 {
-  if (narg != atom->ntypes) error->all(FLERR,"# of pair_style inputs != atoms->ntypes");
+  const int ntypes = atom->ntypes;
+  if (narg != ntypes && narg != ntypes + 2)
+    error->all(FLERR,"Expected one AccelNet potential per atom type, optionally followed by 'g5 MODE'");
+
+  g5_evaluation_mode = ACCELNET_G5_AUTO;
+  if (narg == ntypes + 2) {
+    if (strcmp(arg[ntypes],"g5") != 0)
+      error->all(FLERR,"Expected 'g5 MODE' after the AccelNet potential files");
+    if (strcmp(arg[ntypes+1],"auto") == 0)
+      g5_evaluation_mode = ACCELNET_G5_AUTO;
+    else if (strcmp(arg[ntypes+1],"direct") == 0)
+      g5_evaluation_mode = ACCELNET_G5_DIRECT;
+    else if (strcmp(arg[ntypes+1],"moment") == 0)
+      g5_evaluation_mode = ACCELNET_G5_MOMENT_FORCE;
+    else
+      error->all(FLERR,"AccelNet g5 mode must be auto, direct, or moment");
+  }
 
   memory->create(atom_types, atom->ntypes, 17, "pair:atom_types");
   memory->create(pot_files, atom->ntypes, 1025, "pair:pot_files");
 
-  for (int i = 0; i < narg; i++) {
+  for (int i = 0; i < ntypes; i++) {
     if (strlen(arg[i]) > 1024)
       error->all(FLERR,"AccelNet potential path is too long");
     snprintf(pot_files[i],1025,"%s",arg[i]);
@@ -236,6 +252,13 @@ void PairAccelNet::init_style()
     }
     if (!accelnet_all_loaded())
       error->all(FLERR,"AccelNet did not load all potentials");
+  }
+
+  accelnet_set_g5_evaluation(g5_evaluation_mode, &stat);
+  if (stat != ACCELNET_OK) {
+    snprintf(error_buffer,sizeof(error_buffer),
+             "AccelNet failed to set G5 evaluation mode (error code: %d)",stat);
+    error->all(FLERR,error_buffer);
   }
 
   cut_global = accelnet_Rc_max;

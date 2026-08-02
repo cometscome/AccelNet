@@ -8,6 +8,8 @@ module accelnet
     use accelnet_legacy_lcl, only: lcl_nmax_nbdist
     use accelnet_predictor, only: predictor_model, load_predictor_from_network_data
     use aenet_network, only: atomic_network, read_aenet_network, read_aenet_network_ascii
+    use accelnet_behler, only: G5_EVALUATION_AUTO, G5_EVALUATION_DIRECT, &
+        G5_EVALUATION_MOMENT, G5_EVALUATION_MOMENT_FORCE
     implicit none
     private
     save
@@ -26,6 +28,11 @@ module accelnet
     integer(c_int), bind(C, name="ACCELNET_PATHLEN"), public :: ACCELNET_PATHLEN = PATH_LENGTH
     logical(c_bool), bind(C, name="ACCELNET_TRUE"), public :: ACCELNET_TRUE = .true._c_bool
     logical(c_bool), bind(C, name="ACCELNET_FALSE"), public :: ACCELNET_FALSE = .false._c_bool
+    integer(c_int), bind(C, name="ACCELNET_G5_AUTO"), public :: ACCELNET_G5_AUTO = G5_EVALUATION_AUTO
+    integer(c_int), bind(C, name="ACCELNET_G5_DIRECT"), public :: ACCELNET_G5_DIRECT = G5_EVALUATION_DIRECT
+    integer(c_int), bind(C, name="ACCELNET_G5_MOMENT"), public :: ACCELNET_G5_MOMENT = G5_EVALUATION_MOMENT
+    integer(c_int), bind(C, name="ACCELNET_G5_MOMENT_FORCE"), public :: ACCELNET_G5_MOMENT_FORCE = &
+        G5_EVALUATION_MOMENT_FORCE
 
     integer(c_int), bind(C, name="accelnet_nsf_max"), public :: accelnet_nsf_max = 0_c_int
     integer(c_int), bind(C, name="accelnet_nnb_max"), public :: accelnet_nnb_max = 0_c_int
@@ -52,6 +59,7 @@ module accelnet
     public :: accelnet_init, accelnet_final, accelnet_all_loaded
     public :: accelnet_load_potential, accelnet_print_info
     public :: accelnet_set_chebyshev_version
+    public :: accelnet_set_g5_evaluation
     public :: accelnet_atomic_energy, accelnet_atomic_energy_and_forces
     public :: accelnet_convert_atom_types, accelnet_free_atom_energy
     public :: accelnet_nbl_init, accelnet_nbl_final, accelnet_nbl_neighbors
@@ -131,6 +139,19 @@ contains
             chebyshev_version = version
         end if
     end subroutine accelnet_set_chebyshev_version
+
+    subroutine accelnet_set_g5_evaluation(mode, stat) bind(C)
+        integer(c_int), value, intent(in) :: mode
+        integer(c_int), intent(out) :: stat
+        stat = ACCELNET_OK
+        if (.not. is_loaded .or. .not. allocated(global_model)) then
+            stat = ACCELNET_ERR_INIT
+        else if (mode < G5_EVALUATION_AUTO .or. mode > G5_EVALUATION_MOMENT_FORCE) then
+            stat = ACCELNET_ERR_ARGUMENT
+        else
+            call global_model%set_g5_evaluation(int(mode))
+        end if
+    end subroutine accelnet_set_g5_evaluation
 
     subroutine accelnet_load_potential(type_id, filename, stat, is_ascii)
         integer, intent(in) :: type_id

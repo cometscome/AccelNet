@@ -214,14 +214,18 @@ contains
             call initialize_config(chebyshev, size(network%environment_names), &
                 network%descriptor_parameters(1, 1), nint(network%descriptor_parameters(2, 1)), &
                 network%descriptor_parameters(3, 1), nint(network%descriptor_parameters(4, 1)), &
-                version=chebyshev_version, central_type_index=central_species)
+                version=chebyshev_version, central_type_index=central_species, &
+                cutoff_type=network%descriptor_cutoff_type, &
+                cutoff_alpha=network%descriptor_cutoff_alpha)
             call add_chebyshev(setup%model, chebyshev)
         case("lj")
             call initialize_lj_config(lj, size(network%environment_names), &
-                network%descriptor_parameters(1, 1))
+                network%descriptor_parameters(1, 1), network%descriptor_cutoff_type, &
+                network%descriptor_cutoff_alpha)
             call add_lj(setup%model, lj)
         case("behler2011")
-            call initialize_behler_config(behler, size(network%environment_names))
+            call initialize_behler_config(behler, size(network%environment_names), &
+                network%descriptor_cutoff_type, network%descriptor_cutoff_alpha)
             call add_aenet_ordered_behler_functions(behler, network)
             call add_behler(setup%model, behler)
         case default

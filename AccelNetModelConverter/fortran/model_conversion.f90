@@ -81,6 +81,9 @@ contains
                 networks(i)%energy_scale /= networks(1)%energy_scale .or. &
                 networks(i)%energy_shift /= networks(1)%energy_shift) &
                 error stop "AccelNet networks have inconsistent global metadata"
+            if (networks(i)%descriptor_cutoff_type /= networks(1)%descriptor_cutoff_type .or. &
+                networks(i)%descriptor_cutoff_alpha /= networks(1)%descriptor_cutoff_alpha) &
+                error stop "AccelNet networks use inconsistent descriptor cutoffs"
         end do
         do i = 2, size(order)
             candidate = order(i); j = i - 1
@@ -256,8 +259,8 @@ contains
             write(unit, "(A,1X,ES25.17E3)") "conv_energy", networks(1)%energy_scale
             write(unit, "(A)") "conv_length 1.0"
         end if
-        write(unit, "(A)") "cutoff_type 1"
-        write(unit, "(A)") "cutoff_alpha 0.0"
+        write(unit, "(A,1X,I0,1X,ES25.17E3)") "cutoff_type", &
+            networks(1)%descriptor_cutoff_type, networks(1)%descriptor_cutoff_alpha
         write(unit, "(A)") "scale_symmetry_functions_sigma"
         write(unit, "(A)") "scale_min_short 0.0"
         write(unit, "(A)") "scale_max_short 1.0"

@@ -7,7 +7,8 @@ program test_descriptor
     real(real64) :: t(4), dt(4), values(12), vp(12), vm(12), coefficients(12)
     real(real64) :: displacements(3, 2), dc(3, 12), dn(3, 12, 2)
     real(real64) :: contracted_center(3), contracted_neighbors(3, 2)
-    integer :: species(2), failures, component, basis
+    integer :: species(2), failures, component, basis, cutoff_kind
+    real(real64) :: cutoff_plus, cutoff_minus
     real(real64), parameter :: h = 1.0e-6_real64
 
     failures = 0
@@ -16,6 +17,32 @@ program test_descriptor
     call assert_close("cutoff(Rc)", cutoff_value(5.0_real64, 5.0_real64), 0.0_real64, 0.0_real64)
     call assert_close("cutoff derivative at zero", cutoff_derivative(0.0_real64, 5.0_real64), &
                       0.0_real64, 1.0e-15_real64)
+    do cutoff_kind = CUTOFF_HARD, CUTOFF_FRACTIONAL
+        call assert_close("cutoff value at Rc", &
+            cutoff_value(5.0_real64, 5.0_real64, cutoff_kind, 0.2_real64), &
+            merge(1.0_real64, 0.0_real64, cutoff_kind == CUTOFF_HARD), 0.0_real64)
+        call assert_close("all cutoff derivatives vanish at Rc", &
+            cutoff_derivative(5.0_real64, 5.0_real64, cutoff_kind, 0.2_real64), 0.0_real64, 0.0_real64)
+        cutoff_plus = cutoff_value(2.2_real64 + h, 5.0_real64, cutoff_kind, 0.2_real64)
+        cutoff_minus = cutoff_value(2.2_real64 - h, 5.0_real64, cutoff_kind, 0.2_real64)
+        call assert_close("cutoff analytical derivative", &
+            cutoff_derivative(2.2_real64, 5.0_real64, cutoff_kind, 0.2_real64), &
+            (cutoff_plus - cutoff_minus)/(2.0_real64*h), 3.0e-9_real64)
+        if (cutoff_kind == CUTOFF_COS .or. &
+            (cutoff_kind >= CUTOFF_EXP .and. cutoff_kind <= CUTOFF_POLY4)) then
+            call assert_close("cutoff alpha flat value", &
+                cutoff_value(0.5_real64, 5.0_real64, cutoff_kind, 0.2_real64), 1.0_real64, 0.0_real64)
+            call assert_close("cutoff alpha flat derivative", &
+                cutoff_derivative(0.5_real64, 5.0_real64, cutoff_kind, 0.2_real64), 0.0_real64, 0.0_real64)
+        end if
+    end do
+    call assert_close("unnormalized tanh cutoff at zero", &
+        cutoff_value(0.0_real64, 5.0_real64, CUTOFF_TANHU, 0.7_real64), tanh(1.0_real64)**3, 1.0e-15_real64)
+    call assert_close("normalized tanh cutoff at zero", &
+        cutoff_value(0.0_real64, 5.0_real64, CUTOFF_TANH, 0.7_real64), 1.0_real64, 1.0e-15_real64)
+    call assert_close("paper fractional cutoff", &
+        cutoff_value(0.25_real64, 0.45_real64, CUTOFF_FRACTIONAL, 0.125_real64/0.45_real64), &
+        2.56_real64/3.56_real64, 2.0e-15_real64)
 
     call chebyshev_values_derivatives(0.25_real64, 0.0_real64, 1.0_real64, 3, t, dt)
     call assert_close("T0", t(1), 1.0_real64, 1.0e-15_real64)
@@ -82,7 +109,7 @@ contains
         real(real64) :: direct_center(3, ndescriptor), direct_neighbors(3, ndescriptor, nneighbors)
         real(real64) :: moment_center(3), moment_neighbors(3, nneighbors)
         real(real64) :: moment_coefficients(ndescriptor), expected
-        integer :: local_species(nneighbors), j, version, local_component
+        integer :: local_species(nneighbors), j, version, local_component, local_cutoff
 
         do j = 1, nneighbors
             phase = 0.71_real64*real(j, real64)
@@ -95,8 +122,9 @@ contains
         moment_coefficients = [(0.017_real64*real(j, real64), j = 1, ndescriptor)]
         do version = 0, 10
             if (version > 1 .and. version < 10) cycle
+          do local_cutoff = CUTOFF_HARD, CUTOFF_FRACTIONAL
             call initialize_config(moment_config, 2, 4.0_real64, 4, 3.5_real64, 6, &
-                                   version=version, central_type_index=2)
+                version=version, central_type_index=2, cutoff_type=local_cutoff, cutoff_alpha=0.2_real64)
             call evaluate_atom_with_derivatives(moment_config, r, local_species, direct_values, &
                                                 direct_center, direct_neighbors)
             call evaluate_atom(moment_config, r, local_species, moment_values)
@@ -114,6 +142,7 @@ contains
                                       expected, 2.0e-11_real64)
                 end do
             end do
+          end do
         end do
     end subroutine test_moment_path
 

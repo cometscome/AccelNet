@@ -2,6 +2,7 @@ module n2p2_network
     use iso_fortran_env, only: real64
     use aenet_network, only: atomic_network
     use accelnet_setup, only: descriptor_setup
+    use accelnet_descriptors, only: validate_cutoff_parameters
     use accelnet_descriptor_models, only: add_behler
     use accelnet_behler, only: behler_config, initialize_behler_config, add_g2, add_g4, add_g5
     implicit none
@@ -95,7 +96,11 @@ contains
                 if (trim(adjustl(rest)) /= "2G" .and. trim(adjustl(rest)) /= "2g") &
                     error stop "AccelNetPredictor supports only n2p2 2G models"
             case("cutoff_type")
-                read(rest, *, iostat=ios) settings%cutoff_type
+                read(rest, *, iostat=ios) settings%cutoff_type, settings%cutoff_alpha
+                if (ios /= 0) then
+                    settings%cutoff_alpha = 0.0_real64
+                    read(rest, *, iostat=ios) settings%cutoff_type
+                end if
                 if (ios /= 0) error stop "invalid n2p2 cutoff_type"
             case("cutoff_alpha")
                 read(rest, *, iostat=ios) settings%cutoff_alpha
@@ -182,8 +187,7 @@ contains
         type(n2p2_settings), intent(in) :: settings
         integer :: species
         if (.not. allocated(settings%species)) error stop "n2p2 input.nn has no elements"
-        if (settings%cutoff_type /= 1 .or. abs(settings%cutoff_alpha) > 1.0e-14_real64) &
-            error stop "n2p2 loader requires cosine cutoff_type 1 with cutoff_alpha 0"
+        call validate_cutoff_parameters(settings%cutoff_type, settings%cutoff_alpha)
         if (settings%hidden_layers < 0 .or. settings%node_count /= settings%hidden_layers .or. &
             settings%activation_count /= settings%hidden_layers + 1) &
             error stop "incomplete or inconsistent n2p2 global network topology"
@@ -248,9 +252,11 @@ contains
         integer :: i, n
         type(symmetry_function) :: sf
         n = size(settings%functions(species)%values)
-        allocate(network%descriptor_kinds(n), network%descriptor_parameters(4, n), &
+        allocate(network%descriptor_kinds(n), network%descriptor_parameters(6, n), &
                  network%descriptor_environments(2, n))
         network%descriptor_parameters = 0.0_real64
+        network%descriptor_cutoff_type = settings%cutoff_type
+        network%descriptor_cutoff_alpha = settings%cutoff_alpha
         network%descriptor_environments = 0
         do i = 1, n
             sf = settings%functions(species)%values(i)
@@ -262,11 +268,13 @@ contains
                 network%descriptor_parameters(1:3, i) = [sf%cutoff, sf%shift, sf%eta]
             case(3)
                 network%descriptor_kinds(i) = 4
-                network%descriptor_parameters(:, i) = [sf%cutoff, sf%lambda, sf%zeta, sf%eta]
+                network%descriptor_parameters(1:4, i) = [sf%cutoff, sf%lambda, sf%zeta, sf%eta]
             case(9)
                 network%descriptor_kinds(i) = 5
-                network%descriptor_parameters(:, i) = [sf%cutoff, sf%lambda, sf%zeta, sf%eta]
+                network%descriptor_parameters(1:4, i) = [sf%cutoff, sf%lambda, sf%zeta, sf%eta]
             end select
+            network%descriptor_parameters(5, i) = real(settings%cutoff_type, real64)
+            network%descriptor_parameters(6, i) = settings%cutoff_alpha
         end do
     end subroutine set_descriptor_metadata
 
@@ -284,7 +292,8 @@ contains
         setup%environment_species = settings%species
         allocate(setup%global_to_local(size(settings%species)))
         setup%global_to_local = [(i, i=1, size(settings%species))]
-        call initialize_behler_config(config, size(settings%species))
+        call initialize_behler_config(config, size(settings%species), &
+            settings%cutoff_type, settings%cutoff_alpha)
         do i = 1, size(settings%functions(species)%values)
             sf = settings%functions(species)%values(i)
             select case(sf%kind)

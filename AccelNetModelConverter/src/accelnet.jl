@@ -99,6 +99,17 @@ function atomic_network_from_components(path, nlayers, maxnodes, nweights, nodes
     expected == nweights || throw(ConversionError("inconsistent weight count"))
     all(haskey(CODE_TO_ACTIVATION, code) for code in activations) ||
         throw(ConversionError("activation has no n2p2 equivalent"))
+    cutoff_type = nparam >= 6 ? round(Int, raw_parameters[5]) : 1
+    cutoff_alpha = nparam >= 6 ? raw_parameters[6] : 0.0
+    0 <= cutoff_type <= 9 || throw(ConversionError("embedded cutoff type must be between 0 and 9"))
+    0.0 <= cutoff_alpha < 1.0 || throw(ConversionError("embedded cutoff alpha is invalid"))
+    cutoff_type == 9 && cutoff_alpha <= 0.0 &&
+        throw(ConversionError("embedded fractional cutoff alpha=h/Rc must be positive"))
+    if nparam >= 6
+        all(round(Int, raw_parameters[(index-1)*nparam+5]) == cutoff_type &&
+            raw_parameters[(index-1)*nparam+6] == cutoff_alpha for index in 1:nsf) ||
+            throw(ConversionError("embedded descriptors use inconsistent cutoffs"))
+    end
     functions = SymmetryFunction[]
     for index in 1:nsf
         parameter = raw_parameters[(index-1)*nparam+1:index*nparam]
@@ -127,7 +138,8 @@ function atomic_network_from_components(path, nlayers, maxnodes, nweights, nodes
     end for (average, moment) in zip(averages, moments)]
     return AtomicNetwork(atomtype, description, species, atomic_references, nodes,
                          activations, weights, functions, minima, maxima, averages,
-                         scales, minimum_radius, maximum_radius, energy_scale, energy_shift)
+                         scales, minimum_radius, maximum_radius, energy_scale, energy_shift,
+                         cutoff_type, cutoff_alpha)
 end
 
 function read_ascii_atomic_network(path)
@@ -201,11 +213,13 @@ function write_atomic_network(path, network::AtomicNetwork)
     kinds, environments = Int[], Int[]; parameters = Float64[]
     for function_ in network.functions
         if function_.kind == 2
-            push!(kinds, 2); append!(parameters, [function_.cutoff, function_.shift, function_.eta, 0.0])
+            push!(kinds, 2); append!(parameters, [function_.cutoff, function_.shift, function_.eta, 0.0,
+                Float64(network.cutoff_type), network.cutoff_alpha])
             append!(environments, [species_index[function_.neighbor1], 0])
         else
             push!(kinds, function_.kind == 3 ? 4 : 5)
-            append!(parameters, [function_.cutoff, function_.lambda, function_.zeta, function_.eta])
+            append!(parameters, [function_.cutoff, function_.lambda, function_.zeta, function_.eta,
+                Float64(network.cutoff_type), network.cutoff_alpha])
             append!(environments, [species_index[function_.neighbor1], species_index[function_.neighbor2]])
         end
     end
@@ -214,7 +228,7 @@ function write_atomic_network(path, network::AtomicNetwork)
         format_ints(network.nodes), format_ints(network.activations), format_ints(offsets), format_ints(offsets),
         format_floats(network.weights), network.description, network.atomtype, string(length(network.species)),
         join(network.species, " "), @sprintf("%.17e", network.minimum_radius), @sprintf("%.17e", network.maximum_radius),
-        "Behler2011", string(length(network.functions)), "4", format_ints(kinds), format_floats(parameters),
+        "Behler2011", string(length(network.functions)), "6", format_ints(kinds), format_floats(parameters),
         format_ints(environments), "0", format_floats(network.descriptor_minimum),
         format_floats(network.descriptor_maximum), format_floats(network.descriptor_shift), format_floats(moments),
         "converted from n2p2", "T", @sprintf("%.17e", network.energy_scale), @sprintf("%.17e", network.energy_shift),

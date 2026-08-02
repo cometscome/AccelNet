@@ -1,6 +1,7 @@
 program test_lj_model
     use iso_fortran_env, only: real64
-    use accelnet_descriptors, only: descriptor_config, initialize_config, evaluate_atom
+    use accelnet_descriptors, only: descriptor_config, initialize_config, evaluate_atom, &
+        CUTOFF_HARD, CUTOFF_FRACTIONAL
     use accelnet_lj
     use accelnet_descriptor_models
     implicit none
@@ -13,7 +14,7 @@ program test_lj_model
     real(real64) :: plus_values(4), minus_values(4), shifted(3, 2), finite_difference
     real(real64), allocatable :: model_values(:), chebyshev_values(:)
     real(real64), allocatable :: model_center_derivative(:, :), model_neighbor_derivative(:, :, :)
-    integer :: species(2), coefficient
+    integer :: species(2), coefficient, cutoff_kind
     real(real64), parameter :: step = 1.0e-6_real64
 
     call initialize_lj_config(lj, 2, 3.0_real64)
@@ -43,6 +44,26 @@ program test_lj_model
         call assert_close(neighbor_derivative(2, coefficient, 2), finite_difference, &
                           2.0e-9_real64, "LJ finite difference")
     end do
+
+    do cutoff_kind = CUTOFF_HARD, CUTOFF_FRACTIONAL
+        call initialize_lj_config(lj, 2, 3.0_real64, cutoff_kind, 0.2_real64)
+        call evaluate_lj_values_derivatives(lj, displacements, species, lj_values, &
+            center_derivative, neighbor_derivative)
+        do coefficient = 1, lj%num_descriptors()
+            shifted = displacements
+            shifted(2, 2) = shifted(2, 2) + step
+            call evaluate_lj_values(lj, shifted, species, plus_values)
+            shifted(2, 2) = shifted(2, 2) - 2.0_real64*step
+            call evaluate_lj_values(lj, shifted, species, minus_values)
+            finite_difference = (plus_values(coefficient) - minus_values(coefficient))/(2.0_real64*step)
+            call assert_close(neighbor_derivative(2, coefficient, 2), finite_difference, &
+                2.0e-9_real64, "cutoff LJ finite difference")
+        end do
+    end do
+
+    call initialize_lj_config(lj, 2, 3.0_real64)
+    call evaluate_lj_values_derivatives(lj, displacements, species, lj_values, &
+        center_derivative, neighbor_derivative)
 
     call initialize_config(chebyshev, 2, 3.0_real64, 4, 3.0_real64, 2, version=0)
     call add_chebyshev(model, chebyshev)

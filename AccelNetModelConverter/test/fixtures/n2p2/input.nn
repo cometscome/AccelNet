@@ -2,7 +2,7 @@ number_of_elements 2
 elements Ti O
 atom_energy Ti -2.0
 atom_energy O -1.0
-cutoff_type 1
+cutoff_type 9 0.3
 global_hidden_layers_short 0
 global_nodes_short
 global_activation_short l

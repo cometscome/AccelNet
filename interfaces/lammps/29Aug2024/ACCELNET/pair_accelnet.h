@@ -53,6 +53,7 @@ class PairAccelNet : public Pair {
   double cut_global;
 
   int stat;
+  int g5_evaluation_mode;
   bool initialized;
   char **atom_types;
   char **pot_files;

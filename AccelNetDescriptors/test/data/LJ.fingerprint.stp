@@ -10,5 +10,5 @@ O
 
 RMIN 0.35d0
 
-BASIS type=LJ
+BASIS type=LJ cutoff_type=8 cutoff_alpha=0.3
 radial_Rc = 6.5

@@ -63,10 +63,16 @@ function read_n2p2_model(directory::AbstractString)
     species = sort(copy(elements[1]); by=symbol -> ATOMIC_NUMBER[symbol])
     lowercase(single_value(entries, "nnp_type", "2G")) == "2g" ||
         throw(ConversionError("only n2p2 2G models are convertible"))
-    cutoff_type = parse(Int, single_value(entries, "cutoff_type"))
-    cutoff_alpha = parse(Float64, single_value(entries, "cutoff_alpha", "0"))
-    cutoff_type == 1 && cutoff_alpha == 0.0 ||
-        throw(ConversionError("conversion requires cosine cutoff_type 1 with cutoff_alpha 0"))
+    cutoff_entries = values_for(entries, "cutoff_type")
+    length(cutoff_entries) == 1 && length(only(cutoff_entries)) in (1, 2) ||
+        throw(ConversionError("cutoff_type requires a type and optional alpha"))
+    cutoff_type = parse(Int, only(cutoff_entries)[1])
+    cutoff_alpha = length(only(cutoff_entries)) == 2 ? parse(Float64, only(cutoff_entries)[2]) :
+        parse(Float64, single_value(entries, "cutoff_alpha", "0"))
+    0 <= cutoff_type <= 9 || throw(ConversionError("cutoff_type must be between 0 and 9"))
+    0.0 <= cutoff_alpha < 1.0 || throw(ConversionError("cutoff alpha must satisfy 0 <= alpha < 1"))
+    cutoff_type == 9 && cutoff_alpha <= 0.0 &&
+        throw(ConversionError("fractional cutoff alpha=h/Rc must be positive"))
     isempty(values_for(entries, "normalize_nodes")) ||
         throw(ConversionError("normalize_nodes has no AccelNet equivalent"))
     for key in keys(entries)
@@ -173,5 +179,6 @@ function read_n2p2_model(directory::AbstractString)
     conv_energy = isempty(conv_values) ? 1.0 : parse(Float64, only(only(conv_values)))
     conv_energy != 0.0 || throw(ConversionError("conv_energy must be nonzero"))
     return N2P2Model(species, references, nodes, activations, functions, minima,
-                     maxima, shifts, scales, weights, mean_energy, conv_energy)
+                     maxima, shifts, scales, weights, mean_energy, conv_energy,
+                     cutoff_type, cutoff_alpha)
 end

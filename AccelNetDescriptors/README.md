@@ -96,6 +96,29 @@ Unsupported `multi` members such as Spline and Spherical are rejected
 explicitly; they will be added as their kernels are implemented and
 validated.
 
+All setup descriptor families accept the same cutoff selection as n2p2. Both
+keys are optional; omitting them preserves the historical default (cosine for
+Behler and Chebyshev, hard truncation for LJ):
+
+```text
+FUNCTIONS type=Behler2011 cutoff_type=7 cutoff_alpha=0.2
+BASIS type=Chebyshev cutoff_type=7 cutoff_alpha=0.2
+BASIS type=LJ cutoff_type=7 cutoff_alpha=0.2
+```
+
+`cutoff_type` supports all n2p2 cutoff functions plus the fractional cutoff
+from Mori et al. for Behler, Chebyshev, and LJ:
+`0` hard, `1` cosine,
+`2` unnormalized tanh, `3` normalized tanh, `4` exponential, and polynomial
+orders `1` through `4` as types `5` through `8`. Type `9` is the fractional
+cutoff $X^2/(1+X^2)$ with $X=(r-R_c)/(\alpha R_c)$, so
+`cutoff_alpha=h/Rc` and must be positive. Otherwise `cutoff_alpha` must satisfy
+`0 <= alpha < 1`. As in n2p2, alpha controls the inner flat region for cosine,
+exponential, and polynomial cutoffs and is ignored by hard and tanh cutoffs.
+The selection applies to Behler G1--G5 values and analytical derivatives,
+including both the direct and Cartesian-moment G5 implementations. Chebyshev
+and LJ retain their descriptor-specific native cutoff conventions.
+
 ```fortran
 use accelnet_setup
 
@@ -168,10 +191,18 @@ one model per central species and applies AccelNet's coefficient ordering
 automatically.
 
 Integer-exponent G5/type-9 functions support exact Cartesian-moment
-evaluation, including nonzero radial shifts. The `auto` mode uses direct
-neighbor pairs for small environments and moments for larger environments;
-the default crossover estimate is configurable and is not a universal
-constant. Measure the crossover for a descriptor configuration with:
+evaluation, including nonzero radial shifts. Selection deliberately uses only
+two fixed bounds: moment evaluation is used with at least 16 neighbors and for
+integer angular orders `zeta <= 10`. Fewer neighbors and orders `zeta >= 11` use
+direct pairs. A model may therefore evaluate its low-order G5 functions with
+moments and its high-order functions directly in the same call. Encountering
+a high-order function emits one warning per configuration. The default order
+limit of 10 is intended to cover broader descriptor compositions such as TiO2
+and H2O; the precise direct/moment crossover depends on the number of species
+and G5 functions. `G5_EVALUATION_MOMENT_FORCE` bypasses only the neighbor-count
+bound and exists for tests and benchmarking; it does not bypass the maximum
+order.
+Measure the crossover for a descriptor configuration with:
 
 ```sh
 build/benchmark-g5-scaling 500

@@ -1,7 +1,7 @@
 number_of_elements 1
 elements H
 atom_energy H 0.5
-cutoff_type 1
+cutoff_type 7 0.2
 global_hidden_layers_short 0
 global_nodes_short
 global_activation_short l

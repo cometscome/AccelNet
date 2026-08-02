@@ -1,0 +1,155 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=25mm]{geometry}
+\usepackage{amsmath,amssymb,booktabs,array,longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\title{Cutoff Functions Implemented in AccelNet}
+\author{AccelNet development notes}
+\date{\today}
+
+\newcommand{\rc}{R_{\mathrm c}}
+\newcommand{\fc}{f_{\mathrm c}}
+
+\begin{document}
+\maketitle
+
+\section{Conventions}
+
+For cutoff types 1 and 4--8, define the inner radius and normalized transition
+coordinate by
+\begin{equation}
+  r_{\mathrm{in}}=\alpha\rc,
+  \qquad
+  x=\frac{r-r_{\mathrm{in}}}{\rc-r_{\mathrm{in}}},
+  \qquad 0\leq\alpha<1.
+\end{equation}
+Their common piecewise form is
+\begin{equation}
+  \fc(r)=
+  \begin{cases}
+    1, & 0\leq r<r_{\mathrm{in}},\\
+    F(x), & r_{\mathrm{in}}\leq r<\rc,\\
+    0, & r\geq\rc,
+  \end{cases}
+  \qquad
+  \frac{d\fc}{dr}=
+  \begin{cases}
+    0, & 0\leq r<r_{\mathrm{in}},\\
+    \dfrac{F'(x)}{\rc-r_{\mathrm{in}}}, & r_{\mathrm{in}}\leq r<\rc,\\
+    0, & r\geq\rc.
+  \end{cases}
+\end{equation}
+The hard and tanh cutoffs ignore $\alpha$.  Type 9 instead interprets
+$\alpha=h/\rc$ and requires $0<\alpha<1$.
+
+\section{Implemented functions}
+
+\subsection*{Type 0: hard cutoff}
+\begin{equation}
+  \fc(r)=\begin{cases}1,&r\leq\rc,\\0,&r>\rc,\end{cases}
+  \qquad \frac{d\fc}{dr}=0\quad(r\neq\rc).
+\end{equation}
+This cutoff is discontinuous at $\rc$; the implementation returns zero for
+its ordinary derivative at the boundary.
+
+\subsection*{Type 1: cosine cutoff}
+\begin{equation}
+  F(x)=\frac{1+\cos(\pi x)}{2},
+  \qquad F'(x)=-\frac{\pi}{2}\sin(\pi x).
+\end{equation}
+
+\subsection*{Types 2 and 3: tanh cutoffs}
+Let $t=\tanh(1-r/\rc)$.  For $r<\rc$,
+\begin{align}
+  \text{type 2:}\quad &\fc(r)=t^3,
+  &\frac{d\fc}{dr}=\frac{3t^2(t^2-1)}{\rc},\\
+  \text{type 3:}\quad &\fc(r)=\frac{t^3}{\tanh^3(1)},
+  &\frac{d\fc}{dr}=\frac{3t^2(t^2-1)}{\rc\tanh^3(1)}.
+\end{align}
+For $r\geq\rc$, both the value and derivative are zero.  Type 3 is normalized
+so that $\fc(0)=1$.
+
+\subsection*{Type 4: exponential cutoff}
+\begin{equation}
+  F(x)=\exp\!\left(1+\frac{1}{x^2-1}\right),
+  \qquad
+  F'(x)=-\frac{2x}{(x^2-1)^2}
+  \exp\!\left(1+\frac{1}{x^2-1}\right).
+\end{equation}
+
+\subsection*{Types 5--8: polynomial cutoffs}
+\small
+\begin{longtable}{c>{$}l<{$}>{$}l<{$}}
+\toprule
+Type & F(x) & F'(x)\\
+\midrule
+5 & 1-3x^2+2x^3 & -6x+6x^2\\
+6 & 1-10x^3+15x^4-6x^5 & -30x^2+60x^3-30x^4\\
+7 & 1-35x^4+84x^5-70x^6+20x^7
+  & -140x^3+420x^4-420x^5+140x^6\\
+8 & 1-126x^5+420x^6-540x^7+315x^8-70x^9
+  & -630x^4+2520x^5-3780x^6+2520x^7-630x^8\\
+\bottomrule
+\end{longtable}
+\normalsize
+Type $4+m$ has its first $m$ derivatives equal to zero at the transition
+endpoints, for $m=1,\ldots,4$.
+
+\subsection*{Type 9: fractional cutoff}
+The fractional cutoff introduced in Eq.~(A5) of Mori \emph{et al.} is
+\begin{equation}
+  X=\frac{r-\rc}{h}=\frac{r-\rc}{\alpha\rc},
+  \qquad
+  \fc(r)=
+  \begin{cases}
+    \dfrac{X^2}{1+X^2},&r<\rc,\\
+    0,&r\geq\rc,
+  \end{cases}
+\end{equation}
+with analytical derivative
+\begin{equation}
+  \frac{d\fc}{dr}=
+  \begin{cases}
+    \dfrac{2X}{\alpha\rc(1+X^2)^2},&r<\rc,\\
+    0,&r\geq\rc.
+  \end{cases}
+\end{equation}
+The paper uses $\rc=0.45\,\mathrm{nm}$ and $h=0.125\,\mathrm{nm}$ for its
+three-body contribution.  This corresponds to
+$\alpha=h/\rc=5/18\simeq0.2777778$ in AccelNet.
+
+\section{Use by descriptor family}
+
+The same selected cutoff is applied consistently to values and analytical
+derivatives:
+\begin{itemize}
+  \item Behler radial functions contain one factor $\fc(r_{ij})$; angular
+        functions contain the appropriate products over their radial legs.
+  \item Chebyshev radial terms contain $\fc(r_{ij})$, while angular pair terms
+        contain $\fc(r_{ij})\fc(r_{ik})$.  Direct and Cartesian-moment angular
+        evaluation use the same factors.
+  \item LJ descriptors use $r^{-6}\fc(r)$ and $r^{-12}\fc(r)$, including the
+        product rule in their Cartesian derivatives.
+\end{itemize}
+
+In setup files, use for example
+\begin{verbatim}
+BASIS type=Chebyshev cutoff_type=9 cutoff_alpha=0.2777777777777778
+BASIS type=LJ        cutoff_type=9 cutoff_alpha=0.2777777777777778
+FUNCTIONS type=Behler2011 cutoff_type=9 cutoff_alpha=0.2777777777777778
+\end{verbatim}
+Legacy defaults are type 1 for Chebyshev and Behler, and type 0 for LJ.
+Extended Aenet network files store the cutoff type and alpha in descriptor
+parameter rows 5 and 6.
+
+\section{Reference}
+
+H. Mori \emph{et al.}, ``Dynamic interaction between dislocations and
+obstacles in bcc iron based on atomic potentials derived using neural
+networks,'' \emph{Physical Review Materials} \textbf{7}, 063605 (2023),
+Appendix A, Eqs.~(A4)--(A6), DOI:
+\href{https://doi.org/10.1103/PhysRevMaterials.7.063605}
+{10.1103/PhysRevMaterials.7.063605}.
+
+\end{document}
