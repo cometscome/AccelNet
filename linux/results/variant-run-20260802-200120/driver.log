@@ -1,7 +1,0 @@
-==> water small fixed aenet ranks=1 trial=1
-
-===================================================================================
-=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
-=   RANK 0 PID 3636883 RUNNING AT rtx4090
-=   KILLED BY SIGNAL: 15 (Terminated)
-===================================================================================
