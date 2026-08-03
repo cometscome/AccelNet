@@ -974,8 +974,9 @@ contains
         real(real64), intent(in), optional :: coefficients1(:)
         integer :: j, n, q, entry, a, b, c
         real(real64) :: rj, fc, dfc, species_weight, weighted_cutoff, monomial
-        real(real64) :: ux, uy, uz, gx, gy, gz, udot, coefficient, dmonomial(3)
-        real(real64) :: derivative(3), dm0(3), unit_vector(3)
+        real(real64) :: ux, uy, uz, gx, gy, gz, udot, coefficient, scale, correction
+        real(real64) :: dmonomial_x, dmonomial_y, dmonomial_z
+        real(real64) :: derivative_x, derivative_y, derivative_z, dm0x, dm0y, dm0z
         real(real64) :: moments0(config%number_of_angular_moments)
         real(real64) :: moments1(config%number_of_angular_moments)
         real(real64) :: power_coefficients0(config%angular_order + 1)
@@ -1017,8 +1018,9 @@ contains
         do j = 1, size(neighbor_species)
             rj = distances(j)
             if (rj > config%angular_rc .or. rj < EPS_DISTANCE) cycle
-            unit_vector = displacements(:, j)/rj
-            ux = unit_vector(1); uy = unit_vector(2); uz = unit_vector(3)
+            ux = displacements(1, j)/rj
+            uy = displacements(2, j)/rj
+            uz = displacements(3, j)/rj
             fc = angular_cutoffs(j)
             dfc = angular_cutoff_derivatives(j)
             species_weight = config%species_weights(neighbor_species(j))
@@ -1026,7 +1028,9 @@ contains
             call monomial_powers(ux, config%angular_order, px)
             call monomial_powers(uy, config%angular_order, py)
             call monomial_powers(uz, config%angular_order, pz)
-            derivative = 0.0_real64
+            derivative_x = 0.0_real64
+            derivative_y = 0.0_real64
+            derivative_z = 0.0_real64
             do q = 0, config%angular_order
                 do entry = config%moment_first(q + 1), config%moment_last(q + 1)
                     a = config%moment_x_power(entry)
@@ -1040,19 +1044,33 @@ contains
                     if (b > 0) gy = real(b, real64)*px(a)*py(b - 1)*pz(c)
                     if (c > 0) gz = real(c, real64)*px(a)*py(b)*pz(c - 1)
                     udot = ux*gx + uy*gy + uz*gz
-                    dmonomial = ([gx, gy, gz] - unit_vector*udot)/rj
-                    dm0 = dfc*unit_vector*monomial + fc*dmonomial
+                    dmonomial_x = (gx - ux*udot)/rj
+                    dmonomial_y = (gy - uy*udot)/rj
+                    dmonomial_z = (gz - uz*udot)/rj
+                    dm0x = dfc*ux*monomial + fc*dmonomial_x
+                    dm0y = dfc*uy*monomial + fc*dmonomial_y
+                    dm0z = dfc*uz*monomial + fc*dmonomial_z
                     coefficient = config%moment_multinomial(entry)
-                    derivative = derivative + power_coefficients0(q + 1)*coefficient*moments0(entry)*dm0
-                    if (present(coefficients1)) derivative = derivative + power_coefficients1(q + 1)* &
-                        coefficient*moments1(entry)*(species_weight*dm0)
+                    scale = power_coefficients0(q + 1)*coefficient*moments0(entry)
+                    if (present(coefficients1)) scale = scale + power_coefficients1(q + 1)* &
+                        coefficient*moments1(entry)*species_weight
+                    derivative_x = derivative_x + scale*dm0x
+                    derivative_y = derivative_y + scale*dm0y
+                    derivative_z = derivative_z + scale*dm0z
                 end do
-                derivative = derivative - power_coefficients0(q + 1)*fc*dfc*unit_vector
-                if (present(coefficients1)) derivative = derivative - power_coefficients1(q + 1)* &
-                    weighted_cutoff*species_weight*dfc*unit_vector
+                correction = power_coefficients0(q + 1)*fc*dfc
+                if (present(coefficients1)) correction = correction + power_coefficients1(q + 1)* &
+                    weighted_cutoff*species_weight*dfc
+                derivative_x = derivative_x - correction*ux
+                derivative_y = derivative_y - correction*uy
+                derivative_z = derivative_z - correction*uz
             end do
-            contracted_neighbors(:, j) = contracted_neighbors(:, j) + derivative
-            contracted_center = contracted_center - derivative
+            contracted_neighbors(1, j) = contracted_neighbors(1, j) + derivative_x
+            contracted_neighbors(2, j) = contracted_neighbors(2, j) + derivative_y
+            contracted_neighbors(3, j) = contracted_neighbors(3, j) + derivative_z
+            contracted_center(1) = contracted_center(1) - derivative_x
+            contracted_center(2) = contracted_center(2) - derivative_y
+            contracted_center(3) = contracted_center(3) - derivative_z
         end do
     end subroutine contract_angular_moment_derivatives
 
@@ -1065,10 +1083,14 @@ contains
         integer :: nr, na, j, k, basis, radial1, angular1, radial2, angular2, angular_neighbors
         real(real64) :: rj, rk, cosine, fcj, fck, dfcj, dfck, sj, sk, weight, coefficient
         real(real64) :: angular_r0, angular_r1, radial_contraction
+        real(real64) :: value_contraction, derivative_contraction
         real(real64) :: inv_rj2, inv_rk2, inv_rjrk
         real(real64) :: tr(config%radial_order + 1), dtr(config%radial_order + 1)
         real(real64) :: ta(config%angular_order + 1), dta(config%angular_order + 1)
-        real(real64) :: dcj(3), dck(3), dwj(3), dwk(3), derivative_j(3), derivative_k(3)
+        real(real64) :: dcjx, dcjy, dcjz, dckx, dcky, dckz
+        real(real64) :: dwjx, dwjy, dwjz, dwkx, dwky, dwkz
+        real(real64) :: derivative_jx, derivative_jy, derivative_jz
+        real(real64) :: derivative_kx, derivative_ky, derivative_kz
         real(real64) :: distances(size(neighbor_species)), unit_vectors(3, size(neighbor_species))
         real(real64) :: radial_cutoffs(size(neighbor_species)), angular_cutoffs(size(neighbor_species))
         real(real64) :: radial_cutoff_derivatives(size(neighbor_species))
@@ -1122,9 +1144,15 @@ contains
                         sj*coefficients(radial2 + basis - 1)
                     radial_contraction = radial_contraction + coefficient*(dfcj*tr(basis) + fcj*dtr(basis))
                 end do
-                derivative_j = radial_contraction*unit_vectors(:, j)
-                contracted_neighbors(:, j) = contracted_neighbors(:, j) + derivative_j
-                contracted_center = contracted_center - derivative_j
+                derivative_jx = radial_contraction*unit_vectors(1, j)
+                derivative_jy = radial_contraction*unit_vectors(2, j)
+                derivative_jz = radial_contraction*unit_vectors(3, j)
+                contracted_neighbors(1, j) = contracted_neighbors(1, j) + derivative_jx
+                contracted_neighbors(2, j) = contracted_neighbors(2, j) + derivative_jy
+                contracted_neighbors(3, j) = contracted_neighbors(3, j) + derivative_jz
+                contracted_center(1) = contracted_center(1) - derivative_jx
+                contracted_center(2) = contracted_center(2) - derivative_jy
+                contracted_center(3) = contracted_center(3) - derivative_jz
             end if
 
             if (chebyshev_uses_moments(config, angular_neighbors)) cycle
@@ -1145,22 +1173,43 @@ contains
                 inv_rj2 = 1.0_real64/(rj*rj)
                 inv_rk2 = 1.0_real64/(rk*rk)
                 inv_rjrk = 1.0_real64/(rj*rk)
-                dcj = -cosine*displacements(:, j)*inv_rj2 + displacements(:, k)*inv_rjrk
-                dck = -cosine*displacements(:, k)*inv_rk2 + displacements(:, j)*inv_rjrk
-                dwj = dfcj*fck*unit_vectors(:, j)
-                dwk = fcj*dfck*unit_vectors(:, k)
-                derivative_j = 0.0_real64
-                derivative_k = 0.0_real64
+                dcjx = -cosine*displacements(1, j)*inv_rj2 + displacements(1, k)*inv_rjrk
+                dcjy = -cosine*displacements(2, j)*inv_rj2 + displacements(2, k)*inv_rjrk
+                dcjz = -cosine*displacements(3, j)*inv_rj2 + displacements(3, k)*inv_rjrk
+                dckx = -cosine*displacements(1, k)*inv_rk2 + displacements(1, j)*inv_rjrk
+                dcky = -cosine*displacements(2, k)*inv_rk2 + displacements(2, j)*inv_rjrk
+                dckz = -cosine*displacements(3, k)*inv_rk2 + displacements(3, j)*inv_rjrk
+                dwjx = dfcj*fck*unit_vectors(1, j)
+                dwjy = dfcj*fck*unit_vectors(2, j)
+                dwjz = dfcj*fck*unit_vectors(3, j)
+                dwkx = fcj*dfck*unit_vectors(1, k)
+                dwky = fcj*dfck*unit_vectors(2, k)
+                dwkz = fcj*dfck*unit_vectors(3, k)
+                value_contraction = 0.0_real64
+                derivative_contraction = 0.0_real64
                 do basis = 1, na
                     coefficient = coefficients(angular1 + basis - 1)
                     if (config%num_species > 1) coefficient = coefficient + &
                         sj*sk*coefficients(angular2 + basis - 1)
-                    derivative_j = derivative_j + coefficient*(dwj*ta(basis) + weight*dta(basis)*dcj)
-                    derivative_k = derivative_k + coefficient*(dwk*ta(basis) + weight*dta(basis)*dck)
+                    value_contraction = value_contraction + coefficient*ta(basis)
+                    derivative_contraction = derivative_contraction + coefficient*dta(basis)
                 end do
-                contracted_neighbors(:, j) = contracted_neighbors(:, j) + derivative_j
-                contracted_neighbors(:, k) = contracted_neighbors(:, k) + derivative_k
-                contracted_center = contracted_center - derivative_j - derivative_k
+                derivative_contraction = weight*derivative_contraction
+                derivative_jx = dwjx*value_contraction + dcjx*derivative_contraction
+                derivative_jy = dwjy*value_contraction + dcjy*derivative_contraction
+                derivative_jz = dwjz*value_contraction + dcjz*derivative_contraction
+                derivative_kx = dwkx*value_contraction + dckx*derivative_contraction
+                derivative_ky = dwky*value_contraction + dcky*derivative_contraction
+                derivative_kz = dwkz*value_contraction + dckz*derivative_contraction
+                contracted_neighbors(1, j) = contracted_neighbors(1, j) + derivative_jx
+                contracted_neighbors(2, j) = contracted_neighbors(2, j) + derivative_jy
+                contracted_neighbors(3, j) = contracted_neighbors(3, j) + derivative_jz
+                contracted_neighbors(1, k) = contracted_neighbors(1, k) + derivative_kx
+                contracted_neighbors(2, k) = contracted_neighbors(2, k) + derivative_ky
+                contracted_neighbors(3, k) = contracted_neighbors(3, k) + derivative_kz
+                contracted_center(1) = contracted_center(1) - derivative_jx - derivative_kx
+                contracted_center(2) = contracted_center(2) - derivative_jy - derivative_ky
+                contracted_center(3) = contracted_center(3) - derivative_jz - derivative_kz
             end do
         end do
         if (chebyshev_uses_moments(config, angular_neighbors)) then

@@ -1,0 +1,20 @@
+clear
+units metal
+boundary p p p
+atom_style atomic
+read_data ${data_file}
+replicate ${rep_x} ${rep_y} ${rep_z}
+if "${pair_name} == accelnet" then &
+  "pair_style accelnet ${backend_name} ${model_1} ${model_2}" &
+else &
+  "pair_style aenet ${model_1} ${model_2}"
+pair_coeff * *
+timestep 0.001
+velocity all create 300.0 3847291
+fix integrate all nve
+fix thermostat all temp/csvr 300.0 300.0 0.001 71235
+fix momentum_reset all momentum 100 linear 1 1 1
+thermo_style custom step temp pe ke etotal press
+thermo ${measure_steps}
+run ${warmup_steps} post no
+run ${measure_steps} pre no

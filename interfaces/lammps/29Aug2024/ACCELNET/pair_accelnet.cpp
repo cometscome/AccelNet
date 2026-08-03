@@ -51,6 +51,7 @@ using namespace MathConst;
 /* ---------------------------------------------------------------------- */
 
 PairAccelNet::PairAccelNet(LAMMPS *lmp) : Pair(lmp), cut_global(0.0), stat(0),
+  chebyshev_evaluation_mode(ACCELNET_CHEBYSHEV_AUTO),
   g5_evaluation_mode(ACCELNET_G5_AUTO), initialized(false), atom_types(NULL), pot_files(NULL)
 {
   manybody_flag = 1;
@@ -94,6 +95,10 @@ void PairAccelNet::compute(int eflag, int vflag)
   numneigh = list->numneigh;
   firstneigh = list->firstneigh;
 
+  std::vector<int> jtype;
+  std::vector<int> jlist;
+  std::vector<double> jcoo;
+
   // loop over neighbors of my atoms
   for (ii = 0; ii < inum; ii++) {
     double E_i = 0.0;
@@ -102,9 +107,9 @@ void PairAccelNet::compute(int eflag, int vflag)
     double icoo[3] = { x[i][0], x[i][1], x[i][2] };
       
     jnum = numneigh[i];
-    std::vector<int> jtype(jnum);
-    std::vector<int> jlist(jnum);
-    std::vector<double> jcoo(3*jnum);
+    jtype.resize(jnum);
+    jlist.resize(jnum);
+    jcoo.resize(3*jnum);
     for (jj = 0; jj < jnum; jj++) {
       j = firstneigh[i][jj];
       j &= NEIGHMASK;
@@ -162,11 +167,23 @@ void PairAccelNet::allocate()
 void PairAccelNet::settings(int narg, char **arg)
 {
   const int ntypes = atom->ntypes;
-  if (narg != ntypes && narg != ntypes + 2)
-    error->all(FLERR,"Expected one AccelNet potential per atom type, optionally followed by 'g5 MODE'");
+  int potential_offset = 0;
+  if (narg != ntypes && narg != ntypes + 1 && narg != ntypes + 2)
+    error->all(FLERR,"Expected [auto|direct|moment], one potential per atom type, or potentials followed by 'g5 MODE'");
 
+  chebyshev_evaluation_mode = ACCELNET_CHEBYSHEV_AUTO;
   g5_evaluation_mode = ACCELNET_G5_AUTO;
-  if (narg == ntypes + 2) {
+  if (narg == ntypes + 1) {
+    potential_offset = 1;
+    if (strcmp(arg[0],"auto") == 0)
+      chebyshev_evaluation_mode = ACCELNET_CHEBYSHEV_AUTO;
+    else if (strcmp(arg[0],"direct") == 0)
+      chebyshev_evaluation_mode = ACCELNET_CHEBYSHEV_DIRECT;
+    else if (strcmp(arg[0],"moment") == 0)
+      chebyshev_evaluation_mode = ACCELNET_CHEBYSHEV_MOMENT;
+    else
+      error->all(FLERR,"AccelNet Chebyshev mode must be auto, direct, or moment");
+  } else if (narg == ntypes + 2) {
     if (strcmp(arg[ntypes],"g5") != 0)
       error->all(FLERR,"Expected 'g5 MODE' after the AccelNet potential files");
     if (strcmp(arg[ntypes+1],"auto") == 0)
@@ -183,11 +200,12 @@ void PairAccelNet::settings(int narg, char **arg)
   memory->create(pot_files, atom->ntypes, 1025, "pair:pot_files");
 
   for (int i = 0; i < ntypes; i++) {
-    if (strlen(arg[i]) > 1024)
+    const char *potential = arg[i + potential_offset];
+    if (strlen(potential) > 1024)
       error->all(FLERR,"AccelNet potential path is too long");
-    snprintf(pot_files[i],1025,"%s",arg[i]);
+    snprintf(pot_files[i],1025,"%s",potential);
 
-    std::string filename(arg[i]);
+    std::string filename(potential);
     std::string::size_type slash = filename.find_last_of("/\\");
     std::string basename = slash == std::string::npos ? filename : filename.substr(slash+1);
     std::string::size_type dot = basename.find('.');
@@ -254,11 +272,27 @@ void PairAccelNet::init_style()
       error->all(FLERR,"AccelNet did not load all potentials");
   }
 
+  accelnet_set_chebyshev_evaluation(chebyshev_evaluation_mode, &stat);
+  if (stat != ACCELNET_OK) {
+    snprintf(error_buffer,sizeof(error_buffer),
+             "AccelNet failed to set Chebyshev evaluation mode (error code: %d)",stat);
+    error->all(FLERR,error_buffer);
+  }
   accelnet_set_g5_evaluation(g5_evaluation_mode, &stat);
   if (stat != ACCELNET_OK) {
     snprintf(error_buffer,sizeof(error_buffer),
              "AccelNet failed to set G5 evaluation mode (error code: %d)",stat);
     error->all(FLERR,error_buffer);
+  }
+  if (comm->me == 0) {
+    const char *chebyshev_mode_name = chebyshev_evaluation_mode == ACCELNET_CHEBYSHEV_DIRECT ? "direct" :
+                                      chebyshev_evaluation_mode == ACCELNET_CHEBYSHEV_MOMENT ? "moment" : "auto";
+    const char *mode_name = g5_evaluation_mode == ACCELNET_G5_DIRECT ? "direct" :
+                            g5_evaluation_mode == ACCELNET_G5_MOMENT_FORCE ? "moment" : "auto";
+    if (screen) fprintf(screen,"AccelNet Chebyshev evaluation mode: %s\n",chebyshev_mode_name);
+    if (logfile) fprintf(logfile,"AccelNet Chebyshev evaluation mode: %s\n",chebyshev_mode_name);
+    if (screen) fprintf(screen,"AccelNet G5 evaluation mode: %s\n",mode_name);
+    if (logfile) fprintf(logfile,"AccelNet G5 evaluation mode: %s\n",mode_name);
   }
 
   cut_global = accelnet_Rc_max;

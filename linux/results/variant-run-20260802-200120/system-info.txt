@@ -1,0 +1,123 @@
+2026-08-02T20:01:20+09:00
+Linux rtx4090 6.8.0-65-generic #68~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 15 18:06:34 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+Architecture:                         x86_64
+CPU op-mode(s):                       32-bit, 64-bit
+Address sizes:                        48 bits physical, 48 bits virtual
+Byte Order:                           Little Endian
+CPU(s):                               64
+On-line CPU(s) list:                  0-63
+Vendor ID:                            AuthenticAMD
+Model name:                           AMD EPYC 7713 64-Core Processor
+CPU family:                           25
+Model:                                1
+Thread(s) per core:                   1
+Core(s) per socket:                   64
+Socket(s):                            1
+Stepping:                             1
+Frequency boost:                      enabled
+CPU max MHz:                          2000.0000
+CPU min MHz:                          1500.0000
+BogoMIPS:                             3999.68
+Flags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 pcid sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd amd_ppin brs arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap
+Virtualization:                       AMD-V
+L1d cache:                            2 MiB (64 instances)
+L1i cache:                            2 MiB (64 instances)
+L2 cache:                             32 MiB (64 instances)
+L3 cache:                             256 MiB (8 instances)
+NUMA node(s):                         1
+NUMA node0 CPU(s):                    0-63
+Vulnerability Gather data sampling:   Not affected
+Vulnerability Itlb multihit:          Not affected
+Vulnerability L1tf:                   Not affected
+Vulnerability Mds:                    Not affected
+Vulnerability Meltdown:               Not affected
+Vulnerability Mmio stale data:        Not affected
+Vulnerability Reg file data sampling: Not affected
+Vulnerability Retbleed:               Not affected
+Vulnerability Spec rstack overflow:   Mitigation; Safe RET
+Vulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:             Mitigation; Retpolines; IBPB conditional; IBRS_FW; STIBP disabled; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected
+Vulnerability Srbds:                  Not affected
+Vulnerability Tsx async abort:        Not affected
+
+Large-scale Atomic/Molecular Massively Parallel Simulator - 4 Feb 2020
+
+Usage example: /home/yuki/lammps-4Feb20/src/lmp_mpi_accelnet_moment -var t 300 -echo screen -in in.alloy
+
+List of command line options supported by this LAMMPS executable:
+
+-echo none/screen/log/both  : echoing of input script (-e)
+-help                       : print this help message (-h)
+-in filename                : read input from file, not stdin (-i)
+-kokkos on/off ...          : turn KOKKOS mode on or off (-k)
+-log none/filename          : where to send log output (-l)
+-mpicolor color             : which exe in a multi-exe mpirun cmd (-m)
+-nocite                     : disable writing log.cite file (-nc)
+-package style ...          : invoke package command (-pk)
+-partition size1 size2 ...  : assign partition sizes (-p)
+-plog basename              : basename for partition logs (-pl)
+-pscreen basename           : basename for partition screens (-ps)
+-restart2data rfile dfile ... : convert restart to data file (-r2data)
+-restart2dump rfile dgroup dstyle dfile ... 
+                            : convert restart to dump file (-r2dump)
+-reorder topology-specs     : processor reordering (-r)
+-screen none/filename       : where to send screen output (-sc)
+-suffix gpu/intel/opt/omp   : style suffix to apply (-sf)
+-var varname value          : set index style variable (-v)
+
+OS: Linux 6.8.0-65-generic on x86_64
+
+Compiler: GNU C++ 11.4.0 with OpenMP not enabled
+C++ standard: C++17
+MPI v3.1: Intel(R) MPI Library 2021.15 for Linux* OS
+
+
+Active compile time flags:
+
+-DLAMMPS_GZIP
+-DLAMMPS_SMALLBIG
+
+sizeof(smallint):  32-bit
+sizeof(imageint):  32-bit
+g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0
+Copyright (C) 2021 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+GNU Fortran (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0
+Copyright (C) 2021 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Intel(R) MPI Library for Linux* OS, Version 2021.15 Build 20250213 (id: d233448)
+Copyright 2003-2025, Intel Corporation.
+cmake version 3.31.7
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+567aa474a337c9ad71a936a74292405fa942d94b4bee53d13c2257cfe50b638e  /home/yuki/lammps-4Feb20/src/lmp_mpi_accelnet_direct
+567aa474a337c9ad71a936a74292405fa942d94b4bee53d13c2257cfe50b638e  /home/yuki/lammps-4Feb20/src/lmp_mpi_accelnet_moment
+96f56a26868e3613cca099b0457840e9e532b916a4de8572946edca4b12a5a15  /home/yuki/lammps-4Feb20/src/lmp_mpi_accelnet_direct.backend
+34383886f48a69a0f507da7c2fabdf4e87bc9a281ab017ccc5cdc4c9ea91cc31  /home/yuki/lammps-4Feb20/src/lmp_mpi_accelnet_moment.backend
+560e0897aba853fcd6c2a478af3f88efc7a369839f22b4285cae910b1d102854  /home/yuki/AccelNet/AccelNetDescriptors/CMakeLists.txt
+22487d2c22eceb390ad1f543b1428b08a7efd27e36ff525bb98af1fbcd731ee0  /home/yuki/AccelNet/AccelNetDescriptors/src/accelnet_descriptors.f90
+462b23d803741a1ff1aa76dc6c50ec6528f59e2a0b5c37abafb4ba054924134c  /home/yuki/AccelNet-lammps/examples/water/H.ann
+61f2965b843d2537344761ebac49df96d2fdc41a1b9d6ad7af15ded7b3efab58  /home/yuki/AccelNet-lammps/examples/water/O.ann
+e49780cd5d260726c1b3d3f2e7ef4e2bfc4d4e710494724aa767ee01cda9889b  /home/yuki/aenet-master/examples/example-chebyshev/03-predict/set001/Ti.15t-15t.nn
+e39e2ee86115a459695c43ba31e48f4acb63568909025266c0f0d4307c73bad5  /home/yuki/aenet-master/examples/example-chebyshev/03-predict/set001/O.15t-15t.nn
+96d65ebf35168115af0a3d80552791ba4e95b5079650761b947b041734708c74  /home/yuki/AccelNet-lammps/examples/tio2/data/tio2-relaxed-6.data
+GIT /home/yuki/AccelNet 13b20bd97561706c236fb61f1ddf0b3da8837e75
+GIT_DIRTY /home/yuki/AccelNet yes
+ACCELNET_DIRECT_BACKEND=direct
+ACCELNET_MOMENT_BACKEND=moment
+BENCH_SYSTEMS=water tio2
+BENCH_SIZES=small
+BENCH_MODES=fixed dynamic
+BENCH_IMPLEMENTATIONS=aenet accelnet-direct accelnet-moment
+BENCH_MPI_RANKS=1 2
+BENCH_TRIALS=3
+BENCH_WARMUP_STEPS=100
+BENCH_MEASURE_STEPS=500
+BENCH_BIND_CORES=1
+OMP_NUM_THREADS=1
+OPENBLAS_NUM_THREADS=1

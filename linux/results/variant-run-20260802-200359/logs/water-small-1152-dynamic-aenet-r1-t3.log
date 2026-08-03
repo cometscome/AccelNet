@@ -1,0 +1,90 @@
+LAMMPS (4 Feb 2020)
+clear
+units metal
+boundary p p p
+atom_style atomic
+read_data ${data_file}
+read_data /home/yuki/AccelNet-lammps/examples/water/01_Start/firstframe.start
+  orthogonal box = (0 0 0) to (12.4171 12.4171 12.4171)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  192 atoms
+  read_data CPU = 0.000461176 secs
+replicate ${rep_x} ${rep_y} ${rep_z}
+replicate 3 ${rep_y} ${rep_z}
+replicate 3 2 ${rep_z}
+replicate 3 2 1
+  orthogonal box = (0 0 0) to (37.2513 24.8342 12.4171)
+  1 by 1 by 1 MPI processor grid
+  1152 atoms
+  replicate CPU = 0.00036741 secs
+mass 1 1.007825
+mass 2 15.994915
+pair_style ${pair_name} ${model_1} ${model_2}
+pair_style aenet ${model_1} ${model_2}
+pair_style aenet H.ann ${model_2}
+pair_style aenet H.ann O.ann
+pair_coeff * *
+timestep 0.0005
+velocity all create 300.0 4928459
+fix integrate all nve
+fix thermostat all temp/csvr 300.0 300.0 1.0 54324
+fix momentum_reset all momentum 100 linear 1 1 1
+thermo_style custom step temp pe ke etotal press
+thermo ${measure_steps}
+thermo 500
+run ${warmup_steps} post no
+run 100 post no
+Neighbor list info ...
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.35
+  ghost atom cutoff = 8.35
+  binsize = 4.175, bins = 9 6 3
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair aenet, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 4.129 | 4.129 | 4.129 Mbytes
+Step Temp PotEng KinEng TotEng Press 
+       0          300   -180337.16    44.633528   -180292.53   -4120.7592 
+     100    313.44391   -180339.39    46.633692   -180292.76    3889.0956 
+Loop time of 29.2609 on 1 procs for 100 steps with 1152 atoms
+
+run ${measure_steps} pre no
+run 500 pre no
+Step Temp PotEng KinEng TotEng Press 
+     100    313.44391   -180339.39    46.633692   -180292.76    3889.0956 
+     500    315.16529   -180340.72    46.889796   -180293.83    6143.9545 
+     600     314.5014   -180340.39    46.791023    -180293.6    2533.4315 
+Loop time of 146.314 on 1 procs for 500 steps with 1152 atoms
+
+Performance: 0.148 ns/day, 162.571 hours/ns, 3.417 timesteps/s
+49.9% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 146.23     | 146.23     | 146.23     |   0.0 | 99.94
+Neigh   | 0.064846   | 0.064846   | 0.064846   |   0.0 |  0.04
+Comm    | 0.0087455  | 0.0087455  | 0.0087455  |   0.0 |  0.01
+Output  | 4.3556e-05 | 4.3556e-05 | 4.3556e-05 |   0.0 |  0.00
+Modify  | 0.0069973  | 0.0069973  | 0.0069973  |   0.0 |  0.00
+Other   |            | 0.001858   |            |       |  0.00
+
+Nlocal:    1152 ave 1152 max 1152 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    5354 ave 5354 max 5354 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    0 ave 0 max 0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  279984 ave 279984 max 279984 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 279984
+Ave neighs/atom = 243.042
+Neighbor list builds = 11
+Dangerous builds = 0
+Total wall time: 0:02:55

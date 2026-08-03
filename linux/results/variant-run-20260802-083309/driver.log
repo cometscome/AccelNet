@@ -1,0 +1,61 @@
+==> water small fixed aenet ranks=1 trial=1
+==> water small fixed accelnet-direct ranks=1 trial=1
+==> water small fixed accelnet-moment ranks=1 trial=1
+==> water small fixed aenet ranks=1 trial=2
+==> water small fixed accelnet-direct ranks=1 trial=2
+==> water small fixed accelnet-moment ranks=1 trial=2
+==> water small fixed aenet ranks=1 trial=3
+==> water small fixed accelnet-direct ranks=1 trial=3
+==> water small fixed accelnet-moment ranks=1 trial=3
+==> water small fixed aenet ranks=2 trial=1
+==> water small fixed accelnet-direct ranks=2 trial=1
+==> water small fixed accelnet-moment ranks=2 trial=1
+==> water small fixed aenet ranks=2 trial=2
+==> water small fixed accelnet-direct ranks=2 trial=2
+==> water small fixed accelnet-moment ranks=2 trial=2
+==> water small fixed aenet ranks=2 trial=3
+==> water small fixed accelnet-direct ranks=2 trial=3
+==> water small fixed accelnet-moment ranks=2 trial=3
+==> water small dynamic aenet ranks=1 trial=1
+==> water small dynamic accelnet-direct ranks=1 trial=1
+==> water small dynamic accelnet-moment ranks=1 trial=1
+==> water small dynamic aenet ranks=1 trial=2
+==> water small dynamic accelnet-direct ranks=1 trial=2
+==> water small dynamic accelnet-moment ranks=1 trial=2
+==> water small dynamic aenet ranks=1 trial=3
+==> water small dynamic accelnet-direct ranks=1 trial=3
+==> water small dynamic accelnet-moment ranks=1 trial=3
+==> water small dynamic aenet ranks=2 trial=1
+==> water small dynamic accelnet-direct ranks=2 trial=1
+==> water small dynamic accelnet-moment ranks=2 trial=1
+==> water small dynamic aenet ranks=2 trial=2
+==> water small dynamic accelnet-direct ranks=2 trial=2
+==> water small dynamic accelnet-moment ranks=2 trial=2
+==> water small dynamic aenet ranks=2 trial=3
+==> water small dynamic accelnet-direct ranks=2 trial=3
+==> water small dynamic accelnet-moment ranks=2 trial=3
+==> tio2 small fixed aenet ranks=1 trial=1
+==> tio2 small fixed accelnet-direct ranks=1 trial=1
+==> tio2 small fixed accelnet-moment ranks=1 trial=1
+==> tio2 small fixed aenet ranks=1 trial=2
+==> tio2 small fixed accelnet-direct ranks=1 trial=2
+==> tio2 small fixed accelnet-moment ranks=1 trial=2
+==> tio2 small fixed aenet ranks=1 trial=3
+==> tio2 small fixed accelnet-direct ranks=1 trial=3
+==> tio2 small fixed accelnet-moment ranks=1 trial=3
+==> tio2 small fixed aenet ranks=2 trial=1
+==> tio2 small fixed accelnet-direct ranks=2 trial=1
+==> tio2 small fixed accelnet-moment ranks=2 trial=1
+==> tio2 small fixed aenet ranks=2 trial=2
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 0 PID 3636329 RUNNING AT rtx4090
+=   KILLED BY SIGNAL: 15 (Terminated)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 1 PID 3636330 RUNNING AT rtx4090
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================

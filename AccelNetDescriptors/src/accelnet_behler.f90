@@ -648,9 +648,11 @@ contains
         real(real64) :: distance_j, distance_k, cutoff_j, cutoff_k, exponential
         real(real64) :: radial_value, radial_derivative, cosine_jk, product
         real(real64) :: angular_term, angular_derivative, weight
-        real(real64) :: vector_j(3), vector_k(3), dcosine_j(3), dcosine_k(3)
-        real(real64) :: derivative(3), derivative_j(3), derivative_k(3)
-        real(real64) :: pair_derivative_j(3), pair_derivative_k(3)
+        real(real64) :: vector_j(3), vector_k(3)
+        real(real64) :: derivative(3)
+        real(real64) :: dcos_j1, dcos_j2, dcos_j3, dcos_k1, dcos_k2, dcos_k3
+        real(real64) :: angular_coefficient, radial_coefficient_j, radial_coefficient_k
+        real(real64) :: pair_j1, pair_j2, pair_j3, pair_k1, pair_k2, pair_k3
         real(real64) :: distances(size(neighbor_species)), unit_vectors(3, size(neighbor_species))
         real(real64) :: cutoffs(size(neighbor_species), max(1, allocated_size(config%cutoff_radii)))
         real(real64) :: cutoff_derivatives(size(neighbor_species), max(1, allocated_size(config%cutoff_radii)))
@@ -658,9 +660,9 @@ contains
         real(real64) :: angular_exponentials(size(neighbor_species), max(1, allocated_size(config%angular_eta)))
         real(real64) :: products(max(1, allocated_size(config%angular_eta)), &
                                  max(1, allocated_size(config%cutoff_radii)))
-        real(real64) :: radial_j(3, max(1, allocated_size(config%angular_eta)), &
+        real(real64) :: radial_j(max(1, allocated_size(config%angular_eta)), &
                                 max(1, allocated_size(config%cutoff_radii)))
-        real(real64) :: radial_k(3, max(1, allocated_size(config%angular_eta)), &
+        real(real64) :: radial_k(max(1, allocated_size(config%angular_eta)), &
                                 max(1, allocated_size(config%cutoff_radii)))
         real(real64) :: angular_values(max(1, allocated_size_angular(config%g5)))
         real(real64) :: angular_derivatives(max(1, allocated_size_angular(config%g5)))
@@ -757,8 +759,12 @@ contains
                 if (parameters%count == 0) cycle
                 vector_k = unit_vectors(:, k)
                 cosine_jk = max(-1.0_real64, min(1.0_real64, dot_product(vector_j, vector_k)))
-                dcosine_j = (vector_k - cosine_jk*vector_j)/distance_j
-                dcosine_k = (vector_j - cosine_jk*vector_k)/distance_k
+                dcos_j1 = (vector_k(1) - cosine_jk*vector_j(1))/distance_j
+                dcos_j2 = (vector_k(2) - cosine_jk*vector_j(2))/distance_j
+                dcos_j3 = (vector_k(3) - cosine_jk*vector_j(3))/distance_j
+                dcos_k1 = (vector_j(1) - cosine_jk*vector_k(1))/distance_k
+                dcos_k2 = (vector_j(2) - cosine_jk*vector_k(2))/distance_k
+                dcos_k3 = (vector_j(3) - cosine_jk*vector_k(3))/distance_k
                 do exponential_index = 1, nangular_exp
                     do cutoff_index = 1, ncutoff
                         cutoff_j = cutoffs(j, cutoff_index)
@@ -770,14 +776,14 @@ contains
                             (cutoff_derivatives(j, cutoff_index) - &
                              2.0_real64*config%angular_eta(exponential_index)* &
                              (distance_j - config%angular_shift(exponential_index))*cutoff_j)
-                        radial_j(:, exponential_index, cutoff_index) = radial_derivative*vector_j* &
+                        radial_j(exponential_index, cutoff_index) = radial_derivative* &
                             angular_exponentials(k, exponential_index)*cutoff_k
                         radial_derivative = angular_exponentials(k, exponential_index)* &
                             (cutoff_derivatives(k, cutoff_index) - &
                              2.0_real64*config%angular_eta(exponential_index)* &
                              (distance_k - config%angular_shift(exponential_index))*cutoff_k)
-                        radial_k(:, exponential_index, cutoff_index) = &
-                            angular_exponentials(j, exponential_index)*cutoff_j*radial_derivative*vector_k
+                        radial_k(exponential_index, cutoff_index) = &
+                            angular_exponentials(j, exponential_index)*cutoff_j*radial_derivative
                     end do
                 end do
                 do group = 1, parameters%angular_count
@@ -788,8 +794,8 @@ contains
                         parameters%angular_derivative_prefactor(group), angular_values(group), &
                         angular_derivatives(group))
                 end do
-                pair_derivative_j = 0.0_real64
-                pair_derivative_k = 0.0_real64
+                pair_j1 = 0.0_real64; pair_j2 = 0.0_real64; pair_j3 = 0.0_real64
+                pair_k1 = 0.0_real64; pair_k2 = 0.0_real64; pair_k3 = 0.0_real64
                 do p = 1, parameters%count
                     group = parameters%angular_group(p)
                     if (use_integer_moments .and. parameters%angular_integer_zeta(group) > 0 .and. &
@@ -802,16 +808,25 @@ contains
                     angular_term = angular_values(group)
                     angular_derivative = angular_derivatives(group)
                     weight = 2.0_real64*coefficients(descriptor)
-                    derivative_j = weight*(angular_derivative*dcosine_j*product + &
-                        angular_term*radial_j(:, exponential_index, cutoff_index))
-                    derivative_k = weight*(angular_derivative*dcosine_k*product + &
-                        angular_term*radial_k(:, exponential_index, cutoff_index))
-                    pair_derivative_j = pair_derivative_j + derivative_j
-                    pair_derivative_k = pair_derivative_k + derivative_k
+                    angular_coefficient = weight*angular_derivative*product
+                    radial_coefficient_j = weight*angular_term*radial_j(exponential_index, cutoff_index)
+                    radial_coefficient_k = weight*angular_term*radial_k(exponential_index, cutoff_index)
+                    pair_j1 = pair_j1 + angular_coefficient*dcos_j1 + radial_coefficient_j*vector_j(1)
+                    pair_j2 = pair_j2 + angular_coefficient*dcos_j2 + radial_coefficient_j*vector_j(2)
+                    pair_j3 = pair_j3 + angular_coefficient*dcos_j3 + radial_coefficient_j*vector_j(3)
+                    pair_k1 = pair_k1 + angular_coefficient*dcos_k1 + radial_coefficient_k*vector_k(1)
+                    pair_k2 = pair_k2 + angular_coefficient*dcos_k2 + radial_coefficient_k*vector_k(2)
+                    pair_k3 = pair_k3 + angular_coefficient*dcos_k3 + radial_coefficient_k*vector_k(3)
                 end do
-                contracted_neighbors(:, j) = contracted_neighbors(:, j) + pair_derivative_j
-                contracted_neighbors(:, k) = contracted_neighbors(:, k) + pair_derivative_k
-                contracted_center = contracted_center - pair_derivative_j - pair_derivative_k
+                contracted_neighbors(1, j) = contracted_neighbors(1, j) + pair_j1
+                contracted_neighbors(2, j) = contracted_neighbors(2, j) + pair_j2
+                contracted_neighbors(3, j) = contracted_neighbors(3, j) + pair_j3
+                contracted_neighbors(1, k) = contracted_neighbors(1, k) + pair_k1
+                contracted_neighbors(2, k) = contracted_neighbors(2, k) + pair_k2
+                contracted_neighbors(3, k) = contracted_neighbors(3, k) + pair_k3
+                contracted_center(1) = contracted_center(1) - pair_j1 - pair_k1
+                contracted_center(2) = contracted_center(2) - pair_j2 - pair_k2
+                contracted_center(3) = contracted_center(3) - pair_j3 - pair_k3
                 end associate
             end do
         end do
@@ -828,8 +843,10 @@ contains
         integer :: nneighbors, ncutoff, nangular_exp
         integer :: j, p, entry, q, species, species1, species2, cutoff_index, exponential_index
         integer :: x_power, y_power, z_power
-        real(real64) :: h, polynomial_coefficient, radial_derivative
-        real(real64) :: dh(3), gradient_u(3), dphi(3), derivative(3)
+        real(real64) :: h, polynomial_coefficient, radial_derivative, adjoint, self_scale
+        real(real64) :: ux, uy, uz, gradient_x, gradient_y, gradient_z, gradient_dot_u
+        real(real64) :: dhx, dhy, dhz, dphix, dphiy, dphiz
+        real(real64) :: derivative_x, derivative_y, derivative_z
         real(real64) :: moments(max(1, config%number_of_g5_moments), &
                                 max(1, allocated_size(config%cutoff_radii)), &
                                 max(1, allocated_size(config%angular_eta)), config%num_species)
@@ -839,7 +856,9 @@ contains
         real(real64) :: self_adjoints(max(1, allocated_size(config%cutoff_radii)), &
                                       max(1, allocated_size(config%angular_eta)), config%num_species)
         real(real64) :: monomials(max(1, config%number_of_g5_moments))
-        real(real64) :: monomial_gradients(3, max(1, config%number_of_g5_moments))
+        real(real64) :: monomial_gradient_x(max(1, config%number_of_g5_moments))
+        real(real64) :: monomial_gradient_y(max(1, config%number_of_g5_moments))
+        real(real64) :: monomial_gradient_z(max(1, config%number_of_g5_moments))
 
         nneighbors = size(neighbor_species)
         ncutoff = allocated_size(config%cutoff_radii)
@@ -847,16 +866,18 @@ contains
         moments = 0.0_real64
         do j = 1, nneighbors
             if (distances(j) <= EPS_DISTANCE .or. distances(j) > config%maximum_angular_cutoff) cycle
+            do entry = 1, config%number_of_g5_moments
+                monomials(entry) = moment_monomial(unit_vectors(:, j), config%g5_moment_x_power(entry), &
+                    config%g5_moment_y_power(entry), config%g5_moment_z_power(entry))
+            end do
             do exponential_index = 1, nangular_exp
                 do cutoff_index = 1, ncutoff
                     h = angular_exponentials(j, exponential_index)*cutoffs(j, cutoff_index)
                     if (h == 0.0_real64) cycle
                     do entry = 1, config%number_of_g5_moments
                         moments(entry, cutoff_index, exponential_index, neighbor_species(j)) = &
-                            moments(entry, cutoff_index, exponential_index, neighbor_species(j)) + h* &
-                            moment_monomial(unit_vectors(:, j), config%g5_moment_x_power(entry), &
-                                            config%g5_moment_y_power(entry), &
-                                            config%g5_moment_z_power(entry))
+                            moments(entry, cutoff_index, exponential_index, neighbor_species(j)) + &
+                            h*monomials(entry)
                     end do
                 end do
             end do
@@ -900,16 +921,28 @@ contains
         do j = 1, nneighbors
             if (distances(j) <= EPS_DISTANCE .or. distances(j) > config%maximum_angular_cutoff) cycle
             species = neighbor_species(j)
+            ux = unit_vectors(1, j)
+            uy = unit_vectors(2, j)
+            uz = unit_vectors(3, j)
             do entry = 1, config%number_of_g5_moments
                 x_power = config%g5_moment_x_power(entry)
                 y_power = config%g5_moment_y_power(entry)
                 z_power = config%g5_moment_z_power(entry)
                 monomials(entry) = moment_monomial(unit_vectors(:, j), x_power, y_power, z_power)
-                call moment_monomial_gradient(unit_vectors(:, j), x_power, y_power, z_power, gradient_u)
-                monomial_gradients(:, entry) = (gradient_u - dot_product(unit_vectors(:, j), gradient_u)* &
-                    unit_vectors(:, j))/distances(j)
+                gradient_x = 0.0_real64
+                gradient_y = 0.0_real64
+                gradient_z = 0.0_real64
+                if (x_power > 0) gradient_x = real(x_power, real64)*ux**(x_power - 1)*uy**y_power*uz**z_power
+                if (y_power > 0) gradient_y = real(y_power, real64)*ux**x_power*uy**(y_power - 1)*uz**z_power
+                if (z_power > 0) gradient_z = real(z_power, real64)*ux**x_power*uy**y_power*uz**(z_power - 1)
+                gradient_dot_u = ux*gradient_x + uy*gradient_y + uz*gradient_z
+                monomial_gradient_x(entry) = (gradient_x - gradient_dot_u*ux)/distances(j)
+                monomial_gradient_y(entry) = (gradient_y - gradient_dot_u*uy)/distances(j)
+                monomial_gradient_z(entry) = (gradient_z - gradient_dot_u*uz)/distances(j)
             end do
-            derivative = 0.0_real64
+            derivative_x = 0.0_real64
+            derivative_y = 0.0_real64
+            derivative_z = 0.0_real64
             do exponential_index = 1, nangular_exp
                 do cutoff_index = 1, ncutoff
                     h = angular_exponentials(j, exponential_index)*cutoffs(j, cutoff_index)
@@ -918,16 +951,30 @@ contains
                         (cutoff_derivatives(j, cutoff_index) - &
                          2.0_real64*config%angular_eta(exponential_index)* &
                          (distances(j) - config%angular_shift(exponential_index))*cutoffs(j, cutoff_index))
-                    dh = radial_derivative*unit_vectors(:, j)
-                    derivative = derivative + 2.0_real64*self_adjoints(cutoff_index, exponential_index, species)*h*dh
+                    dhx = radial_derivative*ux
+                    dhy = radial_derivative*uy
+                    dhz = radial_derivative*uz
+                    self_scale = 2.0_real64*self_adjoints(cutoff_index, exponential_index, species)*h
+                    derivative_x = derivative_x + self_scale*dhx
+                    derivative_y = derivative_y + self_scale*dhy
+                    derivative_z = derivative_z + self_scale*dhz
                     do entry = 1, config%number_of_g5_moments
-                        dphi = dh*monomials(entry) + h*monomial_gradients(:, entry)
-                        derivative = derivative + moment_adjoints(entry, cutoff_index, exponential_index, species)*dphi
+                        dphix = dhx*monomials(entry) + h*monomial_gradient_x(entry)
+                        dphiy = dhy*monomials(entry) + h*monomial_gradient_y(entry)
+                        dphiz = dhz*monomials(entry) + h*monomial_gradient_z(entry)
+                        adjoint = moment_adjoints(entry, cutoff_index, exponential_index, species)
+                        derivative_x = derivative_x + adjoint*dphix
+                        derivative_y = derivative_y + adjoint*dphiy
+                        derivative_z = derivative_z + adjoint*dphiz
                     end do
                 end do
             end do
-            contracted_neighbors(:, j) = contracted_neighbors(:, j) + derivative
-            contracted_center = contracted_center - derivative
+            contracted_neighbors(1, j) = contracted_neighbors(1, j) + derivative_x
+            contracted_neighbors(2, j) = contracted_neighbors(2, j) + derivative_y
+            contracted_neighbors(3, j) = contracted_neighbors(3, j) + derivative_z
+            contracted_center(1) = contracted_center(1) - derivative_x
+            contracted_center(2) = contracted_center(2) - derivative_y
+            contracted_center(3) = contracted_center(3) - derivative_z
         end do
     end subroutine contract_g5_integer_moments
 

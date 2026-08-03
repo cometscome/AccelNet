@@ -1,0 +1,84 @@
+LAMMPS (4 Feb 2020)
+clear
+units metal
+boundary p p p
+atom_style atomic
+read_data ${data_file}
+read_data /home/yuki/AccelNet-lammps/examples/tio2/data/tio2-relaxed-6.data
+  triclinic box = (0 0 0) to (3.80348 3.80348 4.84993) with tilt (-2.12e-06 1.90172 1.90172)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  6 atoms
+  read_data CPU = 0.000341028 secs
+replicate ${rep_x} ${rep_y} ${rep_z}
+replicate 8 ${rep_y} ${rep_z}
+replicate 8 6 ${rep_z}
+replicate 8 6 4
+  triclinic box = (0 0 0) to (30.4278 22.8209 19.3997) with tilt (-1.272e-05 7.60686 7.60687)
+  1 by 1 by 1 MPI processor grid
+  1152 atoms
+  replicate CPU = 0.000383634 secs
+pair_style ${pair_name} ${model_1} ${model_2}
+pair_style accelnet ${model_1} ${model_2}
+pair_style accelnet Ti.15t-15t.nn ${model_2}
+pair_style accelnet Ti.15t-15t.nn O.15t-15t.nn
+pair_coeff * *
+thermo_style custom step pe
+thermo ${measure_steps}
+thermo 500
+run ${warmup_steps} post no
+run 100 post no
+WARNING: No fixes defined, atoms won't move (../verlet.cpp:52)
+Neighbor list info ...
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 10
+  ghost atom cutoff = 10
+  binsize = 5, bins = 8 7 4
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair accelnet, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 4.897 | 4.897 | 4.897 Mbytes
+Step PotEng 
+       0      -957249 
+     100      -957249 
+Loop time of 9.33547 on 1 procs for 100 steps with 1152 atoms
+
+run ${measure_steps} pre no
+run 500 pre no
+Step PotEng 
+     100      -957249 
+     500      -957249 
+     600      -957249 
+Loop time of 46.6668 on 1 procs for 500 steps with 1152 atoms
+
+Performance: 0.926 ns/day, 25.926 hours/ns, 10.714 timesteps/s
+100.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 46.656     | 46.656     | 46.656     |   0.0 | 99.98
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.0088718  | 0.0088718  | 0.0088718  |   0.0 |  0.02
+Output  | 2.2098e-05 | 2.2098e-05 | 2.2098e-05 |   0.0 |  0.00
+Modify  | 5.4792e-05 | 5.4792e-05 | 5.4792e-05 |   0.0 |  0.00
+Other   |            | 0.001946   |            |       |  0.00
+
+Nlocal:    1152 ave 1152 max 1152 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    6320 ave 6320 max 6320 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    0 ave 0 max 0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  407808 ave 407808 max 407808 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 407808
+Ave neighs/atom = 354
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:56
