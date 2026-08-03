@@ -1,0 +1,14 @@
+DESCR
+ Chebyshev reference with a second cutoff pattern
+END DESCR
+
+ATOM O
+
+ENV 2
+Ti
+O
+
+RMIN 0.35
+
+BASIS type=Chebyshev
+radial_Rc=5.0 radial_N=5 angular_Rc=4.2 angular_N=3

@@ -1,0 +1,14 @@
+OUTPUT aenet.train
+
+TYPES
+2
+Ti 0.0
+O  0.0
+
+SETUPS
+Ti Ti.fingerprint.stp
+O  O.fingerprint.stp
+
+FILES
+1
+structure.xsf

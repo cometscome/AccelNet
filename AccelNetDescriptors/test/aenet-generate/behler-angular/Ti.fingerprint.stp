@@ -1,0 +1,26 @@
+DESCR
+ Behler G4 and G5 for all unordered species pairs and lambda signs
+END DESCR
+
+ATOM Ti
+
+ENV 2
+Ti
+O
+
+RMIN 0.35
+
+FUNCTIONS type=Behler2011
+12
+G=5 type2=O  type3=Ti Rc=4.4 eta=0.08 lambda=-1.0 zeta=3.0
+G=4 type2=O  type3=O  Rc=4.7 eta=0.12 lambda= 1.0 zeta=2.0
+G=5 type2=Ti type3=Ti Rc=4.8 eta=0.06 lambda= 1.0 zeta=1.0
+G=4 type2=Ti type3=O  Rc=4.5 eta=0.16 lambda=-1.0 zeta=4.0
+G=5 type2=O  type3=O  Rc=4.6 eta=0.10 lambda=-1.0 zeta=2.0
+G=4 type2=Ti type3=Ti Rc=4.9 eta=0.05 lambda= 1.0 zeta=1.0
+G=5 type2=Ti type3=O  Rc=4.7 eta=0.11 lambda= 1.0 zeta=2.0
+G=4 type2=O  type3=Ti Rc=4.6 eta=0.09 lambda= 1.0 zeta=3.0
+G=5 type2=O  type3=O  Rc=4.8 eta=0.07 lambda= 1.0 zeta=4.0
+G=4 type2=Ti type3=Ti Rc=4.5 eta=0.14 lambda=-1.0 zeta=2.0
+G=5 type2=Ti type3=Ti Rc=4.9 eta=0.13 lambda=-1.0 zeta=3.0
+G=4 type2=O  type3=O  Rc=4.4 eta=0.18 lambda=-1.0 zeta=1.0

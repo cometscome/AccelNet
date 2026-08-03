@@ -1,6 +1,10 @@
 number_of_elements 1
 elements H
+nnp_type 2G-HDNNP
 atom_energy H 0.5
+mean_energy 0.25
+conv_energy 2.0
+conv_length 3.0
 cutoff_type 7 0.2
 global_hidden_layers_short 0
 global_nodes_short

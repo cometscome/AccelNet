@@ -10,6 +10,11 @@ set(ACCELNET_ORIGINAL_BUILD_DIR "" CACHE PATH
     "Optional out-of-tree AccelNet build used only for the original-speed benchmark")
 set(AENET_BUILD_DIR "" CACHE PATH
     "Optional ænet build used only for the direct API benchmark")
+set(AENET_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../aenet-master"
+    CACHE PATH "Path to the aenet source tree used by reference tests")
+set(N2P2_SCALING_EXECUTABLE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../n2p2-master/bin/nnp-scaling"
+    CACHE FILEPATH "Path to the n2p2 nnp-scaling reference executable")
 
 if(TARGET AccelNetDescriptors::AccelNetDescriptors)
     # Supplied by a parent superbuild.
@@ -109,6 +114,60 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
     target_link_libraries(test_n2p2_network PRIVATE AccelNetPredictor)
     add_test(NAME n2p2_model_loader COMMAND test_n2p2_network
         "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2")
+    if(EXISTS "${N2P2_SCALING_EXECUTABLE}")
+        add_executable(dump_n2p2_descriptors test/dump_n2p2_descriptors.f90)
+        target_link_libraries(dump_n2p2_descriptors PRIVATE AccelNetPredictor)
+        add_executable(compare_n2p2_descriptors test/compare_n2p2_descriptors.f90)
+        foreach(N2P2_CUTOFF_TYPE RANGE 0 8)
+            add_test(NAME n2p2_descriptor_cutoff_${N2P2_CUTOFF_TYPE}_match
+                COMMAND "${CMAKE_COMMAND}"
+                    -DN2P2_SCALING=${N2P2_SCALING_EXECUTABLE}
+                    -DACCELNET_DUMP=$<TARGET_FILE:dump_n2p2_descriptors>
+                    -DCOMPARATOR=$<TARGET_FILE:compare_n2p2_descriptors>
+                    -DCASE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/test/n2p2-descriptors
+                    -DWORK=${CMAKE_CURRENT_BINARY_DIR}/n2p2-descriptor-${N2P2_CUTOFF_TYPE}
+                    -DCUTOFF_TYPE=${N2P2_CUTOFF_TYPE}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/test/compare_n2p2_scaling.cmake)
+            set_tests_properties(n2p2_descriptor_cutoff_${N2P2_CUTOFF_TYPE}_match
+                PROPERTIES LABELS "integration;n2p2-reference" TIMEOUT 60)
+        endforeach()
+    else()
+        message(STATUS
+            "n2p2 descriptor reference tests disabled: nnp-scaling not found")
+    endif()
+    add_executable(test_network_activations test/test_network_activations.f90)
+    target_link_libraries(test_network_activations PRIVATE AccelNetPredictor)
+    add_test(NAME network_activation_compatibility COMMAND test_network_activations
+        "${CMAKE_CURRENT_SOURCE_DIR}/test/data/legacy-n2p2-softplus.nn.ascii")
+    if(EXISTS "${AENET_SOURCE_DIR}/src/ext/feedforward.f90")
+        add_library(aenet_feedforward_reference STATIC
+            "${AENET_SOURCE_DIR}/src/ext/feedforward.f90")
+        set_target_properties(aenet_feedforward_reference PROPERTIES
+            Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/aenet-reference-modules")
+        target_include_directories(aenet_feedforward_reference PUBLIC
+            "${CMAKE_CURRENT_BINARY_DIR}/aenet-reference-modules")
+        add_executable(test_aenet_activation_reference
+            test/test_aenet_activation_reference.f90)
+        target_link_libraries(test_aenet_activation_reference PRIVATE
+            AccelNetPredictor aenet_feedforward_reference)
+        add_test(NAME network_aenet_activation_reference_match
+            COMMAND test_aenet_activation_reference)
+        set_tests_properties(network_aenet_activation_reference_match
+            PROPERTIES LABELS "aenet-reference")
+    endif()
+    if(TARGET n2p2_function_reference)
+        enable_language(CXX)
+        add_executable(test_n2p2_activation_reference
+            test/test_n2p2_activation_reference.f90)
+        target_link_libraries(test_n2p2_activation_reference PRIVATE
+            AccelNetPredictor n2p2_function_reference)
+        set_target_properties(test_n2p2_activation_reference PROPERTIES
+            LINKER_LANGUAGE CXX)
+        add_test(NAME network_n2p2_activation_reference_match
+            COMMAND test_n2p2_activation_reference)
+        set_tests_properties(network_n2p2_activation_reference_match
+            PROPERTIES LABELS "n2p2-reference")
+    endif()
     set(ACCELNET_PREDICTOR_GOLDEN_DIR
         "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetTrainer.jl/test/data/fortran_predict"
         CACHE PATH "Existing immutable NN/XSF golden data")

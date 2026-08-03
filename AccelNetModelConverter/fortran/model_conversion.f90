@@ -1,6 +1,9 @@
 module model_conversion
     use iso_fortran_env, only: real64
-    use aenet_network, only: atomic_network, read_aenet_network, write_aenet_network_ascii
+    use aenet_network, only: atomic_network, read_aenet_network, write_aenet_network_ascii, &
+        ACTIVATION_LINEAR, ACTIVATION_TANH, ACTIVATION_LOGISTIC, ACTIVATION_SOFTPLUS, &
+        ACTIVATION_RELU, ACTIVATION_GAUSSIAN, ACTIVATION_COSINE, ACTIVATION_REVERSE_LOGISTIC, &
+        ACTIVATION_EXPONENTIAL, ACTIVATION_HARMONIC
     use accelnet_predictor, only: predictor_model, load_predictor_from_n2p2
     use n2p2_network, only: atomic_number
     implicit none
@@ -208,7 +211,7 @@ contains
         else
             reals = [network%descriptor_parameters(1, i), network%descriptor_parameters(4, i), &
                 0.0_real64, network%descriptor_parameters(3, i), &
-                network%descriptor_parameters(2, i), 0.0_real64]
+                network%descriptor_parameters(2, i), angular_shift(network, i)]
         end if
     end subroutine descriptor_key
 
@@ -294,7 +297,7 @@ contains
                         networks(order(i))%descriptor_parameters(4, j), &
                         networks(order(i))%descriptor_parameters(2, j), &
                         networks(order(i))%descriptor_parameters(3, j), &
-                        networks(order(i))%descriptor_parameters(1, j), 0.0_real64
+                        networks(order(i))%descriptor_parameters(1, j), angular_shift(networks(order(i)), j)
                 end if
             end do
         end do
@@ -382,19 +385,27 @@ contains
     character(len=1) function activation_name(code) result(name)
         integer, intent(in) :: code
         select case(code)
-        case(0); name = "l"
-        case(1); name = "t"
-        case(2); name = "s"
-        case(3); name = "p"
-        case(5); name = "r"
-        case(6); name = "g"
-        case(7); name = "c"
-        case(8); name = "S"
-        case(9); name = "e"
-        case(10); name = "h"
+        case(ACTIVATION_LINEAR); name = "l"
+        case(ACTIVATION_TANH); name = "t"
+        case(ACTIVATION_LOGISTIC); name = "s"
+        case(ACTIVATION_SOFTPLUS); name = "p"
+        case(ACTIVATION_RELU); name = "r"
+        case(ACTIVATION_GAUSSIAN); name = "g"
+        case(ACTIVATION_COSINE); name = "c"
+        case(ACTIVATION_REVERSE_LOGISTIC); name = "S"
+        case(ACTIVATION_EXPONENTIAL); name = "e"
+        case(ACTIVATION_HARMONIC); name = "h"
         case default; error stop "activation has no n2p2 equivalent"
         end select
     end function activation_name
+
+    pure real(real64) function angular_shift(network, descriptor) result(shift)
+        type(atomic_network), intent(in) :: network
+        integer, intent(in) :: descriptor
+        shift = 0.0_real64
+        if (size(network%descriptor_parameters, 1) >= 7) &
+            shift = network%descriptor_parameters(7, descriptor)
+    end function angular_shift
 
     subroutine make_directory(path)
         character(len=*), intent(in) :: path

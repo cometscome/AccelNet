@@ -3,6 +3,22 @@ module aenet_network
     implicit none
     private
 
+    integer, parameter, public :: ACTIVATION_LINEAR = 0
+    integer, parameter, public :: ACTIVATION_TANH = 1
+    integer, parameter, public :: ACTIVATION_LOGISTIC = 2
+    integer, parameter, public :: ACTIVATION_AENET_MTANH = 3
+    integer, parameter, public :: ACTIVATION_AENET_TWIST = 4
+    integer, parameter, public :: ACTIVATION_RELU = 5
+    integer, parameter, public :: ACTIVATION_GAUSSIAN = 6
+    integer, parameter, public :: ACTIVATION_COSINE = 7
+    integer, parameter, public :: ACTIVATION_REVERSE_LOGISTIC = 8
+    integer, parameter, public :: ACTIVATION_EXPONENTIAL = 9
+    integer, parameter, public :: ACTIVATION_HARMONIC = 10
+    ! Keep native aenet codes 3/4 available for mtanh/twist.  Softplus is an
+    ! AccelNet extension used by imported n2p2 models and therefore gets a
+    ! non-conflicting serialized code.
+    integer, parameter, public :: ACTIVATION_SOFTPLUS = 11
+
     type, public :: atomic_network
         character(len=16) :: atomtype = ""
         character(len=1024) :: description = ""
@@ -172,6 +188,7 @@ contains
         read(unit, *) nstructures
         read(unit, *) emin, emax, eavg
         close(unit)
+        call upgrade_legacy_n2p2_activations(network)
     end subroutine read_aenet_network_ascii
 
     subroutine read_aenet_network(filename, network)
@@ -232,6 +249,7 @@ contains
         read(unit) network%atomic_references
         read(unit) natoms; read(unit) nstructures; read(unit) emin, emax, eavg
         close(unit)
+        call upgrade_legacy_n2p2_activations(network)
         do i = 1, nsf
             variance = max(moments(i) - network%descriptor_shift(i)**2, 0.0_real64)
             if (variance > 0.0_real64) then
@@ -259,6 +277,18 @@ contains
             any(network%descriptor_parameters(6, :) /= network%descriptor_cutoff_alpha)) &
             error stop "embedded descriptors use inconsistent cutoff metadata"
     end subroutine recover_cutoff_metadata
+
+    subroutine upgrade_legacy_n2p2_activations(network)
+        type(atomic_network), intent(inout) :: network
+        ! AccelNet 0.1.0 wrote n2p2 softplus with integer code 3, which is
+        ! native aenet's mtanh code.  Preserve those generated files while all
+        ! newly written files use ACTIVATION_SOFTPLUS=11.
+        if (index(trim(network%description), "Imported n2p2 2G-HDNNP model") == 1) then
+            where (network%activation == ACTIVATION_AENET_MTANH)
+                network%activation = ACTIVATION_SOFTPLUS
+            end where
+        end if
+    end subroutine upgrade_legacy_n2p2_activations
 
     subroutine evaluate_network(self, input, output)
         class(atomic_network), intent(in) :: self
@@ -323,22 +353,29 @@ contains
     pure real(real64) function activate(x, code) result(y)
         real(real64), intent(in) :: x
         integer, intent(in) :: code
+        real(real64), parameter :: a = 1.7159_real64
+        real(real64), parameter :: b = 0.666666666666667_real64
+        real(real64), parameter :: c = 0.1_real64
         select case(code)
-        case(0); y = x
-        case(1); y = tanh(x)
-        case(2); y = 1.0_real64/(1.0_real64 + exp(-x))
-        case(3)
+        case(ACTIVATION_LINEAR); y = x
+        case(ACTIVATION_TANH); y = tanh(x)
+        case(ACTIVATION_LOGISTIC); y = 1.0_real64/(1.0_real64 + exp(-x))
+        case(ACTIVATION_AENET_MTANH)
+            y = a*tanh(b*x)
+        case(ACTIVATION_AENET_TWIST)
+            y = a*tanh(b*x) + c*x
+        case(ACTIVATION_SOFTPLUS)
             if (x > 0.0_real64) then
                 y = x + log(1.0_real64 + exp(-x))
             else
                 y = log(1.0_real64 + exp(x))
             end if
-        case(5); y = max(x, 0.0_real64)
-        case(6); y = exp(-0.5_real64*x*x)
-        case(7); y = cos(x)
-        case(8); y = 1.0_real64 - 1.0_real64/(1.0_real64 + exp(-x))
-        case(9); y = exp(-x)
-        case(10); y = x*x
+        case(ACTIVATION_RELU); y = max(x, 0.0_real64)
+        case(ACTIVATION_GAUSSIAN); y = exp(-0.5_real64*x*x)
+        case(ACTIVATION_COSINE); y = cos(x)
+        case(ACTIVATION_REVERSE_LOGISTIC); y = 1.0_real64 - 1.0_real64/(1.0_real64 + exp(-x))
+        case(ACTIVATION_EXPONENTIAL); y = exp(-x)
+        case(ACTIVATION_HARMONIC); y = x*x
         case default; error stop "unsupported aenet activation"
         end select
     end function activate
@@ -346,17 +383,27 @@ contains
     pure real(real64) function activation_derivative(x, y, code) result(value)
         real(real64), intent(in) :: x, y
         integer, intent(in) :: code
+        real(real64), parameter :: a = 1.7159_real64
+        real(real64), parameter :: b = 0.666666666666667_real64
+        real(real64), parameter :: c = 0.1_real64
+        real(real64) :: tanhbx
         select case(code)
-        case(0); value = 1.0_real64
-        case(1); value = 1.0_real64 - y*y
-        case(2); value = y*(1.0_real64 - y)
-        case(3); value = 1.0_real64 - exp(-y)
-        case(5); value = merge(1.0_real64, 0.0_real64, y > 0.0_real64)
-        case(6); value = -x*y
-        case(7); value = -sin(x)
-        case(8); value = -y*(1.0_real64 - y)
-        case(9); value = -y
-        case(10); value = 2.0_real64*x
+        case(ACTIVATION_LINEAR); value = 1.0_real64
+        case(ACTIVATION_TANH); value = 1.0_real64 - y*y
+        case(ACTIVATION_LOGISTIC); value = y*(1.0_real64 - y)
+        case(ACTIVATION_AENET_MTANH)
+            tanhbx = tanh(b*x)
+            value = a*b*(1.0_real64 - tanhbx*tanhbx)
+        case(ACTIVATION_AENET_TWIST)
+            tanhbx = tanh(b*x)
+            value = a*b*(1.0_real64 - tanhbx*tanhbx) + c
+        case(ACTIVATION_SOFTPLUS); value = 1.0_real64 - exp(-y)
+        case(ACTIVATION_RELU); value = merge(1.0_real64, 0.0_real64, y > 0.0_real64)
+        case(ACTIVATION_GAUSSIAN); value = -x*y
+        case(ACTIVATION_COSINE); value = -sin(x)
+        case(ACTIVATION_REVERSE_LOGISTIC); value = -y*(1.0_real64 - y)
+        case(ACTIVATION_EXPONENTIAL); value = -y
+        case(ACTIVATION_HARMONIC); value = 2.0_real64*x
         case default; error stop "unsupported aenet activation"
         end select
     end function activation_derivative

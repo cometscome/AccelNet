@@ -37,6 +37,14 @@ symmetry functions, and 4G/charge models are rejected with
 an error rather than evaluated with different semantics. XSF coordinates and
 the parameters in `input.nn` must use the same physical length unit; returned
 energies and forces use the model's physical energy and length units.
+The loader accepts `nnp_type` values `2G`, `2G-HDNNP`, and numeric `2`.
+Normalized models must provide `mean_energy`, `conv_energy`, and `conv_length`
+together. Type-3/type-9 angular radial shifts are retained in row 7 of
+AccelNet's extended descriptor metadata.
+
+The integration tests also run n2p2 v2.3.0 `nnp-scaling` and compare its raw
+symmetry-function output with AccelNet atom by atom. They cover types 2, 3,
+and 9 for both elements and every n2p2 cutoff type from 0 through 8.
 
 The original AccelNet `predict.in` sections are accepted directly. Descriptor
 setups are reconstructed from the fingerprint metadata embedded in each NN.
@@ -121,6 +129,14 @@ load-state and cutoff metadata, atom-type conversion, free-atom energies,
 atomic energies and additive forces, a built-in neighbor list, and the
 standalone structural-fingerprint basis routines. The C ABI is declared by
 `include/accelnet.h`.
+
+Native ænet 2.0.4 activation codes 0 through 4 are evaluated as linear, tanh,
+sigmoid, modified tanh, and twist respectively. Imported n2p2 softplus uses
+the non-conflicting AccelNet extension code 11; legacy AccelNet-generated n2p2
+ASCII networks that used code 3 are recognized and upgraded while loading.
+Reference tests compare the values and first derivatives of codes 0--4 with
+ænet's `ff_activate`, and all supported n2p2 activations with n2p2's
+`NeuralNetwork` implementation over negative, zero, and positive inputs.
 
 ```fortran
 use accelnet

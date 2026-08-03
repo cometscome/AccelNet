@@ -5,9 +5,23 @@ include(CMakePackageConfigHelpers)
 
 option(ACCELNET_DESCRIPTORS_BUILD_TESTING "Build tests" ON)
 option(ACCELNET_DESCRIPTORS_BUILD_REFERENCE "Build comparisons against an untouched AccelNet tree" ON)
+option(ACCELNET_DESCRIPTORS_BUILD_AENET_REFERENCE
+    "Build generate.x comparisons against aenet" ON)
+option(ACCELNET_DESCRIPTORS_BUILD_N2P2_REFERENCE
+    "Build cutoff comparisons against n2p2" ON)
 set(ACCELNET_ORIGINAL_DIR
     "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNet-a76ec3a83c8b0246328e9cca4817cc0afc84c925"
     CACHE PATH "Path to the untouched AccelNet source tree")
+set(AENET_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../aenet-master"
+    CACHE PATH "Path to the aenet source tree")
+set(AENET_GENERATE_EXECUTABLE
+    "${AENET_SOURCE_DIR}/build-benchmark/bin/generate.x_serial"
+    CACHE FILEPATH "Path to aenet generate.x")
+set(AENET_TRNSET2ASCII_EXECUTABLE
+    "${AENET_SOURCE_DIR}/build-benchmark/tools/trnset2ASCII.x"
+    CACHE FILEPATH "Path to aenet trnset2ASCII.x")
+set(N2P2_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../n2p2-master"
+    CACHE PATH "Path to the n2p2 source tree")
 
 add_library(AccelNetDescriptors
     src/accelnet_legacy_lcl.f90
@@ -84,6 +98,55 @@ if(ACCELNET_DESCRIPTORS_BUILD_TESTING)
             -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/test/data/structure0001.xsf
             -DWORK=${CMAKE_CURRENT_BINARY_DIR}/setup-cli-comparison
             -P ${CMAKE_CURRENT_SOURCE_DIR}/test/compare_setup_cli.cmake)
+
+    if(ACCELNET_DESCRIPTORS_BUILD_N2P2_REFERENCE AND
+       EXISTS "${N2P2_SOURCE_DIR}/src/libnnp/CutoffFunction.cpp")
+        enable_language(CXX)
+        add_library(n2p2_function_reference STATIC
+            test/n2p2_cutoff_reference.cpp
+            "${N2P2_SOURCE_DIR}/src/libnnp/CutoffFunction.cpp"
+            "${N2P2_SOURCE_DIR}/src/libnnp/CoreFunction.cpp"
+            "${N2P2_SOURCE_DIR}/src/libnnp/NeuralNetwork.cpp"
+            "${N2P2_SOURCE_DIR}/src/libnnp/utility.cpp")
+        target_include_directories(n2p2_function_reference PRIVATE
+            "${N2P2_SOURCE_DIR}/src/libnnp")
+        target_compile_features(n2p2_function_reference PRIVATE cxx_std_11)
+        target_compile_options(n2p2_function_reference PRIVATE
+            $<$<COMPILE_LANG_AND_ID:CXX,AppleClang>:-Wno-deprecated-declarations>)
+        add_executable(test_n2p2_cutoff_reference
+            test/test_n2p2_cutoff_reference.f90)
+        target_link_libraries(test_n2p2_cutoff_reference PRIVATE
+            AccelNetDescriptors n2p2_function_reference)
+        add_test(NAME descriptor_n2p2_cutoff_reference_match
+            COMMAND test_n2p2_cutoff_reference)
+        set_tests_properties(descriptor_n2p2_cutoff_reference_match
+            PROPERTIES LABELS "n2p2-reference")
+    endif()
+
+    if(ACCELNET_DESCRIPTORS_BUILD_AENET_REFERENCE)
+        if(EXISTS "${AENET_GENERATE_EXECUTABLE}" AND EXISTS "${AENET_TRNSET2ASCII_EXECUTABLE}")
+            add_executable(compare_aenet_training_set
+                test/compare_aenet_training_set.f90)
+            foreach(AENET_CASE chebyshev behler-radial behler-angular)
+                string(REPLACE "-" "_" AENET_TEST_SUFFIX "${AENET_CASE}")
+                add_test(NAME descriptor_aenet_generate_${AENET_TEST_SUFFIX}_match
+                    COMMAND "${CMAKE_COMMAND}"
+                        -DAENET_GENERATE=${AENET_GENERATE_EXECUTABLE}
+                        -DAENET_TRNSET2ASCII=${AENET_TRNSET2ASCII_EXECUTABLE}
+                        -DACCELNET_GENERATE=$<TARGET_FILE:accelnet-setup-descriptor>
+                        -DCOMPARATOR=$<TARGET_FILE:compare_aenet_training_set>
+                        -DCASE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/test/aenet-generate/${AENET_CASE}
+                        -DSTRUCTURE=${CMAKE_CURRENT_SOURCE_DIR}/test/data/structure0001.xsf
+                        -DWORK=${CMAKE_CURRENT_BINARY_DIR}/aenet-generate-${AENET_CASE}
+                        -P ${CMAKE_CURRENT_SOURCE_DIR}/test/compare_aenet_generate.cmake)
+                set_tests_properties(descriptor_aenet_generate_${AENET_TEST_SUFFIX}_match
+                    PROPERTIES LABELS "integration;aenet-reference" TIMEOUT 60)
+            endforeach()
+        else()
+            message(STATUS
+                "aenet generate reference tests disabled: generate.x or trnset2ASCII.x not found")
+        endif()
+    endif()
 
     if(ACCELNET_DESCRIPTORS_BUILD_REFERENCE)
         if(NOT EXISTS "${ACCELNET_ORIGINAL_DIR}/src/chebyshev/fingerprint_basis_chebyshev.f90")

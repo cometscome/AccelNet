@@ -1,6 +1,8 @@
 module n2p2_network
     use iso_fortran_env, only: real64
-    use aenet_network, only: atomic_network
+    use aenet_network, only: atomic_network, ACTIVATION_LINEAR, ACTIVATION_TANH, &
+        ACTIVATION_LOGISTIC, ACTIVATION_SOFTPLUS, ACTIVATION_RELU, ACTIVATION_GAUSSIAN, &
+        ACTIVATION_COSINE, ACTIVATION_REVERSE_LOGISTIC, ACTIVATION_EXPONENTIAL, ACTIVATION_HARMONIC
     use accelnet_setup, only: descriptor_setup
     use accelnet_descriptors, only: validate_cutoff_parameters
     use accelnet_descriptor_models, only: add_behler
@@ -33,11 +35,12 @@ module n2p2_network
         logical :: normalize_nodes = .false.
         real(real64) :: scale_min = 0.0_real64, scale_max = 1.0_real64
         real(real64) :: mean_energy = 0.0_real64, conv_energy = 1.0_real64
-        logical :: has_mean_energy = .false., has_conv_energy = .false.
+        real(real64) :: conv_length = 1.0_real64
+        logical :: has_mean_energy = .false., has_conv_energy = .false., has_conv_length = .false.
         real(real64), allocatable :: atomic_references(:)
     end type n2p2_settings
 
-    public :: load_n2p2_model, atomic_number
+    public :: load_n2p2_model, load_n2p2_setups, atomic_number
 
 contains
 
@@ -52,8 +55,7 @@ contains
 
         input_file = join_path(directory, "input.nn")
         scaling_file = join_path(directory, "scaling.data")
-        call read_settings(trim(input_file), settings)
-        call validate_settings(settings)
+        call read_validated_settings(trim(input_file), settings)
         species_names = settings%species
         allocate(networks(size(species_names)), setups(size(species_names)))
         do species = 1, size(species_names)
@@ -63,6 +65,31 @@ contains
             call build_setup(settings, species, setups(species))
         end do
     end subroutine load_n2p2_model
+
+    subroutine load_n2p2_setups(directory, setups, species_names)
+        character(len=*), intent(in) :: directory
+        type(descriptor_setup), allocatable, intent(out) :: setups(:)
+        character(len=16), allocatable, intent(out) :: species_names(:)
+        type(n2p2_settings) :: settings
+        character(len=LINE_LENGTH) :: input_file
+        integer :: species
+
+        input_file = join_path(directory, "input.nn")
+        call read_validated_settings(trim(input_file), settings)
+        species_names = settings%species
+        allocate(setups(size(species_names)))
+        do species = 1, size(species_names)
+            call sort_functions(settings%functions(species)%values)
+            call build_setup(settings, species, setups(species))
+        end do
+    end subroutine load_n2p2_setups
+
+    subroutine read_validated_settings(filename, settings)
+        character(len=*), intent(in) :: filename
+        type(n2p2_settings), intent(out) :: settings
+        call read_settings(filename, settings)
+        call validate_settings(settings)
+    end subroutine read_validated_settings
 
     subroutine read_settings(filename, settings)
         character(len=*), intent(in) :: filename
@@ -93,7 +120,9 @@ contains
                 if (ios /= 0) error stop "invalid n2p2 elements"
                 call sort_species_by_atomic_number(settings%species)
             case("nnp_type")
-                if (trim(adjustl(rest)) /= "2G" .and. trim(adjustl(rest)) /= "2g") &
+                if (trim(lowercase(adjustl(rest))) /= "2g" .and. &
+                    trim(lowercase(adjustl(rest))) /= "2g-hdnnp" .and. &
+                    trim(adjustl(rest)) /= "2") &
                     error stop "AccelNetPredictor supports only n2p2 2G models"
             case("cutoff_type")
                 read(rest, *, iostat=ios) settings%cutoff_type, settings%cutoff_alpha
@@ -136,6 +165,10 @@ contains
                 read(rest, *, iostat=ios) settings%conv_energy
                 if (ios /= 0) error stop "invalid n2p2 conv_energy"
                 settings%has_conv_energy = .true.
+            case("conv_length")
+                read(rest, *, iostat=ios) settings%conv_length
+                if (ios /= 0) error stop "invalid n2p2 conv_length"
+                settings%has_conv_length = .true.
             case("atom_energy")
                 if (.not. allocated(settings%species)) error stop "n2p2 atom_energy precedes elements"
                 read(rest, *, iostat=ios) central, reference
@@ -194,9 +227,11 @@ contains
         if (settings%normalize_nodes) error stop "n2p2 normalize_nodes is not supported"
         if (settings%sigma_scale .and. (settings%scale .or. settings%center)) &
             error stop "invalid n2p2 symmetry-function scaling combination"
-        if (settings%has_mean_energy .neqv. settings%has_conv_energy) &
-            error stop "n2p2 normalization requires both mean_energy and conv_energy"
+        if ((settings%has_mean_energy .or. settings%has_conv_energy .or. settings%has_conv_length) .and. &
+            .not. (settings%has_mean_energy .and. settings%has_conv_energy .and. settings%has_conv_length)) &
+            error stop "n2p2 normalization requires mean_energy, conv_energy, and conv_length"
         if (settings%conv_energy == 0.0_real64) error stop "n2p2 conv_energy must be nonzero"
+        if (settings%conv_length <= 0.0_real64) error stop "n2p2 conv_length must be positive"
         do species = 1, size(settings%species)
             if (.not. allocated(settings%functions(species)%values)) &
                 error stop "n2p2 model has no symmetry functions for one or more species"
@@ -252,7 +287,7 @@ contains
         integer :: i, n
         type(symmetry_function) :: sf
         n = size(settings%functions(species)%values)
-        allocate(network%descriptor_kinds(n), network%descriptor_parameters(6, n), &
+        allocate(network%descriptor_kinds(n), network%descriptor_parameters(7, n), &
                  network%descriptor_environments(2, n))
         network%descriptor_parameters = 0.0_real64
         network%descriptor_cutoff_type = settings%cutoff_type
@@ -275,6 +310,7 @@ contains
             end select
             network%descriptor_parameters(5, i) = real(settings%cutoff_type, real64)
             network%descriptor_parameters(6, i) = settings%cutoff_alpha
+            if (sf%kind == 3 .or. sf%kind == 9) network%descriptor_parameters(7, i) = sf%shift
         end do
     end subroutine set_descriptor_metadata
 
@@ -420,16 +456,16 @@ contains
     integer function activation_code(name) result(code)
         character(len=1), intent(in) :: name
         select case(name)
-        case("l"); code = 0
-        case("t"); code = 1
-        case("s"); code = 2
-        case("p"); code = 3
-        case("r"); code = 5
-        case("g"); code = 6
-        case("c"); code = 7
-        case("S"); code = 8
-        case("e"); code = 9
-        case("h"); code = 10
+        case("l"); code = ACTIVATION_LINEAR
+        case("t"); code = ACTIVATION_TANH
+        case("s"); code = ACTIVATION_LOGISTIC
+        case("p"); code = ACTIVATION_SOFTPLUS
+        case("r"); code = ACTIVATION_RELU
+        case("g"); code = ACTIVATION_GAUSSIAN
+        case("c"); code = ACTIVATION_COSINE
+        case("S"); code = ACTIVATION_REVERSE_LOGISTIC
+        case("e"); code = ACTIVATION_EXPONENTIAL
+        case("h"); code = ACTIVATION_HARMONIC
         case default; error stop "unsupported n2p2 activation function"
         end select
     end function activation_code
@@ -551,5 +587,16 @@ contains
             work = adjustl(work(position + 1:))
         end do
     end subroutine parse_character_list
+
+    pure function lowercase(input) result(output)
+        character(len=*), intent(in) :: input
+        character(len=len(input)) :: output
+        integer :: i, code
+        output = input
+        do i = 1, len(input)
+            code = iachar(input(i:i))
+            if (code >= iachar("A") .and. code <= iachar("Z")) output(i:i) = achar(code + 32)
+        end do
+    end function lowercase
 
 end module n2p2_network

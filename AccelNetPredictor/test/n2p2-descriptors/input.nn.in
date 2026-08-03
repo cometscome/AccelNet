@@ -1,0 +1,28 @@
+# n2p2 2G descriptor integration fixture.
+number_of_elements 2
+elements H O
+cutoff_type @N2P2_CUTOFF_TYPE@ 0.2
+global_hidden_layers_short 1
+global_nodes_short 2
+global_activation_short t l
+random_seed 12345
+
+# Radial G2, angular-narrow G4 (n2p2 type 3), and angular-wide G5
+# (n2p2 type 9). Each central element deliberately has the same count.
+symfunction_short H 2 H 0.150 0.000 4.800
+symfunction_short H 2 O 0.400 0.700 4.200
+symfunction_short H 3 H H 0.020  1.0 1.0 4.800 0.000
+symfunction_short H 3 H O 0.040 -1.0 2.0 4.500 0.300
+symfunction_short H 3 O O 0.080  1.0 4.0 4.000
+symfunction_short H 9 H H 0.025 -1.0 1.0 4.700 0.000
+symfunction_short H 9 H O 0.055  1.0 2.0 4.400 0.250
+symfunction_short H 9 O O 0.090 -1.0 3.0 4.100
+
+symfunction_short O 2 H 0.230 0.150 4.600
+symfunction_short O 2 O 0.370 0.850 4.300
+symfunction_short O 3 H H 0.030 -1.0 2.0 4.700 0.100
+symfunction_short O 3 H O 0.060  1.0 3.0 4.400
+symfunction_short O 3 O O 0.085 -1.0 1.0 4.100 0.350
+symfunction_short O 9 H H 0.035  1.0 4.0 4.600
+symfunction_short O 9 H O 0.065 -1.0 2.0 4.300 0.200
+symfunction_short O 9 O O 0.095  1.0 1.0 4.000 0.400

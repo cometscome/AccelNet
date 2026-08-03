@@ -3,6 +3,10 @@
 AccelNet is a single-release Fortran monorepo containing the descriptor,
 prediction, and model-conversion components.
 
+The supported and unsupported parts of ænet 2.0.4 and n2p2 v2.3.0 model
+loading, inference, and conversion are documented in
+[`docs/model-compatibility.md`](docs/model-compatibility.md).
+
 ## Build everything
 
 ```sh

@@ -1,0 +1,22 @@
+DESCR
+ Behler G1, G2, and G3 for every environment species
+END DESCR
+
+ATOM Ti
+
+ENV 2
+Ti
+O
+
+RMIN 0.35
+
+FUNCTIONS type=Behler2011
+8
+G=3 type2=O  Rc=4.8 kappa=1.35
+G=2 type2=Ti Rc=4.5 Rs=0.25 eta=0.42
+G=1 type2=O  Rc=4.9
+G=3 type2=Ti Rc=4.6 kappa=0.85
+G=2 type2=O  Rc=4.7 Rs=0.00 eta=0.18
+G=1 type2=Ti Rc=5.0
+G=2 type2=Ti Rc=4.9 Rs=0.70 eta=0.75
+G=2 type2=O  Rc=4.4 Rs=0.45 eta=1.10

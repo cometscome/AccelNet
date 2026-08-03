@@ -1,0 +1,14 @@
+DESCR
+ Chebyshev reference covering radial, angular, and chemical channels
+END DESCR
+
+ATOM Ti
+
+ENV 2
+Ti
+O
+
+RMIN 0.35
+
+BASIS type=Chebyshev
+radial_Rc=5.4 radial_N=5 angular_Rc=4.6 angular_N=3

@@ -48,8 +48,12 @@ julia --project=. bin/accelnet-model-converter.jl accelnet-to-n2p2 \
 活性化関数、energy normalization、atomic reference energiesに対応します。
 n2p2とænetの対称関数順序に合わせ、第一層の重みとscaling配列も並べ替えます。
 
-Chebyshev, LJ, 4G/charge, weighted/compact or shifted-angular symmetry
-functions, `normalize_nodes`, and per-element n2p2
+Fortran版はtype 3/9のangular radial shiftをAccelNet拡張メタデータの
+7行目に保存して往復できます。Julia版は現時点では非ゼロangular shiftを
+明示的に拒否します。
+
+Chebyshev, LJ, 4G/charge, weighted/compact symmetry functions,
+`normalize_nodes`, and per-element n2p2
 topologies are rejected rather than approximated.
 
 Run tests:

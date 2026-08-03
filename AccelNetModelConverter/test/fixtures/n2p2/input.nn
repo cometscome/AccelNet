@@ -5,8 +5,12 @@ atom_energy O -1.0
 cutoff_type 9 0.3
 global_hidden_layers_short 0
 global_nodes_short
-global_activation_short l
+global_activation_short p
 symfunction_short Ti 2 O 0.20 0.0 6.0
 symfunction_short Ti 2 Ti 0.10 0.0 6.0
+symfunction_short Ti 3 Ti O 0.05 1.0 2.0 6.0 0.4
+symfunction_short Ti 9 O O 0.07 -1.0 3.0 6.0 0.2
 symfunction_short O 2 O 0.20 0.0 6.0
 symfunction_short O 2 Ti 0.10 0.0 6.0
+symfunction_short O 3 O Ti 0.05 1.0 2.0 6.0 0.4
+symfunction_short O 9 Ti Ti 0.07 -1.0 3.0 6.0 0.2

@@ -20,7 +20,7 @@ program test_descriptor
     do cutoff_kind = CUTOFF_HARD, CUTOFF_FRACTIONAL
         call assert_close("cutoff value at Rc", &
             cutoff_value(5.0_real64, 5.0_real64, cutoff_kind, 0.2_real64), &
-            merge(1.0_real64, 0.0_real64, cutoff_kind == CUTOFF_HARD), 0.0_real64)
+            0.0_real64, 0.0_real64)
         call assert_close("all cutoff derivatives vanish at Rc", &
             cutoff_derivative(5.0_real64, 5.0_real64, cutoff_kind, 0.2_real64), 0.0_real64, 0.0_real64)
         cutoff_plus = cutoff_value(2.2_real64 + h, 5.0_real64, cutoff_kind, 0.2_real64)

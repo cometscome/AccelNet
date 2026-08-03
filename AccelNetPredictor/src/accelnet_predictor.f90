@@ -251,6 +251,7 @@ contains
         type(atomic_network), intent(in) :: network
         integer :: descriptor, kind, first_species, second_species, added
         integer :: low_species, high_species
+        real(real64) :: angular_shift
 
         ! aenet's symmfunc module stores Behler functions by environment
         ! species and function kind, independently of their order in the
@@ -297,17 +298,23 @@ contains
                         if (network%descriptor_kinds(descriptor) /= kind .or. &
                             low_species /= first_species .or. high_species /= second_species) cycle
                         if (kind == 4) then
+                            angular_shift = 0.0_real64
+                            if (size(network%descriptor_parameters, 1) >= 7) &
+                                angular_shift = network%descriptor_parameters(7, descriptor)
                             call add_g4(config, first_species, second_species, &
                                 network%descriptor_parameters(1, descriptor), &
                                 network%descriptor_parameters(2, descriptor), &
                                 network%descriptor_parameters(3, descriptor), &
-                                network%descriptor_parameters(4, descriptor))
+                                network%descriptor_parameters(4, descriptor), angular_shift)
                         else
+                            angular_shift = 0.0_real64
+                            if (size(network%descriptor_parameters, 1) >= 7) &
+                                angular_shift = network%descriptor_parameters(7, descriptor)
                             call add_g5(config, first_species, second_species, &
                                 network%descriptor_parameters(1, descriptor), &
                                 network%descriptor_parameters(2, descriptor), &
                                 network%descriptor_parameters(3, descriptor), &
-                                network%descriptor_parameters(4, descriptor))
+                                network%descriptor_parameters(4, descriptor), angular_shift)
                         end if
                         added = added + 1
                     end do

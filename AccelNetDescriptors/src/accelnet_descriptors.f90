@@ -240,7 +240,7 @@ contains
         kind = CUTOFF_COS
         if (present(cutoff_type)) kind = cutoff_type
         if (kind == CUTOFF_HARD) then
-            value = merge(1.0_real64, 0.0_real64, distance <= rc)
+            value = merge(1.0_real64, 0.0_real64, distance < rc)
             return
         end if
         if (distance >= rc) then

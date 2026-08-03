@@ -32,11 +32,37 @@ libraries. The tests cover two distinct reproducibility levels:
 The reference build never copies generated files or module files into the
 original AccelNet directory.
 
+When `ACCELNET_DESCRIPTORS_BUILD_AENET_REFERENCE=ON`, three additional
+integration tests run the unmodified aenet `generate.x`, extract its raw
+training-set descriptors with `trnset2ASCII.x --raw`, run
+`accelnet-setup-descriptor` from the same setup files and XSF structure, and
+compare every atom and coefficient. The fixtures cover:
+
+- Chebyshev radial, angular, and chemical channels;
+- Behler G1, G2, and G3 for every environment species;
+- Behler G4 and G5 for every unordered two-species environment pair, both
+  `lambda` signs, and multiple `zeta`, `eta`, and cutoff values.
+
+The reference executables default to the sibling aenet
+`build-benchmark` tree. Override `AENET_GENERATE_EXECUTABLE` and
+`AENET_TRNSET2ASCII_EXECUTABLE` when aenet is built elsewhere. If either tool
+is absent, only these optional external-reference tests are omitted.
+
+With `ACCELNET_DESCRIPTORS_BUILD_N2P2_REFERENCE=ON`, AccelNet cutoff types
+0--8 are compared directly against n2p2's `CutoffFunction` implementation at
+multiple distances, including the inner cutoff and `r=Rc`, for `alpha=0` and
+nonzero `alpha`. Both values and analytical derivatives are checked. Type 9
+is an AccelNet extension and is checked separately against its defining
+fractional-cutoff formula. The source defaults to the sibling `n2p2-master`
+tree and can be overridden with `N2P2_SOURCE_DIR`.
+
 ## Build and test
 
 ```sh
 cmake -S . -B build \
-  -DACCELNET_ORIGINAL_DIR=/path/to/AccelNet-a76ec3a83c8b0246328e9cca4817cc0afc84c925
+  -DACCELNET_ORIGINAL_DIR=/path/to/AccelNet-a76ec3a83c8b0246328e9cca4817cc0afc84c925 \
+  -DAENET_GENERATE_EXECUTABLE=/path/to/aenet/generate.x_serial \
+  -DAENET_TRNSET2ASCII_EXECUTABLE=/path/to/aenet/trnset2ASCII.x
 cmake --build build -j
 ctest --test-dir build --output-on-failure
 ```

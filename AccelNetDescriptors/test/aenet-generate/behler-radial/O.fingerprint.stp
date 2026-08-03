@@ -1,0 +1,22 @@
+DESCR
+ Behler radial functions in a different input order
+END DESCR
+
+ATOM O
+
+ENV 2
+Ti
+O
+
+RMIN 0.35
+
+FUNCTIONS type=Behler2011
+8
+G=2 type2=O  Rc=4.6 Rs=0.30 eta=0.55
+G=1 type2=Ti Rc=4.8
+G=3 type2=Ti Rc=4.7 kappa=1.10
+G=2 type2=Ti Rc=4.4 Rs=0.00 eta=0.24
+G=3 type2=O  Rc=4.5 kappa=0.65
+G=1 type2=O  Rc=5.0
+G=2 type2=O  Rc=4.9 Rs=0.80 eta=0.90
+G=2 type2=Ti Rc=5.0 Rs=0.50 eta=1.25
