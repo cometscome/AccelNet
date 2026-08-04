@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AccelNet VERSION 0.1.0 LANGUAGES Fortran C)
+project(AccelNet VERSION 1.0.0 LANGUAGES Fortran C)
 
 set(CMAKE_Fortran_STANDARD 2008)
 set(CMAKE_Fortran_STANDARD_REQUIRED ON)

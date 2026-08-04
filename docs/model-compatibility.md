@@ -1,7 +1,7 @@
 # AccelNet Compatibility with ænet and n2p2 Models
 
 Assessment date: 2026-08-04<br>
-AccelNet version assessed: `0.1.0`, commit `02e7cb9b65bb945454a566b70a059a7e92aeac51`<br>
+AccelNet version assessed: `1.0.0`<br>
 Reference implementations: ænet `2.0.4`, n2p2 `v2.3.0`
 
 ## 1. Summary
