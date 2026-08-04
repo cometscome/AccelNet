@@ -134,7 +134,10 @@ AccelNetの `accelnet-predict predict.in` は、次のセクションだけを�
   - `%03d` は原子番号。例: Hは `weights.001.data`、Oは `weights.008.data`
 - scalingを有効にした場合は `scaling.data`
 
-`input.data`は読まない。構造入力はAccelNet側のXSF、またはFortran APIで構築した `atomic_structure` を使う。
+構造入力にはAccelNet側のXSF、Fortran APIで構築した `atomic_structure`、または
+`accelnet-predict --n2p2-data [MODEL_DIR] input.data`を使える。`input.data`では
+複数の`begin`/`end`構造、latticeなしの分子、3本の`lattice`を持つ周期構造を読む。
+参照energy、charge、格納済みforce、commentは推論入力として使用しない。
 
 元素記号はHからOgまでの118元素を、正しい大文字小文字で指定する必要がある。内部では原子番号順に並べ替える。
 

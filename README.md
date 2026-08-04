@@ -20,7 +20,31 @@ training and data-preparation tools provided by ænet, ænet-PyTorch, or n2p2.
 - Run supported ænet and n2p2 models from LAMMPS with
   `pair_style accelnet`.
 
-The complete model-format and descriptor compatibility tables are in
+## Compatibility overview
+
+The following table summarizes compatibility with ænet 2.0.4 and n2p2 2.3.0.
+"Conditional" means that only the model families and settings listed in the
+Notes column are accepted; unsupported settings are rejected with an error.
+
+| Feature | ænet / AccelNet | n2p2 | Notes |
+|---|---|---|---|
+| Model input | Supported | Conditional | ænet/AccelNet ASCII and compatible native binary; n2p2 short-range 2G model directories |
+| Descriptors | Supported | Conditional | ænet Chebyshev and Behler G1--G5, plus AccelNet LJ; n2p2 SF types 2, 3, and 9 |
+| Activation functions | Supported | Supported | ænet native codes 0--4; all n2p2 2.3.0 activation characters |
+| Cutoff functions | Supported | Supported | Standard ænet metadata; n2p2 cutoff types 0--8 and AccelNet fractional extension type 9 |
+| Descriptor scaling | Supported | Supported | Affine ænet scaling; n2p2 scale, center, scale+center, and sigma modes |
+| Energy normalization and atomic reference energies | Supported | Supported | Applied consistently to energies and analytic forces |
+| Energy and force inference | Supported | Supported | XSF files and in-memory structures |
+| Structure input | XSF, `predict.in` | XSF, `input.data` | n2p2 `input.data` supports multiple molecular or periodic structures |
+| Fortran and C atomic API | Supported | Supported | n2p2 directories can be loaded directly without conversion |
+| LAMMPS `pair_style accelnet` | Supported | Supported | n2p2 directories can be loaded directly with an explicit atom-type mapping |
+| Model conversion | Conditional | Conditional | Only features representable by both formats are converted |
+| Potential training | Not supported | Not supported | Use ænet, ænet-PyTorch, or n2p2 for training |
+| 4G/Q, charge, weighted, or compact models | Not applicable | Not supported | n2p2 4G/Q and SF types 12, 13, and 20--25 are rejected |
+| Per-element topology and `normalize_nodes` | Not applicable | Not supported | Only a common global short-range topology is accepted |
+
+The exact accepted syntax, formulas, ordering conversions, and tested cases are
+documented in
 [`docs/model-compatibility.md`](docs/model-compatibility.md).
 
 ## Requirements
