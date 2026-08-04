@@ -46,7 +46,7 @@ Notes column are accepted; unsupported settings are rejected with an error.
 | Model conversion | Conditional | Conditional | Only features representable by both formats are converted |
 | Potential training | Not supported | Not supported | Use ænet, ænet-PyTorch, or n2p2 for training |
 | 4G/Q, charge, weighted, or compact models | Not applicable | Not supported | n2p2 4G/Q and SF types 12, 13, and 20--25 are rejected |
-| Per-element topology and `normalize_nodes` | Not applicable | Not supported | Only a common global short-range topology is accepted |
+| Per-element topology and `normalize_nodes` | Not applicable | Supported | n2p2 global defaults and per-element overrides are accepted; node normalization is folded into weights and biases |
 
 The exact accepted syntax, formulas, ordering conversions, and tested cases are
 documented in
@@ -153,6 +153,13 @@ AccelNet reads coordinates, element names, and zero or three lattice vectors.
 Reference energies, stored forces, charges, and comments in `input.data` are
 not used for inference.
 
+The n2p2 loader accepts global network defaults together with
+`element_hidden_layers_short`, `element_nodes_short`, and
+`element_activation_short` overrides. It also supports `normalize_nodes`.
+Normalization is folded into each layer's weights and biases during model
+loading. The same support is available through the Fortran/C atomic APIs and
+LAMMPS direct directory loading.
+
 ## Install and link
 
 Install the libraries, module files, C header, executables, and CMake package
@@ -241,7 +248,6 @@ The following are not currently supported:
 - training of neural-network potentials;
 - n2p2 4G/charge models;
 - weighted and compact n2p2 symmetry functions;
-- `normalize_nodes` and per-element n2p2 network topologies;
 - direct input of general ASE formats or ænet training-set files.
 
 Unsupported model settings are rejected rather than silently approximated.
@@ -265,7 +271,9 @@ build/bin/accelnet-model-converter-fortran accelnet-to-n2p2 \
 
 Conversion is limited to model features representable by both formats. See
 [`AccelNetModelConverter/README.md`](AccelNetModelConverter/README.md) for the
-Fortran and Julia interfaces and their current restrictions.
+Fortran and Julia interfaces and their current restrictions. The Fortran
+converter preserves per-element topology in both directions and absorbs
+`normalize_nodes` exactly when importing n2p2 models.
 
 ## Citation
 

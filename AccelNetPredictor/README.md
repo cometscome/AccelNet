@@ -32,9 +32,9 @@ all n2p2 `cutoff_type` values 0 through 8 and AccelNet's fractional extension
 as type 9, with `0 <= cutoff_alpha < 1` (`cutoff_alpha > 0` for type 9),
 all n2p2 activation functions,
 the standard scaling modes, data-set energy normalization, and atomic energy
-offsets. Per-element network topologies, `normalize_nodes`, weighted/compact
-symmetry functions, and 4G/charge models are rejected with
-an error rather than evaluated with different semantics. XSF coordinates and
+offsets, per-element network topologies, and `normalize_nodes`. Weighted/compact
+symmetry functions and 4G/charge models are rejected with an error rather than
+evaluated with different semantics. XSF coordinates and
 the parameters in `input.nn` must use the same physical length unit; returned
 energies and forces use the model's physical energy and length units.
 The loader accepts `nnp_type` values `2G`, `2G-HDNNP`, and numeric `2`.
@@ -42,9 +42,31 @@ Normalized models must provide `mean_energy`, `conv_energy`, and `conv_length`
 together. Type-3/type-9 angular radial shifts are retained in row 7 of
 AccelNet's extended descriptor metadata.
 
+For example, global topology defaults can be overridden for one element:
+
+```text
+global_hidden_layers_short 2
+global_nodes_short 20 20
+global_activation_short t t l
+
+element_hidden_layers_short O 2
+element_nodes_short O 30 20
+element_activation_short O p t l
+
+normalize_nodes
+```
+
+`normalize_nodes` divides the weighted sum and bias feeding a layer by the
+number of nodes in the preceding layer. The loader applies the equivalent
+transformation to that layer's weights and biases when the model is loaded.
+
 The integration tests also run n2p2 v2.3.0 `nnp-scaling` and compare its raw
 symmetry-function output with AccelNet atom by atom. They cover types 2, 3,
-and 9 for both elements and every n2p2 cutoff type from 0 through 8.
+and 9 for both elements and every n2p2 cutoff type from 0 through 8. A separate
+reference fixture checks per-element widths and activation functions together
+with `normalize_nodes`, comparing the energy and every force component with
+upstream n2p2 v2.3.0 values. Another fixture covers an element-specific hidden
+layer count.
 
 The aenet-style atomic API can load the same directory without conversion:
 

@@ -118,6 +118,14 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
     target_link_libraries(test_n2p2_network PRIVATE AccelNetPredictor)
     add_test(NAME n2p2_model_loader COMMAND test_n2p2_network
         "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2")
+    add_executable(test_n2p2_topology test/test_n2p2_topology.f90)
+    target_link_libraries(test_n2p2_topology PRIVATE AccelNetPredictor)
+    add_test(NAME n2p2_per_element_topology_and_normalize_nodes
+        COMMAND test_n2p2_topology
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2-per-element"
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2-per-element-depth")
+    set_tests_properties(n2p2_per_element_topology_and_normalize_nodes
+        PROPERTIES LABELS "integration;n2p2-reference")
     add_executable(test_n2p2_atomic_api test/test_n2p2_atomic_api.f90)
     target_link_libraries(test_n2p2_atomic_api PRIVATE AccelNetPredictor)
     add_test(NAME n2p2_atomic_api_and_input_data COMMAND test_n2p2_atomic_api

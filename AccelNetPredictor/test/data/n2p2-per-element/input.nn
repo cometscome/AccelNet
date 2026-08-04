@@ -1,0 +1,24 @@
+number_of_elements 2
+elements H O
+nnp_type 2G-HDNNP
+atom_energy H 0.0
+atom_energy O 0.0
+mean_energy 0.0
+conv_energy 1.0
+conv_length 1.0
+cutoff_type 1 0.0
+
+global_hidden_layers_short 2
+global_nodes_short 2 2
+global_activation_short t t l
+
+element_hidden_layers_short O 2
+element_nodes_short O 3 2
+element_activation_short O p t l
+
+normalize_nodes
+
+symfunction_short H 2 H 0.4 0.0 4.0
+symfunction_short H 2 O 0.7 0.2 4.0
+symfunction_short O 2 H 0.3 0.1 4.0
+symfunction_short O 2 O 0.5 0.0 4.0

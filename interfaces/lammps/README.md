@@ -92,6 +92,10 @@ All MPI ranks read the same `input.nn`, `weights.%03d.data`, and optional
 with the n2p2 form. The 29Aug2024 interface additionally accepts the trailing
 `g5 MODE` option after the element list.
 
+No additional pair-style option is needed for n2p2 per-element network
+topologies or `normalize_nodes`; both are handled while the shared AccelNet
+model loader reads `input.nn`.
+
 The 4Feb2020 interface can force the Chebyshev angular algorithm by placing a
 mode before the potential files. Omitting it selects `auto`.
 

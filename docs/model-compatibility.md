@@ -14,7 +14,7 @@ within the following limits.
 | ænet/AccelNet ASCII NN | Supported | Supported | Supported | Chebyshev, Behler2011, and the AccelNet LJ extension; ænet 2.0.4 activation codes 0--4 |
 | AccelNet native binary NN | Supported | Supported | Supported | Fortran sequential-unformatted format; the reader must use a compatible record representation |
 | ænet NN + explicit `.fingerprint.stp` | ASCII only | Supported | Supported | The number of NN inputs must match the number of setup descriptors |
-| n2p2 2G-HDNNP directory | Conditional | Supported | Supported | SF types 2/3/9, a common topology, and no `normalize_nodes` |
+| n2p2 2G-HDNNP directory | Conditional | Supported | Supported | SF types 2/3/9, global or per-element topology, with optional `normalize_nodes` |
 | n2p2 4G-HDNNP / Q-HDNNP | Not supported | Not supported | Not supported | Charge NNs, charge equilibration, and electrostatics are not implemented |
 | n2p2 weighted / compact SFs | Not supported | Not supported | Not supported | Types 12/13/20--25 are not implemented |
 
@@ -300,21 +300,39 @@ function applied to each distance.
 
 ### 4.5 Network topology and activation functions
 
-Only a global short-range topology is supported:
+The following short-range topology settings are supported:
 
 - `global_hidden_layers_short`
 - `global_nodes_short`
 - `global_activation_short`
-- Zero hidden layers are allowed.
-- Parser storage is available for up to 64 layers.
-- The output is one atomic-energy node.
-
-The following settings are not supported and produce an explicit error:
-
 - `element_hidden_layers_short`
 - `element_nodes_short`
 - `element_activation_short`
 - `normalize_nodes`
+
+The three `element_*` settings override the global hidden-layer count, node
+counts, and activation functions for the named element. Zero hidden layers are
+allowed, parser storage is available for up to 64 layers, and every network has
+one atomic-energy output node.
+
+With `normalize_nodes`, n2p2 evaluates each node as
+
+$$
+y_i^{(k)} = f_k\!\left(
+\frac{b_i^{(k)} + \sum_{j=1}^{n_{k-1}}w_{ji}^{(k)}y_j^{(k-1)}}{n_{k-1}}
+\right).
+$$
+
+AccelNet preserves these semantics by dividing every weight and bias feeding
+layer $k$ by $n_{k-1}$ while loading the model. Its ordinary propagation and
+analytical differentiation then produce the same energies and forces.
+
+AccelNet also accepts an element-specific hidden-layer count. In the examined
+n2p2 v2.3.0 source, a setup-loop boundary leaves one hidden-layer node count
+unset when an element's depth differs from the global depth. The numerical
+upstream comparison therefore exercises different per-element widths and
+activations at a common depth; a separate AccelNet fixture covers the intended
+hidden-layer-count override syntax.
 
 All n2p2 v2.3.0 activation characters are implemented.
 
@@ -439,7 +457,6 @@ Conversion is possible only when all the following conditions hold:
 - `descriptor_name = Behler2011`.
 - The descriptors contain only G2, G4, and G5:
   - Internal kinds 2, 4, and 5, corresponding to n2p2 types 2, 3, and 9.
-- Every element uses the same layer architecture and activation functions.
 - Species, atomic references, and energy scale/shift are consistent across all
   NNs.
 - Every element uses the same cutoff type and alpha.
@@ -450,13 +467,16 @@ The following features cannot be converted:
 - Chebyshev.
 - LJ.
 - Behler G1 and G3.
-- Per-element topologies.
 - 4G/Q and charge/electrostatic models.
 - Weighted and compact symmetry functions.
 
 The converter writes `input.nn`, `scaling.data`, and one
 `weights.%03d.data` file per element. Descriptor order, scaling data, and
-first-layer weights are permuted into n2p2 order.
+first-layer weights are permuted into n2p2 order. When element networks use
+different architectures or activation functions, it writes global topology
+defaults plus the corresponding `element_*_short` overrides. A model with an
+element-specific depth may encounter the n2p2 v2.3.0 setup issue described in
+Section 4.5 when loaded by that upstream version.
 
 Upstream n2p2 has no activation equivalent to ænet `mtanh` or `twist`, so a
 native ænet model containing code 3 or 4 is explicitly rejected during n2p2
@@ -466,12 +486,13 @@ n2p2.
 
 ## 7. Validated Coverage
 
-As of 2026-08-04, all 38 CTest cases in `build-safeopt` passed. The principal
+As of 2026-08-04, all 40 CTest cases in `build-safeopt` passed. The principal
 compatibility tests cover the following behavior.
 
 | Test | Coverage |
 |---|---|
 | `n2p2_model_loader` | Official `nnp_type 2G-HDNNP`, all three normalization entries, single-element H, type 2, cutoff type 7 + alpha, linear activation, atomic offset, and energy/forces |
+| `n2p2_per_element_topology_and_normalize_nodes` | Per-element node counts and activations plus `normalize_nodes`, with energy and every force component checked against upstream n2p2 v2.3.0 reference values; a separate fixture covers a hidden-layer-count override |
 | `n2p2_atomic_api_and_input_data` | Two-stage and one-call n2p2 loading through the Fortran atomic API; multiple `input.data` structures; molecular and periodic cells; agreement with the structure API |
 | `n2p2_input_data_cli` | Energy/force output for multiple structures through `--n2p2-data` |
 | `network_activation_compatibility` | Values and input derivatives for ænet `mtanh`/`twist` and n2p2 softplus |
@@ -481,6 +502,7 @@ compatibility tests cover the following behavior.
 | `predictor_original_input` | The `predict.in` path |
 | `predictor_chebyshev_version*` | Chebyshev versions 0/1/10 |
 | `fortran_converter_roundtrip` | Ti/O, types 2/3/9, angular shift, cutoff type 9, softplus, and a no-scaling round trip |
+| `fortran_converter_per_element_roundtrip` | n2p2 → AccelNet → n2p2 → AccelNet round trip preserving per-element topology and the semantics of imported `normalize_nodes` |
 | `descriptor_aenet_generate_chebyshev_match` | Atom-by-atom, coefficient-by-coefficient comparison of all radial, angular, and chemical Chebyshev channels between upstream `generate.x` and AccelNet |
 | `descriptor_aenet_generate_behler_radial_match` | Behler G1/G2/G3 for every environment species and multiple parameter combinations against upstream ænet |
 | `descriptor_aenet_generate_behler_angular_match` | Behler G4/G5 for every species pair, `lambda=+1/-1`, and multiple `zeta`/`eta`/cutoff values against upstream ænet |
@@ -543,8 +565,8 @@ following conditions hold:
 - It is short-range 2G.
 - It has no `nnp_type`, or uses `2G`, `2G-HDNNP`, or `2`.
 - It uses only SF types 2, 3, and 9.
-- It uses only a global topology.
-- It does not enable `normalize_nodes`.
+- It may use global topology defaults, per-element topology overrides, and
+  `normalize_nodes`.
 - It uses cutoff type 0--8.
 - Type 3/9 with an angular shift is supported for direct inference and Fortran
   conversion.

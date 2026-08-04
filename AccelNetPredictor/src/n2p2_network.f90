@@ -22,13 +22,21 @@ module n2p2_network
         type(symmetry_function), allocatable :: values(:)
     end type symmetry_function_list
 
-    type :: n2p2_settings
-        character(len=16), allocatable :: species(:)
-        type(symmetry_function_list), allocatable :: functions(:)
+    type :: network_topology
         integer :: hidden_layers = -1
         integer :: hidden_nodes(MAX_LAYERS) = 0
         character(len=1) :: activations(MAX_LAYERS) = ""
         integer :: node_count = 0, activation_count = 0
+        logical :: hidden_layers_set = .false.
+        logical :: nodes_set = .false.
+        logical :: activations_set = .false.
+    end type network_topology
+
+    type :: n2p2_settings
+        character(len=16), allocatable :: species(:)
+        type(symmetry_function_list), allocatable :: functions(:)
+        type(network_topology) :: global_topology
+        type(network_topology), allocatable :: topologies(:)
         integer :: cutoff_type = -1
         real(real64) :: cutoff_alpha = 0.0_real64
         logical :: scale = .false., center = .false., sigma_scale = .false.
@@ -88,13 +96,14 @@ contains
         character(len=*), intent(in) :: filename
         type(n2p2_settings), intent(out) :: settings
         call read_settings(filename, settings)
+        call resolve_topologies(settings)
         call validate_settings(settings)
     end subroutine read_validated_settings
 
     subroutine read_settings(filename, settings)
         character(len=*), intent(in) :: filename
         type(n2p2_settings), intent(out) :: settings
-        character(len=LINE_LENGTH) :: line, key, rest
+        character(len=LINE_LENGTH) :: line, key, rest, topology_values
         character(len=16) :: central, neighbor1, neighbor2
         type(symmetry_function) :: sf
         integer :: unit, ios, count, central_index
@@ -112,7 +121,8 @@ contains
             case("number_of_elements")
                 read(rest, *, iostat=ios) count
                 if (ios /= 0 .or. count < 1) error stop "invalid n2p2 number_of_elements"
-                allocate(settings%species(count), settings%functions(count), settings%atomic_references(count))
+                allocate(settings%species(count), settings%functions(count), settings%topologies(count), &
+                         settings%atomic_references(count))
                 settings%atomic_references = 0.0_real64
             case("elements")
                 if (.not. allocated(settings%species)) error stop "n2p2 elements must follow number_of_elements"
@@ -135,14 +145,44 @@ contains
                 read(rest, *, iostat=ios) settings%cutoff_alpha
                 if (ios /= 0) error stop "invalid n2p2 cutoff_alpha"
             case("global_hidden_layers_short")
-                read(rest, *, iostat=ios) settings%hidden_layers
+                read(rest, *, iostat=ios) settings%global_topology%hidden_layers
                 if (ios /= 0) error stop "invalid n2p2 global_hidden_layers_short"
+                settings%global_topology%hidden_layers_set = .true.
             case("global_nodes_short")
-                call parse_integer_list(rest, settings%hidden_nodes, settings%node_count)
+                call parse_integer_list(rest, settings%global_topology%hidden_nodes, &
+                    settings%global_topology%node_count)
+                settings%global_topology%nodes_set = .true.
             case("global_activation_short")
-                call parse_character_list(rest, settings%activations, settings%activation_count)
-            case("element_hidden_layers_short", "element_nodes_short", "element_activation_short")
-                error stop "per-element n2p2 network topology is not yet supported"
+                call parse_character_list(rest, settings%global_topology%activations, &
+                    settings%global_topology%activation_count)
+                settings%global_topology%activations_set = .true.
+            case("element_hidden_layers_short")
+                if (.not. allocated(settings%topologies)) &
+                    error stop "n2p2 element topology precedes elements"
+                call split_key(rest, central, topology_values)
+                central_index = species_index(central, settings%species)
+                if (central_index == 0) error stop "unknown species in n2p2 element topology"
+                read(topology_values, *, iostat=ios) settings%topologies(central_index)%hidden_layers
+                if (ios /= 0) error stop "invalid n2p2 element_hidden_layers_short"
+                settings%topologies(central_index)%hidden_layers_set = .true.
+            case("element_nodes_short")
+                if (.not. allocated(settings%topologies)) &
+                    error stop "n2p2 element topology precedes elements"
+                call split_key(rest, central, topology_values)
+                central_index = species_index(central, settings%species)
+                if (central_index == 0) error stop "unknown species in n2p2 element topology"
+                call parse_integer_list(topology_values, settings%topologies(central_index)%hidden_nodes, &
+                    settings%topologies(central_index)%node_count)
+                settings%topologies(central_index)%nodes_set = .true.
+            case("element_activation_short")
+                if (.not. allocated(settings%topologies)) &
+                    error stop "n2p2 element topology precedes elements"
+                call split_key(rest, central, topology_values)
+                central_index = species_index(central, settings%species)
+                if (central_index == 0) error stop "unknown species in n2p2 element topology"
+                call parse_character_list(topology_values, settings%topologies(central_index)%activations, &
+                    settings%topologies(central_index)%activation_count)
+                settings%topologies(central_index)%activations_set = .true.
             case("normalize_nodes")
                 settings%normalize_nodes = .true.
             case("scale_symmetry_functions")
@@ -216,15 +256,36 @@ contains
         close(unit)
     end subroutine read_settings
 
+    subroutine resolve_topologies(settings)
+        type(n2p2_settings), intent(inout) :: settings
+        integer :: species
+
+        if (.not. allocated(settings%topologies)) return
+        do species = 1, size(settings%topologies)
+            if (.not. settings%topologies(species)%hidden_layers_set .and. &
+                settings%global_topology%hidden_layers_set) then
+                settings%topologies(species)%hidden_layers = settings%global_topology%hidden_layers
+                settings%topologies(species)%hidden_layers_set = .true.
+            end if
+            if (.not. settings%topologies(species)%nodes_set .and. settings%global_topology%nodes_set) then
+                settings%topologies(species)%hidden_nodes = settings%global_topology%hidden_nodes
+                settings%topologies(species)%node_count = settings%global_topology%node_count
+                settings%topologies(species)%nodes_set = .true.
+            end if
+            if (.not. settings%topologies(species)%activations_set .and. &
+                settings%global_topology%activations_set) then
+                settings%topologies(species)%activations = settings%global_topology%activations
+                settings%topologies(species)%activation_count = settings%global_topology%activation_count
+                settings%topologies(species)%activations_set = .true.
+            end if
+        end do
+    end subroutine resolve_topologies
+
     subroutine validate_settings(settings)
         type(n2p2_settings), intent(in) :: settings
         integer :: species
         if (.not. allocated(settings%species)) error stop "n2p2 input.nn has no elements"
         call validate_cutoff_parameters(settings%cutoff_type, settings%cutoff_alpha)
-        if (settings%hidden_layers < 0 .or. settings%node_count /= settings%hidden_layers .or. &
-            settings%activation_count /= settings%hidden_layers + 1) &
-            error stop "incomplete or inconsistent n2p2 global network topology"
-        if (settings%normalize_nodes) error stop "n2p2 normalize_nodes is not supported"
         if (settings%sigma_scale .and. (settings%scale .or. settings%center)) &
             error stop "invalid n2p2 symmetry-function scaling combination"
         if ((settings%has_mean_energy .or. settings%has_conv_energy .or. settings%has_conv_length) .and. &
@@ -235,6 +296,13 @@ contains
         do species = 1, size(settings%species)
             if (.not. allocated(settings%functions(species)%values)) &
                 error stop "n2p2 model has no symmetry functions for one or more species"
+            if (.not. settings%topologies(species)%hidden_layers_set .or. &
+                .not. settings%topologies(species)%nodes_set .or. &
+                .not. settings%topologies(species)%activations_set .or. &
+                settings%topologies(species)%hidden_layers < 0 .or. &
+                settings%topologies(species)%node_count /= settings%topologies(species)%hidden_layers .or. &
+                settings%topologies(species)%activation_count /= settings%topologies(species)%hidden_layers + 1) &
+                error stop "incomplete or inconsistent n2p2 network topology"
         end do
     end subroutine validate_settings
 
@@ -244,22 +312,24 @@ contains
         character(len=*), intent(in) :: weight_file, scaling_file
         type(atomic_network), intent(out) :: network
         integer :: layer, nweights, offset, nsf
+        type(network_topology) :: topology
 
         nsf = size(settings%functions(species)%values)
+        topology = settings%topologies(species)
         network%atomtype = settings%species(species)
         network%description = "Imported n2p2 2G-HDNNP model"
         network%descriptor_name = "Behler2011"
         network%minimum_radius = 0.1_real64
         network%maximum_radius = maxval(settings%functions(species)%values%cutoff)
-        network%nlayers = settings%hidden_layers + 2
+        network%nlayers = topology%hidden_layers + 2
         allocate(network%nodes(network%nlayers), network%activation(network%nlayers - 1), &
                  network%weight_offsets(network%nlayers))
         network%nodes(1) = nsf
-        if (settings%hidden_layers > 0) network%nodes(2:network%nlayers - 1) = &
-            settings%hidden_nodes(1:settings%hidden_layers)
+        if (topology%hidden_layers > 0) network%nodes(2:network%nlayers - 1) = &
+            topology%hidden_nodes(1:topology%hidden_layers)
         network%nodes(network%nlayers) = 1
         do layer = 1, network%nlayers - 1
-            network%activation(layer) = activation_code(settings%activations(layer))
+            network%activation(layer) = activation_code(topology%activations(layer))
         end do
         network%maxnodes = maxval(network%nodes)
         offset = 0
@@ -271,6 +341,7 @@ contains
         nweights = offset
         allocate(network%weights(nweights))
         call read_weights(weight_file, network%weights)
+        if (settings%normalize_nodes) call normalize_network_connections(network)
         call set_descriptor_metadata(settings, species, network)
         call read_scaling(scaling_file, settings, species, network%descriptor_shift, network%descriptor_scale)
         network%species_names = settings%species
@@ -279,6 +350,17 @@ contains
         network%energy_scale = settings%conv_energy
         network%energy_shift = settings%mean_energy
     end subroutine build_network
+
+    subroutine normalize_network_connections(network)
+        type(atomic_network), intent(inout) :: network
+        integer :: layer, first, last
+
+        do layer = 1, network%nlayers - 1
+            first = network%weight_offsets(layer) + 1
+            last = network%weight_offsets(layer + 1)
+            network%weights(first:last) = network%weights(first:last)/real(network%nodes(layer), real64)
+        end do
+    end subroutine normalize_network_connections
 
     subroutine set_descriptor_metadata(settings, species, network)
         type(n2p2_settings), intent(in) :: settings

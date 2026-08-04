@@ -1,0 +1,15 @@
+number_of_elements 2
+elements H O
+nnp_type 2G-HDNNP
+cutoff_type 0
+
+global_hidden_layers_short 0
+global_nodes_short
+global_activation_short l
+
+element_hidden_layers_short O 1
+element_nodes_short O 2
+element_activation_short O t l
+
+symfunction_short H 2 H 0.4 0.0 4.0
+symfunction_short O 2 H 0.3 0.1 4.0

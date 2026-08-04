@@ -35,4 +35,17 @@ if(BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/fixtures/n2p2/inpu
             -DFIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/test/fixtures/n2p2
             -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/fortran-roundtrip
             -P ${CMAKE_CURRENT_SOURCE_DIR}/test/fortran_roundtrip.cmake)
+    if(TARGET test_n2p2_topology AND
+       EXISTS "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/data/n2p2-per-element/input.nn")
+        add_test(NAME fortran_converter_per_element_roundtrip
+            COMMAND "${CMAKE_COMMAND}"
+                -DEXE=$<TARGET_FILE:accelnet-model-converter-fortran>
+                -DVALIDATOR=$<TARGET_FILE:test_n2p2_topology>
+                -DFIXTURE=${ACCELNET_PREDICTOR_SOURCE_DIR}/test/data/n2p2-per-element
+                -DDEPTH_FIXTURE=${ACCELNET_PREDICTOR_SOURCE_DIR}/test/data/n2p2-per-element-depth
+                -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/fortran-per-element-roundtrip
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/test/per_element_roundtrip.cmake)
+        set_tests_properties(fortran_converter_per_element_roundtrip
+            PROPERTIES LABELS "integration;n2p2-reference")
+    endif()
 endif()

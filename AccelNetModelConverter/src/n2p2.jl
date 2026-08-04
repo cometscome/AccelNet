@@ -74,10 +74,10 @@ function read_n2p2_model(directory::AbstractString)
     cutoff_type == 9 && cutoff_alpha <= 0.0 &&
         throw(ConversionError("fractional cutoff alpha=h/Rc must be positive"))
     isempty(values_for(entries, "normalize_nodes")) ||
-        throw(ConversionError("normalize_nodes has no AccelNet equivalent"))
+        throw(ConversionError("normalize_nodes is not yet supported by the Julia converter; use the Fortran converter"))
     for key in keys(entries)
         startswith(key, "element_") && endswith(key, "_short") &&
-            throw(ConversionError("per-element n2p2 topologies are not convertible"))
+            throw(ConversionError("per-element n2p2 topologies are not yet supported by the Julia converter; use the Fortran converter"))
     end
 
     hidden_layers = parse(Int, single_value(entries, "global_hidden_layers_short"))

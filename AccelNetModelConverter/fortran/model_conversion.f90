@@ -76,9 +76,6 @@ contains
             if (any(networks(i)%descriptor_kinds /= 2 .and. &
                     networks(i)%descriptor_kinds /= 4 .and. networks(i)%descriptor_kinds /= 5)) &
                 error stop "only Behler G2/G4/G5 descriptors can be converted to n2p2"
-            if (any(networks(i)%nodes /= networks(1)%nodes) .or. &
-                any(networks(i)%activation /= networks(1)%activation)) &
-                error stop "n2p2 conversion requires a common network topology"
             if (any(networks(i)%species_names /= networks(1)%species_names) .or. &
                 any(networks(i)%atomic_references /= networks(1)%atomic_references) .or. &
                 networks(i)%energy_scale /= networks(1)%energy_scale .or. &
@@ -280,6 +277,24 @@ contains
         end do
         write(unit, *)
         do i = 1, size(order)
+            if (same_topology(networks(order(i)), networks(1))) cycle
+            write(unit, "(A,1X,A,1X,I0)") "element_hidden_layers_short", &
+                trim(networks(order(i))%atomtype), networks(order(i))%nlayers - 2
+            write(unit, "(A,1X,A)", advance="no") "element_nodes_short", &
+                trim(networks(order(i))%atomtype)
+            do j = 2, networks(order(i))%nlayers - 1
+                write(unit, "(1X,I0)", advance="no") networks(order(i))%nodes(j)
+            end do
+            write(unit, *)
+            write(unit, "(A,1X,A)", advance="no") "element_activation_short", &
+                trim(networks(order(i))%atomtype)
+            do j = 1, networks(order(i))%nlayers - 1
+                activation = activation_name(networks(order(i))%activation(j))
+                write(unit, "(1X,A)", advance="no") activation
+            end do
+            write(unit, *)
+        end do
+        do i = 1, size(order)
             do j = 1, size(networks(order(i))%descriptor_kinds)
                 kind = networks(order(i))%descriptor_kinds(j)
                 if (kind == 2) then
@@ -304,6 +319,15 @@ contains
         close(unit)
         write(*, "(A)") "WROTE "//trim(path)
     end subroutine write_n2p2_settings
+
+    logical function same_topology(first, second) result(same)
+        type(atomic_network), intent(in) :: first, second
+        same = .false.
+        if (first%nlayers /= second%nlayers) return
+        if (any(first%nodes /= second%nodes)) return
+        if (any(first%activation /= second%activation)) return
+        same = .true.
+    end function same_topology
 
     subroutine write_n2p2_scaling(directory, networks, order)
         character(len=*), intent(in) :: directory

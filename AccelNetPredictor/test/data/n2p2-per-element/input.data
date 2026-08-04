@@ -1,0 +1,8 @@
+begin
+comment per-element topology and normalize_nodes reference structure
+atom 0.0 0.0 0.0 H 0.0 0.0 0.0 0.0 0.0
+atom 1.2 0.3 0.1 O 0.0 0.0 0.0 0.0 0.0
+atom 0.4 1.5 0.2 H 0.0 0.0 0.0 0.0 0.0
+energy 0.0
+charge 0.0
+end

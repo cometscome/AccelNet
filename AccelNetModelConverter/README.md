@@ -53,9 +53,11 @@ Fortran版はtype 3/9のangular radial shiftをAccelNet拡張メタデータの
 7行目に保存して往復できます。Julia版は現時点では非ゼロangular shiftを
 明示的に拒否します。
 
-Chebyshev, LJ, 4G/charge, weighted/compact symmetry functions,
-`normalize_nodes`, and per-element n2p2
-topologies are rejected rather than approximated.
+Chebyshev、LJ、4G/charge、weighted/compact symmetry functionsは、近似せず
+明示的に拒否します。Fortran版はper-element n2p2 topologyを双方向で保持します。
+n2p2からの読込み時には、`normalize_nodes`を各層のweightとbiasへ厳密に
+取り込むため、変換後のモデルにこのキーワードは不要です。
+Julia版は現時点ではper-element topologyと`normalize_nodes`に未対応です。
 
 Run tests:
 
