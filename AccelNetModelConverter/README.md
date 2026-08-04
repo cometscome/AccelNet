@@ -43,7 +43,8 @@ julia --project=. bin/accelnet-model-converter.jl accelnet-to-n2p2 \
 ```
 
 両実装ともBehler–Parrinello 2G types 2, 3, 9、n2p2 cutoff types 0--8、
-およびAccelNet拡張のfractional cutoff type 9に対応します。
+および[Mori *et al.*のfractional cutoff](https://doi.org/10.1103/PhysRevMaterials.7.063605)を
+AccelNet拡張番号type 9として扱う形式に対応します。
 `0 <= cutoff_alpha < 1`（type 9では`0 < cutoff_alpha < 1`）、affine scaling、
 活性化関数、energy normalization、atomic reference energiesに対応します。
 n2p2とænetの対称関数順序に合わせ、第一層の重みとscaling配列も並べ替えます。

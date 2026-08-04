@@ -185,7 +185,7 @@ type 3はAccelNet内部のBehler G4、type 9はG5へ対応付ける。関数はn
 | 6 | polynomial 2 | 対応 |
 | 7 | polynomial 3 | 対応 |
 | 8 | polynomial 4 | 対応 |
-| 9 | fractional cutoff | AccelNet独自拡張。n2p2 v2.3.0本体にはない |
+| 9 | fractional cutoff | Mori *et al.* Appendix Aのcutoff。AccelNetでtype 9として拡張実装し、n2p2 v2.3.0本体にはない |
 
 `0 <= cutoff_alpha < 1`を要求し、AccelNet拡張type 9ではさらに `cutoff_alpha > 0`を要求する。
 
@@ -211,9 +211,14 @@ $\lambda$は通常$+1$または$-1$、$\zeta$は角度分解能、$\eta$は動�
 $r_s$は任意のangular radial shiftである。wide angularなので、narrow angular
 （n2p2 type 3 / Behler G4）と異なり$r_{jk}$に対する指数因子とcutoff因子を含まない。
 
-**AccelNet cutoff type 9 = fractional cutoff**
+**AccelNet cutoff type 9 = Mori *et al.*のfractional cutoff**
 
-こちらは対称関数ではなく、上式中の$f_c(r)$として選べるAccelNet独自のcutoffである。
+こちらは対称関数ではなく、上式中の$f_c(r)$として選べるcutoffである。この関数は
+H. Mori *et al.*, *Physical Review Materials* **7**, 063605 (2023),
+Appendix A, Eqs. (A4)--(A6)で導入された
+([doi:10.1103/PhysRevMaterials.7.063605](https://doi.org/10.1103/PhysRevMaterials.7.063605))。
+AccelNet独自なのは、このcutoffをn2p2互換のcutoff番号体系へtype 9として追加した
+実装上の拡張であり、関数そのものではない。
 $h=\alpha R_c$、$X=(r-R_c)/h$と置くと、
 
 $$

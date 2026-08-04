@@ -20,6 +20,11 @@ training and data-preparation tools provided by ænet, ænet-PyTorch, or n2p2.
 - Run supported ænet and n2p2 models from LAMMPS with
   `pair_style accelnet`.
 
+The descriptor definitions implemented in AccelNet are also used by
+`AccelNet.jl`, a training package that has not yet been publicly released.
+`AccelNet.jl` and its training functionality are not included in this
+repository.
+
 ## Compatibility overview
 
 The following table summarizes compatibility with ænet 2.0.4 and n2p2 2.3.0.
@@ -31,7 +36,7 @@ Notes column are accepted; unsupported settings are rejected with an error.
 | Model input | Supported | Conditional | ænet/AccelNet ASCII and compatible native binary; n2p2 short-range 2G model directories |
 | Descriptors | Supported | Conditional | ænet Chebyshev and Behler G1--G5, plus AccelNet LJ; n2p2 SF types 2, 3, and 9 |
 | Activation functions | Supported | Supported | ænet native codes 0--4; all n2p2 2.3.0 activation characters |
-| Cutoff functions | Supported | Supported | Standard ænet metadata; n2p2 cutoff types 0--8 and AccelNet fractional extension type 9 |
+| Cutoff functions | Supported | Supported | Standard ænet metadata; n2p2 cutoff types 0--8 and the [Mori *et al.* fractional cutoff](https://doi.org/10.1103/PhysRevMaterials.7.063605) as extension type 9 |
 | Descriptor scaling | Supported | Supported | Affine ænet scaling; n2p2 scale, center, scale+center, and sigma modes |
 | Energy normalization and atomic reference energies | Supported | Supported | Applied consistently to energies and analytic forces |
 | Energy and force inference | Supported | Supported | XSF files and in-memory structures |
@@ -265,8 +270,33 @@ Fortran and Julia interfaces and their current restrictions.
 ## Citation
 
 A software citation and archival DOI will be added with the first public
-release. Until then, cite the original publications for the descriptor and
-model type used, including the relevant ænet or n2p2 publication.
+release. Until then, please cite the publications relevant to the model and
+descriptor used:
+
+- **ænet:** N. Artrith and A. Urban, “An implementation of artificial
+  neural-network potentials for atomistic materials simulations: Performance
+  for TiO2,” *Computational Materials Science* **114**, 135--150 (2016),
+  [doi:10.1016/j.commatsci.2015.11.047](https://doi.org/10.1016/j.commatsci.2015.11.047).
+- **Behler--Parrinello HDNNP method:** J. Behler and M. Parrinello,
+  “Generalized neural-network representation of high-dimensional
+  potential-energy surfaces,” *Physical Review Letters* **98**, 146401 (2007),
+  [doi:10.1103/PhysRevLett.98.146401](https://doi.org/10.1103/PhysRevLett.98.146401).
+- **ænet Chebyshev descriptors, when used:** N. Artrith, A. Urban, and
+  G. Ceder, “Efficient and accurate machine-learning interpolation of atomic
+  energies in compositions with many species,” *Physical Review B* **96**,
+  014112 (2017),
+  [doi:10.1103/PhysRevB.96.014112](https://doi.org/10.1103/PhysRevB.96.014112).
+- **n2p2:** A. Singraber, J. Behler, and C. Dellago, “Library-Based LAMMPS
+  Implementation of High-Dimensional Neural Network Potentials,” *Journal of
+  Chemical Theory and Computation* **15**, 1827--1840 (2019),
+  [doi:10.1021/acs.jctc.8b00770](https://doi.org/10.1021/acs.jctc.8b00770),
+  together with the [n2p2 software archive](https://doi.org/10.5281/zenodo.1344446).
+- **Fractional cutoff (cutoff type 9), when used:** H. Mori, T. Tsuru,
+  M. Okumura, D. Matsunaka, Y. Shiihara, and M. Itakura, “Dynamic interaction
+  between dislocations and obstacles in bcc iron based on atomic potentials
+  derived using neural networks,” *Physical Review Materials* **7**, 063605
+  (2023), Appendix A, Eqs. (A4)--(A6),
+  [doi:10.1103/PhysRevMaterials.7.063605](https://doi.org/10.1103/PhysRevMaterials.7.063605).
 
 ## License
 

@@ -133,7 +133,8 @@ BASIS type=LJ cutoff_type=7 cutoff_alpha=0.2
 ```
 
 `cutoff_type` supports all n2p2 cutoff functions plus the fractional cutoff
-from Mori et al. for Behler, Chebyshev, and LJ:
+from [Mori et al., *Phys. Rev. Materials* **7**, 063605 (2023), Appendix A](https://doi.org/10.1103/PhysRevMaterials.7.063605)
+for Behler, Chebyshev, and LJ:
 `0` hard, `1` cosine,
 `2` unnormalized tanh, `3` normalized tanh, `4` exponential, and polynomial
 orders `1` through `4` as types `5` through `8`. Type `9` is the fractional
