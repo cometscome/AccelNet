@@ -1,202 +1,253 @@
-# AccelNet の ænet / n2p2 モデル互換性
+# AccelNet Compatibility with ænet and n2p2 Models
 
-調査日: 2026-08-04
-対象 AccelNet: `0.1.0`, commit `02e7cb9b65bb945454a566b70a059a7e92aeac51`  
-比較対象: ænet `2.0.4`, n2p2 `v2.3.0`
+Assessment date: 2026-08-04<br>
+AccelNet version assessed: `0.1.0`, commit `02e7cb9b65bb945454a566b70a059a7e92aeac51`<br>
+Reference implementations: ænet `2.0.4`, n2p2 `v2.3.0`
 
-## 1. 結論
+## 1. Summary
 
-AccelNet は、次の範囲で既存モデルを読み込み、エネルギーと解析的な力を計算できる。
+AccelNet can load existing models and calculate energies and analytical forces
+within the following limits.
 
-| 入力 | 読み込み | エネルギー | 力 | 主な条件 |
+| Input | Loading | Energy | Forces | Main conditions |
 |---|---:|---:|---:|---|
-| ænet/AccelNet ASCII NN | 対応 | 対応 | 対応 | Chebyshev、Behler2011、AccelNet拡張LJ。ænet 2.0.4の活性化コード0--4に対応 |
-| AccelNet native binary NN | 対応 | 対応 | 対応 | Fortran sequential-unformatted形式。同じレコード表現を読める環境が必要 |
-| ænet NN + 明示的 `.fingerprint.stp` | ASCIIのみ対応 | 対応 | 対応 | NN入力数とsetupの記述子数が一致すること |
-| n2p2 2G-HDNNPディレクトリ | 条件付き対応 | 対応 | 対応 | SF type 2/3/9、共通トポロジー、`normalize_nodes`なし |
-| n2p2 4G-HDNNP / Q-HDNNP | 非対応 | 非対応 | 非対応 | 電荷NN、電荷平衡、静電相互作用を実装していない |
-| n2p2 weighted / compact SF | 非対応 | 非対応 | 非対応 | type 12/13/20--25は未実装 |
+| ænet/AccelNet ASCII NN | Supported | Supported | Supported | Chebyshev, Behler2011, and the AccelNet LJ extension; ænet 2.0.4 activation codes 0--4 |
+| AccelNet native binary NN | Supported | Supported | Supported | Fortran sequential-unformatted format; the reader must use a compatible record representation |
+| ænet NN + explicit `.fingerprint.stp` | ASCII only | Supported | Supported | The number of NN inputs must match the number of setup descriptors |
+| n2p2 2G-HDNNP directory | Conditional | Supported | Supported | SF types 2/3/9, a common topology, and no `normalize_nodes` |
+| n2p2 4G-HDNNP / Q-HDNNP | Not supported | Not supported | Not supported | Charge NNs, charge equilibration, and electrostatics are not implemented |
+| n2p2 weighted / compact SFs | Not supported | Not supported | Not supported | Types 12/13/20--25 are not implemented |
 
-ここでいう「ænet/AccelNet ASCII」は同じ基本レコード配置を指す。ただし、AccelNetが書き出す拡張ASCIIは、活性化関数やcutoffメタデータによっては本家ænet 2.0.4では同じ意味で実行できない。ファイルを読めることと、数値的に同じモデルを実行できることは区別する必要がある。
+Here, “ænet/AccelNet ASCII” means that the files use the same basic record
+layout. However, an extended ASCII file written by AccelNet may not have the
+same semantics in upstream ænet 2.0.4 when it contains extended activation
+functions or cutoff metadata. Being able to parse a file and being able to
+evaluate it with numerically identical semantics are separate properties.
 
-AccelNetは推論器であり、ænetやn2p2の学習機能、データセット処理、最適化器、MPI学習などを再実装しているわけではない。
+AccelNet is an inference engine. It does not reimplement the training,
+dataset-processing, optimization, or MPI training functionality of ænet or
+n2p2.
 
-## 2. 調査範囲と判定方法
+## 2. Scope and Assessment Method
 
-以下を相互に照合した。
+The assessment cross-checked the following sources:
 
-- AccelNetのモデルローダーと推論経路
+- AccelNet model loaders and inference paths:
   - [`aenet_network.f90`](../AccelNetPredictor/src/aenet_network.f90)
   - [`n2p2_network.f90`](../AccelNetPredictor/src/n2p2_network.f90)
   - [`accelnet_predictor.f90`](../AccelNetPredictor/src/accelnet_predictor.f90)
-- AccelNetの変換器
+- AccelNet model converter:
   - [`model_conversion.f90`](../AccelNetModelConverter/fortran/model_conversion.f90)
-- 同じワークスペースにある本家側ソース
+- Upstream source trees available in the same workspace:
   - [ænet 2.0.4 `feedforward.f90`](../../aenet-master/src/ext/feedforward.f90)
   - [ænet 2.0.4 `sfsetup.f90`](../../aenet-master/src/sfsetup.f90)
   - [n2p2 v2.3.0 `Element.cpp`](../../n2p2-master/src/libnnp/Element.cpp)
   - [n2p2 v2.3.0 `Mode.cpp`](../../n2p2-master/src/libnnp/Mode.cpp)
   - [n2p2 v2.3.0 `NeuralNetwork.cpp`](../../n2p2-master/src/libnnp/NeuralNetwork.cpp)
-- AccelNetのテストと、n2p2 v2.3.0に同梱された実モデルによるロード試験
+- AccelNet tests and loading tests with real models distributed with n2p2
+  v2.3.0.
 
-判定は現在の実装に対するものであり、ファイル形式名だけから推測したものではない。
+The conclusions are based on the current implementation, not inferred only
+from file-format names.
 
-## 3. ænet / AccelNet NNへの対応
+## 3. Support for ænet / AccelNet Neural Networks
 
-### 3.1 ファイル形式
+### 3.1 File formats
 
-対応する形式は次の2種類である。
+Two formats are supported.
 
-| 形式 | 判定方法 | 備考 |
+| Format | Detection | Notes |
 |---|---|---|
-| ASCII | ファイル名末尾が厳密に `.ascii` | `read_aenet_network()`による自動判定は大文字小文字を区別する |
-| binary | `.ascii`以外 | Fortran sequential-unformattedレコード |
+| ASCII | The filename must end exactly in `.ascii` | Automatic detection by `read_aenet_network()` is case-sensitive |
+| Binary | Any filename not ending in `.ascii` | Fortran sequential-unformatted records |
 
-明示的setupファイルを同時に渡す `load_predictor(setup_files, network_files, model)` は、現状では常にASCIIリーダーを呼ぶ。binary NNを使う場合は、埋め込み記述子メタデータからsetupを再構成する `load_predictor_from_networks()` を使う。
+`load_predictor(setup_files, network_files, model)`, which accepts explicit
+setup files, currently always invokes the ASCII reader. For a binary NN, use
+`load_predictor_from_networks()`, which reconstructs the setup from embedded
+descriptor metadata.
 
-binary形式は自己記述的・可搬な標準バイナリ形式ではない。コンパイラのレコードマーカー、整数・実数kind、エンディアンなどが作成側と読み込み側で互換である必要がある。ASCIIの方が移植性は高い。
+The binary format is not a self-describing, portable binary standard. Compiler
+record markers, integer and real kinds, endianness, and related representation
+details must be compatible between the writer and reader. ASCII is more
+portable.
 
-### 3.2 ネットワーク構造
+### 3.2 Network architecture
 
-AccelNetは、全結合フィードフォワードネットワークについて以下を扱う。
+AccelNet supports the following properties of fully connected feed-forward
+networks:
 
-- 任意の隠れ層数と各層ノード数
-- 各層のバイアス
-- 原子環境記述子を入力とする、出力先頭ノードのスカラー原子エネルギー
-- 入力に対する解析的勾配と、それを用いた力
-- 記述子のaffine変換 `(G - shift) * scale`
-- cohesive energyの逆スケーリング、原子参照エネルギー、原子当たりenergy shift
+- Any number of hidden layers and any number of nodes per layer.
+- A bias for every layer.
+- A scalar atomic energy from the first output node, with atomic-environment
+  descriptors as inputs.
+- Analytical gradients with respect to the inputs and forces derived from
+  those gradients.
+- Affine descriptor transformation `(G - shift) * scale`.
+- Inverse cohesive-energy scaling, atomic reference energies, and a per-atom
+  energy shift.
 
-一方、複数出力を意味のある別物理量として扱う機能はない。評価器は最終層の第1ノードだけを原子エネルギーとして使用する。
+There is no facility for interpreting multiple outputs as distinct physical
+quantities. The evaluator uses only the first node in the final layer as the
+atomic energy.
 
-複数元素モデルでは、次が必要である。
+A multi-element model requires:
 
-- 元素ごとに1個のNNファイル
-- NNファイル数と埋め込みglobal species数が同じ
-- ファイルの並びが埋め込みspecies順と同じ
-- 各NNの中心元素名とその位置が一致
-- 各中心元素のenvironment speciesにglobal speciesがすべて含まれる
+- One NN file per element.
+- The number of NN files to equal the number of embedded global species.
+- Files to be ordered in the same order as the embedded species.
+- Each NN central-element name to match its position.
+- Every central element's environment-species list to include all global
+  species.
 
-### 3.3 埋め込み記述子
+### 3.3 Embedded descriptors
 
-NNファイル内の `descriptor_name` からsetupを再構成する経路は次に対応する。
+The path that reconstructs a setup from `descriptor_name` in an NN file
+supports the following descriptors.
 
-| `descriptor_name` | 対応内容 | 制約 |
+| `descriptor_name` | Support | Restrictions |
 |---|---|---|
-| `Chebyshev` | radial/angular Chebyshev、解析微分 | version 0/1/10をファイル外から指定 |
-| `Behler2011` | G1、G2、G3、G4、G5、解析微分 | ænet内部のcanonical orderingに並べ直す |
-| `LJ` | 元素別 `sum(r^-6)` / `sum(r^-12)`、解析微分 | AccelNet拡張。本家ænet 2.0.4の標準basisではない |
-| その他 | 非対応 | `unsupported embedded descriptor type` |
+| `Chebyshev` | Radial and angular Chebyshev terms with analytical derivatives | Version 0/1/10 must be specified outside the file |
+| `Behler2011` | G1, G2, G3, G4, and G5 with analytical derivatives | Reordered into ænet canonical order |
+| `LJ` | Per-element `sum(r^-6)` / `sum(r^-12)` with analytical derivatives | AccelNet extension; not a standard ænet 2.0.4 basis |
+| Any other name | Not supported | Reports `unsupported embedded descriptor type` |
 
-Chebyshev versionは標準NNメタデータに保存されていないため、`predict.in`の `VERSION` / `CHEBYSHEV_VERSION`、Fortran API引数、またはaenet-style APIのsetterで0、1、10のいずれかを指定する。省略値は0である。
+The Chebyshev version is not stored in standard NN metadata. Select version 0,
+1, or 10 through `VERSION` / `CHEBYSHEV_VERSION` in `predict.in`, a Fortran API
+argument, or the setter in the ænet-style API. The default is version 0.
 
-拡張NNでは `descriptor_parameters` の5、6行目に `cutoff_type` と `cutoff_alpha` を保存できる。行数が6未満の従来NNでは、Chebyshev/Behlerはcosine、LJはhard cutoffとして扱う。
+Extended NNs can store `cutoff_type` and `cutoff_alpha` in rows 5 and 6 of
+`descriptor_parameters`. Legacy NNs with fewer than six rows use a cosine
+cutoff for Chebyshev and Behler descriptors and a hard cutoff for LJ
+descriptors.
 
-明示的 `.fingerprint.stp` を使う経路では、Chebyshev、LJ、Behler2011 G1--G5、およびChebyshev+LJの `BASIS type=multi` を利用できる。この経路では埋め込み `descriptor_name` よりsetupファイルが優先され、setupの記述子数とNN入力数の一致を検査する。
+The explicit `.fingerprint.stp` path supports Chebyshev, LJ, Behler2011 G1--G5,
+and `BASIS type=multi` combining Chebyshev and LJ. On this path, the setup file
+takes precedence over the embedded `descriptor_name`, and the loader checks
+that the number of setup descriptors matches the number of NN inputs.
 
-### 3.4 ænet 2.0.4の活性化関数
+### 3.4 ænet 2.0.4 activation functions
 
-ænet 2.0.4のネイティブ活性化コードをすべて同じ意味で実装する。
+All native ænet 2.0.4 activation codes are implemented with the same semantics.
 
-| コード | ænet 2.0.4 | 現在のAccelNet | ænetモデルとしての判定 |
+| Code | ænet 2.0.4 | Current AccelNet | Status as an ænet model |
 |---:|---|---|---|
-| 0 | linear | linear | 対応 |
-| 1 | tanh | tanh | 対応 |
-| 2 | logistic/sigmoid | logistic/sigmoid | 対応 |
-| 3 | modified/scaled tanh (`mtanh`) | modified/scaled tanh | 対応 |
-| 4 | `twist` | `mtanh + 0.1*x` | 対応 |
-| 5--10 | ænet 2.0.4では未定義 | ReLU、Gaussian、cos、reverse logistic、exp、harmonic | AccelNetのn2p2拡張 |
-| 11 | ænet 2.0.4では未定義 | softplus | AccelNetのn2p2拡張 |
+| 0 | linear | linear | Supported |
+| 1 | tanh | tanh | Supported |
+| 2 | logistic/sigmoid | logistic/sigmoid | Supported |
+| 3 | modified/scaled tanh (`mtanh`) | modified/scaled tanh | Supported |
+| 4 | `twist` | `mtanh + 0.1*x` | Supported |
+| 5--10 | Undefined in ænet 2.0.4 | ReLU, Gaussian, cosine, reverse logistic, exponential, harmonic | AccelNet n2p2 extensions |
+| 11 | Undefined in ænet 2.0.4 | softplus | AccelNet n2p2 extension |
 
-以前のAccelNet 0.1.0はn2p2 softplusをコード3へ割り当ててænet `mtanh`と衝突していた。現在はsoftplusをコード11へ分離した。以前のFortran変換器が生成したファイルはdescriptionからn2p2由来と判定してコード3をsoftplusへ読み替える。
+An earlier AccelNet 0.1.0 implementation assigned n2p2 softplus to code 3,
+which conflicted with ænet `mtanh`. Softplus now uses code 11. Files produced by
+the earlier Fortran converter are identified as n2p2-derived from their
+description and continue to interpret code 3 as softplus.
 
-n2p2から変換してコード5--11を含むAccelNet ASCII NNは、本家ænet 2.0.4用の汎用NNとはみなせない。
+An AccelNet ASCII NN converted from n2p2 and containing codes 5--11 is not a
+general-purpose NN for upstream ænet 2.0.4.
 
-### 3.5 `predict.in`互換性
+### 3.5 `predict.in` compatibility
 
-AccelNetの `accelnet-predict predict.in` は、次のセクションだけを実際に使用する。
+`accelnet-predict predict.in` uses only these sections:
 
 - `TYPES`
 - `NETWORKS`
 - `FILES`
-- 任意の `VERSION` / `CHEBYSHEV_VERSION`
+- Optional `VERSION` / `CHEBYSHEV_VERSION`
 
-各ファイルについてエネルギーと力を計算するが、ænet `predict.x` の全機能互換ではない。例えば、構造最適化、詳細な出力制御、ænet独自の結果ファイル生成などは再現しない。
+It calculates energies and forces for each input file but is not a complete
+replacement for ænet `predict.x`. For example, it does not reproduce structure
+optimization, detailed output controls, or ænet-specific result files.
 
-## 4. n2p2モデルへの対応
+## 4. Support for n2p2 Models
 
-### 4.1 必要なファイル
+### 4.1 Required files
 
-モデルディレクトリに次が必要である。
+A model directory must contain:
 
 - `input.nn`
-- 元素ごとの `weights.%03d.data`
-  - `%03d` は原子番号。例: Hは `weights.001.data`、Oは `weights.008.data`
-- scalingを有効にした場合は `scaling.data`
+- One `weights.%03d.data` file per element:
+  - `%03d` is the atomic number; for example, H uses `weights.001.data` and O
+    uses `weights.008.data`.
+- `scaling.data` when symmetry-function scaling is enabled.
 
-構造入力にはAccelNet側のXSF、Fortran APIで構築した `atomic_structure`、または
-`accelnet-predict --n2p2-data [MODEL_DIR] input.data`を使える。`input.data`では
-複数の`begin`/`end`構造、latticeなしの分子、3本の`lattice`を持つ周期構造を読む。
-参照energy、charge、格納済みforce、commentは推論入力として使用しない。
+Structures can be provided as AccelNet XSF files, as an `atomic_structure`
+created through the Fortran API, or through
+`accelnet-predict --n2p2-data [MODEL_DIR] input.data`. The `input.data` reader
+supports multiple `begin`/`end` structures, nonperiodic molecules without
+`lattice` records, and periodic structures with three `lattice` records.
+Reference energies, charges, stored forces, and comments are not used as
+inference inputs.
 
-元素記号はHからOgまでの118元素を、正しい大文字小文字で指定する必要がある。内部では原子番号順に並べ替える。
+Element symbols must use the correct letter case and may be any of the 118
+elements from H through Og. Internally, elements are reordered by atomic
+number.
 
-### 4.2 NNP世代
+### 4.2 NNP generation
 
-| n2p2モデル | 判定 |
+| n2p2 model | Status |
 |---|---|
-| 2G-HDNNP short-range model | 条件付き対応 |
-| 4G-HDNNP | 非対応 |
-| Q-HDNNP | 非対応 |
-| 電荷NN、電気陰性度・硬度、電荷平衡、Ewald/静電項 | 非対応 |
+| Short-range 2G-HDNNP | Conditionally supported |
+| 4G-HDNNP | Not supported |
+| Q-HDNNP | Not supported |
+| Charge NNs, electronegativity/hardness, charge equilibration, Ewald/electrostatic terms | Not supported |
 
-`nnp_type`行がない通常の2Gファイルに加え、`2G`、`2g`、本家n2p2 v2.3.0の正式名 `2G-HDNNP`（大文字小文字を区別しない）、数値表記 `2` を受理する。4G/Qの名称と数値は拒否する。
+In addition to conventional 2G files without an `nnp_type` record, the loader
+accepts `2G`, `2g`, the official n2p2 v2.3.0 name `2G-HDNNP`
+(case-insensitive), and the numeric form `2`. Names and numeric identifiers for
+4G and Q models are rejected.
 
-### 4.3 対称関数
+### 4.3 Symmetry functions
 
-n2p2 v2.3.0本体はtype 2、3、9、12、13、20--25を実装しているが、AccelNetが直接読み込めるのは次の3種類である。
+Upstream n2p2 v2.3.0 implements types 2, 3, 9, 12, 13, and 20--25. AccelNet can
+directly load the following three types.
 
-| n2p2 type | 内容 | 直接実行 | 力 | 備考 |
+| n2p2 type | Meaning | Direct inference | Forces | Notes |
 |---:|---|---:|---:|---|
-| 2 | exponential radial | 対応 | 対応 | `eta`, `rshift`, `rcutoff` |
-| 3 | narrow angular | 対応 | 対応 | 任意の末尾radial shiftも直接実行では対応 |
-| 9 | wide angular | 対応 | 対応 | 任意の末尾radial shiftも直接実行では対応 |
-| 12 | weighted radial | 非対応 | 非対応 |  |
-| 13 | weighted angular | 非対応 | 非対応 |  |
-| 20 | compact radial | 非対応 | 非対応 |  |
-| 21 | compact narrow angular | 非対応 | 非対応 |  |
-| 22 | compact wide angular | 非対応 | 非対応 |  |
-| 23--25 | weighted compact | 非対応 | 非対応 |  |
+| 2 | exponential radial | Supported | Supported | `eta`, `rshift`, `rcutoff` |
+| 3 | narrow angular | Supported | Supported | An optional trailing radial shift is supported in direct inference |
+| 9 | wide angular | Supported | Supported | An optional trailing radial shift is supported in direct inference |
+| 12 | weighted radial | Not supported | Not supported |  |
+| 13 | weighted angular | Not supported | Not supported |  |
+| 20 | compact radial | Not supported | Not supported |  |
+| 21 | compact narrow angular | Not supported | Not supported |  |
+| 22 | compact wide angular | Not supported | Not supported |  |
+| 23--25 | weighted compact | Not supported | Not supported |  |
 
-type 3はAccelNet内部のBehler G4、type 9はG5へ対応付ける。関数はn2p2のcanonical orderへソートしてから、scaling配列と第1層重みに対応させる。
+AccelNet maps type 3 to its internal Behler G4 implementation and type 9 to G5.
+Functions are sorted into n2p2 canonical order before the scaling arrays and
+first-layer weights are associated with them.
 
-### 4.4 cutoff関数
+### 4.4 Cutoff functions
 
-本家n2p2 v2.3.0の全cutoff type 0--8に対応する。
+All upstream n2p2 v2.3.0 cutoff types 0--8 are supported.
 
-| type | 関数 | 対応 |
+| Type | Function | Status |
 |---:|---|---:|
-| 0 | hard | 対応 |
-| 1 | cosine | 対応 |
-| 2 | unnormalized `tanh^3` | 対応 |
-| 3 | normalized `tanh^3` | 対応 |
-| 4 | exponential | 対応 |
-| 5 | polynomial 1 | 対応 |
-| 6 | polynomial 2 | 対応 |
-| 7 | polynomial 3 | 対応 |
-| 8 | polynomial 4 | 対応 |
-| 9 | fractional cutoff | Mori *et al.* Appendix Aのcutoff。AccelNetでtype 9として拡張実装し、n2p2 v2.3.0本体にはない |
+| 0 | hard | Supported |
+| 1 | cosine | Supported |
+| 2 | unnormalized `tanh^3` | Supported |
+| 3 | normalized `tanh^3` | Supported |
+| 4 | exponential | Supported |
+| 5 | polynomial 1 | Supported |
+| 6 | polynomial 2 | Supported |
+| 7 | polynomial 3 | Supported |
+| 8 | polynomial 4 | Supported |
+| 9 | fractional cutoff | Cutoff from Mori *et al.*, Appendix A; implemented as AccelNet extension type 9 and not present in upstream n2p2 v2.3.0 |
 
-`0 <= cutoff_alpha < 1`を要求し、AccelNet拡張type 9ではさらに `cutoff_alpha > 0`を要求する。
+`0 <= cutoff_alpha < 1` is required. AccelNet extension type 9 additionally
+requires `cutoff_alpha > 0`.
 
-#### 4.4.1 「type 9」の二つの意味と定義式
+#### 4.4.1 The two meanings of “type 9”
 
-`symfunction_short`のtype番号と`cutoff_type`の番号は、互いに独立した番号体系である。
+The type number in `symfunction_short` and the number given to `cutoff_type`
+belong to independent numbering systems.
 
-**n2p2 symmetry-function type 9 = Behler G5（wide angular）**
+**n2p2 symmetry-function type 9 = Behler G5 (wide angular)**
 
-中心原子を$i$、二つの隣接原子を$j,k$とすると、AccelNetがG5へ対応付ける
-n2p2 type 9は次式である。
+For central atom $i$ and neighbors $j$ and $k$, n2p2 type 9, which AccelNet
+maps to G5, is
 
 $$
 G^{(9)}_i = 2^{1-\zeta}
@@ -206,20 +257,22 @@ G^{(9)}_i = 2^{1-\zeta}
 f_c(r_{ij})f_c(r_{ik}).
 $$
 
-ここで$r_{ij}=|\mathbf r_j-\mathbf r_i|$、$\theta_{ijk}$は$i$を頂点とする角、
-$\lambda$は通常$+1$または$-1$、$\zeta$は角度分解能、$\eta$は動径方向の幅、
-$r_s$は任意のangular radial shiftである。wide angularなので、narrow angular
-（n2p2 type 3 / Behler G4）と異なり$r_{jk}$に対する指数因子とcutoff因子を含まない。
+Here, $r_{ij}=|\mathbf r_j-\mathbf r_i|$, $\theta_{ijk}$ is the angle at atom
+$i$, $\lambda$ is normally $+1$ or $-1$, $\zeta$ controls angular resolution,
+$\eta$ controls radial width, and $r_s$ is an optional angular radial shift.
+Because this is the wide angular form, it does not include an exponential or
+cutoff factor for $r_{jk}$, unlike the narrow angular form (n2p2 type 3 /
+Behler G4).
 
-**AccelNet cutoff type 9 = Mori *et al.*のfractional cutoff**
+**AccelNet cutoff type 9 = the fractional cutoff of Mori *et al.***
 
-こちらは対称関数ではなく、上式中の$f_c(r)$として選べるcutoffである。この関数は
-H. Mori *et al.*, *Physical Review Materials* **7**, 063605 (2023),
-Appendix A, Eqs. (A4)--(A6)で導入された
-([doi:10.1103/PhysRevMaterials.7.063605](https://doi.org/10.1103/PhysRevMaterials.7.063605))。
-AccelNet独自なのは、このcutoffをn2p2互換のcutoff番号体系へtype 9として追加した
-実装上の拡張であり、関数そのものではない。
-$h=\alpha R_c$、$X=(r-R_c)/h$と置くと、
+This is not a symmetry function. It is a selectable $f_c(r)$ in the equation
+above. The function was introduced by H. Mori *et al.*, *Physical Review
+Materials* **7**, 063605 (2023), Appendix A, Eqs. (A4)--(A6)
+([doi:10.1103/PhysRevMaterials.7.063605](https://doi.org/10.1103/PhysRevMaterials.7.063605)).
+The AccelNet-specific part is assigning the function extension number 9 in an
+n2p2-compatible cutoff numbering scheme, not the cutoff function itself. With
+$h=\alpha R_c$ and $X=(r-R_c)/h$,
 
 $$
 f_c^{(9)}(r)=
@@ -231,7 +284,7 @@ f_c^{(9)}(r)=
 X=\frac{r-R_c}{\alpha R_c},\quad 0<\alpha<1.
 $$
 
-cutoff内側での距離微分は、
+Its radial derivative inside the cutoff is
 
 $$
 \frac{d f_c^{(9)}}{dr}
@@ -239,210 +292,273 @@ $$
 \qquad 0\le r<R_c,
 $$
 
-であり、$r\ge R_c$では0とする。したがって、symmetry-function type 9と
-cutoff type 9は同時に指定でき、その場合はG5の二つの因子
-$f_c(r_{ij})f_c(r_{ik})$へfractional cutoffを代入する。前者が記述子全体の形、
-後者が距離ごとの打ち切り関数を決める。
+and it is zero for $r\ge R_c$. Symmetry-function type 9 and cutoff type 9 may
+therefore be selected simultaneously. In that case, the fractional cutoff is
+substituted for the two G5 factors $f_c(r_{ij})f_c(r_{ik})$. The former type
+number selects the overall descriptor form; the latter selects the truncation
+function applied to each distance.
 
-### 4.5 ネットワークトポロジーと活性化関数
+### 4.5 Network topology and activation functions
 
-対応する設定はglobal short-range topologyだけである。
+Only a global short-range topology is supported:
 
 - `global_hidden_layers_short`
 - `global_nodes_short`
 - `global_activation_short`
-- 隠れ層0個も可
-- 最大64層分のパーサー領域
-- 出力は1ノードの原子エネルギー
+- Zero hidden layers are allowed.
+- Parser storage is available for up to 64 layers.
+- The output is one atomic-energy node.
 
-次は非対応で、明示的にエラーにする。
+The following settings are not supported and produce an explicit error:
 
 - `element_hidden_layers_short`
 - `element_nodes_short`
 - `element_activation_short`
 - `normalize_nodes`
 
-n2p2 v2.3.0の全活性化文字を実装している。
+All n2p2 v2.3.0 activation characters are implemented.
 
-| 文字 | 関数 | 対応 |
+| Character | Function | Status |
 |---|---|---:|
-| `l` | identity/linear | 対応 |
-| `t` | tanh | 対応 |
-| `s` | logistic | 対応 |
-| `p` | softplus | 対応 |
-| `r` | ReLU | 対応 |
-| `g` | Gaussian | 対応 |
-| `c` | cosine | 対応 |
-| `S` | reverse logistic | 対応 |
-| `e` | exponential | 対応 |
-| `h` | harmonic (`x^2`) | 対応 |
+| `l` | identity/linear | Supported |
+| `t` | tanh | Supported |
+| `s` | logistic | Supported |
+| `p` | softplus | Supported |
+| `r` | ReLU | Supported |
+| `g` | Gaussian | Supported |
+| `c` | cosine | Supported |
+| `S` | reverse logistic | Supported |
+| `e` | exponential | Supported |
+| `h` | harmonic (`x^2`) | Supported |
 
-### 4.6 symmetry-function scaling
+### 4.6 Symmetry-function scaling
 
-次のモードに対応する。
+The following modes are supported:
 
-- scalingなし
-- `scale_symmetry_functions`
-- `center_symmetry_functions`
-- scale + center
-- `scale_symmetry_functions_sigma`
-- `scale_min_short` / `scale_max_short`
+- No scaling.
+- `scale_symmetry_functions`.
+- `center_symmetry_functions`.
+- Scaling plus centering.
+- `scale_symmetry_functions_sigma`.
+- `scale_min_short` / `scale_max_short`.
 
-scalingを有効にした場合、対象元素・全対称関数の `scaling.data` 行が必要で、欠落、重複、範囲外index、ゼロsigma、ゼロrangeはエラーになる。
+When scaling is enabled, `scaling.data` must contain a record for every
+symmetry function of each relevant element. Missing or duplicate records,
+out-of-range indices, zero sigma, and zero range produce errors.
 
-### 4.7 energy normalizationと単位
+### 4.7 Energy normalization and units
 
-次に対応する。
+The following settings are supported:
 
-- 元素別 `atom_energy`
-- `mean_energy`
-- `conv_energy`
-- 上記に応じたエネルギーと力の逆スケーリング
+- Per-element `atom_energy`.
+- `mean_energy`.
+- `conv_energy`.
+- Corresponding inverse scaling of energies and forces.
 
-本家n2p2 v2.3.0と同様に、`mean_energy`、`conv_energy`、`conv_length`を一組として要求する。部分的にしか存在しない場合、`conv_energy = 0`、または `conv_length <= 0` は拒否する。
+As in upstream n2p2 v2.3.0, `mean_energy`, `conv_energy`, and `conv_length` must
+be provided together. A partial set, `conv_energy = 0`, or `conv_length <= 0`
+is rejected.
 
-n2p2本体は座標、cutoff、shiftを `conv_length` 倍し、`eta`を `conv_length^2` で割って内部単位で評価する。2G type 2/3/9ではこれらが記述子値で相殺される。AccelNetは入力座標とモデルパラメータを元の物理長さ単位のまま評価するため、同じ記述子値になり、物理座標に対する微分には必要な `conv_length` 因子が既に含まれる。このため、追加の座標変換は行わない。
+n2p2 multiplies coordinates, cutoffs, and shifts by `conv_length` and divides
+`eta` by `conv_length^2` for evaluation in its internal units. These factors
+cancel in the descriptor values of 2G types 2/3/9. AccelNet evaluates input
+coordinates and model parameters directly in their original physical length
+unit, producing the same descriptor values; derivatives with respect to the
+physical coordinates already contain the required `conv_length` factor.
+AccelNet therefore does not perform an additional coordinate conversion.
 
-XSF座標と `input.nn` の長さ依存パラメータは、モデル作成時と同じ物理長さ単位で与える必要がある。
+XSF coordinates and the length-dependent parameters in `input.nn` must use the
+same physical length unit as was used to construct the model.
 
-### 4.8 読み飛ばす設定と拒否する設定
+### 4.8 Ignored and rejected settings
 
-学習専用の多くのキーワードは推論に不要なため読み飛ばす。一方、未知のキーが `global_`、`element_`、`symfunction_`、`nnp_type` で始まる場合は、モデルの意味を変え得るため `unsupported n2p2 model setting` として拒否する。
+Many training-only keywords are ignored because they are irrelevant to
+inference. In contrast, an unknown key beginning with `global_`, `element_`,
+`symfunction_`, or `nnp_type` is rejected as an
+`unsupported n2p2 model setting`, because it could change model semantics.
 
-この方針により、epochsやoptimizerなどの学習設定が残った `input.nn` は通常読めるが、新しいネットワーク・記述子関連機能は黙って無視しない。
+Consequently, an `input.nn` that retains training settings such as epochs or
+optimizer options will normally load, while new network- or descriptor-related
+features are not silently ignored.
 
-## 5. 実行インターフェース
+## 5. Inference Interfaces
 
-| 機能 | ænet/AccelNet NN | n2p2 directory |
+| Feature | ænet/AccelNet NN | n2p2 directory |
 |---|---:|---:|
-| `accelnet-predict` CLI | 対応 | `--n2p2`で対応 |
-| Fortran `predictor_model` | 対応 | 対応 |
-| XSFからenergy | 対応 | 対応 |
-| XSFからenergy + forces | 対応 | 対応 |
-| メモリ上の `atomic_structure` | 対応 | 対応 |
-| aenet-style Fortran/C atomic API | 対応 | `accelnet_init_n2p2`または`init` + `load_n2p2`で直接対応 |
-| LAMMPS interface | NNファイル経由 | `pair_style accelnet n2p2 DIR ELEMENT...`で直接対応 |
+| `accelnet-predict` CLI | Supported | Supported with `--n2p2` |
+| Fortran `predictor_model` | Supported | Supported |
+| Energy from XSF | Supported | Supported |
+| Energy and forces from XSF | Supported | Supported |
+| In-memory `atomic_structure` | Supported | Supported |
+| ænet-style Fortran/C atomic API | Supported | Directly supported with `accelnet_init_n2p2` or `init` + `load_n2p2` |
+| LAMMPS interface | Through NN files | Directly supported with `pair_style accelnet n2p2 DIR ELEMENT...` |
 
-n2p2ディレクトリの直接ロードでは、`input.nn`、`weights.%03d.data`、必要なら`scaling.data`をそのまま使用する。LAMMPSの元素引数はLAMMPS atom type順に指定し、モデル内部の原子番号順へ自動変換する。各MPI rankが同じモデルディレクトリを読み込む。
+Direct loading of an n2p2 directory uses `input.nn`, the
+`weights.%03d.data` files, and `scaling.data` when required. LAMMPS element
+arguments are specified in LAMMPS atom-type order and automatically mapped to
+the model's internal atomic-number order. Every MPI rank reads the same model
+directory.
 
-構造レベルCLIはXSFに加えて、`accelnet-predict --n2p2-data [MODEL_DIR] input.data`でn2p2 `input.data`を直接読める。複数の`begin`/`end`構造、latticeなしの分子、3本の`lattice`を持つ周期構造に対応する。推論入力として座標、元素、セルを読み、参照energy、charge、既存force、commentは保持しない。一般的なASE形式とænet学習セットの直接入力には対応しない。
+In addition to XSF, the structure-level CLI can directly read n2p2 `input.data`
+with `accelnet-predict --n2p2-data [MODEL_DIR] input.data`. It supports multiple
+`begin`/`end` structures, nonperiodic molecules without lattice records, and
+periodic structures with three lattice records. Coordinates, elements, and the
+cell are used for inference; reference energies, charges, existing forces, and
+comments are not retained. General ASE formats and ænet training sets cannot be
+read directly.
 
-## 6. モデル変換
+## 6. Model Conversion
 
-### 6.1 n2p2からAccelNet ASCII
+### 6.1 n2p2 to AccelNet ASCII
 
-Fortran変換器は、n2p2ローダーで受理できる2Gモデルについて次を出力する。
+For a 2G model accepted by the n2p2 loader, the Fortran converter writes:
 
-- 元素ごとの `<symbol>.nn.ascii`
-- `networks.list`
-- n2p2順からænet/AccelNet順への記述子並べ替え
-- 並べ替えに対応したscaling配列と第1層重みの置換
+- `<symbol>.nn.ascii` for each element.
+- `networks.list`.
+- Descriptor reordering from n2p2 order to ænet/AccelNet order.
+- Corresponding permutations of the scaling arrays and first-layer weights.
 
-ただし、次の制約がある。
+The following restrictions apply:
 
-1. n2p2 type 3/9の任意angular radial shiftは、AccelNet拡張メタデータの7行目へ保存して再ロードする。
-2. n2p2活性化 `p/r/g/c/S/e/h` はAccelNet拡張整数コードになるため、出力NNを本家ænet 2.0.4で同じ意味で実行できない。
-3. cutoff type 2--9も本家ænet 2.0.4の標準Behler/Chebyshev評価とは一般に同義ではない。
+1. An optional angular radial shift for n2p2 type 3/9 is stored in row 7 of
+   AccelNet's extended metadata and restored when the file is reloaded.
+2. n2p2 activations `p/r/g/c/S/e/h` use AccelNet extension integer codes, so
+   upstream ænet 2.0.4 cannot evaluate the output NN with identical semantics.
+3. Cutoff types 2--9 are also not generally equivalent to standard ænet 2.0.4
+   Behler/Chebyshev evaluation.
 
-したがって出力は「AccelNetが再ロードするための拡張ASCII」であり、任意のn2p2モデルを本家ænet 2.0.4モデルへ変換する一般変換器ではない。
+The output is therefore extended ASCII intended for reloading by AccelNet. It
+is not a general converter from arbitrary n2p2 models to native ænet 2.0.4
+models.
 
-### 6.2 AccelNet/ænet NNからn2p2
+### 6.2 AccelNet/ænet NN to n2p2
 
-変換できるのは以下をすべて満たす場合である。
+Conversion is possible only when all the following conditions hold:
 
-- 全元素分のNNがある
-- `descriptor_name = Behler2011`
-- 記述子がG2、G4、G5だけ
-  - 内部kind 2、4、5、n2p2 type 2、3、9に対応
-- 全元素で同じ層構造と活性化関数
-- species、atomic reference、energy scale/shiftが全NNで整合
-- 全元素で同じcutoff type/alpha
-- 元素記号がH--Ogの表にある
+- An NN is present for every element.
+- `descriptor_name = Behler2011`.
+- The descriptors contain only G2, G4, and G5:
+  - Internal kinds 2, 4, and 5, corresponding to n2p2 types 2, 3, and 9.
+- Every element uses the same layer architecture and activation functions.
+- Species, atomic references, and energy scale/shift are consistent across all
+  NNs.
+- Every element uses the same cutoff type and alpha.
+- Every element symbol appears in the H--Og table.
 
-以下は変換できない。
+The following features cannot be converted:
 
-- Chebyshev
-- LJ
-- Behler G1、G3
-- 元素別トポロジー
-- 4G/Q、charge/electrostatics
-- weighted/compact symmetry functions
+- Chebyshev.
+- LJ.
+- Behler G1 and G3.
+- Per-element topologies.
+- 4G/Q and charge/electrostatic models.
+- Weighted and compact symmetry functions.
 
-出力は `input.nn`、`scaling.data`、元素ごとの `weights.%03d.data` である。記述子順、scaling、第1層重みをn2p2順へ置換する。
+The converter writes `input.nn`, `scaling.data`, and one
+`weights.%03d.data` file per element. Descriptor order, scaling data, and
+first-layer weights are permuted into n2p2 order.
 
-本家n2p2にはænet `mtanh`と`twist`の同等活性化がないため、コード3/4を含むネイティブænetモデルのn2p2変換は明示的に拒否する。linear、tanh、sigmoidは変換できる。AccelNet拡張softplusコード11とn2p2由来のコード5--10もn2p2へ戻せる。
+Upstream n2p2 has no activation equivalent to ænet `mtanh` or `twist`, so a
+native ænet model containing code 3 or 4 is explicitly rejected during n2p2
+conversion. Linear, tanh, and sigmoid can be converted. AccelNet extension
+softplus code 11 and n2p2-derived codes 5--10 can also be converted back to
+n2p2.
 
-## 7. 検証済み範囲
+## 7. Validated Coverage
 
-2026-08-04時点で `build-safeopt` のCTest 38件はすべて成功した。互換性に直接関係する主な検証は次の通り。
+As of 2026-08-04, all 38 CTest cases in `build-safeopt` passed. The principal
+compatibility tests cover the following behavior.
 
-| テスト | 実際に確認する範囲 |
+| Test | Coverage |
 |---|---|
-| `n2p2_model_loader` | 正式な`nnp_type 2G-HDNNP`、正規化3項目、1元素H、type 2、cutoff type 7 + alpha、linear、atomic offset、energy/force |
-| `n2p2_atomic_api_and_input_data` | Fortran atomic APIの2段階・一括n2p2ロード、複数`input.data`構造、分子/周期セル、構造APIとのenergy一致 |
-| `n2p2_input_data_cli` | `--n2p2-data`で複数構造のenergy/forceを出力 |
-| `network_activation_compatibility` | ænet `mtanh`/`twist`とn2p2 softplusの値・入力微分 |
-| `network_ascii_roundtrip` | Tiのænet/AccelNet ASCIIロードとNN入力勾配 |
-| `network_binary_compatibility` | Ti/O Chebyshev ASCIIとnative binaryのenergy一致、reload |
-| `predictor_fortran_golden` | TiO2のenergyと解析力を保存済み参照値と比較 |
-| `predictor_original_input` | `predict.in`経路 |
-| `predictor_chebyshev_version*` | Chebyshev version 0/1/10 |
-| `fortran_converter_roundtrip` | Ti/O、type 2/3/9、angular shift、cutoff type 9、softplus、scalingなしの往復 |
-| `descriptor_aenet_generate_chebyshev_match` | 本家`generate.x`とAccelNetでChebyshevのradial/angular/chemical全チャネルを原子・係数単位で比較 |
-| `descriptor_aenet_generate_behler_radial_match` | Behler G1/G2/G3、全environment species、複数パラメータを本家と比較 |
-| `descriptor_aenet_generate_behler_angular_match` | Behler G4/G5、全species pair、`lambda=+1/-1`、複数`zeta`/`eta`/cutoffを本家と比較 |
-| `network_aenet_activation_reference_match` | ænetコード0--4の値と1階微分を本家`ff_activate`と比較 |
-| `network_n2p2_activation_reference_match` | n2p2の全対応活性化の値と1階微分を本家`NeuralNetwork`と比較 |
-| `descriptor_n2p2_cutoff_reference_match` | cutoff type 0--8の値・微分を本家n2p2と比較し、type 9を定義式と比較 |
-| `n2p2_descriptor_cutoff_{0..8}_match` | 本家n2p2 v2.3.0の`nnp-scaling`と、同じ`input.nn`を直接読むAccelNetを比較。H/Oの非対称8原子構造に対し、type 2（G2）、type 3（G4/narrow）、type 9（G5/wide）、全species pair、`lambda=+1/-1`、複数`eta`/`zeta`/`rshift`/`rcutoff`を、cutoff type 0--8のそれぞれで全原子・全係数比較 |
+| `n2p2_model_loader` | Official `nnp_type 2G-HDNNP`, all three normalization entries, single-element H, type 2, cutoff type 7 + alpha, linear activation, atomic offset, and energy/forces |
+| `n2p2_atomic_api_and_input_data` | Two-stage and one-call n2p2 loading through the Fortran atomic API; multiple `input.data` structures; molecular and periodic cells; agreement with the structure API |
+| `n2p2_input_data_cli` | Energy/force output for multiple structures through `--n2p2-data` |
+| `network_activation_compatibility` | Values and input derivatives for ænet `mtanh`/`twist` and n2p2 softplus |
+| `network_ascii_roundtrip` | Loading of a Ti ænet/AccelNet ASCII model and gradients with respect to NN inputs |
+| `network_binary_compatibility` | Energy agreement and reload for Ti/O Chebyshev ASCII and native binary models |
+| `predictor_fortran_golden` | TiO2 energy and analytical forces against stored reference values |
+| `predictor_original_input` | The `predict.in` path |
+| `predictor_chebyshev_version*` | Chebyshev versions 0/1/10 |
+| `fortran_converter_roundtrip` | Ti/O, types 2/3/9, angular shift, cutoff type 9, softplus, and a no-scaling round trip |
+| `descriptor_aenet_generate_chebyshev_match` | Atom-by-atom, coefficient-by-coefficient comparison of all radial, angular, and chemical Chebyshev channels between upstream `generate.x` and AccelNet |
+| `descriptor_aenet_generate_behler_radial_match` | Behler G1/G2/G3 for every environment species and multiple parameter combinations against upstream ænet |
+| `descriptor_aenet_generate_behler_angular_match` | Behler G4/G5 for every species pair, `lambda=+1/-1`, and multiple `zeta`/`eta`/cutoff values against upstream ænet |
+| `network_aenet_activation_reference_match` | Values and first derivatives of ænet codes 0--4 against upstream `ff_activate` |
+| `network_n2p2_activation_reference_match` | Values and first derivatives of all supported n2p2 activations against upstream `NeuralNetwork` |
+| `descriptor_n2p2_cutoff_reference_match` | Values and derivatives of cutoff types 0--8 against upstream n2p2 and type 9 against its defining formula |
+| `n2p2_descriptor_cutoff_{0..8}_match` | Upstream n2p2 v2.3.0 `nnp-scaling` compared with AccelNet directly reading the same `input.nn`; atom-by-atom and coefficient-by-coefficient checks for types 2 (G2), 3 (G4/narrow), and 9 (G5/wide), all species pairs, `lambda=+1/-1`, multiple `eta`/`zeta`/`rshift`/`rcutoff` values, and each cutoff type 0--8 on an asymmetric eight-atom H/O structure |
 
-`nnp-scaling`の`function.data`は小数点以下10桁であるため、統合比較の許容差は相対スケール込みで`7e-10`とした。9ケースで観測された最大scaled errorは`4.99e-11`以下であり、出力丸め誤差の範囲内だった。この比較は未スケーリングの記述子**値**を対象とする。cutoffの値と距離微分は上記の`descriptor_n2p2_cutoff_reference_match`で本家実装と別途比較しているが、type 3/9の全座標微分を本家n2p2と係数単位で直接比較するテストはまだない。
+Because `function.data` from `nnp-scaling` contains ten digits after the
+decimal point, the integrated comparison uses a tolerance of `7e-10`,
+including relative scaling. The maximum observed scaled error over the nine
+cases was at most `4.99e-11`, consistent with output rounding. This comparison
+covers unscaled descriptor **values**. Cutoff values and radial derivatives are
+compared separately with the upstream implementation by
+`descriptor_n2p2_cutoff_reference_match`; there is not yet a
+coefficient-by-coefficient comparison of the full coordinate derivatives of
+types 3/9 against upstream n2p2.
 
-LAMMPS 29Aug2024の統合ビルドでは、n2p2ディレクトリ直接ロードを1 rankと2 MPI rankで確認した。LAMMPS type順`Ti,O`、モデル内部順`O,Ti`の逆順mappingを含む4原子fixtureで、両rank数のpotential energyはstandalone predictorの`35.320559162555654 eV`と表示精度内で一致した。既存のn2p2/AccelNet/aenet LAMMPS smoke testもenergy・全force成分とも誤差0で成功した。
+With the integrated LAMMPS 29Aug2024 build, direct n2p2-directory loading was
+validated with one and two MPI ranks. A four-atom fixture with LAMMPS type order
+`Ti,O` and reversed internal model order `O,Ti` produced a potential energy
+matching the standalone predictor value of `35.320559162555654 eV` within the
+display precision at both rank counts. Existing n2p2, AccelNet, and ænet LAMMPS
+smoke tests also passed with zero error in the energy and every force
+component.
 
-さらに、同梱n2p2 v2.3.0実モデルに対してローダー/変換器のsmoke testを行った。
+Loader/converter smoke tests were also run with real models distributed with
+n2p2 v2.3.0.
 
-| n2p2同梱モデル | 結果 | 備考 |
+| Bundled n2p2 model | Result | Notes |
 |---|---|---|
-| `H2O_RPBE-D3` | ロード・AccelNet ASCII出力成功 | type 2/3、正規化3項目 |
-| `Cu2S_PBE` | ロード・AccelNet ASCII出力成功 | type 2/3/9、正規化3項目 |
-| `Anisole_SCAN` | 期待通り拒否 | compact type 20/22 |
-| `H2O_RPBE-D3_4G` | 期待通り拒否 | 4G関連設定 |
+| `H2O_RPBE-D3` | Loaded and wrote AccelNet ASCII successfully | Types 2/3 and all three normalization entries |
+| `Cu2S_PBE` | Loaded and wrote AccelNet ASCII successfully | Types 2/3/9 and all three normalization entries |
+| `Anisole_SCAN` | Rejected as expected | Compact types 20/22 |
+| `H2O_RPBE-D3_4G` | Rejected as expected | 4G-related settings |
 
-「成功」はパースと変換完了を意味する。公式モデルについて本家n2p2との全原子energy/force一致を継続的に保証するには、別途corpus回帰テストが望ましい。
+“Successfully” here means that parsing and conversion completed. A separate
+corpus regression suite would be desirable to continuously guarantee
+atom-by-atom energy and force agreement with upstream n2p2 for official
+models.
 
-## 8. 安全に利用できるモデルの目安
+## 8. Conservative Model-Selection Guidance
 
-### ænet 2.0.4モデル
+### ænet 2.0.4 models
 
-次をすべて満たすモデルが安全側である。
+A model is within the conservative compatibility subset when all of the
+following conditions hold:
 
-- 活性化コード0--4
-- descriptorはChebyshevまたはBehler2011
-- 元素ごとに1個のスカラー原子エネルギーNN
-- Chebyshev versionを正しく指定
-- ASCII、または作成環境と互換なnative binary
+- It uses activation codes 0--4.
+- Its descriptor is Chebyshev or Behler2011.
+- It has one scalar atomic-energy NN per element.
+- The correct Chebyshev version is specified.
+- It is ASCII, or a native binary produced in a compatible environment.
 
-### n2p2 v2.3.0モデル
+### n2p2 v2.3.0 models
 
-次をすべて満たすモデルが安全側である。
+A model is within the conservative compatibility subset when all of the
+following conditions hold:
 
-- short-range 2G
-- `nnp_type`なし、`2G`、`2G-HDNNP`、または `2`
-- SF type 2、3、9のみ
-- global topologyのみ
-- `normalize_nodes`なし
-- cutoff type 0--8
-- angular shift付きtype 3/9も直接実行・Fortran変換に対応
-- `mean_energy`、`conv_energy`、`conv_length`は3項目を揃える
-- XSFとモデルパラメータの物理長さ単位を揃える
+- It is short-range 2G.
+- It has no `nnp_type`, or uses `2G`, `2G-HDNNP`, or `2`.
+- It uses only SF types 2, 3, and 9.
+- It uses only a global topology.
+- It does not enable `normalize_nodes`.
+- It uses cutoff type 0--8.
+- Type 3/9 with an angular shift is supported for direct inference and Fortran
+  conversion.
+- `mean_energy`, `conv_energy`, and `conv_length` are provided together.
+- XSF coordinates and model parameters use the same physical length unit.
 
-## 9. 優先的に改善すべき点
+## 9. Recommended Next Improvements
 
-互換性を拡大・明確化するなら、優先度は次の順が妥当である。
+The following order is reasonable for expanding and clarifying compatibility:
 
-1. 公式n2p2モデルについて、本家 `nnp-predict` とenergy/全force成分を比較する回帰テストを追加する。
-2. native ænetのコード3/4を含む実ファイルfixtureを追加する。
-3. Julia版変換器にもangular shift用の拡張メタデータを実装し、Fortran版と揃える。
-4. weighted type 12/13をBehler評価器へ追加する。
-5. compact type 20--25の新しい記述子kernelを追加する。
+1. Add regression tests comparing energies and every force component of
+   official n2p2 models with upstream `nnp-predict`.
+2. Add real native ænet fixtures containing activation codes 3 and 4.
+3. Add extended angular-shift metadata to the Julia converter to match the
+   Fortran converter.
+4. Add weighted types 12/13 to the Behler evaluator.
+5. Add descriptor kernels for compact types 20--25.
