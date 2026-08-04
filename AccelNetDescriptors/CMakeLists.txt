@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(AccelNetDescriptors VERSION 0.1.0 LANGUAGES Fortran)
 
+set(CMAKE_Fortran_STANDARD 2008)
+set(CMAKE_Fortran_STANDARD_REQUIRED ON)
+
 include(CMakePackageConfigHelpers)
 
 option(ACCELNET_DESCRIPTORS_BUILD_TESTING "Build tests" ON)

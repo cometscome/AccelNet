@@ -28,13 +28,14 @@ The complete model-format and descriptor compatibility tables are in
 The standard build requires:
 
 - CMake 3.20 or newer;
-- a Fortran compiler;
+- a Fortran 2008-compatible compiler;
 - a C compiler.
 
 GNU Fortran and Intel Fortran/IntelLLVM compiler flags are configured by the
-build system. Use the same Fortran compiler family for AccelNet and Fortran
-applications that consume its module files. The C API still requires the
-corresponding Fortran runtime when statically linked.
+build system. GNU Fortran 15 or newer is recommended for performance. Use the
+same Fortran compiler family for AccelNet and Fortran applications that consume
+its module files. The C API still requires the corresponding Fortran runtime
+when statically linked.
 
 The core library does not require BLAS, LAPACK, MPI, ænet, or n2p2. Those
 packages are needed only for selected reference comparisons or external
@@ -245,7 +246,7 @@ model type used, including the relevant ænet or n2p2 publication.
 
 ## License
 
-Original AccelNet code is released under the MIT License. The following
+Original AccelNet code is released under the [MIT License](LICENSE). The following
 third-party-derived files retain their original licenses and copyright
 notices:
 
@@ -256,4 +257,6 @@ notices:
 
 The linked-cell file is the only ænet-derived source file retained under the
 MPL-2.0 in the core library. A LAMMPS executable built with the supplied pair
-style remains subject to the LAMMPS GPL terms.
+style remains subject to the LAMMPS GPL terms. Full license texts and provenance
+are provided in [`LICENSES/`](LICENSES/) and
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

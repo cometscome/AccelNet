@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(AccelNetModelConverterFortran VERSION 0.1.0 LANGUAGES Fortran)
 
+set(CMAKE_Fortran_STANDARD 2008)
+set(CMAKE_Fortran_STANDARD_REQUIRED ON)
+
 set(ACCELNET_PREDICTOR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetPredictor"
     CACHE PATH "AccelNetPredictor source directory")
 
