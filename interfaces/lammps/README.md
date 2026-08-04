@@ -77,6 +77,21 @@ pair_style accelnet H.ann O.ann
 pair_coeff * *
 ```
 
+An n2p2 2G model directory can be loaded directly. Element names after the
+directory map LAMMPS atom types to model elements and must be given in LAMMPS
+type order; the interface converts them to n2p2's internal element order.
+
+```lammps
+# LAMMPS type 1 = Ti, type 2 = O
+pair_style accelnet n2p2 /path/to/model Ti O
+pair_coeff * *
+```
+
+All MPI ranks read the same `input.nn`, `weights.%03d.data`, and optional
+`scaling.data` files. The optional leading Chebyshev mode is also accepted
+with the n2p2 form. The 29Aug2024 interface additionally accepts the trailing
+`g5 MODE` option after the element list.
+
 The 4Feb2020 interface can force the Chebyshev angular algorithm by placing a
 mode before the potential files. Omitting it selects `auto`.
 

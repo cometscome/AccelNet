@@ -52,7 +52,8 @@ using namespace MathConst;
 
 PairAccelNet::PairAccelNet(LAMMPS *lmp) : Pair(lmp), cut_global(0.0), stat(0),
   chebyshev_evaluation_mode(ACCELNET_CHEBYSHEV_AUTO),
-  g5_evaluation_mode(ACCELNET_G5_AUTO), initialized(false), atom_types(NULL), pot_files(NULL)
+  g5_evaluation_mode(ACCELNET_G5_AUTO), initialized(false), n2p2_mode(false),
+  type_map(NULL), atom_types(NULL), pot_files(NULL), n2p2_directory(NULL)
 {
   manybody_flag = 1;
   one_coeff = 1;
@@ -73,6 +74,8 @@ PairAccelNet::~PairAccelNet()
   }
   if (atom_types) memory->destroy(atom_types);
   if (pot_files) memory->destroy(pot_files);
+  if (type_map) memory->destroy(type_map);
+  if (n2p2_directory) memory->destroy(n2p2_directory);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -103,7 +106,7 @@ void PairAccelNet::compute(int eflag, int vflag)
   for (ii = 0; ii < inum; ii++) {
     double E_i = 0.0;
     i = ilist[ii];
-    itype = type[i];
+    itype = type_map[type[i]];
     double icoo[3] = { x[i][0], x[i][1], x[i][2] };
       
     jnum = numneigh[i];
@@ -114,7 +117,7 @@ void PairAccelNet::compute(int eflag, int vflag)
       j = firstneigh[i][jj];
       j &= NEIGHMASK;
       jlist[jj] = j + 1;
-      jtype[jj] = type[j];
+      jtype[jj] = type_map[type[j]];
       jcoo[3*jj] = x[j][0];
       jcoo[3*jj+1] = x[j][1];
       jcoo[3*jj+2] = x[j][2];
@@ -167,14 +170,13 @@ void PairAccelNet::allocate()
 void PairAccelNet::settings(int narg, char **arg)
 {
   const int ntypes = atom->ntypes;
-  int potential_offset = 0;
-  if (narg != ntypes && narg != ntypes + 1 && narg != ntypes + 2)
-    error->all(FLERR,"Expected [auto|direct|moment], one potential per atom type, or potentials followed by 'g5 MODE'");
-
+  int cursor = 0;
   chebyshev_evaluation_mode = ACCELNET_CHEBYSHEV_AUTO;
   g5_evaluation_mode = ACCELNET_G5_AUTO;
-  if (narg == ntypes + 1) {
-    potential_offset = 1;
+  n2p2_mode = false;
+  if (narg > 0 && (strcmp(arg[0],"auto") == 0 || strcmp(arg[0],"direct") == 0 ||
+                   strcmp(arg[0],"moment") == 0)) {
+    cursor = 1;
     if (strcmp(arg[0],"auto") == 0)
       chebyshev_evaluation_mode = ACCELNET_CHEBYSHEV_AUTO;
     else if (strcmp(arg[0],"direct") == 0)
@@ -183,24 +185,50 @@ void PairAccelNet::settings(int narg, char **arg)
       chebyshev_evaluation_mode = ACCELNET_CHEBYSHEV_MOMENT;
     else
       error->all(FLERR,"AccelNet Chebyshev mode must be auto, direct, or moment");
-  } else if (narg == ntypes + 2) {
-    if (strcmp(arg[ntypes],"g5") != 0)
-      error->all(FLERR,"Expected 'g5 MODE' after the AccelNet potential files");
-    if (strcmp(arg[ntypes+1],"auto") == 0)
+  }
+
+  int remaining = narg - cursor;
+  n2p2_mode = remaining >= 1 && strcmp(arg[cursor],"n2p2") == 0;
+  const int base_arguments = n2p2_mode ? ntypes + 2 : ntypes;
+  if (remaining != base_arguments && remaining != base_arguments + 2)
+    error->all(FLERR,"Expected [mode] potentials... [g5 MODE] or [mode] n2p2 directory elements... [g5 MODE]");
+  if (remaining == base_arguments + 2) {
+    if (strcmp(arg[cursor + base_arguments],"g5") != 0)
+      error->all(FLERR,"Expected 'g5 MODE' after the AccelNet model arguments");
+    const char *g5_mode = arg[cursor + base_arguments + 1];
+    if (strcmp(g5_mode,"auto") == 0)
       g5_evaluation_mode = ACCELNET_G5_AUTO;
-    else if (strcmp(arg[ntypes+1],"direct") == 0)
+    else if (strcmp(g5_mode,"direct") == 0)
       g5_evaluation_mode = ACCELNET_G5_DIRECT;
-    else if (strcmp(arg[ntypes+1],"moment") == 0)
+    else if (strcmp(g5_mode,"moment") == 0)
       g5_evaluation_mode = ACCELNET_G5_MOMENT_FORCE;
     else
       error->all(FLERR,"AccelNet g5 mode must be auto, direct, or moment");
   }
 
   memory->create(atom_types, atom->ntypes, 17, "pair:atom_types");
+  memory->create(type_map, atom->ntypes + 1, "pair:type_map");
+  type_map[0] = 0;
+
+  if (n2p2_mode) {
+    const char *directory = arg[cursor + 1];
+    if (strlen(directory) > 1024)
+      error->all(FLERR,"AccelNet n2p2 model directory path is too long");
+    memory->create(n2p2_directory, 1025, "pair:n2p2_directory");
+    snprintf(n2p2_directory,1025,"%s",directory);
+    for (int i = 0; i < ntypes; i++) {
+      const char *species = arg[cursor + 2 + i];
+      if (strlen(species) == 0 || strlen(species) > 16)
+        error->all(FLERR,"Invalid element name in AccelNet n2p2 mapping");
+      snprintf(atom_types[i],17,"%s",species);
+    }
+    return;
+  }
+
   memory->create(pot_files, atom->ntypes, 1025, "pair:pot_files");
 
   for (int i = 0; i < ntypes; i++) {
-    const char *potential = arg[i + potential_offset];
+    const char *potential = arg[cursor + i];
     if (strlen(potential) > 1024)
       error->all(FLERR,"AccelNet potential path is too long");
     snprintf(pot_files[i],1025,"%s",potential);
@@ -252,14 +280,27 @@ void PairAccelNet::init_style()
   neighbor->add_request(this, NeighConst::REQ_FULL);
   
   if (!initialized) {
-    accelnet_init(atom->ntypes, atom_types, &stat);
+    if (n2p2_mode)
+      accelnet_init_n2p2(n2p2_directory, &stat);
+    else
+      accelnet_init(atom->ntypes, atom_types, &stat);
     if (stat == ACCELNET_OK) initialized = true;
   }
   if (stat != 0) {
       snprintf(error_buffer,sizeof(error_buffer),"AccelNet error code: %d",stat);
       error->all(FLERR,error_buffer);
   }
-  if (!accelnet_all_loaded()) {    
+  if (n2p2_mode) {
+    std::vector<int> input_types(atom->ntypes);
+    for (int i = 0; i < atom->ntypes; i++) input_types[i] = i + 1;
+    accelnet_convert_atom_types(atom->ntypes, atom_types, atom->ntypes,
+                                input_types.data(), type_map + 1, &stat);
+    if (stat != ACCELNET_OK)
+      error->all(FLERR,"LAMMPS atom types do not match elements in the n2p2 model");
+  } else {
+    for (int i = 1; i <= atom->ntypes; i++) type_map[i] = i;
+  }
+  if (!n2p2_mode && !accelnet_all_loaded()) {
     for (int i = 0; i < atom->ntypes; i++) {
       accelnet_load_potential(i+1, pot_files[i], &stat);
       if (stat != ACCELNET_OK) {
@@ -293,6 +334,10 @@ void PairAccelNet::init_style()
     if (logfile) fprintf(logfile,"AccelNet Chebyshev evaluation mode: %s\n",chebyshev_mode_name);
     if (screen) fprintf(screen,"AccelNet G5 evaluation mode: %s\n",mode_name);
     if (logfile) fprintf(logfile,"AccelNet G5 evaluation mode: %s\n",mode_name);
+    if (n2p2_mode) {
+      if (screen) fprintf(screen,"AccelNet n2p2 model directory: %s\n",n2p2_directory);
+      if (logfile) fprintf(logfile,"AccelNet n2p2 model directory: %s\n",n2p2_directory);
+    }
   }
 
   cut_global = accelnet_Rc_max;

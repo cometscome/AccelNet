@@ -64,6 +64,7 @@ module accelnet_descriptors
 
     public :: initialize_config
     public :: read_xsf
+    public :: read_n2p2_data
     public :: build_neighbor_list
     public :: evaluate_atom
     public :: evaluate_atom_with_derivatives
@@ -425,6 +426,105 @@ contains
         close(unit)
         if (.not. found_coordinates) error stop "PRIMCOORD not found in XSF"
     end subroutine read_xsf
+
+    subroutine read_n2p2_data(filename, species_names, structures)
+        character(len=*), intent(in) :: filename
+        character(len=*), intent(in) :: species_names(:)
+        type(atomic_structure), allocatable, intent(out) :: structures(:)
+        character(len=2048) :: line
+        character(len=32) :: key
+        character(len=16) :: atom_name
+        integer, allocatable :: atom_counts(:), lattice_counts(:), atom_indices(:)
+        integer :: unit, ios, number_of_structures, current, i, itype
+        real(real64) :: x, y, z
+        logical :: inside
+
+        open(newunit=unit, file=filename, status="old", action="read", iostat=ios)
+        if (ios /= 0) error stop "cannot open n2p2 input.data"
+        number_of_structures = 0
+        do
+            read(unit, "(A)", iostat=ios) line
+            if (ios /= 0) exit
+            call n2p2_line_key(line, key, ios)
+            if (ios == 0 .and. trim(key) == "begin") number_of_structures = number_of_structures + 1
+        end do
+        if (number_of_structures < 1) error stop "n2p2 input.data contains no structures"
+        allocate(atom_counts(number_of_structures)); atom_counts = 0
+        rewind(unit); current = 0; inside = .false.
+        do
+            read(unit, "(A)", iostat=ios) line
+            if (ios /= 0) exit
+            call n2p2_line_key(line, key, ios)
+            if (ios /= 0) cycle
+            select case(trim(key))
+            case("begin")
+                if (inside) error stop "nested begin in n2p2 input.data"
+                current = current + 1; inside = .true.
+            case("atom")
+                if (.not. inside) error stop "atom outside structure in n2p2 input.data"
+                atom_counts(current) = atom_counts(current) + 1
+            case("end")
+                if (.not. inside) error stop "end outside structure in n2p2 input.data"
+                inside = .false.
+            end select
+        end do
+        if (inside) error stop "unterminated structure in n2p2 input.data"
+        if (any(atom_counts < 1)) error stop "empty structure in n2p2 input.data"
+
+        allocate(structures(number_of_structures), lattice_counts(number_of_structures), &
+                 atom_indices(number_of_structures))
+        lattice_counts = 0; atom_indices = 0
+        do i = 1, number_of_structures
+            structures(i)%natoms = atom_counts(i)
+            allocate(structures(i)%positions(3, atom_counts(i)), structures(i)%species(atom_counts(i)))
+        end do
+        rewind(unit); current = 0; inside = .false.
+        do
+            read(unit, "(A)", iostat=ios) line
+            if (ios /= 0) exit
+            call n2p2_line_key(line, key, ios)
+            if (ios /= 0) cycle
+            select case(trim(key))
+            case("begin")
+                current = current + 1; inside = .true.
+            case("lattice")
+                if (.not. inside) error stop "lattice outside structure in n2p2 input.data"
+                lattice_counts(current) = lattice_counts(current) + 1
+                if (lattice_counts(current) > 3) error stop "too many lattice vectors in n2p2 input.data"
+                read(line, *, iostat=ios) key, x, y, z
+                if (ios /= 0) error stop "invalid lattice line in n2p2 input.data"
+                structures(current)%lattice(:, lattice_counts(current)) = [x, y, z]
+            case("atom")
+                atom_indices(current) = atom_indices(current) + 1
+                read(line, *, iostat=ios) key, x, y, z, atom_name
+                if (ios /= 0) error stop "invalid atom line in n2p2 input.data"
+                itype = find_species(atom_name, species_names)
+                if (itype == 0) error stop "unknown species in n2p2 input.data"
+                structures(current)%positions(:, atom_indices(current)) = [x, y, z]
+                structures(current)%species(atom_indices(current)) = itype
+            case("end")
+                if (lattice_counts(current) /= 0 .and. lattice_counts(current) /= 3) &
+                    error stop "n2p2 structure must contain zero or three lattice vectors"
+                structures(current)%pbc = lattice_counts(current) == 3
+                inside = .false.
+            end select
+        end do
+        close(unit)
+    end subroutine read_n2p2_data
+
+    subroutine n2p2_line_key(line, key, ios)
+        character(len=*), intent(in) :: line
+        character(len=*), intent(out) :: key
+        integer, intent(out) :: ios
+        integer :: i, code
+        key = ""
+        read(line, *, iostat=ios) key
+        if (ios /= 0) return
+        do i = 1, len_trim(key)
+            code = iachar(key(i:i))
+            if (code >= iachar('A') .and. code <= iachar('Z')) key(i:i) = achar(code + 32)
+        end do
+    end subroutine n2p2_line_key
 
     integer function find_species(name, species_names) result(index_found)
         character(len=*), intent(in) :: name

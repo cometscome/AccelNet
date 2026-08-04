@@ -50,8 +50,8 @@ using namespace MathConst;
 /* ---------------------------------------------------------------------- */
 
 PairAccelNet::PairAccelNet(LAMMPS *lmp) : Pair(lmp), cut_global(0.0), stat(0),
-  chebyshev_mode(ACCELNET_CHEBYSHEV_AUTO), initialized(false),
-  atom_types(NULL), pot_files(NULL)
+  chebyshev_mode(ACCELNET_CHEBYSHEV_AUTO), initialized(false), n2p2_mode(false),
+  type_map(NULL), atom_types(NULL), pot_files(NULL), n2p2_directory(NULL)
 {
   
 }
@@ -71,6 +71,8 @@ PairAccelNet::~PairAccelNet()
   }
   if (atom_types) memory->destroy(atom_types);
   if (pot_files) memory->destroy(pot_files);
+  if (type_map) memory->destroy(type_map);
+  if (n2p2_directory) memory->destroy(n2p2_directory);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -98,7 +100,7 @@ void PairAccelNet::compute(int eflag, int vflag)
   for (ii = 0; ii < inum; ii++) {
     double E_i = 0.0;
     i = ilist[ii];
-    itype = type[i];
+    itype = type_map[type[i]];
     double icoo[3] = { x[i][0], x[i][1], x[i][2] };
       
     jnum = numneigh[i];
@@ -109,7 +111,7 @@ void PairAccelNet::compute(int eflag, int vflag)
       j = firstneigh[i][jj];
       j &= NEIGHMASK;
       jlist[jj] = j + 1;
-      jtype[jj] = type[j];
+      jtype[jj] = type_map[type[j]];
       jcoo[3*jj] = x[j][0];
       jcoo[3*jj+1] = x[j][1];
       jcoo[3*jj+2] = x[j][2];
@@ -161,27 +163,50 @@ void PairAccelNet::allocate()
 
 void PairAccelNet::settings(int narg, char **arg)
 {
-  int model_offset = 0;
+  int cursor = 0;
   chebyshev_mode = ACCELNET_CHEBYSHEV_AUTO;
-  if (narg == atom->ntypes + 1) {
-    model_offset = 1;
+  n2p2_mode = false;
+  if (narg > 0 && (strcmp(arg[0],"auto") == 0 ||
+                   strcmp(arg[0],"direct") == 0 ||
+                   strcmp(arg[0],"moment") == 0)) {
+    cursor = 1;
     if (strcmp(arg[0],"auto") == 0)
       chebyshev_mode = ACCELNET_CHEBYSHEV_AUTO;
     else if (strcmp(arg[0],"direct") == 0)
       chebyshev_mode = ACCELNET_CHEBYSHEV_DIRECT;
     else if (strcmp(arg[0],"moment") == 0)
       chebyshev_mode = ACCELNET_CHEBYSHEV_MOMENT;
-    else
-      error->all(FLERR,"AccelNet evaluation mode must be auto, direct, or moment");
-  } else if (narg != atom->ntypes) {
-    error->all(FLERR,"pair_style accelnet requires [auto|direct|moment] and one potential per atom type");
   }
 
+  int remaining = narg - cursor;
+  if (remaining == atom->ntypes + 2 && strcmp(arg[cursor],"n2p2") == 0)
+    n2p2_mode = true;
+  else if (remaining != atom->ntypes)
+    error->all(FLERR,"pair_style accelnet requires [auto|direct|moment] potentials... or [mode] n2p2 directory elements...");
+
   memory->create(atom_types, atom->ntypes, 17, "pair:atom_types");
+  memory->create(type_map, atom->ntypes + 1, "pair:type_map");
+  type_map[0] = 0;
+
+  if (n2p2_mode) {
+    const char *directory = arg[cursor + 1];
+    if (strlen(directory) > 1024)
+      error->all(FLERR,"AccelNet n2p2 model directory path is too long");
+    memory->create(n2p2_directory, 1025, "pair:n2p2_directory");
+    snprintf(n2p2_directory,1025,"%s",directory);
+    for (int i = 0; i < atom->ntypes; i++) {
+      const char *species = arg[cursor + 2 + i];
+      if (strlen(species) == 0 || strlen(species) > 16)
+        error->all(FLERR,"Invalid element name in AccelNet n2p2 mapping");
+      snprintf(atom_types[i],17,"%s",species);
+    }
+    return;
+  }
+
   memory->create(pot_files, atom->ntypes, 1025, "pair:pot_files");
 
   for (int i = 0; i < atom->ntypes; i++) {
-    const char *potential = arg[i + model_offset];
+    const char *potential = arg[cursor + i];
     if (strlen(potential) > 1024)
       error->all(FLERR,"AccelNet potential path is too long");
     snprintf(pot_files[i],1025,"%s",potential);
@@ -235,12 +260,25 @@ void PairAccelNet::init_style()
   neighbor->requests[irequest]->full = 1;
   
   if (!initialized) {
-    accelnet_init(atom->ntypes, atom_types, &stat);
+    if (n2p2_mode)
+      accelnet_init_n2p2(n2p2_directory, &stat);
+    else
+      accelnet_init(atom->ntypes, atom_types, &stat);
     if (stat == ACCELNET_OK) initialized = true;
   }
   if (stat != 0) {
       snprintf(error_buffer,sizeof(error_buffer),"AccelNet error code: %d",stat);
       error->all(FLERR,error_buffer);
+  }
+  if (n2p2_mode) {
+    std::vector<int> input_types(atom->ntypes);
+    for (int i = 0; i < atom->ntypes; i++) input_types[i] = i + 1;
+    accelnet_convert_atom_types(atom->ntypes, atom_types, atom->ntypes,
+                                input_types.data(), type_map + 1, &stat);
+    if (stat != ACCELNET_OK)
+      error->all(FLERR,"LAMMPS atom types do not match elements in the n2p2 model");
+  } else {
+    for (int i = 1; i <= atom->ntypes; i++) type_map[i] = i;
   }
   accelnet_set_chebyshev_evaluation(chebyshev_mode, &stat);
   if (stat != ACCELNET_OK ||
@@ -249,7 +287,7 @@ void PairAccelNet::init_style()
              "AccelNet failed to select Chebyshev evaluation mode (error code: %d)",stat);
     error->all(FLERR,error_buffer);
   }
-  if (!accelnet_all_loaded()) {    
+  if (!n2p2_mode && !accelnet_all_loaded()) {
     for (int i = 0; i < atom->ntypes; i++) {
       accelnet_load_potential(i+1, pot_files[i], &stat);
       if (stat != ACCELNET_OK) {
@@ -268,6 +306,10 @@ void PairAccelNet::init_style()
                             chebyshev_mode == ACCELNET_CHEBYSHEV_MOMENT ? "moment" : "auto";
     if (screen) fprintf(screen,"AccelNet Chebyshev evaluation mode: %s\n",mode_name);
     if (logfile) fprintf(logfile,"AccelNet Chebyshev evaluation mode: %s\n",mode_name);
+    if (n2p2_mode) {
+      if (screen) fprintf(screen,"AccelNet n2p2 model directory: %s\n",n2p2_directory);
+      if (logfile) fprintf(logfile,"AccelNet n2p2 model directory: %s\n",n2p2_directory);
+    }
   }
   
 }

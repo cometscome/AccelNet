@@ -7,7 +7,8 @@ module accelnet
     use accelnet_descriptor_models, only: evaluate_model_values, evaluate_model_values_derivatives, &
         contract_model_derivatives, model_supports_direct_contraction
     use accelnet_legacy_lcl, only: lcl_nmax_nbdist
-    use accelnet_predictor, only: predictor_model, load_predictor_from_network_data
+    use accelnet_predictor, only: predictor_model, load_predictor_from_network_data, &
+        load_predictor_from_n2p2
     use aenet_network, only: atomic_network, read_aenet_network, read_aenet_network_ascii
     use accelnet_behler, only: G5_EVALUATION_AUTO, G5_EVALUATION_DIRECT, &
         G5_EVALUATION_MOMENT, G5_EVALUATION_MOMENT_FORCE
@@ -64,8 +65,8 @@ module accelnet
     type(descriptor_config) :: sfb_config
     real(real64) :: sfb_radial_cutoff = 0.0_real64
 
-    public :: accelnet_init, accelnet_final, accelnet_all_loaded
-    public :: accelnet_load_potential, accelnet_print_info
+    public :: accelnet_init, accelnet_init_n2p2, accelnet_final, accelnet_all_loaded
+    public :: accelnet_load_potential, accelnet_load_n2p2, accelnet_print_info
     public :: accelnet_set_chebyshev_version
     public :: accelnet_set_chebyshev_evaluation, accelnet_get_chebyshev_evaluation
     public :: accelnet_set_g5_evaluation
@@ -115,6 +116,51 @@ contains
         call accelnet_init(species, local_status)
         stat = local_status
     end subroutine accelnet_init_c
+
+    subroutine accelnet_init_n2p2(directory, stat)
+        character(len=*), intent(in) :: directory
+        integer, intent(out) :: stat
+        type(predictor_model) :: loaded_model
+        character(len=PATH_LENGTH) :: input_file
+        logical :: exists
+        integer :: species
+
+        stat = ACCELNET_OK
+        if (is_initialized) then
+            stat = ACCELNET_ERR_INIT
+            return
+        end if
+        input_file = trim(directory)//"/input.nn"
+        inquire(file=trim(input_file), exist=exists)
+        if (.not. exists) then
+            stat = ACCELNET_ERR_IO
+            return
+        end if
+        call load_predictor_from_n2p2(trim(directory), loaded_model)
+        call accelnet_init(loaded_model%species_names, stat)
+        if (stat /= ACCELNET_OK) return
+        allocate(global_model)
+        global_model = loaded_model
+        pending_networks = global_model%networks
+        potential_loaded = .true.
+        is_loaded = .true.
+        accelnet_Rc_min = global_model%minimum_distance
+        accelnet_Rc_max = global_model%maximum_cutoff
+        accelnet_nsf_max = maxval([(global_model%networks(species)%nodes(1), &
+                                  species=1,number_of_types)])
+        accelnet_nnb_max = lcl_nmax_nbdist(real(accelnet_Rc_min, real64), &
+                                           real(accelnet_Rc_max, real64))
+    end subroutine accelnet_init_n2p2
+
+    subroutine accelnet_init_n2p2_c(directory, stat) bind(C, name="accelnet_init_n2p2")
+        character(c_char), intent(in) :: directory(*)
+        integer(c_int), intent(out) :: stat
+        character(len=PATH_LENGTH) :: local_directory
+        integer :: local_status
+        call copy_c_string(directory, local_directory)
+        call accelnet_init_n2p2(trim(local_directory), local_status)
+        stat = local_status
+    end subroutine accelnet_init_n2p2_c
 
     subroutine accelnet_final(stat) bind(C)
         integer(c_int), intent(out) :: stat
@@ -249,6 +295,56 @@ contains
         call accelnet_load_potential(type_id, trim(local_filename), local_status)
         stat = local_status
     end subroutine accelnet_load_potential_c
+
+    subroutine accelnet_load_n2p2(directory, stat)
+        character(len=*), intent(in) :: directory
+        integer, intent(out) :: stat
+        character(len=PATH_LENGTH) :: input_file
+        logical :: exists
+        integer :: species, global_type
+
+        stat = ACCELNET_OK
+        if (.not. is_initialized .or. is_loaded .or. any(potential_loaded)) then
+            stat = ACCELNET_ERR_INIT
+            return
+        end if
+        input_file = trim(directory)//"/input.nn"
+        inquire(file=trim(input_file), exist=exists)
+        if (.not. exists) then
+            stat = ACCELNET_ERR_IO
+            return
+        end if
+        if (allocated(global_model)) deallocate(global_model)
+        allocate(global_model)
+        call load_predictor_from_n2p2(trim(directory), global_model)
+        if (size(global_model%species_names) /= number_of_types .or. &
+            any([(trim(global_model%species_names(global_type)) /= trim(atom_types(global_type)), &
+                  global_type=1,number_of_types)])) then
+            deallocate(global_model)
+            stat = ACCELNET_ERR_TYPE
+            return
+        end if
+        pending_networks = global_model%networks
+        potential_loaded = .true.
+        call global_model%set_chebyshev_evaluation(chebyshev_evaluation_mode)
+        is_loaded = .true.
+        accelnet_Rc_min = global_model%minimum_distance
+        accelnet_Rc_max = global_model%maximum_cutoff
+        accelnet_nsf_max = maxval([(global_model%networks(species)%nodes(1), &
+                                  species=1,number_of_types)])
+        accelnet_nnb_max = lcl_nmax_nbdist(real(accelnet_Rc_min, real64), &
+                                           real(accelnet_Rc_max, real64))
+    end subroutine accelnet_load_n2p2
+
+    subroutine accelnet_load_n2p2_c(directory, stat) bind(C, name="accelnet_load_n2p2")
+        character(c_char), intent(in) :: directory(*)
+        integer(c_int), intent(out) :: stat
+        character(len=PATH_LENGTH) :: local_directory
+        integer :: local_status
+        call copy_c_string(directory, local_directory)
+        call accelnet_load_n2p2(trim(local_directory), local_status)
+        stat = local_status
+    end subroutine accelnet_load_n2p2_c
 
     subroutine accelnet_load_potential_ascii_c(type_id, filename, stat) &
         bind(C, name="accelnet_load_potential_ascii")

@@ -1,6 +1,6 @@
 # AccelNet の ænet / n2p2 モデル互換性
 
-調査日: 2026-08-03  
+調査日: 2026-08-04
 対象 AccelNet: `0.1.0`, commit `02e7cb9b65bb945454a566b70a059a7e92aeac51`  
 比較対象: ænet `2.0.4`, n2p2 `v2.3.0`
 
@@ -312,12 +312,12 @@ XSF座標と `input.nn` の長さ依存パラメータは、モデル作成時�
 | XSFからenergy | 対応 | 対応 |
 | XSFからenergy + forces | 対応 | 対応 |
 | メモリ上の `atomic_structure` | 対応 | 対応 |
-| aenet-style Fortran/C atomic API | 対応 | 直接ロードAPIなし |
-| LAMMPS interface | NNファイル経由 | n2p2 directoryの直接ロードなし |
+| aenet-style Fortran/C atomic API | 対応 | `accelnet_init_n2p2`または`init` + `load_n2p2`で直接対応 |
+| LAMMPS interface | NNファイル経由 | `pair_style accelnet n2p2 DIR ELEMENT...`で直接対応 |
 
-n2p2モデルをaenet-style C APIや現在のLAMMPS interfaceから使う場合は、対応範囲内のモデルをAccelNet ASCIIへ変換してからロードする方法がある。ただし、次節の変換制約を必ず確認すること。
+n2p2ディレクトリの直接ロードでは、`input.nn`、`weights.%03d.data`、必要なら`scaling.data`をそのまま使用する。LAMMPSの元素引数はLAMMPS atom type順に指定し、モデル内部の原子番号順へ自動変換する。各MPI rankが同じモデルディレクトリを読み込む。
 
-構造レベルCLIはXSFの `PRIMVEC` と `PRIMCOORD` を読む。n2p2の `input.data`、ænetの学習セット、一般的なASE形式を直接読む機能はない。
+構造レベルCLIはXSFに加えて、`accelnet-predict --n2p2-data [MODEL_DIR] input.data`でn2p2 `input.data`を直接読める。複数の`begin`/`end`構造、latticeなしの分子、3本の`lattice`を持つ周期構造に対応する。推論入力として座標、元素、セルを読み、参照energy、charge、既存force、commentは保持しない。一般的なASE形式とænet学習セットの直接入力には対応しない。
 
 ## 6. モデル変換
 
@@ -366,11 +366,13 @@ Fortran変換器は、n2p2ローダーで受理できる2Gモデルについて�
 
 ## 7. 検証済み範囲
 
-2026-08-03時点で `build-safeopt` のCTest 36件はすべて成功した。互換性に直接関係する主な検証は次の通り。
+2026-08-04時点で `build-safeopt` のCTest 38件はすべて成功した。互換性に直接関係する主な検証は次の通り。
 
 | テスト | 実際に確認する範囲 |
 |---|---|
 | `n2p2_model_loader` | 正式な`nnp_type 2G-HDNNP`、正規化3項目、1元素H、type 2、cutoff type 7 + alpha、linear、atomic offset、energy/force |
+| `n2p2_atomic_api_and_input_data` | Fortran atomic APIの2段階・一括n2p2ロード、複数`input.data`構造、分子/周期セル、構造APIとのenergy一致 |
+| `n2p2_input_data_cli` | `--n2p2-data`で複数構造のenergy/forceを出力 |
 | `network_activation_compatibility` | ænet `mtanh`/`twist`とn2p2 softplusの値・入力微分 |
 | `network_ascii_roundtrip` | Tiのænet/AccelNet ASCIIロードとNN入力勾配 |
 | `network_binary_compatibility` | Ti/O Chebyshev ASCIIとnative binaryのenergy一致、reload |
@@ -387,6 +389,8 @@ Fortran変換器は、n2p2ローダーで受理できる2Gモデルについて�
 | `n2p2_descriptor_cutoff_{0..8}_match` | 本家n2p2 v2.3.0の`nnp-scaling`と、同じ`input.nn`を直接読むAccelNetを比較。H/Oの非対称8原子構造に対し、type 2（G2）、type 3（G4/narrow）、type 9（G5/wide）、全species pair、`lambda=+1/-1`、複数`eta`/`zeta`/`rshift`/`rcutoff`を、cutoff type 0--8のそれぞれで全原子・全係数比較 |
 
 `nnp-scaling`の`function.data`は小数点以下10桁であるため、統合比較の許容差は相対スケール込みで`7e-10`とした。9ケースで観測された最大scaled errorは`4.99e-11`以下であり、出力丸め誤差の範囲内だった。この比較は未スケーリングの記述子**値**を対象とする。cutoffの値と距離微分は上記の`descriptor_n2p2_cutoff_reference_match`で本家実装と別途比較しているが、type 3/9の全座標微分を本家n2p2と係数単位で直接比較するテストはまだない。
+
+LAMMPS 29Aug2024の統合ビルドでは、n2p2ディレクトリ直接ロードを1 rankと2 MPI rankで確認した。LAMMPS type順`Ti,O`、モデル内部順`O,Ti`の逆順mappingを含む4原子fixtureで、両rank数のpotential energyはstandalone predictorの`35.320559162555654 eV`と表示精度内で一致した。既存のn2p2/AccelNet/aenet LAMMPS smoke testもenergy・全force成分とも誤差0で成功した。
 
 さらに、同梱n2p2 v2.3.0実モデルに対してローダー/変換器のsmoke testを行った。
 

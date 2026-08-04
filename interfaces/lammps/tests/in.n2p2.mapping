@@ -1,0 +1,14 @@
+units metal
+atom_style atomic
+boundary f f f
+read_data ${data_file}
+
+# LAMMPS type order is Ti,O while n2p2 canonical internal order is O,Ti.
+pair_style accelnet n2p2 ${model_dir} Ti O
+pair_coeff * *
+neighbor 0.3 bin
+neigh_modify every 1 delay 0 check yes
+
+thermo 1
+thermo_style custom step pe
+run 0

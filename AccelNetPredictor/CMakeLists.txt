@@ -114,6 +114,16 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
     target_link_libraries(test_n2p2_network PRIVATE AccelNetPredictor)
     add_test(NAME n2p2_model_loader COMMAND test_n2p2_network
         "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2")
+    add_executable(test_n2p2_atomic_api test/test_n2p2_atomic_api.f90)
+    target_link_libraries(test_n2p2_atomic_api PRIVATE AccelNetPredictor)
+    add_test(NAME n2p2_atomic_api_and_input_data COMMAND test_n2p2_atomic_api
+        "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2"
+        "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2/input.data")
+    add_test(NAME n2p2_input_data_cli COMMAND accelnet-predict --n2p2-data
+        "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2"
+        "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2/input.data")
+    set_tests_properties(n2p2_input_data_cli PROPERTIES
+        PASS_REGULAR_EXPRESSION "STRUCTURE.*:1;STRUCTURE.*:2")
     if(EXISTS "${N2P2_SCALING_EXECUTABLE}")
         add_executable(dump_n2p2_descriptors test/dump_n2p2_descriptors.f90)
         target_link_libraries(dump_n2p2_descriptors PRIVATE AccelNetPredictor)
@@ -219,7 +229,8 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
         target_link_libraries(test_accelnet_c_api PRIVATE AccelNetPredictor)
         add_test(NAME accelnet_c_api COMMAND test_accelnet_c_api
             "${ACCELNET_PREDICTOR_GOLDEN_DIR}/Ti.nn.ascii"
-            "${ACCELNET_PREDICTOR_GOLDEN_DIR}/O.nn.ascii")
+            "${ACCELNET_PREDICTOR_GOLDEN_DIR}/O.nn.ascii"
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2")
         if(TARGET accelnet-atomic-api-benchmark)
             add_test(NAME accelnet_atomic_api_benchmark_smoke
                 COMMAND accelnet-atomic-api-benchmark

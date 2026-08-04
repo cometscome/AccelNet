@@ -3,9 +3,11 @@ program accelnet_predict
     use accelnet_predictor, only: predictor_model, load_predictor, load_predictor_from_networks, &
         load_predictor_from_n2p2
     use predict_input, only: predict_input_data, read_predict_input
+    use accelnet_descriptors, only: atomic_structure, read_n2p2_data
     implicit none
     type(predictor_model) :: model
     type(predict_input_data) :: input
+    type(atomic_structure), allocatable :: data_structures(:)
     character(len=1024), allocatable :: setups(:), networks(:)
     character(len=1024) :: argument, xsf
     integer :: count, species
@@ -14,21 +16,29 @@ program accelnet_predict
     logical :: with_forces
     if (command_argument_count() == 2) then
         call get_command_argument(1, argument)
-        if (trim(argument) == "--n2p2") then
+        if (trim(argument) == "--n2p2" .or. trim(argument) == "--n2p2-data") then
             call get_command_argument(2, xsf)
             call load_predictor_from_n2p2(".", model)
-            call model%predict_energy_forces(trim(xsf), energy, forces)
-            call print_prediction(trim(xsf), energy, forces)
+            if (trim(argument) == "--n2p2-data") then
+                call predict_data_file(trim(xsf))
+            else
+                call model%predict_energy_forces(trim(xsf), energy, forces)
+                call print_prediction(trim(xsf), energy, forces)
+            end if
             stop
         end if
     elseif (command_argument_count() == 3) then
         call get_command_argument(1, argument)
-        if (trim(argument) == "--n2p2") then
+        if (trim(argument) == "--n2p2" .or. trim(argument) == "--n2p2-data") then
             call get_command_argument(2, xsf)
             call load_predictor_from_n2p2(trim(xsf), model)
             call get_command_argument(3, xsf)
-            call model%predict_energy_forces(trim(xsf), energy, forces)
-            call print_prediction(trim(xsf), energy, forces)
+            if (trim(argument) == "--n2p2-data") then
+                call predict_data_file(trim(xsf))
+            else
+                call model%predict_energy_forces(trim(xsf), energy, forces)
+                call print_prediction(trim(xsf), energy, forces)
+            end if
             stop
         end if
     end if
@@ -45,6 +55,7 @@ program accelnet_predict
         write(*, "(A)") "usage: accelnet-predict NSPECIES SETUP... NETWORK... XSF"
         write(*, "(A)") "   or: accelnet-predict predict.in"
         write(*, "(A)") "   or: accelnet-predict --n2p2 [MODEL_DIR] XSF"
+        write(*, "(A)") "   or: accelnet-predict --n2p2-data [MODEL_DIR] input.data"
         error stop 2
     end if
     call get_command_argument(1, argument); read(argument, *) count
@@ -71,6 +82,24 @@ program accelnet_predict
         end do
     end if
 contains
+    subroutine predict_data_file(filename)
+        character(len=*), intent(in) :: filename
+        integer :: structure_index
+        call read_n2p2_data(filename, model%species_names, data_structures)
+        do structure_index = 1, size(data_structures)
+            allocate(forces(3, data_structures(structure_index)%natoms))
+            call model%predict_energy_forces(data_structures(structure_index), energy, forces)
+            call print_prediction(trim(filename)//":"//integer_string(structure_index), energy, forces)
+            deallocate(forces)
+        end do
+    end subroutine predict_data_file
+
+    function integer_string(value) result(text)
+        integer, intent(in) :: value
+        character(len=32) :: text
+        write(text, "(I0)") value
+    end function integer_string
+
     subroutine print_prediction(structure_file, predicted_energy, predicted_forces)
         character(len=*), intent(in) :: structure_file
         real(real64), intent(in) :: predicted_energy

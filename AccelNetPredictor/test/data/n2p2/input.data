@@ -1,0 +1,16 @@
+begin
+comment non-periodic two-atom structure
+atom 0.0 0.0 0.0 H 0.0 0.0 0.0 0.0 0.0
+atom 2.0 0.0 0.0 H 0.0 0.0 0.0 0.0 0.0
+energy 0.0
+charge 0.0
+end
+begin
+comment periodic one-atom structure
+lattice 10.0 0.0 0.0
+lattice  0.0 9.0 0.0
+lattice  0.0 0.0 8.0
+atom 1.0 2.0 3.0 H 0.0 0.0 0.0 0.0 0.0
+energy 0.0
+charge 0.0
+end

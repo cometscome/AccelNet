@@ -46,6 +46,29 @@ The integration tests also run n2p2 v2.3.0 `nnp-scaling` and compare its raw
 symmetry-function output with AccelNet atom by atom. They cover types 2, 3,
 and 9 for both elements and every n2p2 cutoff type from 0 through 8.
 
+The aenet-style atomic API can load the same directory without conversion:
+
+```fortran
+use accelnet
+call accelnet_init_n2p2("/path/to/model", stat)
+```
+
+The C equivalent is `accelnet_init_n2p2(directory, &stat)`. Applications that
+already called `accelnet_init` with the model's canonical species order can
+instead call `accelnet_load_n2p2`. Both entry points publish the usual
+`accelnet_Rc_max`, atom conversion, atomic-energy, and force APIs.
+
+n2p2 structure files with one or more `begin`/`end` blocks are accepted by:
+
+```sh
+build/accelnet-predict --n2p2-data /path/to/model input.data
+```
+
+The public Fortran reader is `read_n2p2_data`. It reads atom coordinates,
+elements, and either zero or three lattice vectors. Reference energies,
+charges, stored forces, and comments are not part of `atomic_structure` and
+are ignored.
+
 The original AccelNet `predict.in` sections are accepted directly. Descriptor
 setups are reconstructed from the fingerprint metadata embedded in each NN.
 Both `*.nn.ascii` and AccelNet native sequential-unformatted binary NN files

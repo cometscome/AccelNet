@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     int stat = -1;
     double energy = 0.0;
 
-    if (argc != 3) return 2;
+    if (argc != 4) return 2;
     accelnet_init(2, species, &stat);
     if (!check(stat == ACCELNET_OK, "C init")) return 1;
     if (!check(accelnet_get_chebyshev_evaluation() == ACCELNET_CHEBYSHEV_AUTO,
@@ -43,5 +43,24 @@ int main(int argc, char **argv) {
     if (!check(accelnet_nsf_max > 0 && accelnet_Rc_max > 0.0, "C globals")) return 1;
     accelnet_final(&stat);
     if (!check(stat == ACCELNET_OK && !accelnet_all_loaded(), "C final")) return 1;
+
+    {
+        char *hydrogen[] = {"H"};
+        double n2p2_center[3] = {0.0, 0.0, 0.0};
+        double n2p2_neighbor[3] = {2.0, 0.0, 0.0};
+        int n2p2_type[1] = {1};
+        accelnet_init(1, hydrogen, &stat);
+        if (!check(stat == ACCELNET_OK, "C n2p2 init")) return 1;
+        accelnet_load_n2p2(argv[3], &stat);
+        if (!check(stat == ACCELNET_OK && accelnet_all_loaded(), "C n2p2 load")) return 1;
+        accelnet_atomic_energy(n2p2_center, 1, 1, n2p2_neighbor, n2p2_type, &energy, &stat);
+        if (!check(stat == ACCELNET_OK && isfinite(energy), "C n2p2 atomic energy")) return 1;
+        accelnet_final(&stat);
+        if (!check(stat == ACCELNET_OK, "C n2p2 final")) return 1;
+        accelnet_init_n2p2(argv[3], &stat);
+        if (!check(stat == ACCELNET_OK && accelnet_all_loaded(), "C one-shot n2p2 init")) return 1;
+        accelnet_final(&stat);
+        if (!check(stat == ACCELNET_OK, "C one-shot n2p2 final")) return 1;
+    }
     return 0;
 }

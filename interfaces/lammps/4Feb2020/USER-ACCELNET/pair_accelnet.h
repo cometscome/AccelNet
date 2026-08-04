@@ -55,8 +55,11 @@ class PairAccelNet : public Pair {
   int stat;
   int chebyshev_mode;
   bool initialized;
+  bool n2p2_mode;
+  int *type_map;
   char **atom_types;
   char **pot_files;
+  char *n2p2_directory;
   char error_buffer[128];
   
 };
