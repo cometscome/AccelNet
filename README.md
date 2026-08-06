@@ -7,6 +7,8 @@ Fortran/C atomic API, model-conversion tools, and a LAMMPS `pair_style`.
 
 AccelNet is an inference package. It does not train potentials or replace the
 training and data-preparation tools provided by ænet, ænet-PyTorch, or n2p2.
+The method and its validation are described in the
+[AccelNet paper](https://arxiv.org/abs/2608.03280).
 
 ## Features
 
@@ -277,8 +279,14 @@ converter preserves per-element topology in both directions and absorbs
 
 ## Citation
 
-A software citation and archival DOI will be added with the first public
-release. Until then, please cite the publications relevant to the model and
+If you use AccelNet, please cite:
+
+- **AccelNet:** Y. Nagai, “AccelNet: Exact backward-compatible acceleration of
+  polynomial angular descriptors through Cartesian moment factorization,”
+  arXiv:2608.03280 [cond-mat.mtrl-sci] (2026),
+  [doi:10.48550/arXiv.2608.03280](https://doi.org/10.48550/arXiv.2608.03280).
+
+Please also cite the publications relevant to the upstream model and
 descriptor used:
 
 - **ænet:** N. Artrith and A. Urban, “An implementation of artificial
