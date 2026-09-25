@@ -165,6 +165,17 @@ call model%predict_energy(structure, energy)
 call model%predict_energy_forces(structure, energy, forces)
 ```
 
+Pass an optional fourth output to obtain the full configurational virial:
+
+```fortran
+real(real64) :: virial(3,3)
+call model%predict_energy_forces(structure, energy, forces, virial)
+! The XSF filename overload accepts the same optional output.
+```
+
+The structure/filename APIs overwrite `forces` and `virial` on each call.
+The virial convention, units, and periodic-image handling are described below.
+
 ## aenet-style atomic API
 
 The `accelnet` Fortran module provides the complete aenet-style global API for
@@ -227,6 +238,76 @@ The exported limits `accelnet_nsf_max`, `accelnet_nnb_max`,
 counterparts. API failures are reported through `ACCELNET_OK` and the
 `ACCELNET_ERR_*` status values. The neighbor-list procedures intentionally
 retain aenet's status-free signatures.
+
+### Virial
+
+`accelnet_atomic_energy_and_forces_virial` returns an atomic energy and adds
+the corresponding forces and full 3-by-3 virial to caller-owned accumulators:
+
+```fortran
+! Zero these once before the central-atom loop, not inside it.
+forces = 0.0_real64
+virial = 0.0_real64
+! For each central atom i, supply its full neighbor list:
+call accelnet_atomic_energy_and_forces_virial(coo_i, type_i, index_i, n_j, &
+    coo_j, type_j, index_j, natoms, energy_i, forces, virial, stat)
+```
+
+For each central atomic energy, the contribution is
+`W(a,b) = sum_j (coo_j(a,j) - coo_i(a)) * F_j(b)`, where `F_j` is that
+atomic energy's force contribution to neighbor image `j`. Equivalently,
+`W(a,b) = -dE/d epsilon(b,a)` for a homogeneous deformation
+`r' = (I + epsilon) r` applied to both positions and lattice vectors.
+This matches the displacement-times-force convention of the PIMD ænet
+interface; all nine components are returned, rather than only one triangle.
+
+The tensor has energy units: eV for a model using eV and Angstrom.
+It is not divided by the cell volume, has no kinetic contribution, and needs
+no factor of one half when summed over central atoms. Convert to a pressure
+or stress convention explicitly in the caller; tensile-positive
+configurational stress is `-W / volume` for these rotationally invariant
+potentials. Input/output units otherwise follow the loaded model, as for
+the energy/force API.
+
+Supply Cartesian coordinates of the actual periodic images in `coo_j`.
+Different images can share an original atom index in `index_j`, including
+the central atom's index. The implementation forms each image's virial
+before its force contributions are combined under those atom indices. This
+also handles cells small enough to contain multiple images within the cutoff.
+Reconstructing the periodic virial from folded atom forces and wrapped
+coordinates alone is not equivalent. Nonperiodic structures are supported too.
+
+The C symbol has the same name. Arrays use Fortran column-major layout:
+`virial[a + 3*b]` holds `W(a+1,b+1)` for zero-based C indices.
+Both accumulators must be initialized by the caller, just as with the
+existing additive force API. Detected argument/initialization errors leave
+them unchanged and report a nonzero `stat`.
+The original `accelnet_atomic_energy_and_forces` signature and C ABI remain
+unchanged, and do not calculate the additional tensor.
+
+The virial tests sweep 13 dimensionless strain steps from `1e-2` to `1e-8`
+using energy-only central differences of all nine tensor components. A pass
+requires two adjacent steps to satisfy `abs(error) <= 2e-6 + 2e-7*abs(W)`
+for every component; the tolerance is in model energy units and does not
+scale with the large constant atomic reference energy. Synthetic Chebyshev
+(AUTO/DIRECT/MOMENT), LJ, and bundled n2p2 models run without external data.
+CSV files named `virial-convergence*.csv` are written under the predictor
+build directory. If `ACCELNET_PREDICTOR_GOLDEN_DIR` points to the Ti/O corpus,
+the tests also check `structure0001.xsf` and `structure2935.xsf`, their sheared
+cells, and all three Chebyshev evaluation modes. Very small steps can amplify
+floating-point cancellation and are recorded rather than required to improve
+monotonically. See the [validation report](../docs/validation/virial-2026-09-25/README.md).
+
+Additional self-contained tests cover nonlinear, per-element n2p2 networks
+and a synthetic H/O model with G2/G4/G5 descriptors and nontrivial scaling.
+The latter mixes an atomic direct-contraction path with a full-Jacobian path
+in the same system. Rotation covariance (`W' = R W R^T`), atom/species
+permutations, independent lattice translations of individual atoms, and image
+metadata are checked in molecular, orthogonal, and triclinic geometries.
+G5 DIRECT/MOMENT/MOMENT_FORCE modes also undergo energy-only strain checks.
+The C API tests invalid indices/types/counts, unloaded/finalized states,
+accumulator preservation on errors, reloading, and the smooth cutoff boundary.
+See [additional regression results](../docs/validation/virial-2026-09-25/additional-tests.md).
 
 An existing model can be replaced explicitly without changing the variable or
 reallocating the caller-owned structure/force objects. Old network and setup

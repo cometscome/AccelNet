@@ -552,6 +552,7 @@ contains
         integer, allocatable :: temporary_atom_indices(:), temporary_image_shifts(:, :)
         real(real64), allocatable :: temporary_positions(:, :), temporary_displacements(:, :)
         real(real64) :: inverse_lattice(3, 3), rmin
+        real(real64) :: center_translation(3)
         integer :: atom, nmax, n, total, entry, local_entry, maximum_entries, initial_capacity
         logical :: use_legacy_order
 
@@ -597,9 +598,15 @@ contains
         neighbors%offsets(1) = 1
         entry = 0
         do atom = 1, structure%natoms
+            ! lcl_init wraps its fractional coordinates in place. Restore
+            ! image positions relative to the caller's (possibly unwrapped)
+            ! central atom before forming force and virial displacements.
+            center_translation = matmul(structure%lattice, &
+                real(nint(matmul(inverse_lattice, structure%positions(:,atom)) - fractional(:,atom)), real64))
             n = nmax
             call lcl_nbdist_cart(atom, n, coordinates, distances, r_cut=cutoff, &
                                  nblist=atom_indices, nbtype=species)
+            coordinates(:,1:n) = coordinates(:,1:n) + spread(center_translation, 2, n)
             if (entry + n > size(temporary_atom_indices)) &
                 call grow_neighbor_buffers(temporary_atom_indices, temporary_image_shifts, &
                     temporary_positions, temporary_displacements, entry, entry + n, maximum_entries)
@@ -667,7 +674,7 @@ contains
         real(real64), intent(in) :: cutoff
         type(neighbor_data), intent(out) :: neighbors
         integer :: i, j, nx, ny, nz, n1, n2, n3, total, entry
-        integer :: mins(3), maxs(3)
+        integer :: mins(3), maxs(3), base_shift(3)
         real(real64) :: inverse_lattice(3, 3), neighbor_position(3), displacement(3), cutoff2
 
         cutoff2 = (cutoff + NEIGHBOR_SKIN)**2
@@ -688,13 +695,20 @@ contains
         total = 0
         do i = 1, structure%natoms
             do j = 1, structure%natoms
+                ! The bounded image search must be centered on the central
+                ! atom even when atoms carry independent unwrapped coordinates.
+                ! Truncation leaves primary-cell pair ordering unchanged and
+                ! brings each fractional separation into (-1,1).
+                base_shift = 0
+                if (structure%pbc) base_shift = -int(matmul(inverse_lattice, &
+                    structure%positions(:,j) - structure%positions(:,i)))
                 do nx = mins(1), maxs(1)
                     do ny = mins(2), maxs(2)
                         do nz = mins(3), maxs(3)
                             if (i == j .and. nx == 0 .and. ny == 0 .and. nz == 0) cycle
                             neighbor_position = structure%positions(:, j)
                             if (structure%pbc) neighbor_position = neighbor_position + &
-                                matmul(structure%lattice, real([nx, ny, nz], real64))
+                                matmul(structure%lattice, real(base_shift + [nx, ny, nz], real64))
                             displacement = neighbor_position - structure%positions(:, i)
                             if (sum(displacement*displacement) <= cutoff2) total = total + 1
                         end do
@@ -711,18 +725,21 @@ contains
         entry = 0
         do i = 1, structure%natoms
             do j = 1, structure%natoms
+                base_shift = 0
+                if (structure%pbc) base_shift = -int(matmul(inverse_lattice, &
+                    structure%positions(:,j) - structure%positions(:,i)))
                 do nx = mins(1), maxs(1)
                     do ny = mins(2), maxs(2)
                         do nz = mins(3), maxs(3)
                             if (i == j .and. nx == 0 .and. ny == 0 .and. nz == 0) cycle
                             neighbor_position = structure%positions(:, j)
                             if (structure%pbc) neighbor_position = neighbor_position + &
-                                matmul(structure%lattice, real([nx, ny, nz], real64))
+                                matmul(structure%lattice, real(base_shift + [nx, ny, nz], real64))
                             displacement = neighbor_position - structure%positions(:, i)
                             if (sum(displacement*displacement) <= cutoff2) then
                                 entry = entry + 1
                                 neighbors%atom_indices(entry) = j
-                                neighbors%image_shifts(:, entry) = [nx, ny, nz]
+                                neighbors%image_shifts(:, entry) = base_shift + [nx, ny, nz]
                                 neighbors%positions(:, entry) = neighbor_position
                                 neighbors%displacements(:, entry) = displacement
                             end if

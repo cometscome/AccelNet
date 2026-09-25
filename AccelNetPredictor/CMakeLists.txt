@@ -114,6 +114,33 @@ endif()
 
 if(ACCELNET_PREDICTOR_BUILD_TESTING)
     enable_testing()
+    add_executable(test_virial test/test_virial.f90)
+    target_link_libraries(test_virial PRIVATE AccelNetPredictor)
+    add_test(NAME predictor_atomic_and_structure_virial COMMAND test_virial
+        "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2")
+    add_executable(test_virial_c test/test_virial_c.c)
+    target_include_directories(test_virial_c PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries(test_virial_c PRIVATE AccelNetPredictor)
+    add_test(NAME predictor_c_virial COMMAND test_virial_c
+        "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2")
+    add_executable(test_virial_convergence test/test_virial_convergence.f90)
+    target_link_libraries(test_virial_convergence PRIVATE AccelNetPredictor)
+    add_test(NAME predictor_virial_convergence_n2p2 COMMAND test_virial_convergence
+        --n2p2 "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2"
+        "${CMAKE_CURRENT_BINARY_DIR}/virial-convergence-n2p2.csv")
+    add_executable(test_virial_invariants test/test_virial_invariants.f90)
+    target_link_libraries(test_virial_invariants PRIVATE AccelNetPredictor)
+    foreach(_virial_model IN ITEMS n2p2-per-element n2p2-virial-angular)
+        add_test(NAME predictor_virial_convergence_${_virial_model} COMMAND test_virial_convergence
+            --n2p2 "${CMAKE_CURRENT_SOURCE_DIR}/test/data/${_virial_model}"
+            "${CMAKE_CURRENT_BINARY_DIR}/virial-convergence-${_virial_model}.csv")
+        set(_virial_path_check "")
+        if(_virial_model STREQUAL "n2p2-virial-angular")
+            set(_virial_path_check "mixed-paths")
+        endif()
+        add_test(NAME predictor_virial_invariants_${_virial_model} COMMAND test_virial_invariants
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/data/${_virial_model}" ${_virial_path_check})
+    endforeach()
     add_executable(test_n2p2_network test/test_n2p2_network.f90)
     target_link_libraries(test_n2p2_network PRIVATE AccelNetPredictor)
     add_test(NAME n2p2_model_loader COMMAND test_n2p2_network
@@ -194,6 +221,13 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetTrainer.jl/test/data/fortran_predict"
         CACHE PATH "Existing immutable NN/XSF golden data")
     if(EXISTS "${ACCELNET_PREDICTOR_GOLDEN_DIR}/Ti.nn.ascii")
+        foreach(_virial_structure IN ITEMS structure0001 structure2935)
+            add_test(NAME predictor_virial_convergence_${_virial_structure} COMMAND test_virial_convergence
+                --aenet "${ACCELNET_PREDICTOR_GOLDEN_DIR}/Ti.nn.ascii"
+                "${ACCELNET_PREDICTOR_GOLDEN_DIR}/O.nn.ascii"
+                "${ACCELNET_PREDICTOR_GOLDEN_DIR}/${_virial_structure}.xsf"
+                "${CMAKE_CURRENT_BINARY_DIR}/virial-convergence-${_virial_structure}.csv")
+        endforeach()
         add_executable(test_network test/test_network.f90)
         target_link_libraries(test_network PRIVATE AccelNetPredictor)
         add_test(NAME network_ascii_roundtrip COMMAND test_network

@@ -15,6 +15,8 @@ The method and its validation are described in the
 - Read ænet/AccelNet ASCII and compatible native-binary neural networks.
 - Read supported n2p2 2G-HDNNP model directories without conversion.
 - Evaluate energies and analytic Cartesian forces from XSF structures.
+- Evaluate analytic configurational virials through the Fortran/C atomic API
+  and the Fortran structure API, including periodic-image contributions.
 - Read molecular and periodic structures from n2p2 `input.data` files.
 - Provide object-based Fortran interfaces and an aenet-style Fortran/C atomic
   API.
@@ -112,6 +114,22 @@ Reference tests against separate ænet and n2p2 source trees are documented in
 [`AccelNetDescriptors/README.md`](AccelNetDescriptors/README.md) and
 [`AccelNetPredictor/README.md`](AccelNetPredictor/README.md). They are not
 required for normal use.
+
+### Continuous integration
+
+[Library tests](.github/workflows/tests.yml) runs on pushes, pull requests,
+and manual dispatch. It checks GNU Fortran 11 on Ubuntu 22.04 and GNU Fortran
+13 on Ubuntu 24.04 in Release/static builds, plus GNU 13 Debug/shared with
+Fortran runtime checks. CTest failures fail the job. Test logs, JUnit results,
+and virial-convergence CSV files are retained as workflow artifacts for 14 days.
+
+The workflow builds the libraries, correctness-test executables, and CLI tools
+used by the tests. Standalone performance benchmarks are excluded; in particular,
+GNU 11 has an internal compiler error on `benchmark-g4-derivative`. Tests use
+bundled fixtures and synthetic models, with no external ænet/n2p2 installation
+or private model corpus. The optional Ti/O corpus tests can be enabled locally
+with `ACCELNET_PREDICTOR_GOLDEN_DIR`; see the
+[virial validation report](docs/validation/virial-2026-09-25/README.md).
 
 ## Run predictions
 
