@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AccelNetDescriptors VERSION 1.0.1 LANGUAGES Fortran)
+project(AccelNetDescriptors VERSION 1.0.2 LANGUAGES Fortran)
 
 set(CMAKE_Fortran_STANDARD 2008)
 set(CMAKE_Fortran_STANDARD_REQUIRED ON)
@@ -74,6 +74,15 @@ if(ACCELNET_DESCRIPTORS_BUILD_TESTING)
     add_executable(test_behler test/test_behler.f90)
     target_link_libraries(test_behler PRIVATE AccelNetDescriptors)
     add_test(NAME descriptor_behler COMMAND test_behler)
+
+    add_executable(test_cutoff_pair test/test_cutoff_pair.f90)
+    target_link_libraries(test_cutoff_pair PRIVATE AccelNetDescriptors)
+    add_test(NAME descriptor_cutoff_pair COMMAND test_cutoff_pair)
+
+    add_executable(test_g4_groups test/test_g4_groups.f90)
+    target_link_libraries(test_g4_groups PRIVATE AccelNetDescriptors)
+    add_test(NAME descriptor_g4_groups COMMAND test_g4_groups)
+    set_tests_properties(descriptor_cutoff_pair descriptor_g4_groups PROPERTIES LABELS "g4")
 
     add_executable(test_combined_model test/test_combined_model.f90)
     target_link_libraries(test_combined_model PRIVATE AccelNetDescriptors)

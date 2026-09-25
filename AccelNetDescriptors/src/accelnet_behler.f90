@@ -1,6 +1,7 @@
 module accelnet_behler
     use iso_fortran_env, only: error_unit, real64
-    use accelnet_descriptors, only: cutoff_value, cutoff_derivative, validate_cutoff_parameters, CUTOFF_COS
+    use accelnet_descriptors, only: cutoff_value, cutoff_derivative, cutoff_value_derivative, &
+        validate_cutoff_parameters, CUTOFF_COS
     implicit none
     private
 
@@ -38,6 +39,9 @@ module accelnet_behler
         integer :: first_output = 0
         logical :: outputs_contiguous = .true.
         integer, allocatable :: output(:), cutoff_group(:), exponential_group(:), angular_group(:)
+        ! Only combinations used by this species pair are evaluated for G4.
+        integer, allocatable :: active_cutoffs(:), active_exponentials(:)
+        integer, allocatable :: product_group(:), product_cutoff(:), product_exponential(:)
         real(real64), allocatable :: rc(:)
         integer, allocatable :: angular_integer_zeta(:)
         real(real64), allocatable :: angular_lambda(:), angular_zeta(:), angular_derivative_prefactor(:)
@@ -46,6 +50,13 @@ module accelnet_behler
         integer :: count = 0
         integer, allocatable :: output(:), cutoff_group(:)
         real(real64), allocatable :: rc(:)
+    end type
+    type :: g4_cutoff_group
+        integer :: cutoff_group = 0
+        type(g4_parameter_group) :: parameters
+    end type
+    type :: g4_zero_shift_pair
+        type(g4_cutoff_group), allocatable :: cutoffs(:)
     end type
     type :: g2_parameter_group
         integer :: count = 0
@@ -79,6 +90,8 @@ module accelnet_behler
         integer, allocatable :: g4_pair_first(:), g4_pair_last(:)
         integer, allocatable :: g5_pair_first(:), g5_pair_last(:)
         type(g4_parameter_group), allocatable :: g4_groups(:)
+        type(g4_zero_shift_pair), allocatable :: g4_zero_shift_groups(:)
+        logical :: has_zero_shift_g4 = .false., has_shifted_g4 = .false.
         type(g4_parameter_group), allocatable :: g5_groups(:)
         type(g1_parameter_group), allocatable :: g1_groups(:)
         type(g2_parameter_group), allocatable :: g2_groups(:)
@@ -110,6 +123,7 @@ contains
         if (present(cutoff_alpha)) config%cutoff_alpha = cutoff_alpha
         call validate_cutoff_parameters(config%cutoff_type, config%cutoff_alpha)
         allocate(config%g4_groups(num_species*(num_species + 1)/2))
+        allocate(config%g4_zero_shift_groups(num_species*(num_species + 1)/2))
         allocate(config%g5_groups(num_species*(num_species + 1)/2))
         allocate(config%g1_groups(num_species), config%g2_groups(num_species), config%g3_groups(num_species))
     end subroutine
@@ -246,8 +260,18 @@ contains
         end if
         call link_angular_pair(config%g4, config%g4_pair_first, config%g4_pair_last, &
                                config%num_species, species1, species2)
-        call append_g4_group(config%g4_groups(unordered_pair_index(config%num_species, species1, species2)), &
-                             parameter)
+        ! Partition exactly at Rs=0. Nonzero shifts, including negative and
+        ! very small shifts, retain the general kernel. Different cutoffs can
+        ! still use the fast path in separate groups of the same species pair.
+        if (parameter%rs == 0.0_real64) then
+            call append_zero_shift_g4(config%g4_zero_shift_groups( &
+                unordered_pair_index(config%num_species, species1, species2)), parameter)
+            config%has_zero_shift_g4 = .true.
+        else
+            call append_g4_group(config%g4_groups(unordered_pair_index(config%num_species, species1, species2)), &
+                                 parameter)
+            config%has_shifted_g4 = .true.
+        end if
         config%maximum_cutoff = max(config%maximum_cutoff, rc)
         config%maximum_angular_cutoff = max(config%maximum_angular_cutoff, rc)
         config%maximum_g4_cutoff = max(config%maximum_g4_cutoff, rc)
@@ -437,10 +461,58 @@ contains
         last_for_pair(pair) = current
     end subroutine link_angular_pair
 
+    subroutine append_zero_shift_g4(pair, parameter)
+        type(g4_zero_shift_pair), intent(inout) :: pair
+        type(angular_parameter), intent(in) :: parameter
+        type(g4_cutoff_group) :: new_group
+        integer :: i
+        if (allocated(pair%cutoffs)) then
+            do i = 1, size(pair%cutoffs)
+                if (pair%cutoffs(i)%cutoff_group /= parameter%cutoff_group) cycle
+                call append_g4_group(pair%cutoffs(i)%parameters, parameter)
+                return
+            end do
+        end if
+        new_group%cutoff_group = parameter%cutoff_group
+        call append_g4_group(new_group%parameters, parameter)
+        if (allocated(pair%cutoffs)) then
+            pair%cutoffs = [pair%cutoffs, new_group]
+        else
+            pair%cutoffs = [new_group]
+        end if
+    end subroutine append_zero_shift_g4
+
     subroutine append_g4_group(group, parameter)
         type(g4_parameter_group), intent(inout) :: group
         type(angular_parameter), intent(in) :: parameter
-        integer :: i, angular_index
+        integer :: i, angular_index, product_index
+        call append_unique_index(group%active_cutoffs, parameter%cutoff_group)
+        call append_unique_index(group%active_exponentials, parameter%exponential_group)
+        product_index = 0
+        if (allocated(group%product_cutoff)) then
+            do i = 1, size(group%product_cutoff)
+                if (group%product_cutoff(i) == parameter%cutoff_group .and. &
+                    group%product_exponential(i) == parameter%exponential_group) then
+                    product_index = i
+                    exit
+                end if
+            end do
+        end if
+        if (product_index == 0) then
+            if (allocated(group%product_cutoff)) then
+                group%product_cutoff = [group%product_cutoff, parameter%cutoff_group]
+                group%product_exponential = [group%product_exponential, parameter%exponential_group]
+            else
+                group%product_cutoff = [parameter%cutoff_group]
+                group%product_exponential = [parameter%exponential_group]
+            end if
+            product_index = size(group%product_cutoff)
+        end if
+        if (allocated(group%product_group)) then
+            group%product_group = [group%product_group, product_index]
+        else
+            group%product_group = [product_index]
+        end if
         angular_index = 0
         do i = 1, group%angular_count
             if (group%angular_lambda(i) == parameter%lambda .and. group%angular_zeta(i) == parameter%zeta) then
@@ -482,6 +554,17 @@ contains
         end if
         group%count = group%count + 1
     end subroutine append_g4_group
+
+    subroutine append_unique_index(indices, index)
+        integer, allocatable, intent(inout) :: indices(:)
+        integer, intent(in) :: index
+        if (allocated(indices)) then
+            if (any(indices == index)) return
+            indices = [indices, index]
+        else
+            indices = [index]
+        end if
+    end subroutine append_unique_index
 
     subroutine append_g1_group(group, parameter)
         type(g1_parameter_group), intent(inout) :: group
@@ -1038,11 +1121,13 @@ contains
             distances(j) = sqrt(dot_product(displacements(:, j), displacements(:, j)))
             if (distances(j) > EPS_DISTANCE) unit_vectors(:, j) = displacements(:, j)/distances(j)
             do group = 1, ncutoff
-                cutoffs(j, group) = cutoff_value(distances(j), config%cutoff_radii(group), &
-                    config%cutoff_type, config%cutoff_alpha)
-                if (do_derivatives) cutoff_derivatives(j, group) = &
-                    cutoff_derivative(distances(j), config%cutoff_radii(group), &
-                    config%cutoff_type, config%cutoff_alpha)
+                if (do_derivatives) then
+                    call cutoff_value_derivative(distances(j), config%cutoff_radii(group), &
+                        config%cutoff_type, config%cutoff_alpha, cutoffs(j, group), cutoff_derivatives(j, group))
+                else
+                    cutoffs(j, group) = cutoff_value(distances(j), config%cutoff_radii(group), &
+                        config%cutoff_type, config%cutoff_alpha)
+                end if
             end do
             do group = 1, nradial_exp
                 radial_exponentials(j, group) = exp(-config%radial_eta(group)* &
@@ -1230,20 +1315,126 @@ contains
                 end if
             end do
         end do
-        if (allocated(config%g4)) call evaluate_g4_only()
+        if (config%has_zero_shift_g4) call evaluate_g4_zero_shift()
+        if (config%has_shifted_g4) call evaluate_g4_only()
         if (allocated(config%g5)) call evaluate_g5_only()
 
     contains
+        subroutine evaluate_g4_zero_shift()
+            integer :: jj, kk, pp, pair_index, cutoff_group, cutoff_index, angular_index, exponential_index, output, active
+            real(real64) :: distance_j, distance_k, distance_jk, distance_jk_squared, radius
+            real(real64) :: inverse_j, inverse_k, inverse_jk, inverse_product, cosine_jk, squared_sum
+            real(real64) :: cutoff_j, cutoff_k, cutoff_jk, dcutoff_jk, cutoff_product
+            real(real64) :: radial_j, radial_k, radial_jk, eta_product
+            real(real64) :: energy_coefficient, angular_coefficient, geometry_j, geometry_k, p1, p2, p3
+            real(real64) :: pair_displacement(3), edge_j(3), edge_k(3), edge_jk(3)
+            real(real64) :: exponentials(max(1, nangular_exp))
+            real(real64) :: angular_values(max(1, size(config%g4)))
+            real(real64) :: angular_derivatives(max(1, size(config%g4)))
+
+            ! Model setup partitions by species pair, cutoff and exact Rs=0.
+            ! Value-only and derivative calls share the same value arithmetic.
+            do jj = 1, nneighbors
+                distance_j = distances(jj)
+                if (distance_j <= EPS_DISTANCE .or. distance_j >= config%maximum_g4_cutoff) cycle
+                inverse_j = 1.0_real64/distance_j
+                do kk = jj + 1, nneighbors
+                    distance_k = distances(kk)
+                    if (distance_k <= EPS_DISTANCE .or. distance_k >= config%maximum_g4_cutoff) cycle
+                    pair_index = unordered_pair_index(config%num_species, neighbor_species(jj), neighbor_species(kk))
+                    if (.not. allocated(config%g4_zero_shift_groups(pair_index)%cutoffs)) cycle
+                    pair_displacement = displacements(:, kk) - displacements(:, jj)
+                    distance_jk_squared = dot_product(pair_displacement, pair_displacement)
+                    if (distance_jk_squared <= EPS_DISTANCE**2 .or. &
+                        distance_jk_squared >= config%maximum_g4_cutoff**2) cycle
+                    distance_jk = sqrt(distance_jk_squared)
+                    inverse_k = 1.0_real64/distance_k
+                    inverse_jk = 1.0_real64/distance_jk
+                    inverse_product = inverse_j*inverse_k
+                    cosine_jk = max(-1.0_real64, min(1.0_real64, &
+                        dot_product(displacements(:, jj), displacements(:, kk))*inverse_product))
+                    geometry_j = inverse_product - cosine_jk*inverse_j*inverse_j
+                    geometry_k = inverse_product - cosine_jk*inverse_k*inverse_k
+                    squared_sum = distance_j*distance_j + distance_k*distance_k + distance_jk_squared
+
+                    do cutoff_group = 1, size(config%g4_zero_shift_groups(pair_index)%cutoffs)
+                        associate(group_data => config%g4_zero_shift_groups(pair_index)%cutoffs(cutoff_group))
+                        cutoff_index = group_data%cutoff_group
+                        radius = config%cutoff_radii(cutoff_index)
+                        if (max(distance_j, distance_k, distance_jk) >= radius) cycle
+                        cutoff_j = cutoffs(jj, cutoff_index)
+                        cutoff_k = cutoffs(kk, cutoff_index)
+                        call cutoff_value_derivative(distance_jk, radius, config%cutoff_type, &
+                            config%cutoff_alpha, cutoff_jk, dcutoff_jk)
+                        cutoff_product = cutoff_j*cutoff_k*cutoff_jk
+                        if (do_derivatives) then
+                            radial_j = cutoff_derivatives(jj, cutoff_index)*cutoff_k*cutoff_jk*inverse_j
+                            radial_k = cutoff_j*cutoff_derivatives(kk, cutoff_index)*cutoff_jk*inverse_k
+                            radial_jk = cutoff_j*cutoff_k*dcutoff_jk*inverse_jk
+                        end if
+                        associate(parameters => group_data%parameters)
+                        do active = 1, size(parameters%active_exponentials)
+                            exponential_index = parameters%active_exponentials(active)
+                            exponentials(exponential_index) = exp(-config%angular_eta(exponential_index)*squared_sum)
+                        end do
+                        do angular_index = 1, parameters%angular_count
+                            if (do_derivatives) then
+                                call angular_power(cosine_jk, parameters%angular_lambda(angular_index), &
+                                    parameters%angular_zeta(angular_index), parameters%angular_integer_zeta(angular_index), &
+                                    parameters%angular_derivative_prefactor(angular_index), &
+                                    angular_values(angular_index), angular_derivatives(angular_index))
+                            else
+                                angular_values(angular_index) = angular_value(cosine_jk, &
+                                    parameters%angular_lambda(angular_index), parameters%angular_zeta(angular_index), &
+                                    parameters%angular_integer_zeta(angular_index))
+                            end if
+                        end do
+                        do pp = 1, parameters%count
+                            output = parameters%output(pp)
+                            angular_index = parameters%angular_group(pp)
+                            exponential_index = parameters%exponential_group(pp)
+                            energy_coefficient = 2.0_real64*angular_values(angular_index)*exponentials(exponential_index)
+                            values(output) = values(output) + energy_coefficient*cutoff_product
+                            if (.not. do_derivatives) cycle
+                            angular_coefficient = 2.0_real64*angular_derivatives(angular_index)* &
+                                exponentials(exponential_index)*cutoff_product
+                            eta_product = 2.0_real64*config%angular_eta(exponential_index)*cutoff_product
+                            p1 = angular_coefficient*geometry_j + energy_coefficient*(radial_j - eta_product)
+                            p2 = angular_coefficient*geometry_k + energy_coefficient*(radial_k - eta_product)
+                            p3 = angular_coefficient*inverse_product - energy_coefficient*(radial_jk - eta_product)
+                            ! Three shared edge products supply both neighbor
+                            ! gradients and the center gradient, without dividing
+                            ! by cutoff values or the angular factor.
+                            edge_j = p1*displacements(:, jj)
+                            edge_k = p2*displacements(:, kk)
+                            edge_jk = p3*pair_displacement
+                            derivative_neighbors(:, output, jj) = derivative_neighbors(:, output, jj) + edge_j + edge_jk
+                            derivative_neighbors(:, output, kk) = derivative_neighbors(:, output, kk) + edge_k - edge_jk
+                            derivative_center(:, output) = derivative_center(:, output) - edge_j - edge_k
+                        end do
+                        end associate
+                        end associate
+                    end do
+                end do
+            end do
+        end subroutine evaluate_g4_zero_shift
+
         subroutine evaluate_g4_only()
-            integer :: jj, kk, pp, cutoff_index, exponential_index, descriptor
+            integer :: jj, kk, pp, cutoff_index, exponential_index, descriptor, active_index, product_index
             real(real64) :: distance_j, distance_k, distance_jk, distance_jk_squared
             real(real64) :: cosine_jk, cutoff_j, cutoff_k, cutoff_jk
             real(real64) :: exp_j, exp_k, exp_jk, product, angular_term, angular_derivative
             real(real64) :: dcutoff_j, dcutoff_k, dcutoff_jk
             real(real64) :: pair_displacement(3)
             real(real64) :: vector_j(3), vector_k(3), vector_jk(3)
-            real(real64) :: dcosine_j(3), dcosine_k(3), derivative_j(3), derivative_k(3)
-            real(real64) :: angular_coefficient, radial_coefficient
+            real(real64) :: angular_coefficient, radial_coefficient, exponential_product
+            real(real64) :: inverse_j, inverse_k, cross_j, cross_k, along_j, along_k, along_jk
+            ! One scalar radial derivative per triangle edge and active product.
+            ! No division by cutoff values: they may vanish at the boundary.
+            real(real64) :: products(max(1, size(config%g4)))
+            real(real64) :: radial_j(max(1, size(config%g4)))
+            real(real64) :: radial_k(max(1, size(config%g4)))
+            real(real64) :: radial_jk(max(1, size(config%g4)))
             real(real64) :: dj1, dj2, dj3, dk1, dk2, dk3
             real(real64) :: angular_values(max(1, size(config%g4)))
             real(real64) :: angular_derivatives(max(1, size(config%g4)))
@@ -1255,6 +1446,8 @@ contains
                 do kk = jj + 1, nneighbors
                     distance_k = distances(kk)
                     if (distance_k <= EPS_DISTANCE .or. distance_k > config%maximum_g4_cutoff) cycle
+                    pair = unordered_pair_index(config%num_species, neighbor_species(jj), neighbor_species(kk))
+                    if (config%g4_groups(pair)%count == 0) cycle
                     pair_displacement = displacements(:, kk) - displacements(:, jj)
                     distance_jk_squared = dot_product(pair_displacement, pair_displacement)
                     if (distance_jk_squared <= EPS_DISTANCE**2 .or. &
@@ -1262,56 +1455,56 @@ contains
 
                     vector_k = unit_vectors(:, kk)
                     cosine_jk = max(-1.0_real64, min(1.0_real64, dot_product(vector_j, vector_k)))
-                    pair = unordered_pair_index(config%num_species, neighbor_species(jj), neighbor_species(kk))
                     associate(parameters => config%g4_groups(pair))
-                    if (parameters%count == 0) cycle
 
                     distance_jk = sqrt(distance_jk_squared)
                     if (do_derivatives) then
                         vector_jk = pair_displacement/distance_jk
-                        dcosine_j = (vector_k - cosine_jk*vector_j)/distance_j
-                        dcosine_k = (vector_j - cosine_jk*vector_k)/distance_k
+                        inverse_j = 1.0_real64/distance_j
+                        inverse_k = 1.0_real64/distance_k
                     end if
 
-                    do group = 1, ncutoff
-                        pair_cutoffs(group) = cutoff_value(distance_jk, config%cutoff_radii(group), &
-                            config%cutoff_type, config%cutoff_alpha)
-                        if (do_derivatives) pair_cutoff_derivatives(group) = &
-                            cutoff_derivative(distance_jk, config%cutoff_radii(group), &
-                            config%cutoff_type, config%cutoff_alpha)
+                    do active_index = 1, size(parameters%active_cutoffs)
+                        group = parameters%active_cutoffs(active_index)
+                        if (do_derivatives) then
+                            call cutoff_value_derivative(distance_jk, config%cutoff_radii(group), &
+                                config%cutoff_type, config%cutoff_alpha, pair_cutoffs(group), pair_cutoff_derivatives(group))
+                        else
+                            pair_cutoffs(group) = cutoff_value(distance_jk, config%cutoff_radii(group), &
+                                config%cutoff_type, config%cutoff_alpha)
+                        end if
                     end do
-                    do group = 1, nangular_exp
+                    do active_index = 1, size(parameters%active_exponentials)
+                        group = parameters%active_exponentials(active_index)
                         pair_exponentials(group) = exp(-config%angular_eta(group)* &
                             (distance_jk - config%angular_shift(group))**2)
                     end do
-                    do exponential_index = 1, nangular_exp
-                        do cutoff_index = 1, ncutoff
-                            cutoff_j = cutoffs(jj, cutoff_index)
-                            cutoff_k = cutoffs(kk, cutoff_index)
-                            cutoff_jk = pair_cutoffs(cutoff_index)
-                            exp_j = angular_exponentials(jj, exponential_index)
-                            exp_k = angular_exponentials(kk, exponential_index)
-                            exp_jk = pair_exponentials(exponential_index)
-                            g4_products(exponential_index, cutoff_index) = &
-                                exp_j*cutoff_j*exp_k*cutoff_k*exp_jk*cutoff_jk
-                            if (do_derivatives) then
-                                dcutoff_j = cutoff_derivatives(jj, cutoff_index) - &
-                                    2.0_real64*config%angular_eta(exponential_index)* &
-                                    (distance_j - config%angular_shift(exponential_index))*cutoff_j
-                                dcutoff_k = cutoff_derivatives(kk, cutoff_index) - &
-                                    2.0_real64*config%angular_eta(exponential_index)* &
-                                    (distance_k - config%angular_shift(exponential_index))*cutoff_k
-                                dcutoff_jk = pair_cutoff_derivatives(cutoff_index) - &
-                                    2.0_real64*config%angular_eta(exponential_index)* &
-                                    (distance_jk - config%angular_shift(exponential_index))*cutoff_jk
-                                g4_radial_j(:, exponential_index, cutoff_index) = &
-                                    exp_j*dcutoff_j*vector_j*exp_k*cutoff_k*exp_jk*cutoff_jk - &
-                                    exp_j*cutoff_j*exp_k*cutoff_k*exp_jk*dcutoff_jk*vector_jk
-                                g4_radial_k(:, exponential_index, cutoff_index) = &
-                                    exp_j*cutoff_j*exp_k*dcutoff_k*vector_k*exp_jk*cutoff_jk + &
-                                    exp_j*cutoff_j*exp_k*cutoff_k*exp_jk*dcutoff_jk*vector_jk
-                            end if
-                        end do
+                    do product_index = 1, size(parameters%product_cutoff)
+                        exponential_index = parameters%product_exponential(product_index)
+                        cutoff_index = parameters%product_cutoff(product_index)
+                        cutoff_j = cutoffs(jj, cutoff_index)
+                        cutoff_k = cutoffs(kk, cutoff_index)
+                        cutoff_jk = pair_cutoffs(cutoff_index)
+                        exp_j = angular_exponentials(jj, exponential_index)
+                        exp_k = angular_exponentials(kk, exponential_index)
+                        exp_jk = pair_exponentials(exponential_index)
+                        products(product_index) = &
+                            exp_j*cutoff_j*exp_k*cutoff_k*exp_jk*cutoff_jk
+                        if (do_derivatives) then
+                            dcutoff_j = cutoff_derivatives(jj, cutoff_index) - &
+                                2.0_real64*config%angular_eta(exponential_index)* &
+                                (distance_j - config%angular_shift(exponential_index))*cutoff_j
+                            dcutoff_k = cutoff_derivatives(kk, cutoff_index) - &
+                                2.0_real64*config%angular_eta(exponential_index)* &
+                                (distance_k - config%angular_shift(exponential_index))*cutoff_k
+                            dcutoff_jk = pair_cutoff_derivatives(cutoff_index) - &
+                                2.0_real64*config%angular_eta(exponential_index)* &
+                                (distance_jk - config%angular_shift(exponential_index))*cutoff_jk
+                            exponential_product = exp_j*exp_k*exp_jk
+                            radial_j(product_index) = exponential_product*dcutoff_j*cutoff_k*cutoff_jk
+                            radial_k(product_index) = exponential_product*cutoff_j*dcutoff_k*cutoff_jk
+                            radial_jk(product_index) = exponential_product*cutoff_j*cutoff_k*dcutoff_jk
+                        end if
                     end do
 
                     do group = 1, parameters%angular_count
@@ -1330,28 +1523,26 @@ contains
                     do pp = 1, parameters%count
                         if (distance_j > parameters%rc(pp) .or. distance_k > parameters%rc(pp) .or. &
                             distance_jk > parameters%rc(pp)) cycle
-                        cutoff_index = parameters%cutoff_group(pp)
-                        exponential_index = parameters%exponential_group(pp)
+                        product_index = parameters%product_group(pp)
                         descriptor = parameters%first_output + pp - 1
-                        product = g4_products(exponential_index, cutoff_index)
+                        product = products(product_index)
                         group = parameters%angular_group(pp)
                         angular_term = angular_values(group)
                         angular_derivative = angular_derivatives(group)
                         values(descriptor) = values(descriptor) + 2.0_real64*angular_term*product
                         angular_coefficient = 2.0_real64*angular_derivative*product
                         radial_coefficient = 2.0_real64*angular_term
-                        dj1 = angular_coefficient*dcosine_j(1) + &
-                            radial_coefficient*g4_radial_j(1, exponential_index, cutoff_index)
-                        dj2 = angular_coefficient*dcosine_j(2) + &
-                            radial_coefficient*g4_radial_j(2, exponential_index, cutoff_index)
-                        dj3 = angular_coefficient*dcosine_j(3) + &
-                            radial_coefficient*g4_radial_j(3, exponential_index, cutoff_index)
-                        dk1 = angular_coefficient*dcosine_k(1) + &
-                            radial_coefficient*g4_radial_k(1, exponential_index, cutoff_index)
-                        dk2 = angular_coefficient*dcosine_k(2) + &
-                            radial_coefficient*g4_radial_k(2, exponential_index, cutoff_index)
-                        dk3 = angular_coefficient*dcosine_k(3) + &
-                            radial_coefficient*g4_radial_k(3, exponential_index, cutoff_index)
+                        cross_j = angular_coefficient*inverse_j
+                        cross_k = angular_coefficient*inverse_k
+                        along_j = radial_coefficient*radial_j(product_index) - cross_j*cosine_jk
+                        along_k = radial_coefficient*radial_k(product_index) - cross_k*cosine_jk
+                        along_jk = radial_coefficient*radial_jk(product_index)
+                        dj1 = along_j*vector_j(1) + cross_j*vector_k(1) - along_jk*vector_jk(1)
+                        dj2 = along_j*vector_j(2) + cross_j*vector_k(2) - along_jk*vector_jk(2)
+                        dj3 = along_j*vector_j(3) + cross_j*vector_k(3) - along_jk*vector_jk(3)
+                        dk1 = along_k*vector_k(1) + cross_k*vector_j(1) + along_jk*vector_jk(1)
+                        dk2 = along_k*vector_k(2) + cross_k*vector_j(2) + along_jk*vector_jk(2)
+                        dk3 = along_k*vector_k(3) + cross_k*vector_j(3) + along_jk*vector_jk(3)
                         derivative_neighbors(1, descriptor, jj) = derivative_neighbors(1, descriptor, jj) + dj1
                         derivative_neighbors(2, descriptor, jj) = derivative_neighbors(2, descriptor, jj) + dj2
                         derivative_neighbors(3, descriptor, jj) = derivative_neighbors(3, descriptor, jj) + dj3
@@ -1366,24 +1557,36 @@ contains
                     do pp = 1, parameters%count
                         if (distance_j > parameters%rc(pp) .or. distance_k > parameters%rc(pp) .or. &
                             distance_jk > parameters%rc(pp)) cycle
-                        cutoff_index = parameters%cutoff_group(pp)
-                        exponential_index = parameters%exponential_group(pp)
+                        product_index = parameters%product_group(pp)
                         descriptor = parameters%output(pp)
-                        product = g4_products(exponential_index, cutoff_index)
+                        product = products(product_index)
                         group = parameters%angular_group(pp)
                         angular_term = angular_values(group)
                         values(descriptor) = values(descriptor) + 2.0_real64*angular_term*product
                         if (do_derivatives) then
                             angular_derivative = angular_derivatives(group)
-                            derivative_j = 2.0_real64*(angular_derivative*dcosine_j*product + &
-                                angular_term*g4_radial_j(:, exponential_index, cutoff_index))
-                            derivative_k = 2.0_real64*(angular_derivative*dcosine_k*product + &
-                                angular_term*g4_radial_k(:, exponential_index, cutoff_index))
-                            derivative_neighbors(:, descriptor, jj) = &
-                                derivative_neighbors(:, descriptor, jj) + derivative_j
-                            derivative_neighbors(:, descriptor, kk) = &
-                                derivative_neighbors(:, descriptor, kk) + derivative_k
-                            derivative_center(:, descriptor) = derivative_center(:, descriptor) - derivative_j - derivative_k
+                            angular_coefficient = 2.0_real64*angular_derivative*product
+                            radial_coefficient = 2.0_real64*angular_term
+                            cross_j = angular_coefficient*inverse_j
+                            cross_k = angular_coefficient*inverse_k
+                            along_j = radial_coefficient*radial_j(product_index) - cross_j*cosine_jk
+                            along_k = radial_coefficient*radial_k(product_index) - cross_k*cosine_jk
+                            along_jk = radial_coefficient*radial_jk(product_index)
+                            dj1 = along_j*vector_j(1) + cross_j*vector_k(1) - along_jk*vector_jk(1)
+                            dj2 = along_j*vector_j(2) + cross_j*vector_k(2) - along_jk*vector_jk(2)
+                            dj3 = along_j*vector_j(3) + cross_j*vector_k(3) - along_jk*vector_jk(3)
+                            dk1 = along_k*vector_k(1) + cross_k*vector_j(1) + along_jk*vector_jk(1)
+                            dk2 = along_k*vector_k(2) + cross_k*vector_j(2) + along_jk*vector_jk(2)
+                            dk3 = along_k*vector_k(3) + cross_k*vector_j(3) + along_jk*vector_jk(3)
+                            derivative_neighbors(1, descriptor, jj) = derivative_neighbors(1, descriptor, jj) + dj1
+                            derivative_neighbors(2, descriptor, jj) = derivative_neighbors(2, descriptor, jj) + dj2
+                            derivative_neighbors(3, descriptor, jj) = derivative_neighbors(3, descriptor, jj) + dj3
+                            derivative_neighbors(1, descriptor, kk) = derivative_neighbors(1, descriptor, kk) + dk1
+                            derivative_neighbors(2, descriptor, kk) = derivative_neighbors(2, descriptor, kk) + dk2
+                            derivative_neighbors(3, descriptor, kk) = derivative_neighbors(3, descriptor, kk) + dk3
+                            derivative_center(1, descriptor) = derivative_center(1, descriptor) - dj1 - dk1
+                            derivative_center(2, descriptor) = derivative_center(2, descriptor) - dj2 - dk2
+                            derivative_center(3, descriptor) = derivative_center(3, descriptor) - dj3 - dk3
                         end if
                     end do
                     end if

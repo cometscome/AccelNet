@@ -71,6 +71,39 @@ The standalone Fortran G4 derivative-layout benchmark is available as
 `build/benchmark-g4-derivative`. It checks numerical equivalence before timing
 the array-expression, contiguous fused-scalar, and member-first SoA kernels.
 
+At model setup, G4 descriptors with exactly zero radial shift (`Rs=0`) are
+grouped by neighbor-species pair and cutoff radius. These groups automatically
+use a fast path that shares triangle geometry and cutoff factors, reuses
+exponentials and angular powers, and forms derivatives from shared edge
+products. Different radii and shifted descriptors may coexist in one model:
+each zero-shift group uses the fast path, while nonzero shifts (including
+negative shifts) use the general kernel with active parameter combinations.
+
+Both paths evaluate cutoff values and derivatives together where needed,
+and avoid division by cutoff values or angular factors. Cutoff boundaries
+and collinear geometries remain supported. The value-only and derivative
+entry points use the same G4 value arithmetic. This is an algebraic
+optimization, independent of the G5 direct/moment selection; no input flag
+or retraining is required.
+
+The self-contained G4 regression tests are also run by GitHub Actions:
+
+```sh
+cmake --build build --target test_cutoff_pair test_g4_groups
+ctest --test-dir build -L g4 --output-on-failure
+```
+
+They cover all ten cutoff types, sparse combinations of species and
+parameters, shifted Gaussians, integer and noninteger angular powers,
+contiguous and interleaved descriptor outputs, near-collinear geometries,
+and cutoff boundaries. Mixed-shift, all-zero-shift and all-nonzero-shift
+models are tested, including multiple fast-path cutoffs within one species
+pair and negative shifts. G4 values from the value-only and derivative APIs
+must match exactly. Values are checked against a scalar definition of
+G4; analytical derivatives are checked against finite differences of that
+definition. The predictor's existing tests additionally check energy,
+forces and virials.
+
 If the sibling `TiO2-xsf` corpus is present, CMake automatically adds a
 six-structure cross-implementation regression and a 95-atom performance
 gate. Without that corpus, the self-contained 24-atom fixture is still

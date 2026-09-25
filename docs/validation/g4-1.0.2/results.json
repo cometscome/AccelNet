@@ -1,0 +1,331 @@
+{
+  "warmup": 20,
+  "steps": 200,
+  "atoms": 36,
+  "beads": 4,
+  "ranks": 1,
+  "threads": 1,
+  "runs": [
+    {
+      "variant": "previous",
+      "repeat": 0,
+      "seconds": 11.95,
+      "printed_error": 0.0,
+      "restart_error": 0.0
+    },
+    {
+      "variant": "grouped",
+      "repeat": 0,
+      "seconds": 9.06,
+      "printed_error": 0.0,
+      "restart_error": 8.753975322406404e-11
+    },
+    {
+      "variant": "n2p2",
+      "repeat": 0,
+      "seconds": 7.87,
+      "printed_error": 0.0,
+      "restart_error": 1.4296119843493216e-10
+    },
+    {
+      "variant": "original",
+      "repeat": 0,
+      "seconds": 12.02,
+      "printed_error": 0.0,
+      "restart_error": 1.1644107900110612e-10
+    },
+    {
+      "variant": "grouped",
+      "repeat": 1,
+      "seconds": 9.03,
+      "printed_error": 0.0,
+      "restart_error": 8.753975322406404e-11
+    },
+    {
+      "variant": "n2p2",
+      "repeat": 1,
+      "seconds": 7.84,
+      "printed_error": 0.0,
+      "restart_error": 1.4296119843493216e-10
+    },
+    {
+      "variant": "original",
+      "repeat": 1,
+      "seconds": 11.99,
+      "printed_error": 0.0,
+      "restart_error": 1.1644107900110612e-10
+    },
+    {
+      "variant": "previous",
+      "repeat": 1,
+      "seconds": 9.97,
+      "printed_error": 0.0,
+      "restart_error": 0.0
+    },
+    {
+      "variant": "n2p2",
+      "repeat": 2,
+      "seconds": 7.82,
+      "printed_error": 0.0,
+      "restart_error": 1.4296119843493216e-10
+    },
+    {
+      "variant": "original",
+      "repeat": 2,
+      "seconds": 11.99,
+      "printed_error": 0.0,
+      "restart_error": 1.1644107900110612e-10
+    },
+    {
+      "variant": "previous",
+      "repeat": 2,
+      "seconds": 9.95,
+      "printed_error": 0.0,
+      "restart_error": 0.0
+    },
+    {
+      "variant": "grouped",
+      "repeat": 2,
+      "seconds": 9.01,
+      "printed_error": 0.0,
+      "restart_error": 8.753975322406404e-11
+    }
+  ],
+  "executables": {
+    "previous": {
+      "backend": "ACCELNET",
+      "path": "/tmp/accelnet-g4-grouped/pimd.before.x",
+      "sha256": "3a17b58a8a2327143fdb4f547344f613e098ddb82c0038b83942fafc8d11f36d"
+    },
+    "grouped": {
+      "backend": "ACCELNET",
+      "path": "/tmp/accelnet-g4-grouped/pimd.grouped.x",
+      "sha256": "8ecc78fa873c147a6af37effa42d8b6b95f380229284509ba112085836fed0de"
+    },
+    "n2p2": {
+      "backend": "N2P2",
+      "path": "/tmp/pimd-ice-profile/pimd.baseline.x",
+      "sha256": "47705addfe34821cdc71e38503469d88586011b8b4a622babca936064713580b"
+    },
+    "original": {
+      "backend": "ACCELNET",
+      "path": "/tmp/pimd-ice-profile/pimd.baseline.x",
+      "sha256": "47705addfe34821cdc71e38503469d88586011b8b4a622babca936064713580b"
+    }
+  },
+  "median_seconds": {
+    "previous": 9.97,
+    "grouped": 9.03,
+    "n2p2": 7.84,
+    "original": 11.99
+  },
+  "version": "1.0.2",
+  "accelnet_base": "c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b",
+  "environment": {
+    "cpu": "Intel Xeon Gold 6526Y",
+    "fortran": "GNU Fortran 11.4.0",
+    "mpi": "Open MPI 5.0.7",
+    "accelnet_flags": "-O3; no fast-math or CPU-specific flags",
+    "n2p2": "PIMD-patched 2.2.0, grouped/cache enabled, -O3 -march=native",
+    "pimd_branch": "AccelNet_v1",
+    "pimd_base": "ea2e7541"
+  },
+  "source_sha256": {
+    "AccelNetDescriptors/src/accelnet_behler.f90": "541a845c4b41925f723bf724debdf2cff762a80171c8012cbcf2c4c0d88cdcb6",
+    "AccelNetDescriptors/src/accelnet_descriptors.f90": "821bb32d3df1665c05af7052f0aa1becc431c2434a3ff14008b0ea453f394447",
+    "AccelNetDescriptors/test/test_cutoff_pair.f90": "7475701d911c2358bf2d18297b7181eaf89b90f8bcf5ad677666262c50a8e1a3",
+    "AccelNetDescriptors/test/test_g4_groups.f90": "3ecb0287462f73b56c8e899755d937c8b7847f0f819a3f51a9023336dd11d96c"
+  },
+  "validation": {
+    "release_ctest": "23/23 passed",
+    "debug_shared_ctest": "23/23 passed; -fcheck=all -fbacktrace",
+    "pimd_ctest": "8/8 accelnet groups passed",
+    "github_actions": "G4 tests registered; hosted matrix not yet run",
+    "ice_finite_difference": {
+      "TESTFORCE": {
+        "components": 108,
+        "maximum_printed_error": 3.3000000000411173e-09,
+        "fdiff_bohr": 0.0001
+      },
+      "TESTVIRIAL": {
+        "components": 9,
+        "maximum_printed_error": 2.0000000100495186e-08,
+        "fdiff_bohr": 0.0001
+      }
+    },
+    "reference_checks": {
+      "aenet-SiO2-initial-DIRECT": {
+        "energy_Ha": 1.9984014443252818e-15,
+        "force_Ha_per_bohr": 2.1094237467877974e-15,
+        "virial_Ha": 5.6066262743570405e-15
+      },
+      "aenet-SiO2-initial-MOMENT": {
+        "energy_Ha": 3.9968028886505635e-15,
+        "force_Ha_per_bohr": 2.0712598303163077e-15,
+        "virial_Ha": 1.199040866595169e-14
+      },
+      "aenet-SiO2-initial-AUTO": {
+        "energy_Ha": 3.9968028886505635e-15,
+        "force_Ha_per_bohr": 2.0712598303163077e-15,
+        "virial_Ha": 1.199040866595169e-14
+      },
+      "aenet-SiO2-displaced-DIRECT": {
+        "energy_Ha": 1.9984014443252818e-15,
+        "force_Ha_per_bohr": 3.2335245592207684e-15,
+        "virial_Ha": 7.993605777301127e-15
+      },
+      "aenet-SiO2-displaced-MOMENT": {
+        "energy_Ha": 4.884981308350689e-15,
+        "force_Ha_per_bohr": 2.4147350785597155e-15,
+        "virial_Ha": 8.881784197001252e-15
+      },
+      "aenet-SiO2-displaced-AUTO": {
+        "energy_Ha": 4.884981308350689e-15,
+        "force_Ha_per_bohr": 2.4147350785597155e-15,
+        "virial_Ha": 8.881784197001252e-15
+      },
+      "aenet-SiO2-dynamics-xmpi-OFF": {
+        "printed_trajectory": 0.0,
+        "restart": 2.6645352591003757e-15
+      },
+      "aenet-SiO2-dynamics-xmpi-ON": {
+        "printed_trajectory": 0.0,
+        "restart": 2.6645352591003757e-15
+      },
+      "aenet-PdH-initial-DIRECT": {
+        "energy_Ha": 0.0,
+        "force_Ha_per_bohr": 2.7483881856863216e-16,
+        "virial_Ha": 1.8332557694122897e-14
+      },
+      "aenet-PdH-initial-MOMENT": {
+        "energy_Ha": 0.0,
+        "force_Ha_per_bohr": 3.0408703829089056e-16,
+        "virial_Ha": 1.720151798778602e-14
+      },
+      "aenet-PdH-initial-AUTO": {
+        "energy_Ha": 0.0,
+        "force_Ha_per_bohr": 3.0408703829089056e-16,
+        "virial_Ha": 1.720151798778602e-14
+      },
+      "aenet-PdH-initial-skin-0.1": {
+        "energy_Ha": 1.0658141036401503e-14,
+        "force_Ha_per_bohr": 2.056873002176973e-16,
+        "virial_Ha": 4.1598668953923834e-15
+      },
+      "aenet-PdH-initial-skin-2.0": {
+        "energy_Ha": 0.0,
+        "force_Ha_per_bohr": 0.0,
+        "virial_Ha": 0.0
+      },
+      "aenet-PdH-displaced-DIRECT": {
+        "energy_Ha": 1.0658141036401503e-14,
+        "force_Ha_per_bohr": 3.0579922274953653e-16,
+        "virial_Ha": 9.686695889854491e-15
+      },
+      "aenet-PdH-displaced-MOMENT": {
+        "energy_Ha": 1.0658141036401503e-14,
+        "force_Ha_per_bohr": 3.2395960913866872e-16,
+        "virial_Ha": 8.770761894538737e-15
+      },
+      "aenet-PdH-displaced-AUTO": {
+        "energy_Ha": 1.0658141036401503e-14,
+        "force_Ha_per_bohr": 3.2395960913866872e-16,
+        "virial_Ha": 8.770761894538737e-15
+      },
+      "aenet-PdH-displaced-skin-0.1": {
+        "energy_Ha": 1.0658141036401503e-14,
+        "force_Ha_per_bohr": 2.423733956591345e-16,
+        "virial_Ha": 2.7200464103316335e-15
+      },
+      "aenet-PdH-displaced-skin-2.0": {
+        "energy_Ha": 0.0,
+        "force_Ha_per_bohr": 0.0,
+        "virial_Ha": 0.0
+      },
+      "aenet-PdH-dynamics-xmpi-OFF": {
+        "printed_trajectory": 0.0,
+        "restart": 2.0816681711721685e-15
+      },
+      "aenet-PdH-dynamics-xmpi-ON": {
+        "printed_trajectory": 0.0,
+        "restart": 2.1094237467877974e-15
+      },
+      "n2p2-SiO2-initial-DIRECT": {
+        "energy_Ha": 7.993605777301127e-15,
+        "force_Ha_per_bohr": 7.993605777301127e-15,
+        "virial_Ha": 3.206324095117452e-13
+      },
+      "n2p2-SiO2-initial-MOMENT": {
+        "energy_Ha": 7.993605777301127e-15,
+        "force_Ha_per_bohr": 7.993605777301127e-15,
+        "virial_Ha": 3.206324095117452e-13
+      },
+      "n2p2-SiO2-initial-AUTO": {
+        "energy_Ha": 7.993605777301127e-15,
+        "force_Ha_per_bohr": 7.993605777301127e-15,
+        "virial_Ha": 3.206324095117452e-13
+      },
+      "n2p2-SiO2-displaced-DIRECT": {
+        "energy_Ha": 5.995204332975845e-15,
+        "force_Ha_per_bohr": 1.0769163338864018e-14,
+        "virial_Ha": 2.1227464230832993e-13
+      },
+      "n2p2-SiO2-displaced-MOMENT": {
+        "energy_Ha": 5.995204332975845e-15,
+        "force_Ha_per_bohr": 1.0769163338864018e-14,
+        "virial_Ha": 2.1227464230832993e-13
+      },
+      "n2p2-SiO2-displaced-AUTO": {
+        "energy_Ha": 5.995204332975845e-15,
+        "force_Ha_per_bohr": 1.0769163338864018e-14,
+        "virial_Ha": 2.1227464230832993e-13
+      },
+      "n2p2-SiO2-dynamics-xmpi-OFF": {
+        "printed_trajectory": 0.0,
+        "restart": 4.198030811863873e-15
+      },
+      "n2p2-SiO2-dynamics-xmpi-ON": {
+        "printed_trajectory": 0.0,
+        "restart": 4.250072516143177e-15
+      },
+      "n2p2-ice-initial-DIRECT": {
+        "energy_Ha": 8.881784197001252e-16,
+        "force_Ha_per_bohr": 2.491279751937192e-15,
+        "virial_Ha": 1.1901590823981678e-13
+      },
+      "n2p2-ice-initial-MOMENT": {
+        "energy_Ha": 8.881784197001252e-16,
+        "force_Ha_per_bohr": 2.491279751937192e-15,
+        "virial_Ha": 1.1901590823981678e-13
+      },
+      "n2p2-ice-initial-AUTO": {
+        "energy_Ha": 8.881784197001252e-16,
+        "force_Ha_per_bohr": 2.491279751937192e-15,
+        "virial_Ha": 1.1901590823981678e-13
+      },
+      "n2p2-ice-displaced-DIRECT": {
+        "energy_Ha": 4.440892098500626e-15,
+        "force_Ha_per_bohr": 3.788636071533347e-15,
+        "virial_Ha": 3.907985046680551e-14
+      },
+      "n2p2-ice-displaced-MOMENT": {
+        "energy_Ha": 4.440892098500626e-15,
+        "force_Ha_per_bohr": 3.788636071533347e-15,
+        "virial_Ha": 3.907985046680551e-14
+      },
+      "n2p2-ice-displaced-AUTO": {
+        "energy_Ha": 4.440892098500626e-15,
+        "force_Ha_per_bohr": 3.788636071533347e-15,
+        "virial_Ha": 3.907985046680551e-14
+      },
+      "n2p2-ice-dynamics-xmpi-OFF": {
+        "printed_trajectory": 0.0,
+        "restart": 2.1316282072803006e-14
+      },
+      "n2p2-ice-dynamics-xmpi-ON": {
+        "printed_trajectory": 0.0,
+        "restart": 2.1316282072803006e-14
+      }
+    }
+  }
+}

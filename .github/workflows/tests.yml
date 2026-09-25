@@ -61,6 +61,7 @@ jobs:
         run: >-
           cmake --build build --parallel 2 --target
           test_descriptor test_tio2 test_lj_model test_behler test_combined_model test_setup_parser
+          test_cutoff_pair test_g4_groups
           test_virial test_virial_c test_virial_convergence test_virial_invariants
           test_n2p2_network test_n2p2_topology test_n2p2_atomic_api test_network_activations
           accelnet-descriptor accelnet-setup-descriptor accelnet-predict accelnet-model-converter-fortran

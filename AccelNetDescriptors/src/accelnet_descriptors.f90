@@ -72,6 +72,7 @@ module accelnet_descriptors
     public :: evaluate_structure
     public :: write_descriptor_file
     public :: cutoff_value, cutoff_derivative, validate_cutoff_parameters
+    public :: cutoff_value_derivative
     public :: chebyshev_values, chebyshev_values_derivatives
     public :: set_chebyshev_evaluation, chebyshev_uses_moments
 
@@ -342,6 +343,76 @@ contains
             value = inverse_width*core_derivative
         end select
     end function cutoff_derivative
+
+    pure subroutine cutoff_value_derivative(distance, rc, cutoff_type, alpha, value, derivative)
+        real(real64), intent(in) :: distance, rc
+        integer, intent(in), optional :: cutoff_type
+        real(real64), intent(in), optional :: alpha
+        real(real64), intent(out) :: value, derivative
+        integer :: kind
+        real(real64) :: inner, inverse_width, x, t, width, core_derivative
+
+        ! Share the expensive elementary functions when both outputs are needed.
+        kind = CUTOFF_COS
+        if (present(cutoff_type)) kind = cutoff_type
+        value = 0.0_real64
+        derivative = 0.0_real64
+        if (distance >= rc) return
+        select case(kind)
+        case(CUTOFF_HARD)
+            value = 1.0_real64
+        case(CUTOFF_TANHU, CUTOFF_TANH)
+            t = tanh(1.0_real64 - distance/rc)
+            value = t*t*t
+            derivative = 3.0_real64*t*t*(t*t - 1.0_real64)/rc
+            if (kind == CUTOFF_TANH) then
+                value = value/tanh(1.0_real64)**3
+                derivative = derivative/tanh(1.0_real64)**3
+            end if
+        case(CUTOFF_FRACTIONAL)
+            width = rc
+            if (present(alpha)) width = alpha*rc
+            x = (distance - rc)/width
+            value = x*x/(1.0_real64 + x*x)
+            derivative = 2.0_real64*x/(width*(1.0_real64 + x*x)**2)
+        case default
+            inner = 0.0_real64
+            if (present(alpha)) inner = alpha*rc
+            if (distance < inner) then
+                value = 1.0_real64
+                return
+            end if
+            inverse_width = 1.0_real64/(rc - inner)
+            x = (distance - inner)*inverse_width
+            select case(kind)
+            case(CUTOFF_COS)
+                value = 0.5_real64*(cos(PI_ACCELNET*x) + 1.0_real64)
+                core_derivative = -0.5_real64*PI_ACCELNET*sin(PI_ACCELNET*x)
+            case(CUTOFF_EXP)
+                t = 1.0_real64/(x*x - 1.0_real64)
+                value = exp(1.0_real64 + t)
+                core_derivative = -2.0_real64*x*t*t*value
+            case(CUTOFF_POLY1)
+                value = (2.0_real64*x - 3.0_real64)*x*x + 1.0_real64
+                core_derivative = x*(6.0_real64*x - 6.0_real64)
+            case(CUTOFF_POLY2)
+                value = ((15.0_real64 - 6.0_real64*x)*x - 10.0_real64)*x*x*x + 1.0_real64
+                core_derivative = x*x*((60.0_real64 - 30.0_real64*x)*x - 30.0_real64)
+            case(CUTOFF_POLY3)
+                value = (x*(x*(20.0_real64*x - 70.0_real64) + 84.0_real64) - 35.0_real64)*x**4 + 1.0_real64
+                core_derivative = x**3*(x*(x*(140.0_real64*x - 420.0_real64) + &
+                    420.0_real64) - 140.0_real64)
+            case(CUTOFF_POLY4)
+                value = (x*(x*((315.0_real64 - 70.0_real64*x)*x - 540.0_real64) + &
+                    420.0_real64) - 126.0_real64)*x**5 + 1.0_real64
+                core_derivative = x**4*(x*(x*((2520.0_real64 - 630.0_real64*x)*x - &
+                    3780.0_real64) + 2520.0_real64) - 630.0_real64)
+            case default
+                core_derivative = 0.0_real64
+            end select
+            derivative = inverse_width*core_derivative
+        end select
+    end subroutine cutoff_value_derivative
 
     pure subroutine chebyshev_values(r, r0, r1, order, values)
         real(real64), intent(in) :: r, r0, r1
