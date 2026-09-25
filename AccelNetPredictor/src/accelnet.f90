@@ -71,6 +71,7 @@ module accelnet
     public :: accelnet_set_chebyshev_evaluation, accelnet_get_chebyshev_evaluation
     public :: accelnet_set_g5_evaluation
     public :: accelnet_atomic_energy, accelnet_atomic_energy_and_forces
+    public :: accelnet_atomic_energy_and_forces_virial
     public :: accelnet_convert_atom_types, accelnet_free_atom_energy
     public :: accelnet_nbl_init, accelnet_nbl_final, accelnet_nbl_neighbors
     public :: accelnet_sfb_init, accelnet_sfb_final, accelnet_sfb_nvalues
@@ -483,18 +484,43 @@ contains
 
     subroutine accelnet_atomic_energy_and_forces(coo_i, type_i, index_i, n_j, coo_j, type_j, &
                                                  index_j, natoms, energy_i, forces, stat) bind(C)
+        integer(c_int), value, intent(in) :: type_i, index_i, n_j, natoms
+        real(c_double), intent(in) :: coo_i(3), coo_j(3,n_j)
+        integer(c_int), intent(in) :: type_j(n_j), index_j(n_j)
+        real(c_double), intent(out) :: energy_i
+        real(c_double), intent(inout) :: forces(3,natoms)
+        integer(c_int), intent(out) :: stat
+        call atomic_energy_forces(coo_i, type_i, index_i, n_j, coo_j, type_j, &
+                                  index_j, natoms, energy_i, forces, stat)
+    end subroutine accelnet_atomic_energy_and_forces
+
+    subroutine accelnet_atomic_energy_and_forces_virial(coo_i, type_i, index_i, n_j, coo_j, type_j, &
+                                                        index_j, natoms, energy_i, forces, virial, stat) bind(C)
+        integer(c_int), value, intent(in) :: type_i, index_i, n_j, natoms
+        real(c_double), intent(in) :: coo_i(3), coo_j(3,n_j)
+        integer(c_int), intent(in) :: type_j(n_j), index_j(n_j)
+        real(c_double), intent(out) :: energy_i
+        real(c_double), intent(inout) :: forces(3,natoms), virial(3,3)
+        integer(c_int), intent(out) :: stat
+        call atomic_energy_forces(coo_i, type_i, index_i, n_j, coo_j, type_j, &
+                                  index_j, natoms, energy_i, forces, stat, virial)
+    end subroutine accelnet_atomic_energy_and_forces_virial
+
+    subroutine atomic_energy_forces(coo_i, type_i, index_i, n_j, coo_j, type_j, &
+                                    index_j, natoms, energy_i, forces, stat, virial)
         real(c_double), intent(in) :: coo_i(3)
         integer(c_int), value, intent(in) :: type_i, index_i, n_j, natoms
         real(c_double), intent(in) :: coo_j(3,n_j)
         integer(c_int), intent(in) :: type_j(n_j), index_j(n_j)
         real(c_double), intent(out) :: energy_i
         real(c_double), intent(inout) :: forces(3,natoms)
+        real(c_double), intent(inout), optional :: virial(3,3)
         integer(c_int), intent(out) :: stat
         real(real64), allocatable :: displacements(:, :), descriptor(:), normalized(:), gradient(:), contribution(:)
         real(real64), allocatable :: derivative_center(:, :), derivative_neighbors(:, :, :), contracted_neighbors(:, :)
         integer, allocatable :: local_species(:)
-        real(real64) :: network_energy, contracted_center(3)
-        integer :: allocation_status, dimension, neighbor
+        real(real64) :: network_energy, contracted_center(3), neighbor_force(3)
+        integer :: allocation_status, dimension, neighbor, component
         logical :: direct_contraction
         energy_i = 0.0_c_double
         call validate_atomic_arguments(type_i, n_j, type_j, stat)
@@ -537,21 +563,35 @@ contains
                    global_model%networks(type_i)%atomic_references(type_i)
         contribution = -gradient*global_model%networks(type_i)%descriptor_scale / &
                        global_model%networks(type_i)%energy_scale
+        ! W(a,b) = sum_images (r_image-r_center)(a) * F_image(b).
+        ! Accumulate before image forces are folded onto original atom IDs.
+        ! This is the full energy-unit virial, without a factor 1/2 or volume division.
         if (direct_contraction) then
             call contract_model_derivatives(global_model%setups(type_i)%model, displacements, local_species, &
                 contribution, contracted_center, contracted_neighbors)
             forces(:,index_i) = forces(:,index_i) + contracted_center
             do neighbor = 1, n_j
                 forces(:,index_j(neighbor)) = forces(:,index_j(neighbor)) + contracted_neighbors(:,neighbor)
+                if (present(virial)) then
+                    do component = 1, 3
+                        virial(:,component) = virial(:,component) + &
+                            displacements(:,neighbor)*contracted_neighbors(component,neighbor)
+                    end do
+                end if
             end do
         else
             forces(:,index_i) = forces(:,index_i) + matmul(derivative_center, contribution)
             do neighbor = 1, n_j
-                forces(:,index_j(neighbor)) = forces(:,index_j(neighbor)) + &
-                    matmul(derivative_neighbors(:,:,neighbor), contribution)
+                neighbor_force = matmul(derivative_neighbors(:,:,neighbor), contribution)
+                forces(:,index_j(neighbor)) = forces(:,index_j(neighbor)) + neighbor_force
+                if (present(virial)) then
+                    do component = 1, 3
+                        virial(:,component) = virial(:,component) + displacements(:,neighbor)*neighbor_force(component)
+                    end do
+                end if
             end do
         end if
-    end subroutine accelnet_atomic_energy_and_forces
+    end subroutine atomic_energy_forces
 
     subroutine validate_atomic_arguments(type_i, n_j, type_j, stat)
         integer, intent(in) :: type_i, n_j, type_j(n_j)

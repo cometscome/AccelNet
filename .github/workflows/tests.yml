@@ -1,0 +1,79 @@
+name: Library tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: library-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: GNU ${{ matrix.compiler }} / ${{ matrix.build_type }} / shared=${{ matrix.shared }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            compiler: 11
+            build_type: Release
+            shared: "OFF"
+            checks: ""
+          - os: ubuntu-24.04
+            compiler: 13
+            build_type: Release
+            shared: "OFF"
+            checks: ""
+          - os: ubuntu-24.04
+            compiler: 13
+            build_type: Debug
+            shared: "ON"
+            checks: "-fcheck=all -fbacktrace"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install compilers and CMake
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gcc-${{ matrix.compiler }} gfortran-${{ matrix.compiler }} cmake
+      - name: Configure self-contained tests
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_C_COMPILER=gcc-${{ matrix.compiler }}
+          -DCMAKE_Fortran_COMPILER=gfortran-${{ matrix.compiler }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_Fortran_FLAGS="${{ matrix.checks }}"
+          -DBUILD_SHARED_LIBS=${{ matrix.shared }}
+          -DBUILD_TESTING=ON
+          -DACCELNET_BUILD_REFERENCE_TESTS=OFF
+          -DACCELNET_DESCRIPTORS_BUILD_AENET_REFERENCE=OFF
+          -DACCELNET_DESCRIPTORS_BUILD_N2P2_REFERENCE=OFF
+          -DACCELNET_PREDICTOR_GOLDEN_DIR=
+      # Build test dependencies explicitly: standalone performance benchmarks
+      # are not part of the correctness suite (GCC 11 ICEs on benchmark-g4-derivative).
+      - name: Build libraries, test binaries, and tested command-line tools
+        run: >-
+          cmake --build build --parallel 2 --target
+          test_descriptor test_tio2 test_lj_model test_behler test_combined_model test_setup_parser
+          test_virial test_virial_c test_virial_convergence test_virial_invariants
+          test_n2p2_network test_n2p2_topology test_n2p2_atomic_api test_network_activations
+          accelnet-descriptor accelnet-setup-descriptor accelnet-predict accelnet-model-converter-fortran
+      - name: Run all configured tests
+        run: ctest --test-dir build --output-on-failure --no-tests=error --output-junit test-results.xml
+      - name: Save test logs and virial convergence data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-gnu${{ matrix.compiler }}-${{ matrix.build_type }}-shared${{ matrix.shared }}
+          path: |
+            build/test-results.xml
+            build/Testing/Temporary/
+            build/**/virial-convergence*.csv
+          if-no-files-found: warn
+          retention-days: 14

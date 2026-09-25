@@ -35,6 +35,16 @@ void accelnet_atomic_energy_and_forces(
     const double coo_j[], const int type_j[], const int index_j[],
     int natoms, double *energy_i, double forces[], int *stat);
 
+/* Adds the atomic contribution to forces and to the full virial tensor.
+ * virial[a + 3*b] += sum_j (coo_j[a] - coo_i[a]) * F_j[b].
+ * Units are energy (no volume division); periodic images must be explicit
+ * in coo_j, even when multiple images share the same index_j.
+ * Initialize forces and virial to zero before the central-atom loop. */
+void accelnet_atomic_energy_and_forces_virial(
+    const double coo_i[3], int type_i, int index_i, int n_j,
+    const double coo_j[], const int type_j[], const int index_j[],
+    int natoms, double *energy_i, double forces[], double virial[9], int *stat);
+
 void accelnet_convert_atom_types(int ntypes_in, char *atom_types[],
                                  int natoms_in, const int type_id_in[],
                                  int type_id_out[], int *stat);

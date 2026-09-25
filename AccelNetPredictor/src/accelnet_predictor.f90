@@ -382,30 +382,32 @@ contains
         end do
     end subroutine predict_energy_structure
 
-    subroutine predict_energy_forces_file(self, xsf_file, total_energy, forces)
+    subroutine predict_energy_forces_file(self, xsf_file, total_energy, forces, virial)
         class(predictor_model), intent(in) :: self
         character(len=*), intent(in) :: xsf_file
         real(real64), intent(out) :: total_energy
         real(real64), allocatable, intent(out) :: forces(:, :)
+        real(real64), intent(out), optional :: virial(3,3)
         type(atomic_structure) :: structure
         call read_xsf(trim(xsf_file), self%species_names, structure)
         allocate(forces(3, structure%natoms))
-        call self%predict_energy_forces(structure, total_energy, forces)
+        call self%predict_energy_forces(structure, total_energy, forces, virial)
     end subroutine predict_energy_forces_file
 
-    subroutine predict_energy_forces_structure(self, structure, total_energy, forces)
+    subroutine predict_energy_forces_structure(self, structure, total_energy, forces, virial)
         class(predictor_model), intent(in) :: self
         type(atomic_structure), intent(in) :: structure
         real(real64), intent(out) :: total_energy
         real(real64), intent(out) :: forces(:, :)
+        real(real64), intent(out), optional :: virial(3,3)
         type(neighbor_data) :: neighbors
         real(real64), allocatable :: descriptor(:), normalized(:), gradient(:), contributions(:)
         real(real64), allocatable :: derivative_center(:, :), derivative_neighbors(:, :, :)
         real(real64), allocatable :: contracted_neighbors(:, :)
-        real(real64) :: contracted_center(3)
+        real(real64) :: contracted_center(3), neighbor_force(3)
         integer, allocatable :: global_neighbors(:), local_neighbors(:)
         integer :: atom, species, first, last, n, maximum_dimension, maximum_neighbors
-        integer :: neighbor, target, coefficient
+        integer :: neighbor, target, coefficient, component
         real(real64) :: atomic_energy, cohesive
         logical :: use_direct_contraction
         if (size(forces, 1) /= 3 .or. size(forces, 2) /= structure%natoms) &
@@ -431,6 +433,7 @@ contains
         end if
         allocate(global_neighbors(maximum_neighbors), local_neighbors(maximum_neighbors))
         forces = 0.0_real64; cohesive = 0.0_real64
+        if (present(virial)) virial = 0.0_real64
         do atom = 1, structure%natoms
             species = structure%species(atom)
             first = neighbors%offsets(atom); last = neighbors%offsets(atom + 1) - 1; n = max(0, last - first + 1)
@@ -462,6 +465,12 @@ contains
                 do neighbor = 1, n
                     target = neighbors%atom_indices(first + neighbor - 1)
                     forces(:, target) = forces(:, target) + contracted_neighbors(:, neighbor)
+                    if (present(virial)) then
+                        do component = 1, 3
+                            virial(:,component) = virial(:,component) + &
+                                neighbors%displacements(:,first + neighbor - 1)*contracted_neighbors(component,neighbor)
+                        end do
+                    end if
                 end do
             else
                 do coefficient = 1, self%networks(species)%nodes(1)
@@ -474,6 +483,14 @@ contains
                         forces(:, target) = forces(:, target) + &
                             contributions(coefficient)*derivative_neighbors(:, coefficient, neighbor)
                     end do
+                    if (present(virial)) then
+                        neighbor_force = matmul(derivative_neighbors(:,1:self%networks(species)%nodes(1),neighbor), &
+                                                contributions(1:self%networks(species)%nodes(1)))
+                        do component = 1, 3
+                            virial(:,component) = virial(:,component) + &
+                                neighbors%displacements(:,first + neighbor - 1)*neighbor_force(component)
+                        end do
+                    end if
                 end do
             end if
         end do
