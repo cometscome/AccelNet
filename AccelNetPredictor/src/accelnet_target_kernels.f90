@@ -1,5 +1,5 @@
 ! All arguments are plain contiguous arrays. No derived-type deep mapping,
-! device allocation, or descriptor Jacobian is needed by the kernels.
+! device allocation is performed inside the kernels. G4 saves its Jacobian.
 module accelnet_target_kernels
     use iso_fortran_env, only: real64
     use accelnet_target_runtime, only: omp_get_wtime, omp_get_initial_device
@@ -13,7 +13,7 @@ contains
                                 features, feature_params, local_species, mp, multiplicity, polynomial, &
                                 species, centers, offsets, indices, dr, &
                                 energies, forces, virial, g, values, deriv, delta, moments, powers, &
-            radial_cache, use_moment, &
+            radial_cache, jacobian, g4_scratch, g4_first, use_moment, &
                                 geom, edge_row, edge_force, nrw, natoms, nedges, stages)
         integer, contiguous, intent(in) :: features(:,:,:),local_species(:,:)
         real(real64), contiguous, intent(in) :: feature_params(:,:,:)
@@ -26,8 +26,9 @@ contains
         real(real64), contiguous, intent(out) :: energies(:)
         real(real64), contiguous, intent(inout) :: forces(:,:), virial(:,:)
         real(real64), contiguous, intent(inout) :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:)
-        real(real64), contiguous, intent(inout) :: moments(:,:,:), powers(:,:,:), radial_cache(:,:,:)
-        integer, contiguous, intent(inout) :: use_moment(:), edge_row(:)
+        real(real64), contiguous, intent(inout) :: moments(:,:,:), powers(:,:,:), radial_cache(:,:,:), &
+            jacobian(:,:,:), g4_scratch(:,:,:)
+        integer, contiguous, intent(inout) :: use_moment(:), edge_row(:), g4_first(:,:,:)
         real(real64), contiguous, intent(inout) :: geom(:,:), edge_force(:,:)
         real(real64), intent(out) :: stages(3)
         integer :: row, s, nr, na, dim, multi, version, ct, j, k, b, l, i, o, nin, nout, a, c, target
@@ -42,7 +43,8 @@ contains
         !$omp& map(alloc: features,feature_params,local_species) &
         !$omp& map(alloc: meta, nodes, acts, woffset, weights, params, shift, scale, spin, mp, multiplicity, polynomial) &
         !$omp& map(alloc: species, centers, offsets, indices, dr, energies, forces, virial, &
-        !$omp& g, values, deriv, delta, moments, powers, radial_cache, use_moment, geom, edge_row, edge_force)
+        !$omp& g, values, deriv, delta, moments, powers, radial_cache, jacobian, g4_scratch, g4_first, &
+        !$omp& use_moment, geom, edge_row, edge_force)
         started = omp_get_wtime()
         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& private(s,nr,na,dim,multi,version,ct,j,k,b,l,i,o,nin,nout,rj,rk,fcj,fck,sj,sk,cosine,x, &
@@ -201,8 +203,10 @@ contains
             end do
             !$omp end target teams distribute parallel do
         end if
-        if (any(meta(10,:) == 1)) then
-            if (any(features(12,:,:) > 0)) then
+        if (any(features(1,:,:) == 4)) call g4_values_derivatives(device,nrw,meta,nodes,features,feature_params, &
+            local_species,species,centers,offsets,indices,dr,geom,radial_cache,g,jacobian,g4_scratch,g4_first)
+        if (any(features(1,:,:) > 0 .and. features(1,:,:) /= 4 .and. features(1,:,:) /= 7)) then
+            if (any(features(12,:,:) > 0 .and. features(1,:,:) == 5)) then
                 call generic_values_grouped(device,nrw,meta,nodes,features,feature_params, &
                     local_species,species,centers,offsets,indices,geom,radial_cache,g)
             else
@@ -259,6 +263,7 @@ contains
             ! No additional array, allocation, transfer, or kernel launch.
             if (meta(10,s) == 1) then
                 do b=1,dim
+                    if (features(1,b,s) == 4) cycle ! G4 contracts its saved Jacobian after the NN.
                     if (features(13,b,s) /= b .or. features(14,b,s) == 0) cycle
                     v=g(row,b); bb=features(14,b,s)
                     do while (bb /= 0)
@@ -393,7 +398,7 @@ contains
         end do
         !$omp end target teams distribute parallel do
         if (any(meta(10,:) == 1)) call generic_forces(device,nedges,meta,nodes,features,feature_params, &
-            local_species,species,centers,offsets,indices,geom,edge_row,radial_cache,g,edge_force)
+            local_species,species,centers,offsets,indices,geom,edge_row,radial_cache,jacobian,g,edge_force)
         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& private(j,target,c,a,fj,center_f,w)
         do row = 1, nrw
@@ -424,6 +429,106 @@ contains
         stages(3) = omp_get_wtime()-started
         !$omp end target data
     end subroutine
+    ! The same center -> unordered pair -> descriptor traversal as the CPU
+    ! G4 evaluator: values and both derivatives are accumulated together. Each
+    ! center owns its CSR edges, so neither CPU nor GPU needs Jacobian atomics.
+    subroutine g4_values_derivatives(device,nrw,meta,nodes,features,fp,local_species,species,centers,offsets, &
+            indices,dr,geom,radial_cache,g,jacobian,g4_scratch,g4_first)
+        integer, intent(in) :: device,nrw
+        integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),features(:,:,:),local_species(:,:)
+        integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:)
+        real(real64), contiguous, intent(in) :: fp(:,:,:),dr(:,:),geom(:,:),radial_cache(:,:,:)
+        real(real64), contiguous, intent(inout) :: g(:,:),jacobian(:,:,:),g4_scratch(:,:,:)
+        integer, contiguous, intent(inout) :: g4_first(:,:,:)
+        integer :: row,s,dim,b,j,k,tj,tk,t1,t2,head,group,cr,er,ar,c
+        real(real64) :: rcmax,rj,rk,rjk,rjk2,cosine,uj(3),uk(3),ujk(3),dcj(3),dck(3)
+        real(real64) :: qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj(3),dk(3)
+        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
+        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
+        !$omp& dr,geom,radial_cache,g,jacobian,g4_scratch,g4_first) &
+        !$omp& private(s,dim,b,j,k,tj,tk,t1,t2,head,group,cr,er,ar,c,rcmax,rj,rk,rjk,rjk2, &
+        !$omp& cosine,uj,uk,ujk,dcj,dck,qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj,dk)
+        do row = 1,nrw
+            s = species(centers(row))
+            if (meta(10,s) /= 1) cycle
+            dim = nodes(1,s); g4_first(:,:,row) = 0; rcmax = 0
+            do b = dim,1,-1
+                if (features(1,b,s) /= 4) cycle
+                t1 = features(2,b,s); t2 = features(3,b,s)
+                g4_first(t1,t2,row) = b; g4_first(t2,t1,row) = b
+                rcmax = max(rcmax,fp(1,b,s))
+                g(row,b) = 0
+                do j = offsets(row),offsets(row+1)-1
+                    jacobian(:,b,j) = 0
+                end do
+            end do
+            if (rcmax == 0) cycle
+            do j = offsets(row),offsets(row+1)-1
+                rj = geom(4,j)
+                if (rj <= eps .or. rj > rcmax) cycle
+                tj = local_species(species(indices(j)),s)
+                if (tj < 1) cycle
+                uj = geom(1:3,j)
+                do k = j+1,offsets(row+1)-1
+                    rk = geom(4,k)
+                    if (rk <= eps .or. rk > rcmax) cycle
+                    tk = local_species(species(indices(k)),s)
+                    if (tk < 1) cycle
+                    head = g4_first(tj,tk,row)
+                    if (head == 0) cycle
+                    ujk = dr(:,k)-dr(:,j); rjk2 = sum(ujk**2)
+                    if (rjk2 <= eps**2 .or. rjk2 >= rcmax**2) cycle
+                    rjk = sqrt(rjk2); ujk = ujk/rjk
+                    uk = geom(1:3,k)
+                    cosine = max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
+                    dcj = (uk-cosine*uj)/rj; dck = (uj-cosine*uk)/rk
+                    ! Independent cutoff/exponential groups, as in the CPU
+                    ! evaluator. No repeated transcendental call per output.
+                    do b = 1,dim
+                        if (features(1,b,s) /= 4) cycle
+                        if (features(15,b,s) == b) then
+                            g4_scratch(1,b,row) = target_cutoff_value(rjk,fp(1,b,s),features(4,b,s),fp(7,b,s))
+                            g4_scratch(2,b,row) = target_cutoff_derivative(rjk,fp(1,b,s),features(4,b,s),fp(7,b,s))
+                        end if
+                        if (features(16,b,s) == b) g4_scratch(3,b,row) = exp(-fp(2,b,s)*(rjk-fp(3,b,s))**2)
+                    end do
+                    do b = 1,dim
+                        if (features(1,b,s) /= 4 .or. features(19,b,s) /= b) cycle
+                        group = features(7,b,s); cr = features(15,b,s); er = features(16,b,s)
+                        qj = radial_cache(j,group,1); qk = radial_cache(k,group,1)
+                        dqj = radial_cache(j,group,2); dqk = radial_cache(k,group,2)
+                        qjk = g4_scratch(1,cr,row)*g4_scratch(3,er,row)
+                        dqjk = (g4_scratch(2,cr,row)-2*fp(2,b,s)*(rjk-fp(3,b,s))*g4_scratch(1,cr,row))*g4_scratch(3,er,row)
+                        g4_scratch(6,group,row) = qj*qk*qjk
+                        g4_scratch(7:9,group,row) = dqj*uj*qk*qjk-qj*qk*dqjk*ujk
+                        g4_scratch(10:12,group,row) = qj*dqk*uk*qjk+qj*qk*dqjk*ujk
+                    end do
+                    b = head
+                    do while (b /= 0)
+                        ar = features(17,b,s)
+                        ! Angular representatives precede their followers in
+                        ! the same species-pair list, irrespective of cutoff.
+                        if (ar == b) call angular_power(cosine,fp(4,b,s),fp(5,b,s),features(5,b,s), &
+                            0.5_real64*fp(5,b,s)*fp(4,b,s),g4_scratch(4,b,row),g4_scratch(5,b,row))
+                        if (rj <= fp(1,b,s) .and. rk <= fp(1,b,s) .and. rjk <= fp(1,b,s)) then
+                            group = features(7,b,s); a = g4_scratch(4,ar,row); da = g4_scratch(5,ar,row)
+                            g(row,b) = g(row,b)+2*a*g4_scratch(6,group,row)
+                            ca = 2*da*g4_scratch(6,group,row); cv = 2*a
+                            dj = ca*dcj+cv*g4_scratch(7:9,group,row)
+                            dk = ca*dck+cv*g4_scratch(10:12,group,row)
+                            do c = 1,3
+                                jacobian(c,b,j) = jacobian(c,b,j)+dj(c)
+                                jacobian(c,b,k) = jacobian(c,b,k)+dk(c)
+                            end do
+                        end if
+                        b = features(18,b,s)
+                    end do
+                end do
+            end do
+        end do
+        !$omp end target teams distribute parallel do
+    end subroutine
+
     subroutine generic_values(device,nrw,meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g)
         integer, intent(in) :: device,nrw
         integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),features(:,:,:),local_species(:,:)
@@ -440,7 +545,7 @@ contains
                 s = species(centers(row))
                 if (meta(10,s) /= 1 .or. b > nodes(1,s)) cycle
                 kind = features(1,b,s); t1 = features(2,b,s); t2 = features(3,b,s)
-                if (kind == 7) cycle
+                if (kind == 4 .or. kind == 7) cycle
                 if (features(10,b,s) /= 0 .and. features(10,b,s) /= b) cycle
                 group = features(7,b,s)
                 total = 0; total12 = 0
@@ -501,7 +606,7 @@ contains
                 s = species(centers(row))
                 if (meta(10,s) /= 1 .or. b > nodes(1,s)) cycle
                 kind = features(1,b,s); t1 = features(2,b,s); t2 = features(3,b,s)
-                if (kind == 7) cycle
+                if (kind == 4 .or. kind == 7) cycle
                 if (features(10,b,s) /= 0 .and. features(10,b,s) /= b) cycle
                 degree = features(12,b,s)
                 hvalues = 0
@@ -562,18 +667,18 @@ contains
     end subroutine
 
     subroutine generic_forces(device,nedges,meta,nodes,features,fp,local_species,species,centers,offsets, &
-                              indices,geom,edge_row,radial_cache,g,edge_force)
+                              indices,geom,edge_row,radial_cache,jacobian,g,edge_force)
         integer, intent(in) :: device,nedges
         integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),features(:,:,:),local_species(:,:)
         integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:),edge_row(:)
-        real(real64), contiguous, intent(in) :: fp(:,:,:),radial_cache(:,:,:),geom(:,:),g(:,:)
+        real(real64), contiguous, intent(in) :: fp(:,:,:),radial_cache(:,:,:),jacobian(:,:,:),geom(:,:),g(:,:)
         real(real64), contiguous, intent(inout) :: edge_force(:,:)
         integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group,degree,d,c,bb
         real(real64) :: f(3),v,dv,gradient(3),gradient_k(3),v12,dv12,radial_force,hcoeff(0:16)
         logical :: pair_once
         ! CPU serial builds benefit from evaluating both sides once. GPU edge
         ! ownership avoids contended force atomics; all scalar formulas are shared.
-        pair_once = device == omp_get_initial_device() .and. any(features(10,:,:) > 0)
+        pair_once = device == omp_get_initial_device() .and. any(features(1,:,:) == 5)
         if (pair_once) then
             do j=1,nedges
                 row=edge_row(j); s=species(centers(row))
@@ -582,7 +687,7 @@ contains
         end if
         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
         !$omp& firstprivate(pair_once) map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
-        !$omp& geom,edge_row,radial_cache,g,edge_force) &
+        !$omp& geom,edge_row,radial_cache,jacobian,g,edge_force) &
         !$omp& private(row,b,s,k,tj,tk,kind,t1,t2,group,degree,d,c,bb,f,v,dv,gradient,gradient_k,v12,dv12,radial_force,hcoeff)
         do j = 1,nedges
             row = edge_row(j); s = species(centers(row))
@@ -591,6 +696,10 @@ contains
             do b = 1,nodes(1,s)
                 kind = features(1,b,s); t1 = features(2,b,s); t2 = features(3,b,s)
                 if (kind == 7) cycle
+                if (kind == 4) then
+                    f = f+g(row,b)*jacobian(:,b,j)
+                    cycle
+                end if
                 if (features(10,b,s) /= 0 .and. features(10,b,s) /= b) cycle
                 group = features(7,b,s)
                 if (kind /= 4 .and. kind /= 5) then

@@ -10,7 +10,8 @@ module accelnet_target_descriptors
     use accelnet_descriptor_models, only: descriptor_model
     implicit none
     private
-    public :: pack_generic_descriptors
+    public :: pack_generic_descriptors, PACKED_FEATURE_FIELDS
+    integer, parameter :: PACKED_FEATURE_FIELDS = 19
 contains
     subroutine pack_generic_descriptors(model, fi, fr, status, message)
         type(descriptor_model), intent(in) :: model
@@ -23,7 +24,7 @@ contains
         status = 1
         message = 'OpenMP target: invalid LJ/Behler descriptor metadata'
         n = model%num_outputs
-        allocate(fi(14,n),fr(7,n))
+        allocate(fi(PACKED_FEATURE_FIELDS,n),fr(7,n))
         fi = 0; fr = 0
         if (n < 1) return
         if (allocated(model%lj)) then
@@ -204,6 +205,29 @@ contains
                 k = fi(14,k)
             end do
             fi(14,k) = b
+        end do
+        ! G4 follows the established CPU value/Jacobian traversal. Reuse cutoff,
+        ! exponential, angular and radial factors independently, then follow a
+        ! species-pair list instead of scanning all descriptors for each pair.
+        ! Fields 15..19: cutoff rep, exponential rep, angular rep (within species
+        ! pair), next G4 in species pair, and G4 radial rep.
+        do b = 1,n
+            if (fi(1,b) /= 4) cycle
+            fi(15:17,b) = b; fi(19,b) = b
+            do k = 1,b-1
+                if (fi(1,k) /= 4) cycle
+                if (fi(4,k) == fi(4,b) .and. fr(1,k) == fr(1,b) .and. fr(7,k) == fr(7,b)) &
+                    fi(15,b) = fi(15,k)
+                if (all(fr(2:3,k) == fr(2:3,b))) fi(16,b) = fi(16,k)
+                if (fi(7,k) == fi(7,b)) fi(19,b) = fi(19,k)
+                if (minval(fi(2:3,k)) /= minval(fi(2:3,b)) .or. &
+                    maxval(fi(2:3,k)) /= maxval(fi(2:3,b))) cycle
+                if (all(fr(4:5,k) == fr(4:5,b))) fi(17,b) = fi(17,k)
+                ! Ascending construction appends b to the previous pair member.
+                if (fi(18,k) == 0) then
+                    fi(18,k) = b
+                end if
+            end do
         end do
         status = 0; message = ''
     end subroutine

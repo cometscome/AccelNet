@@ -1,0 +1,6 @@
+Failing in Thread:1
+Accelerator Fatal Error: call to cuMemcpyDtoHAsync returned error 700 (CUDA_ERROR_ILLEGAL_ADDRESS): Illegal address during kernel execution
+ File: /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_target_kernels.f90
+ Function: g4_values_derivatives:434
+ Line: 533
+

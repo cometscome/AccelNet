@@ -1,6 +1,7 @@
 ! Scalar formulas are shared with CPU sources; this module compiles their device variants.
 module accelnet_target_math
     use iso_fortran_env, only: real64
+    use accelnet_target_descriptors, only: PACKED_FEATURE_FIELDS
     use accelnet_descriptors, only: CUTOFF_HARD, CUTOFF_COS, CUTOFF_TANHU, CUTOFF_TANH, &
         CUTOFF_EXP, CUTOFF_POLY1, CUTOFF_POLY2, CUTOFF_POLY3, CUTOFF_POLY4, CUTOFF_FRACTIONAL
     use aenet_network, only: ACTIVATION_LINEAR, ACTIVATION_TANH, ACTIVATION_LOGISTIC, &
@@ -122,7 +123,7 @@ contains
 
     pure subroutine generic_pair_geometry(f,p,uj,uk,rj,rk,cosine,qjk,dqjk,ujk,force)
         !$omp declare target
-        integer, intent(in) :: f(14)
+        integer, intent(in) :: f(PACKED_FEATURE_FIELDS)
         real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk
         logical, intent(in) :: force
         real(real64), intent(out) :: cosine,qjk,dqjk,ujk(3)
@@ -149,7 +150,7 @@ contains
     pure subroutine generic_pair_contracted(f,p,uj,uk,rj,rk,qj,qk,dqj,dqk,coeff,degree,both,gradient,gradient_k)
         !$omp declare target
         logical, intent(in) :: both
-        integer, intent(in) :: f(14),degree
+        integer, intent(in) :: f(PACKED_FEATURE_FIELDS),degree
         real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk,qj,qk,dqj,dqk,coeff(0:16)
         real(real64), intent(out) :: gradient(3),gradient_k(3)
         real(real64) :: cosine,qjk,dqjk,ujk(3),a,da,t,product,angular_j,angular_k,radial_j,radial_k,radial_jk
@@ -184,7 +185,7 @@ contains
     end subroutine
     pure real(real64) function generic_pair_value(f,p,uj,uk,rj,rk,qj,qk) result(value)
         !$omp declare target
-        integer, intent(in) :: f(14)
+        integer, intent(in) :: f(PACKED_FEATURE_FIELDS)
         real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk,qj,qk
         real(real64) :: qjk,rjk,rjk2,cosine
         value = 0

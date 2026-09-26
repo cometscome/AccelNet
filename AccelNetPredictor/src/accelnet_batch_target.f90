@@ -9,7 +9,7 @@ module accelnet_batch_target
     use accelnet_predictor, only: predictor_model
     use accelnet_descriptors, only: descriptor_config, validate_cutoff_parameters
     use aenet_network, only: atomic_network
-    use accelnet_target_descriptors, only: pack_generic_descriptors
+    use accelnet_target_descriptors, only: pack_generic_descriptors, PACKED_FEATURE_FIELDS
     use accelnet_target_kernels, only: run_target_batch
     implicit none
     private
@@ -36,8 +36,8 @@ module accelnet_batch_target
         private
         type(target_model) :: cached
         real(real64), allocatable :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:), moments(:,:,:), &
-            powers(:,:,:), radial(:,:,:)
-        integer, allocatable :: species(:), centers(:), offsets(:), indices(:), use_moment(:), edge_row(:)
+            powers(:,:,:), radial(:,:,:), jacobian(:,:,:), g4_scratch(:,:,:)
+        integer, allocatable :: species(:), centers(:), offsets(:), indices(:), use_moment(:), edge_row(:), g4_first(:,:,:)
         real(real64), allocatable :: dr(:,:), energies(:), forces(:,:), virial(:,:), geom(:,:), edge_force(:,:)
         integer :: growth_count = 0, upload_count = 0
     contains
@@ -261,7 +261,7 @@ contains
             return
         end if
         mm = max(1,mm); ma = max(1,ma)
-        allocate(self%features(14,mn,ns),self%feature_params(7,mn,ns))
+        allocate(self%features(PACKED_FEATURE_FIELDS,mn,ns),self%feature_params(7,mn,ns))
         self%features = 0; self%feature_params = 0
         allocate(self%mp(4,mm,ns),self%multiplicity(mm,ns),self%polynomial(ma,ma,ns))
         self%mp = 0; self%multiplicity = 0; self%polynomial = 0
@@ -345,10 +345,11 @@ contains
         class(target_workspace), intent(inout) :: self
         if (.not. allocated(self%g)) return
         call map_buffers(self%cached%device,.false.,self%g,self%values,self%deriv,self%delta,self%moments, &
-            self%powers,self%radial, &
+            self%powers,self%radial,self%jacobian,self%g4_scratch,self%g4_first, &
             self%species,self%centers,self%offsets,self%indices,self%use_moment,self%dr,self%energies,self%forces,self%virial, &
             self%geom,self%edge_row,self%edge_force)
-        deallocate(self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%radial,self%species,self%centers, &
+        deallocate(self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%radial, &
+            self%jacobian,self%g4_scratch,self%g4_first,self%species,self%centers, &
             self%offsets,self%indices,self%use_moment,self%dr,self%energies,self%forces,self%virial, &
             self%geom,self%edge_row,self%edge_force)
     end subroutine
@@ -498,7 +499,7 @@ contains
         type(target_model), intent(in) :: model
         type(target_workspace), intent(inout) :: work
         integer, intent(in) :: nrw,natoms,nedges
-        integer :: n,mn,ml,ne,na,mm,mpower,ngroups
+        integer :: n,mn,ml,ne,na,mm,mpower,ngroups,njf,nje,njr,nlocal
         logical :: grow
         na = natoms
         ! Each workspace owns its model cache; compare values, not addresses, so
@@ -515,24 +516,38 @@ contains
         n = nrw; mn = model%maxnodes; ml = model%maxlayers
         ne = max(1,nedges); mm = size(model%mp,2); mpower = size(model%polynomial,1)
         ngroups = max(1,maxval(model%features(7,:,:)))
+        ! The Jacobian has the CPU layout (Cartesian, descriptor, edge).
+        ! Reserve it only for species containing G4; all other models use a
+        ! minimal placeholder. It stays resident and is never uploaded/downloaded.
+        njf = max(1,maxval(model%nodes(1,:),mask=any(model%features(1,:,:) == 4,dim=1)))
+        nje = 1; njr = 1; nlocal = 1
+        if (any(model%features(1,:,:) == 4)) then
+            nje = ne; njr = max(1,nrw); nlocal = max(1,maxval(model%features(6,:,:)))
+        end if
         grow = .true.
         if (allocated(work%g)) then
             n = max(n,size(work%g,1)); mn = max(mn,size(work%g,2)); ml = max(ml,size(work%values,3))
             ne = max(ne,size(work%indices)); na = max(na,size(work%species)); mm = max(mm,size(work%moments,2))
             mpower = max(mpower,size(work%powers,2))
             ngroups = max(ngroups,size(work%radial,2))
+            njf = max(njf,size(work%jacobian,2)); nje = max(nje,size(work%jacobian,3))
+            njr = max(njr,size(work%g4_scratch,3)); nlocal = max(nlocal,size(work%g4_first,1))
             grow = n > size(work%g,1) .or. mn > size(work%g,2) .or. ml > size(work%values,3) .or. &
                 ne > size(work%indices) .or. na > size(work%species) .or. mm > size(work%moments,2) .or. &
-                mpower > size(work%powers,2) .or. ngroups > size(work%radial,2)
+                mpower > size(work%powers,2) .or. ngroups > size(work%radial,2) .or. &
+                njf > size(work%jacobian,2) .or. nje > size(work%jacobian,3) .or. &
+                njr > size(work%g4_scratch,3) .or. nlocal > size(work%g4_first,1)
         end if
         if (grow) then
             call release_buffers(work)
             allocate(work%g(n,mn),work%values(n,mn,ml),work%deriv(n,mn,ml),work%delta(n,mn,2), &
-                work%moments(n,mm,2),work%powers(ne,mpower,3),work%radial(ne,ngroups,2),work%species(na), &
+                work%moments(n,mm,2),work%powers(ne,mpower,3),work%radial(ne,ngroups,2), &
+                work%jacobian(3,njf,nje),work%g4_scratch(12,njf,njr),work%g4_first(nlocal,nlocal,njr),work%species(na), &
                 work%centers(n),work%offsets(n+1), &
                 work%indices(ne),work%use_moment(n),work%dr(3,ne),work%geom(7,ne),work%edge_row(ne),work%edge_force(3,ne), &
                 work%energies(n),work%forces(3,na),work%virial(3,3))
-            call map_buffers(model%device,.true.,work%g,work%values,work%deriv,work%delta,work%moments,work%powers,work%radial, &
+            call map_buffers(model%device,.true.,work%g,work%values,work%deriv,work%delta,work%moments, &
+                work%powers,work%radial,work%jacobian,work%g4_scratch,work%g4_first, &
                 work%species,work%centers,work%offsets,work%indices,work%use_moment,work%dr, &
                 work%energies,work%forces,work%virial,work%geom,work%edge_row,work%edge_force)
             work%growth_count = work%growth_count+1
@@ -553,7 +568,9 @@ contains
             work%cached%features,work%cached%feature_params,work%cached%local_species, &
             work%cached%mp,work%cached%multiplicity,work%cached%polynomial,work%species,work%centers,work%offsets, &
             work%indices,work%dr,work%energies,work%forces,work%virial,work%g,work%values,work%deriv,work%delta, &
-            work%moments,work%powers,work%radial,work%use_moment,work%geom,work%edge_row,work%edge_force,nrw,natoms,nedges,stages)
+            work%moments,work%powers,work%radial,work%jacobian,work%g4_scratch,work%g4_first,work%use_moment, &
+            work%geom,work%edge_row, &
+            work%edge_force,nrw,natoms,nedges,stages)
         timing%descriptors = stages(1); timing%network = stages(2); timing%forces = stages(3)
         mark = omp_get_wtime()
         call download_outputs(model%device,natoms,nrw,work%energies,work%forces,work%virial)
@@ -646,21 +663,25 @@ contains
         end if
     end subroutine
 
-    subroutine map_buffers(device,enter,g,values,deriv,delta,moments,powers,radial,species,centers,offsets,indices, &
+    subroutine map_buffers(device,enter,g,values,deriv,delta,moments,powers,radial,jacobian,g4_scratch, &
+            g4_first,species,centers,offsets,indices, &
                            use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
         integer, intent(in) :: device
         logical, intent(in) :: enter
         real(real64), contiguous, intent(inout) :: g(:,:),values(:,:,:),deriv(:,:,:),delta(:,:,:),moments(:,:,:), &
-            powers(:,:,:), radial(:,:,:)
-        integer, contiguous, intent(inout) :: species(:),centers(:),offsets(:),indices(:),use_moment(:),edge_row(:)
+            powers(:,:,:), radial(:,:,:), jacobian(:,:,:), g4_scratch(:,:,:)
+        integer, contiguous, intent(inout) :: species(:),centers(:),offsets(:),indices(:),use_moment(:),edge_row(:), &
+            g4_first(:,:,:)
         real(real64), contiguous, intent(inout) :: dr(:,:),energies(:),forces(:,:),virial(:,:),geom(:,:),edge_force(:,:)
         if (enter) then
             !$omp target enter data device(device) if(device /= omp_get_initial_device()) &
-            !$omp& map(alloc:g,values,deriv,delta,moments,powers,radial,species,centers,offsets,indices, &
+            !$omp& map(alloc:g,values,deriv,delta,moments,powers,radial,jacobian,g4_scratch,g4_first,species, &
+        !$omp& centers,offsets,indices, &
             !$omp& use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
         else
             !$omp target exit data device(device) if(device /= omp_get_initial_device()) &
-            !$omp& map(delete:g,values,deriv,delta,moments,powers,radial,species,centers,offsets,indices, &
+            !$omp& map(delete:g,values,deriv,delta,moments,powers,radial,jacobian,g4_scratch,g4_first,species, &
+        !$omp& centers,offsets,indices, &
             !$omp& use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
         end if
     end subroutine

@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.3 — 2026-09-27 (JST).**
+**Document version 1.4 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -18,7 +18,7 @@ not bitwise equality.
 | AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | The base commit plus the **`gpu` branch checkpoint** of the work developed on September 25–27, 2026; the base commit alone does not identify this implementation |
+| Optimization source revision | `gpu` checkpoint **`cd00106`**, followed by the common G4 value/Jacobian changes in Section 15; the earlier base commit alone does not identify this implementation |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -71,8 +71,8 @@ are recorded in the [G4 report](docs/validation/g4-common-2026-09-27/README.md).
 | Differentiated multivariate Horner and lexicographic coefficient packing | Adopted and validated |
 | LJ and Behler G1–G5 | GPU support implemented; G4/G5 use direct pairs; forced GPU G5 moments are rejected |
 | Generic radial caching and LJ component fusion | Implemented in the common serial CPU/GPU source; measurements in Section 12 |
-| Behler angular coefficient contraction and differentiated Horner | Implemented in common code; model-dependent value grouping and CPU/GPU force accumulation are detailed in Section 13 |
-| G4 pair-work reduction | Identical-value reuse, early squared-distance rejection, explicit argument extents, and scalar force factors in common code; Section 14 |
+| Behler angular coefficient contraction and differentiated Horner | Retained for G5; the former G4 path in Sections 13–14 is superseded by Section 15 |
+| G4 value/Jacobian evaluation | One shared center → unordered pair → descriptor traversal for values and both derivatives; force contraction reads the saved Jacobian; Section 15 |
 | LAMMPS GPU package integration | CUDA adapter plus Fortran OpenMP target; AMD/HIP/OpenCL interoperability is not implemented |
 
 The default CPU shared path applies to the **CSR batch API when every element has
@@ -1149,3 +1149,109 @@ The final validation includes 130 descriptor cases, H100 and Blackwell tests,
 zero H100 memcheck errors, 63 LAMMPS comparisons, and the ordinary CPU correctness
 and performance gates. Exact timings, control experiments, hashes, and commands
 are in the linked report. These batch speedups are not full LAMMPS MD speedups.
+
+
+## 15. G4 value/Jacobian traversal shared by CPU and GPU (revision 1.4)
+
+This revision implements the requested comparison against the established CPU
+G4 algorithm. The immediate before baseline is the `gpu` checkpoint `cd00106`
+(revision 1.3). Both CPU and GPU now use the same center-to-unordered-pair-to-feature
+loop for G4, including independent cutoff, exponential, and angular reuse. This
+is not the earlier feature-to-pair Jacobian experiment.
+
+For center $i$ and descriptor $b$, accumulate its value and edge derivatives
+in the same pair traversal:
+
+$$
+G_{ib}=\sum_{j<k}g_b(\mathbf r_{ij},\mathbf r_{ik}),\qquad
+J_{\mu b e}=\frac{\partial G_{ib}}{\partial r_{ij,\mu}},\quad e=(i,j).
+$$
+
+Each pair adds both $\partial g_b/\partial\mathbf r_{ij}$ and
+$\partial g_b/\partial\mathbf r_{ik}$ to their respective edge slots. The NN
+then produces the scaled negative descriptor gradients $w_{ib}$, and the force
+stage only contracts
+
+$$
+f_{\mu e}=\sum_b w_{ib}J_{\mu b e}.
+$$
+
+The existing scatter step adds neighbor forces, the opposite center force, and
+the image-displacement virial. **No G4 pair geometry, radial factor, or angular
+power is recalculated in the force stage.** Unlike revision 1.3, G4 keeps each
+NN gradient separately; aggregating duplicate gradients and also reading every
+Jacobian column would count duplicate contributions twice. G5 retains its
+previous coefficient-contracted force algorithm.
+
+Packed integer fields 15–19 identify G4 cutoff, exponential, and angular
+representatives, the next descriptor for an unordered species pair, and the G4
+radial representative. Cutoffs include cutoff type and alpha in their key;
+exponentials include eta and shift; angular sharing is within a species pair
+and includes lambda and the original real zeta. Integer/near-integer/fractional
+power semantics remain unchanged. A named packed-field extent replaces literal
+array extents in the internal helper interfaces.
+
+The Jacobian uses the CPU layout `(Cartesian, descriptor, CSR edge)`. Each center
+owns its edges and writes both sides of each pair without atomics. The GPU target
+loop distributes centers; the OpenMP-disabled CPU build executes the same loop
+serially. Pair caches and species-pair heads occupy persistent per-center
+workspace arrays. These explicit mapped buffers avoid the invalid-address issue
+observed with variable-sized private arrays in the first offload prototype.
+There are no allocations inside the device kernel and no Jacobian/cache transfers
+between host and GPU during evaluation.
+
+For $E$ edges, $D$ input columns in species containing G4, $R$ centers, and $S$
+local species, additional resident payload is approximately
+
+$$
+M_J=8\cdot3DE,\qquad M_{\rm scratch}=8\cdot12DR+4S^2R\quad\text{bytes}.
+$$
+
+The host also reserves corresponding arrays. Mixed models reserve all input
+columns of G4-containing species, including unused non-G4 columns, to retain a
+simple direct index. Capacities grow and persist; models without G4 need only
+minimal placeholders. This memory cost is part of the one-traversal design and
+must be reported alongside steady-state timings.
+
+The [comparison report](docs/validation/g4-fused-2026-09-27/README.md) records
+OpenMP-disabled single-core CPU measurements, H100/Blackwell timings, memory,
+numerical checks, and source/binary identities. Earlier revision tables remain
+historical measurements of the former two-traversal common implementation.
+
+
+### 15.1 Measured outcome
+
+At 4096 atoms, the timings below compare revision 1.3 against the shared
+one-traversal implementation. Values are milliseconds per batch evaluation,
+including transfers for GPU, but excluding neighbor construction. CPU builds
+disable OpenMP compilation and use one core. These are two-round medians with
+five samples per round, not full LAMMPS MD timings.
+
+| Backend | 4 distinct inputs: before → fused ms | 48 distinct inputs: before → fused ms |
+|---|---:|---:|
+| gnu | 197.500 → 104.196 | 247.388 → 296.201 |
+| nvhpc | 139.868 → 80.665 | 197.842 → 260.596 |
+| h100 | 2.919 → 6.839 | 5.586 → 30.406 |
+| blackwell | 9.943 → 14.309 | 11.330 → 34.829 |
+
+The four-input common CPU implementation now beats the established CPU evaluator
+as well as the previous common code. The 48-input result is less favorable, and
+both GPUs regress in every measured G4 case. The force stage is cheaper, but the
+descriptor/Jacobian stage is more expensive; the report includes phase timings.
+The GPU implementation currently distributes only centers, with batch-resident
+derivatives and per-center pair caches. These observations do not prove a
+one-traversal algorithm inherently unsuitable for GPU; separating parallelism
+from memory/cache costs requires further measurement.
+
+The pair loop and derivative calculation now follow the established CPU strategy,
+but the complete pipelines still differ: the CPU evaluator consumes each center's
+Jacobian immediately, whereas the common backend keeps all centers' derivatives
+across a batch-wide NN stage. This storage lifetime is a remaining optimization
+opportunity. At 4096 atoms and 48 inputs, the Jacobian and pair-cache/head buffers
+add about 148.5 MiB of resident payload, with corresponding host allocations.
+
+Validation passed 135 descriptor cases, the GNU/NVHPC and H100/Blackwell suites,
+63 LAMMPS comparisons, and ordinary CPU correctness/performance gates. H100
+memcheck passed three selected benchmark smoke cases. The common one-traversal
+source is retained, and a separate `lmp-g4-fused` executable preserves this
+measured candidate alongside the previous installed `lmp`.

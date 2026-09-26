@@ -68,6 +68,11 @@ equal-power value reuse, squared-distance rejection before expensive pair work,
 explicit packed-argument extents, and scalar force contraction. These changes
 remain in the common source; the report includes a four-input model with no
 duplicate descriptors as a control. The default CPU LJ/Behler dispatch is unchanged.
+The subsequent [G4 value/Jacobian comparison](validation/g4-fused-2026-09-27/README.md)
+changes common G4 evaluation to the established CPU traversal: each unordered
+pair contributes values and both derivatives once, and forces read the saved
+Jacobian after the NN. CPU and GPU compile that same numerical loop. G5 keeps
+coefficient contraction; earlier reports describe the former G4 implementation.
 
 ## Build and test on H100
 
@@ -163,21 +168,25 @@ The evaluation stages are:
    For G4/G5 rows, fill shared radial-group values/derivatives in the same stage.
 2. In moment mode, construct moments in parallel over both atoms and monomials,
    then form angular descriptors using the CPU model's polynomial coefficients.
-3. Evaluate NN outputs and input gradients; transform angular gradient coefficients.
-4. Contract derivatives in parallel over neighbor edges, reusing cached geometry,
+3. For G4, accumulate descriptor values and edge Jacobians together in one
+   center/pair/descriptor traversal, reusing cutoff, exponential and angular factors.
+4. Evaluate NN outputs and input gradients; transform G5/Chebyshev angular coefficients.
+5. Contract derivatives in parallel over neighbor edges, reusing cached geometry,
    and moments. In moment mode, nested x/y/z Horner recurrences evaluate the
    contracted polynomial and all three Cartesian derivatives together. Store
-   only three force components per edge.
-5. Aggregate edge contributions by center and scatter forces/virial with FP64 atomics.
+   three force components per edge. G4 reads saved Jacobians without another pair traversal.
+6. Aggregate edge contributions by center and scatter forces/virial with FP64 atomics.
 
-There is no atom × descriptor × neighbor Jacobian. Main scratch storage scales
+G4 adds a persistent `(3, descriptor, edge)` Jacobian and per-center pair caches.
+They remain on the device and are allocated/reused with the workspace. Other
+families do not materialize this Jacobian. Main scratch storage also scales
 with rows × network size, rows × number of moments, and edges × angular order
 (for cached coordinate powers). Generic angular rows also use a persistent
-edge × radial-group × 2 cache for values and derivatives. Angular force coefficients
+edge × radial-group × 2 cache for values and derivatives. G5 angular force coefficients
 reuse existing NN-gradient slots, with no new global coefficient buffer. Polynomial
 degree is bounded at 16; higher/noninteger powers keep their original evaluation.
-CSR batching bounds this memory. Row kernels use
-32-thread teams, while monomial/edge kernels expose more parallel work to the
+CSR batching bounds this memory. Chebyshev row kernels use
+32-thread teams, while G4 distributes centers and monomial/edge kernels expose more parallel work to the
 runtime. These are portable OpenMP constructs, with performance validated here
 on NVIDIA GPUs only.
 

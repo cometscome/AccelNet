@@ -6,7 +6,7 @@ program test_batch_target
     use accelnet_predictor, only: predictor_model, load_predictor_from_networks, load_predictor_from_n2p2
     use accelnet_descriptors, only: atomic_structure, neighbor_data, build_neighbor_list, read_xsf, &
         descriptor_config, initialize_config
-    use accelnet_descriptor_models, only: add_chebyshev
+    use accelnet_descriptor_models, only: descriptor_model, add_chebyshev, add_behler
     use accelnet_behler, only: behler_config, initialize_behler_config, add_g1, add_g2, add_g3, add_g4, add_g5
     use batch_test_support
     implicit none
@@ -162,6 +162,40 @@ program test_batch_target
         call make_model('g4-distinct',model)
         call packed%initialize(model,use_host=host)
         call make_structure(8,2,s)
+        call check(s)
+        call finite_differences(s)
+        ! G4 Jacobian storage must grow when G4 replaces a same-sized G5 model,
+        ! then remain reusable when switching away from and back to G4.
+        call work%release()
+        call make_structure(8,2,s)
+        do v = 1,4
+            if (mod(v,2) == 1) then
+                call make_model('g5',model)
+            else
+                call make_model('g4',model)
+            end if
+            call packed%initialize(model,use_host=host)
+            nw = work%allocations()
+            call check(s)
+            if (v == 2) call require(work%allocations() == nw+1,'G4 Jacobian growth')
+            if (v >= 3) call require(work%allocations() == nw,'G4 Jacobian reuse')
+        end do
+        ! Independent cutoff/exponential/angular reuse across G4 components.
+        ! An angular representative with a different Rc must still initialize
+        ! its follower's power; cutoff type/alpha must never be conflated.
+        call make_model('g4-distinct',model)
+        do i = 1,2
+            model%setups(i)%model = descriptor_model()
+            call initialize_behler_config(grouped_config,2,cutoff_type=1,cutoff_alpha=0.2_real64)
+            call add_g4(grouped_config,1,2,2.8_real64,1.0_real64,2.0_real64,0.2_real64,0.4_real64)
+            call add_g4(grouped_config,2,1,3.4_real64,1.0_real64,2.0_real64,0.2_real64,0.4_real64)
+            call add_behler(model%setups(i)%model,grouped_config)
+            call initialize_behler_config(grouped_config,2,cutoff_type=4,cutoff_alpha=0.1_real64)
+            call add_g4(grouped_config,1,2,3.4_real64,1.0_real64,1.5_real64,0.3_real64,0.4_real64)
+            call add_g4(grouped_config,1,1,3.4_real64,1.0_real64,2.0_real64,0.3_real64,0.2_real64)
+            call add_behler(model%setups(i)%model,grouped_config)
+        end do
+        call packed%initialize(model,use_host=host)
         call check(s)
         call finite_differences(s)
         ! Mixed species families share NN and scatter kernels, but descriptors
