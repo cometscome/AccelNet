@@ -1,0 +1,23 @@
+{
+  "gnu": {
+    "libAccelNetDescriptors.a": "6723e263bfeaca31385fea49682c4699a4fe50abb58654b1151b50ab912835ec",
+    "libbatch_test_support.a": "b3ec5eb522c5860f31b8df78285cea6b48e31b251711f33e8e10b017d22a6138",
+    "libaenet_feedforward_reference.a": "0fe44fc3657bce3f3e83502d57f99c96fa5f4e4afaf791970ff28fe1dccd1cc4",
+    "libn2p2_function_reference.a": "f5a355fa5942e8af054a4cba26995e24cc52d2a1404de5d7f9741f2561ae27bb",
+    "libaccelnet.a": "8b52379350f51c267fc869897ccc40562b6e0533231b6776169c50b0125f024e",
+    "libaccelnet_target.a": "13225c50416e5910426d098b2b5da69e561ee7c519f3cf127c1c03f29c71a0f3"
+  },
+  "nvhpc": {
+    "libAccelNetDescriptors.a": "0f880958e841160214659e6d7ce613a8edeb6e4290506b90cd11e073df32d8ad",
+    "libbatch_test_support.a": "6df3f64bfaf7924da0ca033f14d93ed2c9f80a9606f73c1befc3fa58f87cccb2",
+    "libaccelnet.a": "0bc589f0ba730e07adec5bd7f4b1c15a734c26752bcad1d136dffa0b52084936",
+    "libaccelnet_target.a": "1d9f0cea3412a68b5eeddebb21b1c3428d825b85eda8730ac6f6f52071784e4e"
+  },
+  "gpu": {
+    "libaenet_feedforward_reference.a": "5e8a0ce58f53c88cb321ab1c636161a163502cc271d0fd03d893a54b7a1f67f9",
+    "libAccelNetDescriptors.a": "1a5694ca6e46752739c35502cd9cc5177244437908c554b9f70fbacc3d055bf0",
+    "libbatch_test_support.a": "a6b3803854020f879ddf6743c4ed91964b435b754e69ff4d4282714633b76174",
+    "libaccelnet.a": "ce5a227988669429af7b31f1c7f4568f108f31c949bb0a4224c902c09dd2ba99",
+    "libaccelnet_target.a": "80beeb99446582748b50527d96f26e5071465f0296e24ec46a753dce4a1e02fa"
+  }
+}

@@ -1,0 +1,1843 @@
+========= COMPUTE-SANITIZER
+Authorization required, but no authorization protocol specified
+========= Program hit CUDA_ERROR_INVALID_CONTEXT (error 201) due to "invalid device context" on CUDA API call to cuCtxSetFlags.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: uct_cuda_copy_md_open in cuda_copy_md.c:1075 [0xb7ca] in libuct_cuda.so.0
+=========         Host Frame: uct_md_open in uct_md.c:61 [0x15b0c] in libuct.so.0
+=========         Host Frame: ucp_add_component_resources in ucp_context.c:1655 [0x2dafa] in libucp.so.0
+=========         Host Frame: ucp_fill_resources in ucp_context.c:1907 [0x2f862] in libucp.so.0
+=========         Host Frame: ucp_init_version in ucp_context.c:2400 [0x31012] in libucp.so.0
+=========         Host Frame: mca_pml_ucx_open [0x25498f] in libmpi.so.40
+=========         Host Frame: mca_base_framework_components_open [0x3ce81] in libopen-pal.so.80
+=========         Host Frame: mca_pml_base_open [0x24ff7e] in libmpi.so.40
+=========         Host Frame: mca_base_framework_open [0x3da28] in libopen-pal.so.80
+=========         Host Frame: ompi_mpi_instance_init_common [0x9ea22] in libmpi.so.40
+=========         Host Frame: ompi_mpi_instance_init [0x9f767] in libmpi.so.40
+=========         Host Frame: ompi_mpi_init [0x96a8e] in libmpi.so.40
+=========         Host Frame: MPI_Init [0xc79e1] in libmpi.so.40
+=========         Host Frame: main in main.cpp:48 [0x1cd20] in lmp
+========= 
+LAMMPS (29 Aug 2024 - Update 4)
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: PMPI_Allgather [0xa87bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:122 [0x9e8192] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: PMPI_Allgather [0xa87bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:122 [0x9e8192] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: PMPI_Allgather [0xa87bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:122 [0x9e8192] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: PMPI_Allgather [0xa87bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:122 [0x9e8192] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d227] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d227] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d227] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d227] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:150 [0x9e867a] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d227] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d227] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d227] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d227] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_split_with_info [0x6d8e0] in libmpi.so.40
+=========         Host Frame: PMPI_Comm_split [0xb3115] in libmpi.so.40
+=========         Host Frame: LAMMPS_AL::Device<double, double>::init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:293 [0x9e8d5e] in lmp
+=========         Host Frame: lmp_init_device(ompi_communicator_t*, ompi_communicator_t*, int, int, int, double, int, double, char*, int, char*, int) in lal_device.cpp:1172 [0x9e2d78] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:231 [0x2a9424] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: GPU_EXTRA::check_flag(int, LAMMPS_NS::Error*, ompi_communicator_t*&) in gpu_extra.h:52 [0x2ab477] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:235 [0x2a9441] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: GPU_EXTRA::check_flag(int, LAMMPS_NS::Error*, ompi_communicator_t*&) in gpu_extra.h:52 [0x2ab477] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:235 [0x2a9441] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: GPU_EXTRA::check_flag(int, LAMMPS_NS::Error*, ompi_communicator_t*&) in gpu_extra.h:52 [0x2ab477] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:235 [0x2a9441] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: GPU_EXTRA::check_flag(int, LAMMPS_NS::Error*, ompi_communicator_t*&) in gpu_extra.h:52 [0x2ab477] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:235 [0x2a9441] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: GPU_EXTRA::check_flag(int, LAMMPS_NS::Error*, ompi_communicator_t*&) in gpu_extra.h:52 [0x2ab477] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:235 [0x2a9441] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: GPU_EXTRA::check_flag(int, LAMMPS_NS::Error*, ompi_communicator_t*&) in gpu_extra.h:52 [0x2ab477] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:235 [0x2a9441] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: GPU_EXTRA::check_flag(int, LAMMPS_NS::Error*, ompi_communicator_t*&) in gpu_extra.h:52 [0x2ab477] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:235 [0x2a9441] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: GPU_EXTRA::check_flag(int, LAMMPS_NS::Error*, ompi_communicator_t*&) in gpu_extra.h:52 [0x2ab477] in lmp
+=========         Host Frame: LAMMPS_NS::FixGPU::FixGPU(LAMMPS_NS::LAMMPS*, int, char**) in fix_gpu.cpp:235 [0x2a9441] in lmp
+=========         Host Frame: LAMMPS_NS::Fix* _INTERNAL_46__tmp_accelnet_lammps_gpu_source_src_modify_cpp_c0e76449::style_creator<LAMMPS_NS::Fix, LAMMPS_NS::FixGPU>(LAMMPS_NS::LAMMPS*, int, char**) in modify.cpp:44 [0x105d2b] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(int, char**, int) in modify.cpp:921 [0x11302d] in lmp
+=========         Host Frame: LAMMPS_NS::Modify::add_fix(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) in modify.cpp:992 [0x113d9e] in lmp
+=========         Host Frame: LAMMPS_NS::Input::package() in input.cpp:1711 [0x2e627] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:818 [0x2548a] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_create_w_info [0x6ceca] in libmpi.so.40
+=========         Host Frame: mca_topo_base_cart_create [0x28435b] in libmpi.so.40
+=========         Host Frame: PMPI_Cart_create [0xad2bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ProcMap::cart_map(int, int*, int*, int (*) [2], int***) in procmap.cpp:361 [0x842f94] in lmp
+=========         Host Frame: LAMMPS_NS::Comm::set_proc_grid(int) in comm.cpp:0 [0x32c6b7] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:684 [0x19d41b] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_create_w_info [0x6ceca] in libmpi.so.40
+=========         Host Frame: mca_topo_base_cart_create [0x28435b] in libmpi.so.40
+=========         Host Frame: PMPI_Cart_create [0xad2bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ProcMap::cart_map(int, int*, int*, int (*) [2], int***) in procmap.cpp:361 [0x842f94] in lmp
+=========         Host Frame: LAMMPS_NS::Comm::set_proc_grid(int) in comm.cpp:0 [0x32c6b7] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:684 [0x19d41b] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_create_w_info [0x6ceca] in libmpi.so.40
+=========         Host Frame: mca_topo_base_cart_create [0x28435b] in libmpi.so.40
+=========         Host Frame: PMPI_Cart_create [0xad2bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ProcMap::cart_map(int, int*, int*, int (*) [2], int***) in procmap.cpp:361 [0x842f94] in lmp
+=========         Host Frame: LAMMPS_NS::Comm::set_proc_grid(int) in comm.cpp:0 [0x32c6b7] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:684 [0x19d41b] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_getnextcid [0x7051e] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_create_w_info [0x6ceca] in libmpi.so.40
+=========         Host Frame: mca_topo_base_cart_create [0x28435b] in libmpi.so.40
+=========         Host Frame: PMPI_Cart_create [0xad2bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ProcMap::cart_map(int, int*, int*, int (*) [2], int***) in procmap.cpp:361 [0x842f94] in lmp
+=========         Host Frame: LAMMPS_NS::Comm::set_proc_grid(int) in comm.cpp:0 [0x32c6b7] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:684 [0x19d41b] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_create_w_info [0x6ceca] in libmpi.so.40
+=========         Host Frame: mca_topo_base_cart_create [0x28435b] in libmpi.so.40
+=========         Host Frame: PMPI_Cart_create [0xad2bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ProcMap::cart_map(int, int*, int*, int (*) [2], int***) in procmap.cpp:361 [0x842f94] in lmp
+=========         Host Frame: LAMMPS_NS::Comm::set_proc_grid(int) in comm.cpp:0 [0x32c6b7] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:684 [0x19d41b] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_create_w_info [0x6ceca] in libmpi.so.40
+=========         Host Frame: mca_topo_base_cart_create [0x28435b] in libmpi.so.40
+=========         Host Frame: PMPI_Cart_create [0xad2bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ProcMap::cart_map(int, int*, int*, int (*) [2], int***) in procmap.cpp:361 [0x842f94] in lmp
+=========         Host Frame: LAMMPS_NS::Comm::set_proc_grid(int) in comm.cpp:0 [0x32c6b7] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:684 [0x19d41b] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_create_w_info [0x6ceca] in libmpi.so.40
+=========         Host Frame: mca_topo_base_cart_create [0x28435b] in libmpi.so.40
+=========         Host Frame: PMPI_Cart_create [0xad2bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ProcMap::cart_map(int, int*, int*, int (*) [2], int***) in procmap.cpp:361 [0x842f94] in lmp
+=========         Host Frame: LAMMPS_NS::Comm::set_proc_grid(int) in comm.cpp:0 [0x32c6b7] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:684 [0x19d41b] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: ompi_datatype_sndrcv [0xa7779] in libmpi.so.40
+=========         Host Frame: nbc_allreduce_init [0x14abdf] in libmpi.so.40
+=========         Host Frame: ompi_coll_libnbc_iallreduce [0x14c3b9] in libmpi.so.40
+=========         Host Frame: ompi_comm_allreduce_intra_nb [0x7003d] in libmpi.so.40
+=========         Host Frame: ompi_comm_checkcid [0x70793] in libmpi.so.40
+=========         Host Frame: ompi_comm_request_progress [0x75863] in libmpi.so.40
+=========         Host Frame: opal_progress [0x28733] in libopen-pal.so.80
+=========         Host Frame: ompi_request_wait_completion [0x70ee3] in libmpi.so.40
+=========         Host Frame: ompi_comm_nextcid [0x74d34] in libmpi.so.40
+=========         Host Frame: ompi_comm_create_w_info [0x6ceca] in libmpi.so.40
+=========         Host Frame: mca_topo_base_cart_create [0x28435b] in libmpi.so.40
+=========         Host Frame: PMPI_Cart_create [0xad2bd] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ProcMap::cart_map(int, int*, int*, int (*) [2], int***) in procmap.cpp:361 [0x842f94] in lmp
+=========         Host Frame: LAMMPS_NS::Comm::set_proc_grid(int) in comm.cpp:0 [0x32c6b7] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:684 [0x19d41b] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1557 [0x1aa9ff] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1557 [0x1aa9ff] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1557 [0x1aa9ff] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1557 [0x1aa9ff] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1557 [0x1aa9ff] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1557 [0x1aa9ff] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1557 [0x1aa9ff] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1557 [0x1aa9ff] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:895 [0x2c264e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:895 [0x2c264e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:895 [0x2c264e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:895 [0x2c264e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:895 [0x2c264e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:895 [0x2c264e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:895 [0x2c264e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:895 [0x2c264e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:896 [0x2c2676] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:896 [0x2c2676] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:896 [0x2c2676] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:896 [0x2c2676] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:896 [0x2c2676] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:896 [0x2c2676] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:896 [0x2c2676] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::tag_check() in atom.cpp:896 [0x2c2676] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1566 [0x1aaab4] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:993 [0x2c3563] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:993 [0x2c3563] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:993 [0x2c3563] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:993 [0x2c3563] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:993 [0x2c3563] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:993 [0x2c3563] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:993 [0x2c3563] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:993 [0x2c3563] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:998 [0x2c359e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:998 [0x2c359e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:998 [0x2c359e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:998 [0x2c359e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:998 [0x2c359e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:998 [0x2c359e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:998 [0x2c359e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:998 [0x2c359e] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1003 [0x2c35d9] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1003 [0x2c35d9] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1003 [0x2c35d9] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1003 [0x2c35d9] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1003 [0x2c35d9] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1003 [0x2c35d9] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1003 [0x2c35d9] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1003 [0x2c35d9] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1008 [0x2c3614] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x13942e] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1008 [0x2c3614] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1008 [0x2c3614] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394b3] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1008 [0x2c3614] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1008 [0x2c3614] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuPointerGetAttribute.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x376e] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6ae8f] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1008 [0x2c3614] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuMemRetainAllocationHandle.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: accelerator_cuda_check_addr [0x3719] in mca_accelerator_cuda.so
+=========         Host Frame: opal_datatype_accelerator_memcpy.isra.0 [0x6aeda] in libopen-pal.so.80
+=========         Host Frame: non_overlap_accelerator_copy_content_same_ddt [0x6b014] in libopen-pal.so.80
+=========         Host Frame: mca_coll_self_allreduce_intra [0x142418] in libmpi.so.40
+=========         Host Frame: mca_coll_cuda_allreduce [0x1394eb] in libmpi.so.40
+=========         Host Frame: PMPI_Allreduce [0xa979b] in libmpi.so.40
+=========         Host Frame: LAMMPS_NS::Atom::bonus_check() in atom.cpp:1008 [0x2c3614] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::atoms() in read_data.cpp:1570 [0x1aaac0] in lmp
+=========         Host Frame: LAMMPS_NS::ReadData::command(int, char**) in read_data.cpp:708 [0x19d80c] in lmp
+=========         Host Frame: LAMMPS_NS::Input::execute_command() in input.cpp:868 [0x250b0] in lmp
+=========         Host Frame: LAMMPS_NS::Input::file() in input.cpp:313 [0x2249a] in lmp
+=========         Host Frame: main in main.cpp:78 [0x1cd4e] in lmp
+========= 
+Reading data file ...
+  triclinic box = (0 0 0) to (5.934 9.2969997 4.6489999) with tilt (0.7 -0.4 0.3)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  24 atoms
+  read_data CPU = 0.230 seconds
+Replication is creating a 1x1x1 = 1 times larger system...
+  triclinic box = (0 0 0) to (5.934 9.2969997 4.6489999) with tilt (0.7 -0.4 0.3)
+  1 by 1 by 1 MPI processor grid
+  24 atoms
+  replicate CPU = 0.100 seconds
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+- GPU package (short-range, long-range and three-body potentials): doi:10.1016/j.cpc.2010.12.021, doi:10.1016/j.cpc.2011.10.012, doi:10.1016/j.cpc.2013.08.002, doi:10.1016/j.commatsci.2014.10.068, doi:10.1016/j.cpc.2016.10.020, doi:10.3233/APC200086
+The log file lists these citations in BibTeX format.
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+AccelNet GPU: CUDA device 0, FP64 OpenMP target, GPU package neighbors
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.0001
+Per MPI rank memory allocation (min/avg/max) = 2.074 | 2.074 | 2.074 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  -19958.706184163388 51153.626982112386 10867.694034831391 47815.528487692456 -104404.71576692133 125660.61764353988 -116919.56551345006
+Loop time of 1.524e-06 on 1 procs for 0 steps with 24 atoms
+
+196.9% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 1.524e-06  |            |       |100.00
+
+Nlocal:             24 ave          24 max          24 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:            816 ave         816 max         816 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0
+Neighbor list builds = 0
+Dangerous builds not checked
+AccelNet GPU: CUDA device 0, FP64 OpenMP target, GPU package neighbors
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.0001
+Per MPI rank memory allocation (min/avg/max) = 2.199 | 2.199 | 2.199 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  -19958.706184163388 51153.626982111702 10867.694034831347 47815.528487692463 -104404.71576692141 125660.61764353979 -116919.5655134502
+         1  -19958.704399886687 51161.255724877432 10863.352421473615 47812.023224253142 -104415.03179927618 125670.01843653168 -116904.34157612424
+         2  -19958.70274060755 51169.394341227104 10857.433452905059 47805.703574653744 -104425.42900156332 125679.27728241765 -116889.37848604831
+         3  -19958.701207105845 51178.070263224021 10849.939240488984 47796.571933375919 -104435.89489749768 125688.38084839912 -116874.67796352862
+         4  -19958.699800109051 51187.447594258148 10840.878689551801 47784.638630941561 -104446.38819661748 125697.28547497572 -116860.24808838182
+         5  -19958.698520289909 51197.304820006626 10830.24440547664 47769.896053407538 -104456.94837557309 125706.03326303649 -116846.07896928731
+         6  -19958.697368265784 51207.640547948999 10818.03932058622 47752.348531346659 -104467.56864774135 125714.61749423601 -116832.1709734996
+         7  -19958.696344599466 51218.524038320029 10804.33734446079 47732.268159246982 -104478.17169822771 125722.89439712216 -116818.66135426542
+         8  -19958.695449800809 51229.955381682434 10789.143804796713 47709.665407891938 -104488.74936419356 125730.85520290441 -116805.5524398486
+         9  -19958.694684321672 51241.866821530712 10772.377423947733 47684.274985695512 -104499.36402482864 125738.62586420581 -116792.69470564286
+        10  -19958.694048557434 51254.256249367296 10753.992453513114 47656.049644254868 -104510.01687769337 125746.20877868695 -116780.03483418548
+        11  -19958.693542846839 51267.124889991181 10734.057482462113 47625.066843843051 -104520.69006053406 125753.58666825024 -116767.63802625159
+        12  -19958.693167471429 51280.472430646259 10712.579717452285 47591.337654377458 -104531.37591496577 125760.75309775899 -116755.50475478926
+        13  -19958.692922655471 51294.298744906067 10689.567065902884 47554.874251061956 -104542.06664784176 125767.7016968134 -116743.63550701414
+        14  -19958.692808565669 51308.603893410545 10665.028132407546 47515.689908053202 -104552.75433402695 125774.42616440411 -116732.03078434791
+        15  -19958.692825310955 51323.388123941906 10638.972214637286 47473.798991429496 -104563.43091929621 125780.92027374511 -116720.69110217704
+        16  -19958.692972942263 51338.651870893867 10611.409298738106 47429.216951461785 -104574.088223367 125787.17787729359 -116709.61698942792
+        17  -19958.69325145242 51354.395754077217 10582.350054234385 47381.960314189681 -104584.71794305572 125793.19291193684 -116698.8089879664
+        18  -19958.693660777575 51370.665674976466 10552.009977045022 47332.541869048509 -104595.21568774249 125799.108846327 -116687.94968077286
+        19  -19958.694200800499 51387.447980795492 10520.335272806744 47280.820474300745 -104605.60388600727 125804.87144928891 -116677.14209925462
+        20  -19958.694871340194 51404.714315667959 10487.205122690229 47226.491954488061 -104615.93664685778 125810.37717339034 -116666.59473439242
+Loop time of 1.78099 on 1 procs for 20 steps with 24 atoms
+
+Performance: 0.097 ns/day, 247.360 hours/ns, 11.230 timesteps/s, 269.513 atom-step/s
+89.4% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.3722     | 1.3722     | 1.3722     |   0.0 | 77.05
+Neigh   | 7.504e-06  | 7.504e-06  | 7.504e-06  |   0.0 |  0.00
+Comm    | 0.00040755 | 0.00040755 | 0.00040755 |   0.0 |  0.02
+Output  | 0.40821    | 0.40821    | 0.40821    |   0.0 | 22.92
+Modify  | 3.264e-05  | 3.264e-05  | 3.264e-05  |   0.0 |  0.00
+Other   |            | 8.97e-05   |            |       |  0.01
+
+Nlocal:             24 ave          24 max          24 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:            816 ave         816 max         816 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0
+Neighbor list builds = 20
+Dangerous builds not checked
+Total wall time: 0:00:04
+========= ERROR SUMMARY: 1774 errors
+========= ERROR SUMMARY: 1674 errors were not printed. Use --print-limit option to adjust the number of printed errors

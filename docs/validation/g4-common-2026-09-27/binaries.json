@@ -1,0 +1,30 @@
+{
+  "before": {
+    "gnu": {
+      "path": "/tmp/accelnet-g4-improve/before/gnu",
+      "sha256": "3ab5b66b39a45f47ca09451b53ee83248040a48d3faa6f080b357857fb42aeaa"
+    },
+    "nvhpc": {
+      "path": "/tmp/accelnet-g4-improve/before/nvhpc",
+      "sha256": "8435f24562dbd7b88de6143c7523adf71d146e585d2e38695c00a69e3b1dd062"
+    },
+    "gpu": {
+      "path": "/tmp/accelnet-g4-improve/before/gpu",
+      "sha256": "cd4d9aaba56a34651e17f32a123e819cce53a34a95654525a9a39bf394e6c00a"
+    }
+  },
+  "after": {
+    "gnu": {
+      "path": "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+      "sha256": "04449c166a1c075c67c4d6d3204acd46c6067b065843799492e050c7c2a36601"
+    },
+    "nvhpc": {
+      "path": "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "sha256": "02e4f475d818f9e2ad6ccfe8cf5924c0a18a69dcd4e3c26daf81062782ebdbba"
+    },
+    "gpu": {
+      "path": "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+      "sha256": "f153b09c04cfddcb4ddf193b025316b10f9b9866065c0bc090ac666097e2fc30"
+    }
+  }
+}

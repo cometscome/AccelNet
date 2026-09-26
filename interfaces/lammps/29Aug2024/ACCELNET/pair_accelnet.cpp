@@ -135,7 +135,7 @@ void PairAccelNet::compute(int eflag, int vflag)
       error->all(FLERR,error_buffer);
     }
 
-    if (evflag) ev_tally(0,0,nlocal, 1,
+    if (evflag) ev_tally(i,i,nlocal, 1,
 			 E_i,0.0,0.0,0.0,0.0,0.0);
     
   }

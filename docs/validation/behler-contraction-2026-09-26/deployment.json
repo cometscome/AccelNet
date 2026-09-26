@@ -1,0 +1,6 @@
+{
+  "path": "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp",
+  "sha256": "9a7200fba689020f9f53381de9ed6dd22e973d3e9c24bb440ed9af4700f8b5b5",
+  "previous_path": "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp-before-generic-common",
+  "previous_sha256": "fa20e636e98e4f7229233f3e25f3eba24d7d24808a38069214113421bcddd61e"
+}

@@ -1,0 +1,3 @@
+ GPU checks:           59  maximum absolute E/F/W error: 
+   3.8857805861880479E-016
+ GPU batch FP64 equivalence and finite differences passed

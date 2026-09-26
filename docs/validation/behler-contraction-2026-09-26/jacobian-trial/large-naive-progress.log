@@ -1,0 +1,6 @@
+large-h100-g4-jacobian ms 3.2312 ratio 0.036
+large-h100-g5-jacobian ms 3.0061 ratio 0.02
+large-h100-behler-jacobian ms 6.0982 ratio 0.017
+large-blackwell-g4-jacobian ms 9.8556 ratio 0.111
+large-blackwell-g5-jacobian ms 8.4175 ratio 0.057
+large-blackwell-behler-jacobian ms 15.3215 ratio 0.043

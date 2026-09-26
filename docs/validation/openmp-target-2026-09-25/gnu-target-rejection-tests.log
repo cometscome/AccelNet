@@ -1,0 +1,122 @@
+Start testing: Sep 25 17:46 JST
+----------------------------------------------------------
+15/41 Testing: predictor_target_reject_unsupported
+15/41 Test: predictor_target_reject_unsupported
+Command: "/tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch_target" "unsupported"
+Directory: /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor
+"predictor_target_reject_unsupported" start time: Sep 25 17:46 JST
+Output:
+----------------------------------------------------------
+ERROR STOP OpenMP target: only a single Chebyshev component per species is supported
+
+Error termination. Backtrace:
+#0  0x7fcd9e430960 in ???
+#1  0x7fcd9e4314d9 in ???
+#2  0x7fcd9e432b47 in ???
+#3  0x557eced380d0 in __accelnet_batch_target_MOD_initialize_target_model
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch_target.f90:56
+#4  0x557ecece6b4e in reject
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:265
+#5  0x557ecece8ebd in test_batch_target
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:53
+#6  0x557eced1ae70 in main
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:3
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_unsupported" end time: Sep 25 17:46 JST
+"predictor_target_reject_unsupported" time elapsed: 00:00:00
+----------------------------------------------------------
+
+16/41 Testing: predictor_target_reject_activation
+16/41 Test: predictor_target_reject_activation
+Command: "/tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch_target" "activation"
+Directory: /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor
+"predictor_target_reject_activation" start time: Sep 25 17:46 JST
+Output:
+----------------------------------------------------------
+ERROR STOP OpenMP target: unsupported network activation
+
+Error termination. Backtrace:
+#0  0x7f7505267960 in ???
+#1  0x7f75052684d9 in ???
+#2  0x7f7505269b47 in ???
+#3  0x55e33d243658 in __accelnet_batch_target_MOD_initialize_target_model
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch_target.f90:86
+#4  0x55e33d1edb4e in reject
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:265
+#5  0x55e33d1efebd in test_batch_target
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:53
+#6  0x55e33d221e70 in main
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:3
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_activation" end time: Sep 25 17:46 JST
+"predictor_target_reject_activation" time elapsed: 00:00:00
+----------------------------------------------------------
+
+18/41 Testing: predictor_target_reject_uninitialized
+18/41 Test: predictor_target_reject_uninitialized
+Command: "/tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch_target" "uninitialized"
+Directory: /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor
+"predictor_target_reject_uninitialized" start time: Sep 25 17:46 JST
+Output:
+----------------------------------------------------------
+ERROR STOP OpenMP target: initialize target_model first
+
+Error termination. Backtrace:
+#0  0x7f4fe59b2960 in ???
+#1  0x7f4fe59b34d9 in ???
+#2  0x7f4fe59b4b47 in ???
+#3  0x55e7705bc7e7 in __accelnet_batch_target_MOD_evaluate_batch_target
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch_target.f90:155
+#4  0x55e77057244e in reject
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:278
+#5  0x55e770573ebd in test_batch_target
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:53
+#6  0x55e7705a5e70 in main
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:3
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_uninitialized" end time: Sep 25 17:46 JST
+"predictor_target_reject_uninitialized" time elapsed: 00:00:00
+----------------------------------------------------------
+
+19/41 Testing: predictor_target_reject_host_fallback
+19/41 Test: predictor_target_reject_host_fallback
+Command: "/tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch_target" "fallback"
+Directory: /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor
+"predictor_target_reject_host_fallback" start time: Sep 25 17:46 JST
+Output:
+----------------------------------------------------------
+ERROR STOP OpenMP target: GPU device unavailable
+
+Error termination. Backtrace:
+#0  0x7f4dd1fa3960 in ???
+#1  0x7f4dd1fa44d9 in ???
+#2  0x7f4dd1fa5b47 in ???
+#3  0x55da563afee8 in __accelnet_batch_target_MOD_initialize_target_model
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch_target.f90:106
+#4  0x55da56359b4e in reject
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:265
+#5  0x55da5635bebd in test_batch_target
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:53
+#6  0x55da5638de70 in main
+	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch_target.f90:3
+<end of output>
+Test time =   0.11 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_host_fallback" end time: Sep 25 17:46 JST
+"predictor_target_reject_host_fallback" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 25 17:46 JST
+
+gpu =   0.40 sec*proc
+

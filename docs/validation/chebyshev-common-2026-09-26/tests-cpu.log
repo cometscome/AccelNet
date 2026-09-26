@@ -1,0 +1,95 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-research/build-current
+Test project /tmp/accelnet-gpu-research/build-current
+      Start  1: descriptor_unit
+ 1/42 Test  #1: descriptor_unit ....................................   Passed    0.00 sec
+      Start  2: descriptor_tio2
+ 2/42 Test  #2: descriptor_tio2 ....................................   Passed    0.01 sec
+      Start  3: descriptor_lj_model
+ 3/42 Test  #3: descriptor_lj_model ................................   Passed    0.00 sec
+      Start  4: descriptor_behler
+ 4/42 Test  #4: descriptor_behler ..................................   Passed    0.01 sec
+      Start  5: descriptor_combined_model
+ 5/42 Test  #5: descriptor_combined_model ..........................   Passed    0.00 sec
+      Start  6: descriptor_setup_parser
+ 6/42 Test  #6: descriptor_setup_parser ............................   Passed    0.01 sec
+      Start  7: descriptor_setup_cli_match
+ 7/42 Test  #7: descriptor_setup_cli_match .........................   Passed    0.03 sec
+      Start  9: predictor_batch_equivalence
+ 8/42 Test  #9: predictor_batch_equivalence ........................   Passed    0.15 sec
+      Start 10: predictor_batch_reject_offset
+ 9/42 Test #10: predictor_batch_reject_offset ......................   Passed    0.11 sec
+      Start 11: predictor_batch_reject_monotonic
+10/42 Test #11: predictor_batch_reject_monotonic ...................   Passed    0.11 sec
+      Start 12: predictor_batch_reject_target
+11/42 Test #12: predictor_batch_reject_target ......................   Passed    0.12 sec
+      Start 13: predictor_batch_reject_center
+12/42 Test #13: predictor_batch_reject_center ......................   Passed    0.12 sec
+      Start 14: predictor_batch_reject_species
+13/42 Test #14: predictor_batch_reject_species .....................   Passed    0.10 sec
+      Start 15: predictor_batch_reject_shape
+14/42 Test #15: predictor_batch_reject_shape .......................   Passed    0.11 sec
+      Start 16: predictor_atomic_and_structure_virial
+15/42 Test #16: predictor_atomic_and_structure_virial ..............   Passed    0.13 sec
+      Start 17: predictor_c_virial
+16/42 Test #17: predictor_c_virial .................................   Passed    0.00 sec
+      Start 18: predictor_virial_convergence_n2p2
+17/42 Test #18: predictor_virial_convergence_n2p2 ..................   Passed    0.03 sec
+      Start 19: predictor_virial_convergence_n2p2-per-element
+18/42 Test #19: predictor_virial_convergence_n2p2-per-element ......   Passed    0.04 sec
+      Start 20: predictor_virial_invariants_n2p2-per-element
+19/42 Test #20: predictor_virial_invariants_n2p2-per-element .......   Passed    0.03 sec
+      Start 21: predictor_virial_convergence_n2p2-virial-angular
+20/42 Test #21: predictor_virial_convergence_n2p2-virial-angular ...   Passed    0.06 sec
+      Start 22: predictor_virial_invariants_n2p2-virial-angular
+21/42 Test #22: predictor_virial_invariants_n2p2-virial-angular ....   Passed    0.02 sec
+      Start 23: n2p2_model_loader
+22/42 Test #23: n2p2_model_loader ..................................   Passed    0.00 sec
+      Start 24: n2p2_per_element_topology_and_normalize_nodes
+23/42 Test #24: n2p2_per_element_topology_and_normalize_nodes ......   Passed    0.00 sec
+      Start 25: n2p2_atomic_api_and_input_data
+24/42 Test #25: n2p2_atomic_api_and_input_data .....................   Passed    0.00 sec
+      Start 26: n2p2_input_data_cli
+25/42 Test #26: n2p2_input_data_cli ................................   Passed    0.00 sec
+      Start 27: network_activation_compatibility
+26/42 Test #27: network_activation_compatibility ...................   Passed    0.00 sec
+      Start 28: network_aenet_activation_reference_match
+27/42 Test #28: network_aenet_activation_reference_match ...........   Passed    0.00 sec
+      Start 29: predictor_batch_aenet_golden
+28/42 Test #29: predictor_batch_aenet_golden .......................   Passed    0.13 sec
+      Start 30: predictor_virial_convergence_structure0001
+29/42 Test #30: predictor_virial_convergence_structure0001 .........   Passed    2.67 sec
+      Start 31: predictor_virial_convergence_structure2935
+30/42 Test #31: predictor_virial_convergence_structure2935 .........   Passed    2.57 sec
+      Start 32: network_ascii_roundtrip
+31/42 Test #32: network_ascii_roundtrip ............................   Passed    0.00 sec
+      Start 33: network_binary_compatibility
+32/42 Test #33: network_binary_compatibility .......................   Passed    0.01 sec
+      Start 34: predictor_tio2_energy
+33/42 Test #34: predictor_tio2_energy ..............................   Passed    0.01 sec
+      Start 35: predictor_fortran_golden
+34/42 Test #35: predictor_fortran_golden ...........................   Passed    0.03 sec
+      Start 37: accelnet_fortran_api
+35/42 Test #37: accelnet_fortran_api ...............................   Passed    0.01 sec
+      Start 38: accelnet_c_api
+36/42 Test #38: accelnet_c_api .....................................   Passed    0.00 sec
+      Start 39: predictor_original_input
+37/42 Test #39: predictor_original_input ...........................   Passed    0.01 sec
+      Start 40: predictor_default_aenet204_version
+38/42 Test #40: predictor_default_aenet204_version .................   Passed    0.01 sec
+      Start 41: predictor_chebyshev_version1
+39/42 Test #41: predictor_chebyshev_version1 .......................   Passed    0.01 sec
+      Start 42: predictor_chebyshev_version10
+40/42 Test #42: predictor_chebyshev_version10 ......................   Passed    0.01 sec
+      Start 43: fortran_converter_roundtrip
+41/42 Test #43: fortran_converter_roundtrip ........................   Passed    0.07 sec
+      Start 44: fortran_converter_per_element_roundtrip
+42/42 Test #44: fortran_converter_per_element_roundtrip ............   Passed    0.07 sec
+
+100% tests passed, 0 tests failed out of 42
+
+Label Time Summary:
+aenet-reference    =   0.00 sec*proc (1 test)
+integration        =   0.07 sec*proc (2 tests)
+n2p2-reference     =   0.07 sec*proc (2 tests)
+
+Total Test time (real) =   6.87 sec

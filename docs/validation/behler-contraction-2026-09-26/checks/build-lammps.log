@@ -1,0 +1,47 @@
+-- Git Directory: /tmp/accelnet-lammps-gpu/source/.git
+-- Generating lmpgitversion.h...
+[  0%] Built target fmt_format.h
+[  0%] Built target angle.h
+[  0%] Built target atom.h
+[  0%] Built target citeme.h
+[  0%] Built target bond.h
+[  1%] Built target comm.h
+[  1%] Built target gitversion
+[  1%] Built target error.h
+[  1%] Built target command.h
+[  1%] Built target compute.h
+[  1%] Built target dihedral.h
+[  1%] Built target domain.h
+[  1%] Built target exceptions.h
+[  1%] Built target fix.h
+[  2%] Built target improper.h
+[  2%] Built target force.h
+[  2%] Built target group.h
+[  2%] Built target info.h
+[  2%] Built target input.h
+[  2%] Built target kspace.h
+[  2%] Built target lammps.h
+[  3%] Built target lattice.h
+[  3%] Built target library.h
+[  3%] Built target lmptype.h
+[  3%] Built target memory.h
+[  3%] Built target lmppython.h
+[  3%] Built target neighbor.h
+[  4%] Built target modify.h
+[  4%] Built target neigh_list.h
+[  4%] Built target pair.h
+[  4%] Built target output.h
+[  5%] Built target platform.h
+[  5%] Built target pointers.h
+[  5%] Built target region.h
+[  5%] Built target timer.h
+[  5%] Built target universe.h
+[  5%] Built target update.h
+[  5%] Built target utils.h
+[  6%] Built target variable.h
+[  6%] Built target fmt_core.h
+[  6%] Built target nvc_get_devices
+[ 47%] Built target gpu
+[100%] Built target lammps
+[100%] Linking CXX executable lmp
+[100%] Built target lmp

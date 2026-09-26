@@ -1,0 +1,66 @@
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7fffee73d640 (LWP 184445)]
+[New Thread 0x7fffeca88640 (LWP 184449)]
+[New Thread 0x7ffde3fff640 (LWP 184450)]
+[New Thread 0x7ffde1a04640 (LWP 184451)]
+Failing in Thread:1
+Accelerator Fatal Error: call to cuMemFree returned error 4 (unknown): Deinitialized
+ File: nvomp_target.c
+ Function: finalizeDeviceMemoryPool:331
+ Line: 135
+
+double free or corruption (fasttop)
+
+Thread 1 "test_batch_targ" received signal SIGABRT, Aborted.
+__pthread_kill_implementation (no_tid=0, signo=6, threadid=140737352597696) at ./nptl/pthread_kill.c:44
+44	./nptl/pthread_kill.c: No such file or directory.
+
+Thread 5 (Thread 0x7ffde1a04640 (LWP 184451) "test_batch_targ"):
+#0  0x00007ffff46efbcf in __GI___poll (fds=0x166f640, nfds=2, timeout=100) at ../sysdeps/unix/sysv/linux/poll.c:29
+#1  0x00007fffeea375d7 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#2  0x00007fffeeb14697 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#3  0x00007fffeea22f93 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#4  0x00007ffff466bac3 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:442
+#5  0x00007ffff46fd850 in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:81
+
+Thread 4 (Thread 0x7ffde3fff640 (LWP 184450) "cuda-EvtHandlr"):
+#0  0x00007ffff46efbcf in __GI___poll (fds=0x7ffddc000c20, nfds=10, timeout=100) at ../sysdeps/unix/sysv/linux/poll.c:29
+#1  0x00007fffeea375d7 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#2  0x00007fffeeb14697 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#3  0x00007fffeea22f93 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#4  0x00007ffff466bac3 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:442
+#5  0x00007ffff46fd850 in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:81
+
+Thread 3 (Thread 0x7fffeca88640 (LWP 184449) "test_batch_targ"):
+#0  __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x7fffeca87450, op=393, expected=0, futex_word=0x7416c8) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x7fffeca87450, clockid=0, expected=0, futex_word=0x7416c8) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7416c8, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x7fffeca87450, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007ffff466ae9b in __pthread_cond_wait_common (abstime=0x7fffeca87450, clockid=0, mutex=0x73beb8, cond=0x7416a0) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_timedwait64 (cond=0x7416a0, mutex=0x73beb8, abstime=0x7fffeca87450) at ./nptl/pthread_cond_wait.c:652
+#5  0x00007fffee99ac3a in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#6  0x00007fffeea22f93 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#7  0x00007ffff466bac3 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:442
+#8  0x00007ffff46fd850 in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:81
+
+Thread 2 (Thread 0x7fffee73d640 (LWP 184445) "cuda00001400006"):
+#0  0x00007ffff46efbcf in __GI___poll (fds=0x6f12b0, nfds=3, timeout=-1) at ../sysdeps/unix/sysv/linux/poll.c:29
+#1  0x00007fffeea375d7 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#2  0x00007fffeeb14697 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#3  0x00007fffeea22f93 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
+#4  0x00007ffff466bac3 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:442
+#5  0x00007ffff46fd850 in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:81
+
+Thread 1 (Thread 0x7ffff7e880c0 (LWP 184434) "test_batch_targ"):
+#0  __pthread_kill_implementation (no_tid=0, signo=6, threadid=140737352597696) at ./nptl/pthread_kill.c:44
+#1  __pthread_kill_internal (signo=6, threadid=140737352597696) at ./nptl/pthread_kill.c:78
+#2  __GI___pthread_kill (threadid=140737352597696, signo=signo@entry=6) at ./nptl/pthread_kill.c:89
+#3  0x00007ffff4619476 in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+#4  0x00007ffff45ff7f3 in __GI_abort () at ./stdlib/abort.c:79
+#5  0x00007ffff4660676 in __libc_message (action=action@entry=do_abort, fmt=fmt@entry=0x7ffff47b2b77 "%s\n") at ../sysdeps/posix/libc_fatal.c:155
+#6  0x00007ffff4677cfc in malloc_printerr (str=str@entry=0x7ffff47b5748 "double free or corruption (fasttop)") at ./malloc/malloc.c:5664
+#7  0x00007ffff46799ca in _int_free (av=0x7ffff47f1c80 <main_arena>, p=0x1671c10, have_lock=0) at ./malloc/malloc.c:4539
+#8  0x00007ffff467c453 in __GI___libc_free (mem=<optimized out>) at ./malloc/malloc.c:3391
+#9  0x00007ffff5620a23 in finalizeDeviceMemoryPool (poolTable=0x178afb0, deviceId=deviceId@entry=0) at nvomp_target.c:136
+#10 0x00007ffff56260a2 in finalizeDeviceMemoryPools () at nvomp_target.c:152
+#11 nvompTargetFinalize () at nvomp_target.c:4868

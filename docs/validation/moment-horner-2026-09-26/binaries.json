@@ -1,0 +1,38 @@
+{
+  "gnu-before": {
+    "path": "/tmp/accelnet-moment-horner/before-gnu/accelnet-target-benchmark",
+    "sha256": "10f6b79a5d6768bfc7e24deacdc4add1463ed1eefa063d16e9c0c0f21ed88dfe"
+  },
+  "nvhpc-before": {
+    "path": "/tmp/accelnet-moment-horner/before-nvhpc/accelnet-target-benchmark",
+    "sha256": "18096bac6f46b4a67d947103748a71e4d28140c79b52d0b45fca005386de6728"
+  },
+  "gpu-before": {
+    "path": "/tmp/accelnet-moment-horner/before-gpu/accelnet-target-benchmark",
+    "sha256": "b2d337fd484f7da264d901bab5e44f3d889d527f510736ded29d1d7d20f5e17b"
+  },
+  "gpu-indirect": {
+    "path": "/tmp/accelnet-moment-horner/indirect-gpu/accelnet-target-benchmark",
+    "sha256": "5ddc46f7f587c4ff2094bc514c8ccdc869ae0d0bc5f63f3be9686c6163cc8b80"
+  },
+  "gnu-horner": {
+    "path": "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+    "sha256": "e69832c58435cd688f59ee2d3c8ebd1cfe48beda9ff14d690b387dce2e594525"
+  },
+  "nvhpc-horner": {
+    "path": "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+    "sha256": "885e60727ce4b73d953866249603d47a91e8ce6fbb79cb231dfdfc7ff7d4916a"
+  },
+  "gpu-horner": {
+    "path": "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+    "sha256": "777fd8a17b2762958012cf0864a917f15b44f92635fb50866efe21992bc21ded"
+  },
+  "lammps-before": {
+    "path": "/tmp/accelnet-moment-horner/lmp-before",
+    "sha256": "d7a93267303946c00e5c21c72c73f99760733c6205525df1b4db969bc4fc408c"
+  },
+  "lammps-horner": {
+    "path": "/tmp/accelnet-lammps-gpu/build/lmp",
+    "sha256": "fa20e636e98e4f7229233f3e25f3eba24d7d24808a38069214113421bcddd61e"
+  }
+}

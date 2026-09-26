@@ -1,0 +1,127 @@
+Authorization required, but no authorization protocol specified
+LAMMPS (29 Aug 2024 - Update 4)
+Reading data file ...
+  orthogonal box = (0 0 0) to (5.934 9.2969997 4.6489999)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  24 atoms
+  read_data CPU = 0.001 seconds
+Replication is creating a 8x8x8 = 512 times larger system...
+  orthogonal box = (0 0 0) to (47.472 74.375998 37.192)
+  1 by 1 by 1 MPI processor grid
+  12288 atoms
+  replicate CPU = 0.001 seconds
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+- GPU package (short-range, long-range and three-body potentials): doi:10.1016/j.cpc.2010.12.021, doi:10.1016/j.cpc.2011.10.012, doi:10.1016/j.cpc.2013.08.002, doi:10.1016/j.commatsci.2014.10.068, doi:10.1016/j.cpc.2016.10.020, doi:10.3233/APC200086
+The log file lists these citations in BibTeX format.
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+AccelNet GPU: CUDA device 0, FP64 OpenMP target, GPU package neighbors
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.0001
+Per MPI rank memory allocation (min/avg/max) = 5.221 | 5.221 | 5.221 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  -10219909.857921025 40265.067485123764 -16705.812601314206 11508.768082456561 -3028.8180926368022 -1467.8868013894314 -225.48082527637069
+        20  -10219919.509129655 40323.374196407538 -17065.942240691427 11122.095370213303 -3024.6596420914261 -1512.4654623850133 -217.52551961780577
+Loop time of 0.236416 on 1 procs for 20 steps with 12288 atoms
+
+Performance: 0.731 ns/day, 32.836 hours/ns, 84.596 timesteps/s, 1.040 Matom-step/s
+100.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.23322    | 0.23322    | 0.23322    |   0.0 | 98.65
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.0010553  | 0.0010553  | 0.0010553  |   0.0 |  0.45
+Output  | 5.3493e-05 | 5.3493e-05 | 5.3493e-05 |   0.0 |  0.02
+Modify  | 0.001621   | 0.001621   | 0.001621   |   0.0 |  0.69
+Other   |            | 0.0004638  |            |       |  0.20
+
+Nlocal:          12288 ave       12288 max       12288 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          14039 ave       14039 max       14039 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0
+Neighbor list builds = 0
+Dangerous builds = 0
+AccelNet GPU: CUDA device 0, FP64 OpenMP target, GPU package neighbors
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 20
+  Time step     : 0.0001
+Per MPI rank memory allocation (min/avg/max) = 5.221 | 5.221 | 5.221 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+        20  -10219919.509129655 40323.374196407458 -17065.942240691442 11122.095370213317 -3024.6596420914279 -1512.4654623850142 -217.52551961781072
+       100  -10220091.802945444 42149.49102668967 -23868.182620406009 3511.2443398519581 -2569.6352743770944 -2164.3874314048385 125.27523134584912
+       120  -10220140.547814405 42711.113109988881 -25744.572835209576 1299.5426129704358 -2242.7795452790047 -2199.4743581729695 134.51358394384906
+Loop time of 1.17592 on 1 procs for 100 steps with 12288 atoms
+
+Performance: 0.735 ns/day, 32.664 hours/ns, 85.040 timesteps/s, 1.045 Matom-step/s
+100.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.1603     | 1.1603     | 1.1603     |   0.0 | 98.67
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.0051908  | 0.0051908  | 0.0051908  |   0.0 |  0.44
+Output  | 0.00010464 | 0.00010464 | 0.00010464 |   0.0 |  0.01
+Modify  | 0.0080674  | 0.0080674  | 0.0080674  |   0.0 |  0.69
+Other   |            | 0.002226   |            |       |  0.19
+
+Nlocal:          12288 ave       12288 max       12288 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          14039 ave       14039 max       14039 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0
+Neighbor list builds = 0
+Dangerous builds = 0
+AccelNet GPU: CUDA device 0, FP64 OpenMP target, GPU package neighbors
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 120
+  Time step     : 0.0001
+Per MPI rank memory allocation (min/avg/max) = 5.471 | 5.471 | 5.471 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+       120  -10220140.547814403 42711.113109988786 -25744.572835209608 1299.5426129704397 -2242.7795452790074 -2199.4743581729667 134.51358394385392
+Loop time of 4.93e-07 on 1 procs for 0 steps with 12288 atoms
+
+202.8% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 4.93e-07   |            |       |100.00
+
+Nlocal:          12288 ave       12288 max       12288 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          14039 ave       14039 max       14039 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:01

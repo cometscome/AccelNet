@@ -1,0 +1,8 @@
+before-n512-order5-mode1-round0 seconds 0.010825250125 ratio 1.093172326638827
+after-n512-order5-mode1-round0 seconds 0.009881829 ratio 0.987242305886646
+before-n512-order5-mode2-round0 seconds 0.0050178344375 ratio 0.6305433705719173
+after-n512-order5-mode2-round0 seconds 0.00504973675 ratio 0.6326401095602747
+before-n4096-order5-mode1-round0 seconds 0.0754388045 ratio 0.9586238853346291
+after-n4096-order5-mode1-round0 seconds 0.077262854 ratio 0.982647769468462
+before-n4096-order5-mode2-round0 seconds 0.042423378 ratio 0.6451444238598958
+after-n4096-order5-mode2-round0 seconds 0.040880268 ratio 0.6432080869229613

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-cc"
+	tests="13"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="s218"
+	time="21"
+	timestamp="2026-09-25T17:46:27"
+	>
+	<testcase name="predictor_target_equivalence" classname="predictor_target_equivalence" time="7.21588" status="run">
+		<system-out> GPU checks:           56  maximum absolute E/F/W error: 
+   1.0547118733938987E-015
+ GPU batch FP64 equivalence and finite differences passed
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_offset" classname="predictor_target_reject_offset" time="0.159491" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: CSR offset out of range
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_monotonic" classname="predictor_target_reject_monotonic" time="0.155971" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: CSR offsets must be nondecreasing
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_target" classname="predictor_target_reject_target" time="0.154703" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: neighbor index out of range
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_center" classname="predictor_target_reject_center" time="0.154737" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: center index out of range
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_species" classname="predictor_target_reject_species" time="0.156403" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: species out of range
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_shape" classname="predictor_target_reject_shape" time="0.136085" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: wrong CSR offset count
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_unsupported" classname="predictor_target_reject_unsupported" time="0.00328545" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: only a single Chebyshev component per species is supported
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_activation" classname="predictor_target_reject_activation" time="0.00292309" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: unsupported network activation
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_version10" classname="predictor_target_reject_version10" time="0.137911" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: too few neighbors for version 10 center lookup
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_uninitialized" classname="predictor_target_reject_uninitialized" time="0.00498703" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: initialize target_model first
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_reject_host_fallback" classname="predictor_target_reject_host_fallback" time="0.00296554" status="run">
+		<system-out>Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: GPU device unavailable
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_aenet_golden" classname="predictor_target_aenet_golden" time="13.2718" status="run">
+		<system-out> GPU checks:           18  maximum absolute E/F/W error: 
+   3.3395508580724709E-012
+ GPU batch FP64 equivalence and finite differences passed
+</system-out>
+	</testcase>
+</testsuite>

@@ -23,6 +23,19 @@ The method and its validation are described in the
 - Convert supported models between n2p2 and AccelNet ASCII representations.
 - Run supported ænet and n2p2 models from LAMMPS with
   `pair_style accelnet`.
+- Evaluate Chebyshev, LJ and Behler G1–G5 batches in FP64 using an optional
+  [OpenMP target GPU backend](docs/openmp-target.md) through the Fortran API,
+  with persistent GPU buffers, direct/moment methods and phase profiling.
+  Chebyshev CPU batches use the same kernel source with OpenMP disabled, for
+  both direct and moment; the former CPU batch implementation remains available
+  as `evaluate_batch_reference` for independent comparisons.
+  G4/G5 currently use direct pair evaluation; Chebyshev supports direct/moment.
+  Existing CLI, C atomic and `pair_style accelnet` calls continue using the CPU backend.
+  The optional [LAMMPS `accelnet/gpu` interface](docs/lammps-gpu.md) uses the GPU package
+  with the Fortran OpenMP target backend.
+
+The equations, implementation choices, versions, and measured effects of the
+CPU/GPU optimizations are recorded in [speedupmethods.md](speedupmethods.md).
 
 The descriptor definitions implemented in AccelNet are also used by
 `AccelNet.jl`, a training package that has not yet been publicly released.
@@ -203,6 +216,9 @@ and Fortran/C examples are provided in
 [`AccelNetPredictor/README.md`](AccelNetPredictor/README.md).
 
 ## LAMMPS
+
+For the optional CUDA GPU package interface (`accelnet/gpu`, CPU or GPU neighbors),
+see [build, usage, and regression tests](docs/lammps-gpu.md).
 
 Interfaces are provided for these LAMMPS releases:
 

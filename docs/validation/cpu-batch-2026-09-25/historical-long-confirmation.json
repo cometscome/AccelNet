@@ -1,0 +1,48 @@
+{
+  "host": "s218",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "cpu": 6,
+  "baseline": "/tmp/accelnet-gpu-research/baseline-cpu-benchmark",
+  "candidate": "/tmp/accelnet-gpu-research/build-current/bin/accelnet-cpu-regression-benchmark",
+  "candidate_mode": "batch",
+  "samples": 9,
+  "seconds_per_sample": 1.0,
+  "max_slowdown": 1.1,
+  "absolute_tolerance": 2e-10,
+  "relative_tolerance": 2e-10,
+  "cases": [
+    {
+      "family": "chebyshev",
+      "natoms": 512,
+      "seconds": {
+        "baseline": [
+          0.1902614433333333,
+          0.18989152333333334,
+          0.18985386233333335,
+          0.18993467416666665,
+          0.19021193766666666,
+          0.18995377666666668,
+          0.1900476905,
+          0.18558330599999998,
+          0.1365485625
+        ],
+        "candidate": [
+          0.190102655,
+          0.19006162000000001,
+          0.19006828016666666,
+          0.19039394683333333,
+          0.19021863733333333,
+          0.1900737541666667,
+          0.19006007633333333,
+          0.1899425505,
+          0.136511109875
+        ]
+      },
+      "ratio": 1.0007034313275667,
+      "max_absolute_error": 6.195932655828074e-12,
+      "correct": true,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

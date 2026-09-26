@@ -1,0 +1,969 @@
+Start testing: Sep 25 17:38 JST
+----------------------------------------------------------
+8/44 Testing: predictor_cpu_performance_regression
+8/44 Test: predictor_cpu_performance_regression
+Command: "/usr/bin/python3.10" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/benchmark/compare_cpu_performance.py" "--baseline" "/tmp/accelnet-gpu-research/baseline-cpu-benchmark" "--candidate" "/tmp/accelnet-gpu-research/build-current/bin/accelnet-cpu-regression-benchmark" "--max-slowdown" "1.10" "--output" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/cpu-performance.json"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_cpu_performance_regression" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+chebyshev    N=     8 ratio=1.006 error=0 PASS
+chebyshev    N=    64 ratio=0.999 error=0 PASS
+chebyshev    N=   512 ratio=1.002 error=0 PASS
+lj           N=     8 ratio=1.007 error=0 PASS
+lj           N=    64 ratio=0.998 error=0 PASS
+lj           N=   512 ratio=1.000 error=0 PASS
+n2p2-g5      N=     8 ratio=1.005 error=0 PASS
+n2p2-g5      N=    64 ratio=0.998 error=0 PASS
+n2p2-g5      N=   512 ratio=1.000 error=0 PASS
+n2p2-g4      N=     8 ratio=1.004 error=0 PASS
+n2p2-g4      N=    64 ratio=0.992 error=0 PASS
+n2p2-g4      N=   512 ratio=1.000 error=0 PASS
+<end of output>
+Test time =  48.01 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_cpu_performance_regression" end time: Sep 25 17:38 JST
+"predictor_cpu_performance_regression" time elapsed: 00:00:48
+----------------------------------------------------------
+
+16/44 Testing: predictor_atomic_and_structure_virial
+16/44 Test: predictor_atomic_and_structure_virial
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_virial" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_atomic_and_structure_virial" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ Atomic and structure virial finite differences passed
+<end of output>
+Test time =   0.37 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_atomic_and_structure_virial" end time: Sep 25 17:38 JST
+"predictor_atomic_and_structure_virial" time elapsed: 00:00:00
+----------------------------------------------------------
+
+29/44 Testing: predictor_batch_aenet_golden
+29/44 Test: predictor_batch_aenet_golden
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_batch" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "--aenet" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_batch_aenet_golden" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ Batch real aenet model equivalence passed
+<end of output>
+Test time =   0.40 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_batch_aenet_golden" end time: Sep 25 17:38 JST
+"predictor_batch_aenet_golden" time elapsed: 00:00:00
+----------------------------------------------------------
+
+43/44 Testing: fortran_converter_roundtrip
+43/44 Test: fortran_converter_roundtrip
+Command: "/usr/bin/cmake" "-DEXE=/tmp/accelnet-gpu-research/build-current/bin/accelnet-model-converter-fortran" "-DFIXTURE=/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetModelConverter/test/fixtures/n2p2" "-DOUTPUT=/tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip" "-P" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetModelConverter/test/fortran_roundtrip.cmake"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter
+"fortran_converter_roundtrip" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/accelnet-1/O.nn.ascii
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/accelnet-1/Ti.nn.ascii
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/accelnet-1/networks.list
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/n2p2/input.nn
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/n2p2/scaling.data
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/n2p2/weights.008.data
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/n2p2/weights.022.data
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/accelnet-2/O.nn.ascii
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/accelnet-2/Ti.nn.ascii
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-roundtrip/accelnet-2/networks.list
+<end of output>
+Test time =   0.21 sec
+----------------------------------------------------------
+Test Passed.
+"fortran_converter_roundtrip" end time: Sep 25 17:38 JST
+"fortran_converter_roundtrip" time elapsed: 00:00:00
+----------------------------------------------------------
+
+44/44 Testing: fortran_converter_per_element_roundtrip
+44/44 Test: fortran_converter_per_element_roundtrip
+Command: "/usr/bin/cmake" "-DEXE=/tmp/accelnet-gpu-research/build-current/bin/accelnet-model-converter-fortran" "-DVALIDATOR=/tmp/accelnet-gpu-research/build-current/bin/test_n2p2_topology" "-DFIXTURE=/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetModelConverter/../AccelNetPredictor/test/data/n2p2-per-element" "-DDEPTH_FIXTURE=/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetModelConverter/../AccelNetPredictor/test/data/n2p2-per-element-depth" "-DOUTPUT=/tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip" "-P" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetModelConverter/test/per_element_roundtrip.cmake"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter
+"fortran_converter_per_element_roundtrip" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-1/H.nn.ascii
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-1/O.nn.ascii
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-1/networks.list
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/n2p2/input.nn
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/n2p2/scaling.data
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/n2p2/weights.001.data
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/n2p2/weights.008.data
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-2/H.nn.ascii
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-2/O.nn.ascii
+WROTE /tmp/accelnet-gpu-research/build-current/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-2/networks.list
+<end of output>
+Test time =   0.29 sec
+----------------------------------------------------------
+Test Passed.
+"fortran_converter_per_element_roundtrip" end time: Sep 25 17:38 JST
+"fortran_converter_per_element_roundtrip" time elapsed: 00:00:00
+----------------------------------------------------------
+
+21/44 Testing: predictor_virial_convergence_n2p2-virial-angular
+21/44 Test: predictor_virial_convergence_n2p2-virial-angular
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_virial_convergence" "--n2p2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2-virial-angular" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/virial-convergence-n2p2-virial-angular.csv"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_virial_convergence_n2p2-virial-angular" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+VIRIAL molecule 0 best_h= 1.000E-05 max_error= 8.072E-12 atomic_error= 6.939E-18
+VIRIAL orthogonal 0 best_h= 3.000E-06 max_error= 2.315E-11 atomic_error= 1.388E-17
+VIRIAL triclinic 0 best_h= 3.000E-06 max_error= 2.045E-11 atomic_error= 5.551E-17
+VIRIAL self_images 0 best_h= 3.000E-06 max_error= 4.779E-12 atomic_error= 2.711E-20
+<end of output>
+Test time =   0.16 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_virial_convergence_n2p2-virial-angular" end time: Sep 25 17:38 JST
+"predictor_virial_convergence_n2p2-virial-angular" time elapsed: 00:00:00
+----------------------------------------------------------
+
+9/44 Testing: predictor_batch_equivalence
+9/44 Test: predictor_batch_equivalence
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_batch" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_batch_equivalence" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ Batch energies, forces, virials, partitions and workspace reuse passed
+<end of output>
+Test time =   0.45 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_batch_equivalence" end time: Sep 25 17:38 JST
+"predictor_batch_equivalence" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/44 Testing: predictor_batch_reject_center
+13/44 Test: predictor_batch_reject_center
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_batch" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "center"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_batch_reject_center" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ERROR STOP batch: center index out of range
+
+Error termination. Backtrace:
+#0  0x7f81f117b960 in ???
+#1  0x7f81f117c4d9 in ???
+#2  0x7f81f117db47 in ???
+#3  0x55bbb09a8327 in ???
+#4  0x55bbb09900cc in ???
+#5  0x55bbb098c62e in ???
+#6  0x7f81f0d52d8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#7  0x7f81f0d52e3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#8  0x55bbb098c664 in ???
+#9  0xffffffffffffffff in ???
+<end of output>
+Test time =   0.33 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_batch_reject_center" end time: Sep 25 17:38 JST
+"predictor_batch_reject_center" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/44 Testing: predictor_batch_reject_monotonic
+11/44 Test: predictor_batch_reject_monotonic
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_batch" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "monotonic"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_batch_reject_monotonic" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ERROR STOP batch: CSR offsets must be nondecreasing
+
+Error termination. Backtrace:
+#0  0x7fa2a024e960 in ???
+#1  0x7fa2a024f4d9 in ???
+#2  0x7fa2a0250b47 in ???
+#3  0x55a49b77c67a in ???
+#4  0x55a49b7640cc in ???
+#5  0x55a49b76062e in ???
+#6  0x7fa29fe25d8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#7  0x7fa29fe25e3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#8  0x55a49b760664 in ???
+#9  0xffffffffffffffff in ???
+<end of output>
+Test time =   0.32 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_batch_reject_monotonic" end time: Sep 25 17:38 JST
+"predictor_batch_reject_monotonic" time elapsed: 00:00:00
+----------------------------------------------------------
+
+10/44 Testing: predictor_batch_reject_offset
+10/44 Test: predictor_batch_reject_offset
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_batch" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "offset"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_batch_reject_offset" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ERROR STOP batch: CSR offset out of range
+
+Error termination. Backtrace:
+#0  0x7f69c4f9b960 in ???
+#1  0x7f69c4f9c4d9 in ???
+#2  0x7f69c4f9db47 in ???
+#3  0x56025573b2ac in ???
+#4  0x5602557230cc in ???
+#5  0x56025571f62e in ???
+#6  0x7f69c4b72d8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#7  0x7f69c4b72e3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#8  0x56025571f664 in ???
+#9  0xffffffffffffffff in ???
+<end of output>
+Test time =   0.32 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_batch_reject_offset" end time: Sep 25 17:38 JST
+"predictor_batch_reject_offset" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/44 Testing: predictor_batch_reject_target
+12/44 Test: predictor_batch_reject_target
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_batch" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "target"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_batch_reject_target" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ERROR STOP batch: neighbor index out of range
+
+Error termination. Backtrace:
+#0  0x7efdc211f960 in ???
+#1  0x7efdc21204d9 in ???
+#2  0x7efdc2121b47 in ???
+#3  0x56178ff093c1 in ???
+#4  0x56178fef10cc in ???
+#5  0x56178feed62e in ???
+#6  0x7efdc1cf6d8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#7  0x7efdc1cf6e3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#8  0x56178feed664 in ???
+#9  0xffffffffffffffff in ???
+<end of output>
+Test time =   0.32 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_batch_reject_target" end time: Sep 25 17:38 JST
+"predictor_batch_reject_target" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/44 Testing: predictor_batch_reject_shape
+15/44 Test: predictor_batch_reject_shape
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_batch" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "shape"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_batch_reject_shape" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ERROR STOP batch: wrong CSR offset count
+
+Error termination. Backtrace:
+#0  0x7fd6489da960 in ???
+#1  0x7fd6489db4d9 in ???
+#2  0x7fd6489dcb47 in ???
+#3  0x559491915195 in ???
+#4  0x5594918fa0cc in ???
+#5  0x5594918f662e in ???
+#6  0x7fd6485b1d8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#7  0x7fd6485b1e3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#8  0x5594918f6664 in ???
+#9  0xffffffffffffffff in ???
+<end of output>
+Test time =   0.31 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_batch_reject_shape" end time: Sep 25 17:38 JST
+"predictor_batch_reject_shape" time elapsed: 00:00:00
+----------------------------------------------------------
+
+19/44 Testing: predictor_virial_convergence_n2p2-per-element
+19/44 Test: predictor_virial_convergence_n2p2-per-element
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_virial_convergence" "--n2p2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2-per-element" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/virial-convergence-n2p2-per-element.csv"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_virial_convergence_n2p2-per-element" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+VIRIAL molecule 0 best_h= 1.000E-05 max_error= 1.142E-12 atomic_error= 0.000E+00
+VIRIAL orthogonal 0 best_h= 1.000E-05 max_error= 2.831E-12 atomic_error= 0.000E+00
+VIRIAL triclinic 0 best_h= 1.000E-05 max_error= 2.630E-12 atomic_error= 0.000E+00
+VIRIAL self_images 0 best_h= 1.000E-05 max_error= 5.467E-13 atomic_error= 0.000E+00
+<end of output>
+Test time =   0.13 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_virial_convergence_n2p2-per-element" end time: Sep 25 17:38 JST
+"predictor_virial_convergence_n2p2-per-element" time elapsed: 00:00:00
+----------------------------------------------------------
+
+14/44 Testing: predictor_batch_reject_species
+14/44 Test: predictor_batch_reject_species
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_batch" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "species"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_batch_reject_species" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ERROR STOP batch: species out of range
+
+Error termination. Backtrace:
+#0  0x7f28a25ca960 in ???
+#1  0x7f28a25cb4d9 in ???
+#2  0x7f28a25ccb47 in ???
+#3  0x55dc9f5735fa in ???
+#4  0x55dc9f55b0cc in ???
+#5  0x55dc9f55762e in ???
+#6  0x7f28a21a1d8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#7  0x7f28a21a1e3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#8  0x55dc9f557664 in ???
+#9  0xffffffffffffffff in ???
+<end of output>
+Test time =   0.32 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_batch_reject_species" end time: Sep 25 17:38 JST
+"predictor_batch_reject_species" time elapsed: 00:00:00
+----------------------------------------------------------
+
+18/44 Testing: predictor_virial_convergence_n2p2
+18/44 Test: predictor_virial_convergence_n2p2
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_virial_convergence" "--n2p2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/virial-convergence-n2p2.csv"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_virial_convergence_n2p2" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+VIRIAL molecule 0 best_h= 1.000E-05 max_error= 8.552E-11 atomic_error= 0.000E+00
+VIRIAL orthogonal 0 best_h= 1.000E-05 max_error= 1.306E-10 atomic_error= 0.000E+00
+VIRIAL triclinic 0 best_h= 1.000E-05 max_error= 9.359E-11 atomic_error= 0.000E+00
+VIRIAL self_images 0 best_h= 1.000E-05 max_error= 1.996E-11 atomic_error= 0.000E+00
+<end of output>
+Test time =   0.11 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_virial_convergence_n2p2" end time: Sep 25 17:38 JST
+"predictor_virial_convergence_n2p2" time elapsed: 00:00:00
+----------------------------------------------------------
+
+35/44 Testing: predictor_fortran_golden
+35/44 Test: predictor_fortran_golden
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_predictor" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.fingerprint.stp" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.fingerprint.stp" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure2935.xsf" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure2935.forces"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_fortran_golden" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_fortran_golden" end time: Sep 25 17:38 JST
+"predictor_fortran_golden" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/44 Testing: descriptor_setup_cli_match
+7/44 Test: descriptor_setup_cli_match
+Command: "/usr/bin/cmake" "-DNEW_EXE=/tmp/accelnet-gpu-research/build-current/bin/accelnet-setup-descriptor" "-DLEGACY_EXE=/tmp/accelnet-gpu-research/build-current/bin/accelnet-descriptor" "-DTI_SETUP=/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/Ti.fingerprint.stp" "-DO_SETUP=/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/O.fingerprint.stp" "-DINPUT=/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/structure0001.xsf" "-DWORK=/tmp/accelnet-gpu-research/build-current/AccelNetDescriptors/setup-cli-comparison" "-P" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/compare_setup_cli.cmake"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetDescriptors
+"descriptor_setup_cli_match" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.14 sec
+----------------------------------------------------------
+Test Passed.
+"descriptor_setup_cli_match" end time: Sep 25 17:38 JST
+"descriptor_setup_cli_match" time elapsed: 00:00:00
+----------------------------------------------------------
+
+22/44 Testing: predictor_virial_invariants_n2p2-virial-angular
+22/44 Test: predictor_virial_invariants_n2p2-virial-angular
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_virial_invariants" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2-virial-angular" "mixed-paths"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_virial_invariants_n2p2-virial-angular" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ Multispecies virial permutations, rotations and periodic images passed
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_virial_invariants_n2p2-virial-angular" end time: Sep 25 17:38 JST
+"predictor_virial_invariants_n2p2-virial-angular" time elapsed: 00:00:00
+----------------------------------------------------------
+
+20/44 Testing: predictor_virial_invariants_n2p2-per-element
+20/44 Test: predictor_virial_invariants_n2p2-per-element
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_virial_invariants" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2-per-element"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_virial_invariants_n2p2-per-element" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+ Multispecies virial permutations, rotations and periodic images passed
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_virial_invariants_n2p2-per-element" end time: Sep 25 17:38 JST
+"predictor_virial_invariants_n2p2-per-element" time elapsed: 00:00:00
+----------------------------------------------------------
+
+37/44 Testing: accelnet_fortran_api
+37/44 Test: accelnet_fortran_api
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_accelnet_api" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure2935.xsf"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"accelnet_fortran_api" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+API energy error=  3.637979E-12 force max error=  0.000000E+00
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"accelnet_fortran_api" end time: Sep 25 17:38 JST
+"accelnet_fortran_api" time elapsed: 00:00:00
+----------------------------------------------------------
+
+36/44 Testing: accelnet_order_scaling_benchmark_smoke
+36/44 Test: accelnet_order_scaling_benchmark_smoke
+Command: "/tmp/accelnet-gpu-research/build-current/bin/accelnet-order-scaling-benchmark" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf" "5"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"accelnet_order_scaling_benchmark_smoke" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+NEIGHBORS 102
+ORDER MOMENTS VALUE_SECONDS_PER_ATOM FORCE_SECONDS_PER_ATOM CHECKSUM
+    0       1   6.0000000000000154E-06   1.1999999999999988E-05   5.3306326458935537E+01
+    2      10   6.0000000000000154E-06   1.4199999999999976E-05   3.1635171982598681E+01
+    4      35   7.2000000000000014E-06   2.1400000000000022E-05   3.2558651373227249E+01
+    6      84   8.9999999999999799E-06   3.5799999999999982E-05   3.0457157734340811E+01
+    8     165   1.2399999999999998E-05   5.8599999999999974E-05   4.2647326398175196E+01
+   10     286   1.7599999999999994E-05   9.3199999999999961E-05   2.9724433846301849E+01
+   12     455   2.3000000000000017E-05   1.4139999999999994E-04   3.3788177062786986E+01
+   14     680   3.4800000000000107E-05   2.0759999999999998E-04   3.4637885462553299E+01
+   16     969   4.2799999999999956E-05   2.8819999999999990E-04   3.5041507311982613E+01
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[ORDER MOMENTS]
+"accelnet_order_scaling_benchmark_smoke" end time: Sep 25 17:38 JST
+"accelnet_order_scaling_benchmark_smoke" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/44 Testing: descriptor_behler
+4/44 Test: descriptor_behler
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_behler"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetDescriptors
+"descriptor_behler" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=28 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+Behler G1-G5 tests passed
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"descriptor_behler" end time: Sep 25 17:38 JST
+"descriptor_behler" time elapsed: 00:00:00
+----------------------------------------------------------
+
+33/44 Testing: network_binary_compatibility
+33/44 Test: network_binary_compatibility
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_binary_network" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/Ti.test.nn" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/O.test.nn" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"network_binary_compatibility" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"network_binary_compatibility" end time: Sep 25 17:38 JST
+"network_binary_compatibility" time elapsed: 00:00:00
+----------------------------------------------------------
+
+25/44 Testing: n2p2_atomic_api_and_input_data
+25/44 Test: n2p2_atomic_api_and_input_data
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_n2p2_atomic_api" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2/input.data"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"n2p2_atomic_api_and_input_data" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"n2p2_atomic_api_and_input_data" end time: Sep 25 17:38 JST
+"n2p2_atomic_api_and_input_data" time elapsed: 00:00:00
+----------------------------------------------------------
+
+39/44 Testing: predictor_original_input
+39/44 Test: predictor_original_input
+Command: "/tmp/accelnet-gpu-research/build-current/bin/accelnet-predict" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/predict.in"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_original_input" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+STRUCTURE /home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf
+TOTAL_ENERGY_EV  -1.9960761441252627E+04
+FORCE_EV_PER_ANGSTROM 1   3.3829452377067099E-01  -4.7439348444173407E-01   2.2819166068195729E-01
+FORCE_EV_PER_ANGSTROM 2  -1.1399150266751801E-01   3.8167862994687296E-01   5.4780032011312563E-01
+FORCE_EV_PER_ANGSTROM 3   1.1126820931811301E-01  -6.2733820962050313E-01   1.7020555078170976E-01
+FORCE_EV_PER_ANGSTROM 4  -2.9823167381935334E-01  -2.6810762480194250E-01  -3.8892996431642318E-02
+FORCE_EV_PER_ANGSTROM 5   6.5775233812651834E-01   3.5131935026137229E-01  -9.3993092526301378E-02
+FORCE_EV_PER_ANGSTROM 6   6.4582640970465588E-01  -3.3875544249667461E-02  -4.1583620561887646E-01
+FORCE_EV_PER_ANGSTROM 7  -1.1513966939128146E+00   4.5786964488835730E-01   1.9852302552739887E-01
+FORCE_EV_PER_ANGSTROM 8  -4.3662152886860789E-01  -1.5467165329562238E-01  -5.8842252138414031E-01
+FORCE_EV_PER_ANGSTROM 9   7.4585888366989250E-01   3.3113076503727371E-02   4.4439493787711898E-01
+FORCE_EV_PER_ANGSTROM 10   3.9631713872598301E-01   9.6200789127645858E-01   1.1210818036756385E+00
+FORCE_EV_PER_ANGSTROM 11  -3.3308662439006417E-02   4.1569944325378372E-01   1.8741503707309515E-01
+FORCE_EV_PER_ANGSTROM 12   2.0441026918961328E-01  -1.1380550295001866E-02  -2.4338302468260095E-01
+FORCE_EV_PER_ANGSTROM 13   7.5018277040228232E-01  -5.1580591795721394E-02   2.9480102070117298E-01
+FORCE_EV_PER_ANGSTROM 14   4.6619890523157001E-02  -3.7358649912849090E-01   3.7201922105827911E-01
+FORCE_EV_PER_ANGSTROM 15  -2.0341577785154290E+00   3.5047288768100443E-01   3.2279963221950764E-01
+FORCE_EV_PER_ANGSTROM 16   6.5414428785290601E-01   2.7888529301827347E-01  -3.2762315233529113E-02
+FORCE_EV_PER_ANGSTROM 17  -6.1216874264521381E-01  -2.5781458486894926E-01   1.2188875033271943E-02
+FORCE_EV_PER_ANGSTROM 18  -6.6500349610559706E-01   7.7363963438710959E-01  -1.4288942860227269E+00
+FORCE_EV_PER_ANGSTROM 19   6.1917009343633678E-01   4.0042557837138548E-01  -3.1036914236464830E-01
+FORCE_EV_PER_ANGSTROM 20   6.9130094034442513E-01  -1.2339366422387110E+00   8.5910333842003372E-01
+FORCE_EV_PER_ANGSTROM 21   3.8787025042524043E-01  -7.7822450516554398E-02  -5.9434955264417455E-01
+FORCE_EV_PER_ANGSTROM 22  -2.5613569597695418E-01  -6.9455297079409051E-01  -6.7457455636347807E-01
+FORCE_EV_PER_ANGSTROM 23  -1.7282623729093083E-01  -8.1971520376514073E-01   1.8805204522432684E-01
+FORCE_EV_PER_ANGSTROM 24  -4.7517399324837445E-01   6.7366458022378184E-01  -5.2509877511452085E-01
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[TOTAL_ENERGY_EV]
+"predictor_original_input" end time: Sep 25 17:38 JST
+"predictor_original_input" time elapsed: 00:00:00
+----------------------------------------------------------
+
+24/44 Testing: n2p2_per_element_topology_and_normalize_nodes
+24/44 Test: n2p2_per_element_topology_and_normalize_nodes
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_n2p2_topology" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2-per-element" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2-per-element-depth"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"n2p2_per_element_topology_and_normalize_nodes" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"n2p2_per_element_topology_and_normalize_nodes" end time: Sep 25 17:38 JST
+"n2p2_per_element_topology_and_normalize_nodes" time elapsed: 00:00:00
+----------------------------------------------------------
+
+41/44 Testing: predictor_chebyshev_version1
+41/44 Test: predictor_chebyshev_version1
+Command: "/tmp/accelnet-gpu-research/build-current/bin/accelnet-predict" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/predict-version1.in"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_chebyshev_version1" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+STRUCTURE /home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf
+TOTAL_ENERGY_EV  -1.9944989953816577E+04
+FORCE_EV_PER_ANGSTROM 1  -7.6405963087745610E-01  -2.6553951850811255E+00   2.5582908138271878E+00
+FORCE_EV_PER_ANGSTROM 2   1.7034351104683945E+00   4.0037959176143030E+00   3.1631149532983982E+00
+FORCE_EV_PER_ANGSTROM 3   2.1390344984582423E+00   9.6010577625412685E-01  -9.6965224707888265E-01
+FORCE_EV_PER_ANGSTROM 4  -2.8330893641541919E+00   1.0399485162381210E+00   1.0177281302702763E+00
+FORCE_EV_PER_ANGSTROM 5   6.2296144282053945E-01   1.2686613953759545E+00   1.4642933795000463E+00
+FORCE_EV_PER_ANGSTROM 6   1.6878641292149725E+00  -6.5594876821032899E-01  -2.4926327419002612E+00
+FORCE_EV_PER_ANGSTROM 7  -7.4160321639226112E-01   6.9067774729980425E-01  -1.1462360806905332E+00
+FORCE_EV_PER_ANGSTROM 8  -8.5873227914479744E-01   1.2109644739881828E-01   1.0670985952221592E+00
+FORCE_EV_PER_ANGSTROM 9   4.5222925080057841E-01   4.5248031477837536E-01  -2.6096617860617877E-01
+FORCE_EV_PER_ANGSTROM 10  -8.3068533282054657E-01   1.5315602895695724E-01   1.6466930219840126E+00
+FORCE_EV_PER_ANGSTROM 11  -5.8246041815002236E-01  -3.3570357111463056E-01   6.3315185769414040E-01
+FORCE_EV_PER_ANGSTROM 12   8.6791635399191092E-01   3.9656276955184672E-02   2.5338392795057990E-01
+FORCE_EV_PER_ANGSTROM 13   7.4038492623880692E-01   2.0708992283283209E-01  -7.9026980810006350E-02
+FORCE_EV_PER_ANGSTROM 14  -1.9540643746277658E-01  -3.6394745898561487E-01   3.7331621476366356E-01
+FORCE_EV_PER_ANGSTROM 15  -1.6192296583576054E+00   6.9412095229699611E-01   9.7914911075345490E-01
+FORCE_EV_PER_ANGSTROM 16   1.2603224578294787E+00   3.3880579905799624E-01  -7.3537413380822336E-01
+FORCE_EV_PER_ANGSTROM 17  -9.5776135095191528E-01  -1.1177195407839688E+00  -5.6410784013239323E-01
+FORCE_EV_PER_ANGSTROM 18  -2.6352000280512006E-01  -4.5870385931992153E-01  -8.2499544089572197E-01
+FORCE_EV_PER_ANGSTROM 19   8.2952082842442065E-01   7.2002979488309915E-02  -5.1710167713847988E-01
+FORCE_EV_PER_ANGSTROM 20  -1.0853532035496916E-01  -2.4324397212523730E+00  -1.6408956705616016E+00
+FORCE_EV_PER_ANGSTROM 21  -9.6362143424868069E-02   3.3162137698841909E-02  -8.8795695406860276E-01
+FORCE_EV_PER_ANGSTROM 22  -2.2455170000639219E-01  -2.2056604878998418E+00  -1.6165420093267278E+00
+FORCE_EV_PER_ANGSTROM 23  -4.3509311131871048E-01  -3.4749466966641729E-01  -9.4813875515013035E-01
+FORCE_EV_PER_ANGSTROM 24   2.0742096797428630E-01   4.9825305006760118E-01  -4.7259329509617404E-01
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[TOTAL_ENERGY_EV]
+"predictor_chebyshev_version1" end time: Sep 25 17:38 JST
+"predictor_chebyshev_version1" time elapsed: 00:00:00
+----------------------------------------------------------
+
+40/44 Testing: predictor_default_aenet204_version
+40/44 Test: predictor_default_aenet204_version
+Command: "/tmp/accelnet-gpu-research/build-current/bin/accelnet-predict" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/predict-default.in"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_default_aenet204_version" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+STRUCTURE /home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf
+TOTAL_ENERGY_EV  -1.9960761441252627E+04
+FORCE_EV_PER_ANGSTROM 1   3.3829452377067099E-01  -4.7439348444173407E-01   2.2819166068195729E-01
+FORCE_EV_PER_ANGSTROM 2  -1.1399150266751801E-01   3.8167862994687296E-01   5.4780032011312563E-01
+FORCE_EV_PER_ANGSTROM 3   1.1126820931811301E-01  -6.2733820962050313E-01   1.7020555078170976E-01
+FORCE_EV_PER_ANGSTROM 4  -2.9823167381935334E-01  -2.6810762480194250E-01  -3.8892996431642318E-02
+FORCE_EV_PER_ANGSTROM 5   6.5775233812651834E-01   3.5131935026137229E-01  -9.3993092526301378E-02
+FORCE_EV_PER_ANGSTROM 6   6.4582640970465588E-01  -3.3875544249667461E-02  -4.1583620561887646E-01
+FORCE_EV_PER_ANGSTROM 7  -1.1513966939128146E+00   4.5786964488835730E-01   1.9852302552739887E-01
+FORCE_EV_PER_ANGSTROM 8  -4.3662152886860789E-01  -1.5467165329562238E-01  -5.8842252138414031E-01
+FORCE_EV_PER_ANGSTROM 9   7.4585888366989250E-01   3.3113076503727371E-02   4.4439493787711898E-01
+FORCE_EV_PER_ANGSTROM 10   3.9631713872598301E-01   9.6200789127645858E-01   1.1210818036756385E+00
+FORCE_EV_PER_ANGSTROM 11  -3.3308662439006417E-02   4.1569944325378372E-01   1.8741503707309515E-01
+FORCE_EV_PER_ANGSTROM 12   2.0441026918961328E-01  -1.1380550295001866E-02  -2.4338302468260095E-01
+FORCE_EV_PER_ANGSTROM 13   7.5018277040228232E-01  -5.1580591795721394E-02   2.9480102070117298E-01
+FORCE_EV_PER_ANGSTROM 14   4.6619890523157001E-02  -3.7358649912849090E-01   3.7201922105827911E-01
+FORCE_EV_PER_ANGSTROM 15  -2.0341577785154290E+00   3.5047288768100443E-01   3.2279963221950764E-01
+FORCE_EV_PER_ANGSTROM 16   6.5414428785290601E-01   2.7888529301827347E-01  -3.2762315233529113E-02
+FORCE_EV_PER_ANGSTROM 17  -6.1216874264521381E-01  -2.5781458486894926E-01   1.2188875033271943E-02
+FORCE_EV_PER_ANGSTROM 18  -6.6500349610559706E-01   7.7363963438710959E-01  -1.4288942860227269E+00
+FORCE_EV_PER_ANGSTROM 19   6.1917009343633678E-01   4.0042557837138548E-01  -3.1036914236464830E-01
+FORCE_EV_PER_ANGSTROM 20   6.9130094034442513E-01  -1.2339366422387110E+00   8.5910333842003372E-01
+FORCE_EV_PER_ANGSTROM 21   3.8787025042524043E-01  -7.7822450516554398E-02  -5.9434955264417455E-01
+FORCE_EV_PER_ANGSTROM 22  -2.5613569597695418E-01  -6.9455297079409051E-01  -6.7457455636347807E-01
+FORCE_EV_PER_ANGSTROM 23  -1.7282623729093083E-01  -8.1971520376514073E-01   1.8805204522432684E-01
+FORCE_EV_PER_ANGSTROM 24  -4.7517399324837445E-01   6.7366458022378184E-01  -5.2509877511452085E-01
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[TOTAL_ENERGY_EV]
+"predictor_default_aenet204_version" end time: Sep 25 17:38 JST
+"predictor_default_aenet204_version" time elapsed: 00:00:00
+----------------------------------------------------------
+
+42/44 Testing: predictor_chebyshev_version10
+42/44 Test: predictor_chebyshev_version10
+Command: "/tmp/accelnet-gpu-research/build-current/bin/accelnet-predict" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/predict-version10.in"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_chebyshev_version10" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+STRUCTURE /home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf
+TOTAL_ENERGY_EV  -1.9956751564102688E+04
+FORCE_EV_PER_ANGSTROM 1   1.5418170477054888E-01  -5.3138701123360051E-03  -4.0486024261039050E-01
+FORCE_EV_PER_ANGSTROM 2   2.9706179649872950E-02  -2.8306270217976037E-01  -4.4568932270785067E-01
+FORCE_EV_PER_ANGSTROM 3   9.6409462392355576E-03  -4.4395607468361631E-01   3.1932364656816181E-01
+FORCE_EV_PER_ANGSTROM 4  -3.0921001343836302E-01   8.4384136404791546E-02   1.1567682818967102E-01
+FORCE_EV_PER_ANGSTROM 5   3.7979326755335108E-01   3.7045146472619117E-01  -2.0531576276837735E-01
+FORCE_EV_PER_ANGSTROM 6   3.2445046175938835E-01   8.6578129626341635E-02   3.3225414429127120E-01
+FORCE_EV_PER_ANGSTROM 7  -4.1741484039752091E-01   6.5587834312932830E-02   5.4401011799544785E-01
+FORCE_EV_PER_ANGSTROM 8  -3.5003354215905802E-01   7.3874161472926886E-02  -4.9816027617432390E-01
+FORCE_EV_PER_ANGSTROM 9   6.6245613570586648E-01   5.4929670731639768E-01   5.6671006105781951E-01
+FORCE_EV_PER_ANGSTROM 10  -3.6966228807002892E-02   1.2925128274861120E+00   1.5346311774036214E+00
+FORCE_EV_PER_ANGSTROM 11  -1.0134230667190910E-01   1.2981696965184635E+00   6.1723450499471455E-01
+FORCE_EV_PER_ANGSTROM 12   5.1710840206330400E-01   5.4762340949749277E-01   5.5533449740640617E-02
+FORCE_EV_PER_ANGSTROM 13   5.0144193541374804E-01  -6.5596245244539675E-01   4.2356330158676875E-02
+FORCE_EV_PER_ANGSTROM 14   1.4050932587848344E-01  -7.3854361368800281E-01   6.9978396779804969E-02
+FORCE_EV_PER_ANGSTROM 15  -1.5724030541250520E+00  -1.0012389864951879E-01  -1.2996816718515802E-01
+FORCE_EV_PER_ANGSTROM 16   5.7443368629646607E-01  -2.3165573026951675E-01  -3.1409275334450992E-01
+FORCE_EV_PER_ANGSTROM 17  -6.2977969657406074E-01  -1.0925848022754947E+00   1.9500341354707551E-01
+FORCE_EV_PER_ANGSTROM 18  -5.9265696642634513E-01   5.9796403819798241E-02  -6.6260261400625409E-01
+FORCE_EV_PER_ANGSTROM 19   6.9453540705559347E-01  -2.7101597002428851E-01   1.3044007262466251E-01
+FORCE_EV_PER_ANGSTROM 20   4.8988744153669289E-01  -1.5626469721893057E+00   1.0403247979906385E+00
+FORCE_EV_PER_ANGSTROM 21   4.9958705909911116E-01   3.8897301550322749E-01  -1.1949992762187402E+00
+FORCE_EV_PER_ANGSTROM 22  -9.4044639041306902E-02  -1.3627856666482793E-02  -9.3920128058039642E-01
+FORCE_EV_PER_ANGSTROM 23  -2.3241995620021097E-01  -4.2376244456930945E-01   1.6520315941712219E-02
+FORCE_EV_PER_ANGSTROM 24  -6.4146070918083220E-01   1.0050086010683557E+00  -7.8510756168791895E-01
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[TOTAL_ENERGY_EV]
+"predictor_chebyshev_version10" end time: Sep 25 17:38 JST
+"predictor_chebyshev_version10" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/44 Testing: descriptor_setup_parser
+6/44 Test: descriptor_setup_parser
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_setup_parser" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/Ti.fingerprint.stp" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/LJ.fingerprint.stp" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/Behler.fingerprint.stp" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/Multi.fingerprint.stp" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/Chebyshev-v1.fingerprint.stp" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/Chebyshev-v10.fingerprint.stp"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetDescriptors
+"descriptor_setup_parser" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+AccelNet setup parser tests passed
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"descriptor_setup_parser" end time: Sep 25 17:38 JST
+"descriptor_setup_parser" time elapsed: 00:00:00
+----------------------------------------------------------
+
+38/44 Testing: accelnet_c_api
+38/44 Test: accelnet_c_api
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_accelnet_c_api" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"accelnet_c_api" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"accelnet_c_api" end time: Sep 25 17:38 JST
+"accelnet_c_api" time elapsed: 00:00:00
+----------------------------------------------------------
+
+1/44 Testing: descriptor_unit
+1/44 Test: descriptor_unit
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_descriptor"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetDescriptors
+"descriptor_unit" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+descriptor unit tests passed
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"descriptor_unit" end time: Sep 25 17:38 JST
+"descriptor_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+28/44 Testing: network_aenet_activation_reference_match
+28/44 Test: network_aenet_activation_reference_match
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_aenet_activation_reference"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"network_aenet_activation_reference_match" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"network_aenet_activation_reference_match" end time: Sep 25 17:38 JST
+"network_aenet_activation_reference_match" time elapsed: 00:00:00
+----------------------------------------------------------
+
+34/44 Testing: predictor_tio2_energy
+34/44 Test: predictor_tio2_energy
+Command: "/tmp/accelnet-gpu-research/build-current/bin/accelnet-predict" "2" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.fingerprint.stp" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.fingerprint.stp" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_tio2_energy" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+TOTAL_ENERGY_EV  -1.9960761441252627E+04
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_tio2_energy" end time: Sep 25 17:38 JST
+"predictor_tio2_energy" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/44 Testing: descriptor_tio2
+2/44 Test: descriptor_tio2
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_tio2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/test/data/structure0001.xsf"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetDescriptors
+"descriptor_tio2" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+TiO2 regression fixture passed: 24 atoms, 2406
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"descriptor_tio2" end time: Sep 25 17:38 JST
+"descriptor_tio2" time elapsed: 00:00:00
+----------------------------------------------------------
+
+27/44 Testing: network_activation_compatibility
+27/44 Test: network_activation_compatibility
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_network_activations" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/legacy-n2p2-softplus.nn.ascii"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"network_activation_compatibility" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"network_activation_compatibility" end time: Sep 25 17:38 JST
+"network_activation_compatibility" time elapsed: 00:00:00
+----------------------------------------------------------
+
+32/44 Testing: network_ascii_roundtrip
+32/44 Test: network_ascii_roundtrip
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_network" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"network_ascii_roundtrip" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"network_ascii_roundtrip" end time: Sep 25 17:38 JST
+"network_ascii_roundtrip" time elapsed: 00:00:00
+----------------------------------------------------------
+
+26/44 Testing: n2p2_input_data_cli
+26/44 Test: n2p2_input_data_cli
+Command: "/tmp/accelnet-gpu-research/build-current/bin/accelnet-predict" "--n2p2-data" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2/input.data"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"n2p2_input_data_cli" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+STRUCTURE /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2/input.data:1
+TOTAL_ENERGY_EV   3.5059102397135806E+00
+FORCE_EV_PER_ANGSTROM 1  -3.8982024316274809E-02   0.0000000000000000E+00   0.0000000000000000E+00
+FORCE_EV_PER_ANGSTROM 2   3.8982024316274809E-02   0.0000000000000000E+00   0.0000000000000000E+00
+STRUCTURE /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2/input.data:2
+TOTAL_ENERGY_EV   1.7500000000000000E+00
+FORCE_EV_PER_ANGSTROM 1   0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[STRUCTURE.*:1]
+"n2p2_input_data_cli" end time: Sep 25 17:38 JST
+"n2p2_input_data_cli" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/44 Testing: descriptor_combined_model
+5/44 Test: descriptor_combined_model
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_combined_model"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetDescriptors
+"descriptor_combined_model" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+combined Chebyshev + Behler + LJ model test passed
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"descriptor_combined_model" end time: Sep 25 17:38 JST
+"descriptor_combined_model" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/44 Testing: descriptor_lj_model
+3/44 Test: descriptor_lj_model
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_lj_model"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetDescriptors
+"descriptor_lj_model" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+LJ and descriptor model tests passed
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"descriptor_lj_model" end time: Sep 25 17:38 JST
+"descriptor_lj_model" time elapsed: 00:00:00
+----------------------------------------------------------
+
+23/44 Testing: n2p2_model_loader
+23/44 Test: n2p2_model_loader
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_n2p2_network" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"n2p2_model_loader" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"n2p2_model_loader" end time: Sep 25 17:38 JST
+"n2p2_model_loader" time elapsed: 00:00:00
+----------------------------------------------------------
+
+17/44 Testing: predictor_c_virial
+17/44 Test: predictor_c_virial
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_virial_c" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_c_virial" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_c_virial" end time: Sep 25 17:38 JST
+"predictor_c_virial" time elapsed: 00:00:00
+----------------------------------------------------------
+
+31/44 Testing: predictor_virial_convergence_structure2935
+31/44 Test: predictor_virial_convergence_structure2935
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_virial_convergence" "--aenet" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure2935.xsf" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/virial-convergence-structure2935.csv"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_virial_convergence_structure2935" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+VIRIAL original 0 best_h= 1.000E-05 max_error= 1.579E-07 atomic_error= 0.000E+00
+VIRIAL sheared 0 best_h= 1.000E-05 max_error= 3.901E-07 atomic_error= 0.000E+00
+VIRIAL original 1 best_h= 1.000E-05 max_error= 1.579E-07 atomic_error= 0.000E+00
+VIRIAL sheared 1 best_h= 1.000E-05 max_error= 3.901E-07 atomic_error= 0.000E+00
+VIRIAL original 2 best_h= 1.000E-05 max_error= 1.579E-07 atomic_error= 0.000E+00
+VIRIAL sheared 2 best_h= 1.000E-05 max_error= 3.901E-07 atomic_error= 0.000E+00
+<end of output>
+Test time =   4.88 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_virial_convergence_structure2935" end time: Sep 25 17:38 JST
+"predictor_virial_convergence_structure2935" time elapsed: 00:00:04
+----------------------------------------------------------
+
+30/44 Testing: predictor_virial_convergence_structure0001
+30/44 Test: predictor_virial_convergence_structure0001
+Command: "/tmp/accelnet-gpu-research/build-current/bin/test_virial_convergence" "--aenet" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf" "/tmp/accelnet-gpu-research/build-current/AccelNetPredictor/virial-convergence-structure0001.csv"
+Directory: /tmp/accelnet-gpu-research/build-current/AccelNetPredictor
+"predictor_virial_convergence_structure0001" start time: Sep 25 17:38 JST
+Output:
+----------------------------------------------------------
+VIRIAL original 0 best_h= 1.000E-05 max_error= 1.853E-07 atomic_error= 0.000E+00
+VIRIAL sheared 0 best_h= 1.000E-05 max_error= 1.170E-07 atomic_error= 0.000E+00
+VIRIAL original 1 best_h= 1.000E-05 max_error= 1.853E-07 atomic_error= 0.000E+00
+VIRIAL sheared 1 best_h= 1.000E-05 max_error= 1.170E-07 atomic_error= 0.000E+00
+VIRIAL original 2 best_h= 1.000E-05 max_error= 1.853E-07 atomic_error= 0.000E+00
+VIRIAL sheared 2 best_h= 1.000E-05 max_error= 1.170E-07 atomic_error= 0.000E+00
+<end of output>
+Test time =   4.96 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_virial_convergence_structure0001" end time: Sep 25 17:38 JST
+"predictor_virial_convergence_structure0001" time elapsed: 00:00:04
+----------------------------------------------------------
+
+End testing: Sep 25 17:38 JST
+
+aenet-reference =   0.02 sec*proc
+
+integration =   0.32 sec*proc
+
+n2p2-reference =   0.32 sec*proc
+
+performance =  48.04 sec*proc
+

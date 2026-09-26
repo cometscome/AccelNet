@@ -1,0 +1,19 @@
+
+NOTICE: Existing SQLite export found: /tmp/accelnet-modes-profile/24000-moment/trace.sqlite
+        It is assumed file was previously exported from: /tmp/accelnet-modes-profile/24000-moment/trace.nsys-rep
+        Consider using --force-export=true if needed.
+
+Processing [/tmp/accelnet-modes-profile/24000-moment/trace.sqlite] with [/opt/nvidia/nsight-systems/2025.5.2/host-linux-x64/reports/cuda_gpu_kern_sum.py]... 
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+50.6,1518207185,123,12343147.8,12347389.0,12143996,12500831,59175.7,nvkernel_accelnet_target_kernels_run_target_batch__F1L126_4_
+26.7,801893343,123,6519458.1,6501121.0,6459681,8374762,172913.3,nvkernel_accelnet_target_kernels_run_target_batch__F1L236_10_
+14.3,427475334,123,3475409.2,3476049.0,3434513,3518162,17306.6,nvkernel_accelnet_target_kernels_run_target_batch__F1L41_2_
+3.8,112580915,123,915292.0,928037.0,641539,932933,42412.1,nvkernel_accelnet_batch_target_import_lammps_inputs__F1L541_4_
+1.9,55546102,123,451594.3,451715.0,444706,458595,2696.9,nvkernel_accelnet_target_kernels_run_target_batch__F1L312_12_
+1.3,38492029,123,312943.3,311777.0,296801,334242,8226.2,nvkernel_accelnet_batch_target_import_lammps_inputs__F1L549_6_
+0.9,26993996,123,219463.4,219393.0,217569,221473,905.8,nvkernel_accelnet_target_kernels_run_target_batch__F1L145_6_
+0.6,16963024,123,137910.8,137345.0,133472,146977,2729.4,nvkernel_accelnet_target_kernels_run_target_batch__F1L179_8_
+0.0,400705,3,133568.3,133376.0,132961,134368,722.9,calc_neigh_list_cell
+0.0,4224,1,4224.0,4224.0,4224,4224,0.0,nvkernel_accelnet_batch_target_initialize_target_model__F1L230_2_
+0.0,1088,1,1088.0,1088.0,1088,1088,0.0,kernel_info
+

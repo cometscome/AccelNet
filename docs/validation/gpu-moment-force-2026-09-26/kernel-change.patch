@@ -1,0 +1,95 @@
+diff --git a/tmp/accelnet-moment-production/before/accelnet_target_kernels.f90 b/AccelNetPredictor/src/accelnet_target_kernels.f90
+index 9ecbbfb..4d446e8 100644
+--- a/tmp/accelnet-moment-production/before/accelnet_target_kernels.f90
++++ b/AccelNetPredictor/src/accelnet_target_kernels.f90
+@@ -121,12 +121,12 @@ contains
+         end do
+         !$omp end target teams distribute parallel do
+         if (any(meta(8,:) /= 1)) then
+-            ! Parallelize over both rows and monomials, instead of leaving one
+-            ! GPU thread to build every moment for an atom.
++            ! Keep one atom's monomials adjacent in the GPU work order so their
++            ! neighbor geometry and powers can be reused before cache eviction.
+             !$omp target teams distribute parallel do collapse(2) device(device) &
+             !$omp& private(s,j,ax,ay,az,mono,fcj,sj,self0,self1)
+-            do entry = 1, size(mp,2)
+-                do row = 1, nrw
++            do row = 1, nrw
++                do entry = 1, size(mp,2)
+                     if (use_moment(row) /= 1) cycle
+                     s = species(centers(row))
+                     if (entry > meta(9,s)) cycle
+@@ -177,7 +177,7 @@ contains
+         stages(1) = omp_get_wtime()-started
+         started = omp_get_wtime()
+         !$omp target teams distribute parallel do device(device) thread_limit(32) &
+-        !$omp& private(s,dim,l,nin,nout,o,j,i,z,v,b,q,nr,na,multi)
++        !$omp& private(s,dim,l,nin,nout,o,j,i,z,v,b,q,nr,na,multi,entry,self0,self1)
+         do row = 1, nrw
+             s = species(centers(row)); dim = nodes(1,s)
+             ! NN work is laid out with batch rows contiguous, including networks
+@@ -227,6 +227,21 @@ contains
+                         if (multi == 1) delta(row,q,2) = delta(row,q,2)+g(row,2*nr+na+b)*polynomial(b,q,s)
+                     end do
+                 end do
++                ! Raw moments are dead after descriptor evaluation. Reuse their
++                ! storage for the two species-weight channels of the force
++                ! polynomial, once per center rather than once per edge.
++                do entry = 1, meta(9,s)
++                    q = mp(4,entry,s)
++                    moments(row,entry,1) = multiplicity(entry,s)*delta(row,q,1)*moments(row,entry,1)
++                    moments(row,entry,2) = multiplicity(entry,s)*delta(row,q,2)*moments(row,entry,2)
++                end do
++                self0 = 0; self1 = 0
++                do q = 1, na
++                    self0 = self0+delta(row,q,1)
++                    self1 = self1+delta(row,q,2)
++                end do
++                ! The self-pair correction is independent of direction.
++                delta(row,1,1) = self0; delta(row,1,2) = self1
+             end if
+         end do
+         !$omp end target teams distribute parallel do
+@@ -236,7 +251,7 @@ contains
+         !$omp target teams distribute parallel do device(device) &
+         !$omp& private(row,s,nr,na,multi,version,ct,k,b,rj,rk,fcj,fck,dfcj,sj,sk,cosine,x, &
+         !$omp& t0,t1,t2,dt0,dt1,dt2,rc,ac,alpha,xscale,vc,dc,coeff,radial,fj, &
+-        !$omp& entry,q,ax,ay,az,nm,mono,u,grad,dm,correction)
++        !$omp& entry,q,ax,ay,az,nm,mono,u,grad,dm,correction,v)
+         do j = 1, nedges
+             row = edge_row(j); s = species(centers(row))
+             nr = meta(1,s); na = meta(2,s); multi = meta(3,s); version = meta(4,s); ct = meta(5,s)
+@@ -263,24 +278,22 @@ contains
+                     fcj = geom(5,j); dfcj = geom(6,j)
+                     if (use_moment(row) == 1) then
+                         u = geom(1:3,j)
++                        v = 0; dm = 0
+                         do entry = 1, nm
+-                            ax = mp(1,entry,s); ay = mp(2,entry,s); az = mp(3,entry,s); q = mp(4,entry,s)
++                            ax = mp(1,entry,s); ay = mp(2,entry,s); az = mp(3,entry,s)
+                             mono = powers(j,ax+1,1)*powers(j,ay+1,2)*powers(j,az+1,3)
+                             grad = 0
+                             if (ax > 0) grad(1) = ax*powers(j,ax,1)*powers(j,ay+1,2)*powers(j,az+1,3)
+                             if (ay > 0) grad(2) = ay*powers(j,ax+1,1)*powers(j,ay,2)*powers(j,az+1,3)
+                             if (az > 0) grad(3) = az*powers(j,ax+1,1)*powers(j,ay+1,2)*powers(j,az,3)
+-                            dm = dfcj*u*mono+fcj*(grad-u*sum(u*grad))/rj
+-                            coeff = multiplicity(entry,s)*(delta(row,q,1)*moments(row,entry,1) + &
+-                                sj*delta(row,q,2)*moments(row,entry,2))
+-                            fj = fj+coeff*dm
+-                            ! Entries are ordered by degree; apply the self-image
+-                            ! correction after the last monomial of each degree.
+-                            if (ax == q-1 .and. ay == 0 .and. az == 0) then
+-                                correction = fcj*dfcj*(delta(row,q,1)+sj*sj*delta(row,q,2))
+-                                fj = fj-correction*u
+-                            end if
++                            coeff = moments(row,entry,1)+sj*moments(row,entry,2)
++                            v = v+coeff*mono
++                            dm = dm+coeff*grad
+                         end do
++                        ! Contract the polynomial and its Cartesian gradient
++                        ! before projecting onto the tangent plane of u.
++                        correction = fcj*dfcj*(delta(row,1,1)+sj*sj*delta(row,1,2))
++                        fj = fj+(dfcj*v-correction)*u+fcj*(dm-u*sum(u*dm))/rj
+                     else
+                     do k = offsets(row), offsets(row+1)-1
+                         if (k == j) cycle

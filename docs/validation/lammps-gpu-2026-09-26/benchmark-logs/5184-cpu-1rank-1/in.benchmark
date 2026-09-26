@@ -1,0 +1,22 @@
+clear
+
+units metal
+atom_style atomic
+boundary p p p
+
+read_data /tmp/accelnet-lammps-gpu/validation-h100/orthogonal.data
+replicate 6 6 6
+pair_style accelnet auto /home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii /home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii
+pair_coeff * *
+neighbor 0.6 bin
+neigh_modify every 10 delay 0 check yes
+atom_modify sort 100 0.0
+velocity all create 100 4928459 mom yes rot no dist gaussian
+fix integrate all nve
+timestep 0.0001
+compute vir all pressure NULL virial
+thermo 50
+thermo_style custom step pe c_vir[1] c_vir[2] c_vir[3] c_vir[4] c_vir[5] c_vir[6]
+thermo_modify format float %.17g lost error
+run 10
+run 50

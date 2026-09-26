@@ -1,0 +1,70 @@
+[
+  {
+    "compiler": "gnu",
+    "variant": "before",
+    "path": "/tmp/accelnet-angular-contraction/baseline-gnu/accelnet-target-benchmark",
+    "sha256": "3c9b9103abc23829effb67bb3ce05bd0b6b6fe2533a89085fc88f3cf103494ca",
+    "target_serial": true,
+    "flags": [
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3 -Jmodules -O3 -ffree-line-length-none",
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3 -Jtarget-modules",
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3"
+    ],
+    "undefined_openmp_symbols": [],
+    "ldd": "\tlinux-vdso.so.1 (0x00007ffe562ea000)\n\tlibgfortran.so.5 => /lib/x86_64-linux-gnu/libgfortran.so.5 (0x00007effeb8e0000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007effeb7f9000)\n\tlibmvec.so.1 => /lib/x86_64-linux-gnu/libmvec.so.1 (0x00007effeb6fc000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007effeb6dc000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007effeb4b1000)\n\tlibquadmath.so.0 => /lib/x86_64-linux-gnu/libquadmath.so.0 (0x00007effeb469000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007effebcaf000)\n",
+    "cpu_affinity_in_driver": [
+      6
+    ]
+  },
+  {
+    "compiler": "gnu",
+    "variant": "after",
+    "path": "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+    "sha256": "3ab5b66b39a45f47ca09451b53ee83248040a48d3faa6f080b357857fb42aeaa",
+    "target_serial": true,
+    "flags": [
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3 -Jmodules -O3 -ffree-line-length-none",
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3 -Jtarget-modules",
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3"
+    ],
+    "undefined_openmp_symbols": [],
+    "ldd": "\tlinux-vdso.so.1 (0x00007fff6e8b9000)\n\tlibgfortran.so.5 => /lib/x86_64-linux-gnu/libgfortran.so.5 (0x00007f303a4d0000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f303a3e9000)\n\tlibmvec.so.1 => /lib/x86_64-linux-gnu/libmvec.so.1 (0x00007f303a2ec000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f303a2cc000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f303a0a1000)\n\tlibquadmath.so.0 => /lib/x86_64-linux-gnu/libquadmath.so.0 (0x00007f303a059000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f303a8a2000)\n",
+    "cpu_affinity_in_driver": [
+      6
+    ]
+  },
+  {
+    "compiler": "nvhpc",
+    "variant": "before",
+    "path": "/tmp/accelnet-angular-contraction/baseline-nvhpc/accelnet-target-benchmark",
+    "sha256": "b49ff63039b8a11b23f1190c340e93b8e34dd5ecbeb686b4a3b452a7048e984b",
+    "target_serial": true,
+    "flags": [
+      "Fortran_FLAGS = -fast -O3 -module modules",
+      "Fortran_FLAGS = -fast -O3 -module target-modules",
+      "Fortran_FLAGS = -fast -O3"
+    ],
+    "undefined_openmp_symbols": [],
+    "ldd": "\tlinux-vdso.so.1 (0x00007ffd0911e000)\n\tlibnvf.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvf.so (0x00007f2074400000)\n\tlibnvomp.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvomp.so (0x00007f2073200000)\n\tlibnvhpcatm.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvhpcatm.so (0x00007f2072e00000)\n\tlibnvcpumath.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvcpumath.so (0x00007f2072800000)\n\tlibnvc.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvc.so (0x00007f2072400000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f20721d7000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f2074b98000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f2074319000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f2074bd6000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f2074b93000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f2074b8e000)\n",
+    "cpu_affinity_in_driver": [
+      6
+    ]
+  },
+  {
+    "compiler": "nvhpc",
+    "variant": "after",
+    "path": "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+    "sha256": "8435f24562dbd7b88de6143c7523adf71d146e585d2e38695c00a69e3b1dd062",
+    "target_serial": true,
+    "flags": [
+      "Fortran_FLAGS = -fast -O3 -module modules",
+      "Fortran_FLAGS = -fast -O3 -module target-modules",
+      "Fortran_FLAGS = -fast -O3"
+    ],
+    "undefined_openmp_symbols": [],
+    "ldd": "\tlinux-vdso.so.1 (0x00007ffd711f1000)\n\tlibnvf.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvf.so (0x00007f7908800000)\n\tlibnvomp.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvomp.so (0x00007f7907600000)\n\tlibnvhpcatm.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvhpcatm.so (0x00007f7907200000)\n\tlibnvcpumath.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvcpumath.so (0x00007f7906c00000)\n\tlibnvc.so => /opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/lib/libnvc.so (0x00007f7906800000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f79065d7000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f7908f36000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f7908719000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f7908f74000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f7908f31000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f7908f2c000)\n",
+    "cpu_affinity_in_driver": [
+      6
+    ]
+  }
+]

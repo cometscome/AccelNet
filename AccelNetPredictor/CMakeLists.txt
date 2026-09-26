@@ -55,12 +55,14 @@ add_library(AccelNetPredictor
     src/n2p2_network.f90
     src/predict_input.f90
     src/accelnet_predictor.f90
+    src/accelnet_batch.f90
     src/accelnet.f90)
 add_library(AccelNetPredictor::AccelNetPredictor ALIAS AccelNetPredictor)
 add_library(AccelNet::AccelNet ALIAS AccelNetPredictor)
 set_target_properties(AccelNetPredictor PROPERTIES
     OUTPUT_NAME accelnet
     Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/modules")
+target_include_directories(AccelNetPredictor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetDescriptors/src/shared")
 target_include_directories(AccelNetPredictor PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/modules>"
     "$<INSTALL_INTERFACE:include>")
@@ -69,6 +71,64 @@ target_link_libraries(AccelNetPredictor PUBLIC
 target_compile_options(AccelNetPredictor PRIVATE
     $<$<Fortran_COMPILER_ID:GNU>:-O3;-ffree-line-length-none>
     $<$<Fortran_COMPILER_ID:Intel,IntelLLVM>:-O3>)
+
+# Compile the same numerical kernels for the ordinary CPU batch API. Separate
+# module names let this serial instance coexist with a GPU-enabled instance.
+# Strip directives even when the caller supplies global OpenMP compiler flags.
+set(_shared_modules accelnet_target_runtime accelnet_target_descriptors
+    accelnet_target_math accelnet_target_kernels accelnet_batch_target)
+foreach(_module IN LISTS _shared_modules)
+    set(_extension f90)
+    if(_module STREQUAL "accelnet_target_runtime")
+        set(_extension F90)
+    endif()
+    set(_source "${CMAKE_CURRENT_SOURCE_DIR}/src/${_module}.${_extension}")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_source}")
+    file(READ "${_source}" _serial_source)
+    foreach(_name IN LISTS _shared_modules)
+        string(REPLACE "${_name}" "${_name}_serial" _serial_source "${_serial_source}")
+    endforeach()
+    string(REGEX REPLACE "[ \t]*!\\$omp[^\n]*" "" _serial_source "${_serial_source}")
+    set(_generated "${CMAKE_CURRENT_BINARY_DIR}/serial/${_module}.F90")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/serial")
+    # configure_file avoids touching unchanged files and rebuilding everything.
+    set(_serial_source "#define ACCELNET_TARGET_SERIAL\n${_serial_source}")
+    configure_file(cmake/serial-source.F90.in "${_generated}" @ONLY)
+    target_sources(AccelNetPredictor PRIVATE "${_generated}")
+endforeach()
+
+option(ACCELNET_BUILD_OPENMP_TARGET "Build the optional OpenMP target batch backend" OFF)
+set(ACCELNET_OPENMP_TARGET_FLAGS "" CACHE STRING "Compiler/link flags for OpenMP GPU offload")
+option(ACCELNET_TARGET_SERIAL "Compile the target kernels without OpenMP flags/directives for CPU comparison" OFF)
+if(ACCELNET_BUILD_OPENMP_TARGET)
+    if(NOT ACCELNET_OPENMP_TARGET_FLAGS AND NOT ACCELNET_TARGET_SERIAL)
+        message(FATAL_ERROR "Set ACCELNET_OPENMP_TARGET_FLAGS for your compiler/device, e.g. -mp=gpu -gpu=cc90")
+    endif()
+    set(_offload_flags "")
+    if(NOT ACCELNET_TARGET_SERIAL)
+        separate_arguments(_offload_flags NATIVE_COMMAND "${ACCELNET_OPENMP_TARGET_FLAGS}")
+    endif()
+    add_library(AccelNetTarget
+        src/accelnet_target_runtime.F90
+        src/accelnet_target_descriptors.f90
+        src/accelnet_target_math.f90
+        src/accelnet_target_kernels.f90
+        src/accelnet_batch_target.f90
+        src/accelnet_target_c.f90)
+    add_library(AccelNet::Target ALIAS AccelNetTarget)
+    set_target_properties(AccelNetTarget PROPERTIES OUTPUT_NAME accelnet_target
+        Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/target-modules")
+    target_include_directories(AccelNetTarget PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetDescriptors/src/shared")
+    target_include_directories(AccelNetTarget PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/target-modules>"
+        "$<INSTALL_INTERFACE:include>")
+    target_link_libraries(AccelNetTarget PUBLIC AccelNetPredictor)
+    if(ACCELNET_TARGET_SERIAL)
+        target_compile_definitions(AccelNetTarget PRIVATE ACCELNET_TARGET_SERIAL)
+    endif()
+    target_compile_options(AccelNetTarget PRIVATE ${_offload_flags})
+    target_link_options(AccelNetTarget PUBLIC ${_offload_flags})
+endif()
 
 add_executable(accelnet-predict app/accelnet_predict.f90)
 target_link_libraries(accelnet-predict PRIVATE AccelNetPredictor)
@@ -114,6 +174,106 @@ endif()
 
 if(ACCELNET_PREDICTOR_BUILD_TESTING)
     enable_testing()
+    option(ACCELNET_TEST_OPENMP_TARGET "Build an opt-in GPU runtime smoke test (not GPU inference)" OFF)
+    set(ACCELNET_OPENMP_TARGET_TEST_FLAGS "" CACHE STRING "Compiler/link flags for the GPU runtime test")
+    if(ACCELNET_TEST_OPENMP_TARGET)
+        if(NOT ACCELNET_OPENMP_TARGET_TEST_FLAGS)
+            message(FATAL_ERROR "Set ACCELNET_OPENMP_TARGET_TEST_FLAGS for your compiler and GPU")
+        endif()
+        separate_arguments(_target_test_flags NATIVE_COMMAND "${ACCELNET_OPENMP_TARGET_TEST_FLAGS}")
+        add_executable(test_openmp_target test/test_openmp_target.f90)
+        target_compile_options(test_openmp_target PRIVATE ${_target_test_flags})
+        target_link_options(test_openmp_target PRIVATE ${_target_test_flags})
+        add_test(NAME openmp_target_device_smoke COMMAND test_openmp_target)
+        set_tests_properties(openmp_target_device_smoke PROPERTIES
+            LABELS "gpu" ENVIRONMENT "OMP_TARGET_OFFLOAD=MANDATORY" TIMEOUT 60)
+    endif()
+    add_library(batch_test_support STATIC test/batch_test_support.f90)
+    set_target_properties(batch_test_support PROPERTIES
+        Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/batch-test-modules")
+    target_include_directories(batch_test_support PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/batch-test-modules")
+    target_link_libraries(batch_test_support PUBLIC AccelNetPredictor)
+    if(ACCELNET_BUILD_OPENMP_TARGET)
+        add_executable(test_target_c test/test_target_c.c)
+        target_include_directories(test_target_c PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        target_link_libraries(test_target_c PRIVATE AccelNetTarget)
+        set_target_properties(test_target_c PROPERTIES LINKER_LANGUAGE Fortran)
+        if(CMAKE_Fortran_COMPILER_ID STREQUAL "NVHPC")
+            target_link_options(test_target_c PRIVATE -Mnomain)
+        endif()
+        if(EXISTS "${ACCELNET_PREDICTOR_GOLDEN_DIR}/Ti.nn.ascii")
+            add_test(NAME predictor_target_c_api COMMAND test_target_c
+                "${ACCELNET_PREDICTOR_GOLDEN_DIR}/Ti.nn.ascii"
+                "${ACCELNET_PREDICTOR_GOLDEN_DIR}/O.nn.ascii")
+            set_tests_properties(predictor_target_c_api PROPERTIES LABELS "gpu" TIMEOUT 120)
+        endif()
+        add_executable(test_batch_target test/test_batch_target.f90)
+        target_link_libraries(test_batch_target PRIVATE batch_test_support AccelNetTarget)
+        add_executable(accelnet-target-benchmark benchmark/target_benchmark.f90)
+        target_link_libraries(accelnet-target-benchmark PRIVATE batch_test_support AccelNetTarget)
+        add_test(NAME predictor_target_equivalence COMMAND test_batch_target)
+        set_tests_properties(predictor_target_equivalence PROPERTIES LABELS "gpu" TIMEOUT 300)
+        foreach(_gpu_mode IN ITEMS direct moment)
+            add_test(NAME predictor_target_${_gpu_mode}_equivalence COMMAND test_batch_target --${_gpu_mode})
+            set_tests_properties(predictor_target_${_gpu_mode}_equivalence PROPERTIES LABELS "gpu" TIMEOUT 300)
+        endforeach()
+        add_executable(write_target_fixtures test/write_target_fixtures.f90)
+        target_link_libraries(write_target_fixtures PRIVATE batch_test_support)
+        set(_target_fixtures "${CMAKE_CURRENT_BINARY_DIR}/target-fixtures")
+        file(MAKE_DIRECTORY "${_target_fixtures}")
+        add_test(NAME predictor_target_write_fixtures COMMAND write_target_fixtures "${_target_fixtures}")
+        set_tests_properties(predictor_target_write_fixtures PROPERTIES FIXTURES_SETUP target-models LABELS "gpu")
+        foreach(_family IN ITEMS lj behler)
+            add_test(NAME predictor_target_embedded_${_family} COMMAND test_batch_target --embedded
+                "${_target_fixtures}/H.${_family}.nn.ascii" "${_target_fixtures}/O.${_family}.nn.ascii")
+            add_test(NAME predictor_target_c_${_family} COMMAND test_target_c
+                "${_target_fixtures}/H.${_family}.nn.ascii" "${_target_fixtures}/O.${_family}.nn.ascii")
+            set_tests_properties(predictor_target_embedded_${_family} predictor_target_c_${_family}
+                PROPERTIES FIXTURES_REQUIRED target-models LABELS "gpu" TIMEOUT 120)
+        endforeach()
+        add_test(NAME predictor_target_other_descriptors COMMAND test_batch_target --descriptors)
+        set_tests_properties(predictor_target_other_descriptors PROPERTIES LABELS "gpu" TIMEOUT 300)
+        add_test(NAME predictor_target_host_equivalence COMMAND test_batch_target --host)
+        add_test(NAME predictor_target_host_other_descriptors COMMAND test_batch_target --host --descriptors)
+        set_tests_properties(predictor_target_host_equivalence predictor_target_host_other_descriptors
+            PROPERTIES LABELS "target-host" ENVIRONMENT "OMP_NUM_THREADS=1" TIMEOUT 300)
+        foreach(_n2p2_fixture IN ITEMS n2p2 n2p2-per-element n2p2-per-element-depth n2p2-virial-angular)
+            add_test(NAME predictor_target_${_n2p2_fixture} COMMAND test_batch_target --n2p2
+                "${CMAKE_CURRENT_SOURCE_DIR}/test/data/${_n2p2_fixture}")
+            set_tests_properties(predictor_target_${_n2p2_fixture} PROPERTIES LABELS "gpu" TIMEOUT 300)
+        endforeach()
+        foreach(_bad_target IN ITEMS offset monotonic target center species shape unsupported activation version10 uninitialized)
+            add_test(NAME predictor_target_reject_${_bad_target} COMMAND test_batch_target ${_bad_target})
+            set_tests_properties(predictor_target_reject_${_bad_target} PROPERTIES WILL_FAIL TRUE LABELS "gpu")
+        endforeach()
+        add_test(NAME predictor_target_reject_host_fallback COMMAND test_batch_target fallback)
+        set_tests_properties(predictor_target_reject_host_fallback PROPERTIES
+            WILL_FAIL TRUE LABELS "gpu" ENVIRONMENT "OMP_TARGET_OFFLOAD=DISABLED")
+    endif()
+    add_executable(accelnet-cpu-regression-benchmark benchmark/cpu_regression_benchmark.F90)
+    target_compile_definitions(accelnet-cpu-regression-benchmark PRIVATE ACCELNET_HAVE_BATCH)
+    target_link_libraries(accelnet-cpu-regression-benchmark PRIVATE batch_test_support)
+    set(ACCELNET_CPU_BASELINE_EXECUTABLE "" CACHE FILEPATH "Archived CPU regression benchmark executable")
+    set(ACCELNET_CPU_MAX_SLOWDOWN "1.10" CACHE STRING "Maximum median paired CPU time ratio")
+    if(ACCELNET_CPU_BASELINE_EXECUTABLE)
+        find_package(Python3 COMPONENTS Interpreter REQUIRED)
+        add_test(NAME predictor_cpu_performance_regression
+            COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/benchmark/compare_cpu_performance.py"
+                --baseline "${ACCELNET_CPU_BASELINE_EXECUTABLE}"
+                --candidate $<TARGET_FILE:accelnet-cpu-regression-benchmark>
+                --max-slowdown "${ACCELNET_CPU_MAX_SLOWDOWN}"
+                --output "${CMAKE_CURRENT_BINARY_DIR}/cpu-performance.json")
+        set_tests_properties(predictor_cpu_performance_regression PROPERTIES
+            LABELS "performance" RUN_SERIAL TRUE TIMEOUT 300)
+    endif()
+    add_executable(test_batch test/test_batch.f90)
+    target_link_libraries(test_batch PRIVATE batch_test_support)
+    add_test(NAME predictor_batch_equivalence COMMAND test_batch "${CMAKE_CURRENT_SOURCE_DIR}/test/data")
+    foreach(_bad_batch IN ITEMS offset monotonic target center species shape)
+        add_test(NAME predictor_batch_reject_${_bad_batch} COMMAND test_batch
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/data" ${_bad_batch})
+        set_tests_properties(predictor_batch_reject_${_bad_batch} PROPERTIES WILL_FAIL TRUE)
+    endforeach()
     add_executable(test_virial test/test_virial.f90)
     target_link_libraries(test_virial PRIVATE AccelNetPredictor)
     add_test(NAME predictor_atomic_and_structure_virial COMMAND test_virial
@@ -221,6 +381,18 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetTrainer.jl/test/data/fortran_predict"
         CACHE PATH "Existing immutable NN/XSF golden data")
     if(EXISTS "${ACCELNET_PREDICTOR_GOLDEN_DIR}/Ti.nn.ascii")
+        if(ACCELNET_BUILD_OPENMP_TARGET)
+            add_test(NAME predictor_target_aenet_golden COMMAND test_batch_target
+                --aenet "${ACCELNET_PREDICTOR_GOLDEN_DIR}")
+            set_tests_properties(predictor_target_aenet_golden PROPERTIES LABELS "gpu" TIMEOUT 300)
+            foreach(_gpu_mode RANGE 1 2)
+                add_test(NAME predictor_target_aenet_mode${_gpu_mode} COMMAND test_batch_target
+                    --aenet "${ACCELNET_PREDICTOR_GOLDEN_DIR}" ${_gpu_mode})
+                set_tests_properties(predictor_target_aenet_mode${_gpu_mode} PROPERTIES LABELS "gpu" TIMEOUT 300)
+            endforeach()
+        endif()
+        add_test(NAME predictor_batch_aenet_golden COMMAND test_batch
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/data" --aenet "${ACCELNET_PREDICTOR_GOLDEN_DIR}")
         foreach(_virial_structure IN ITEMS structure0001 structure2935)
             add_test(NAME predictor_virial_convergence_${_virial_structure} COMMAND test_virial_convergence
                 --aenet "${ACCELNET_PREDICTOR_GOLDEN_DIR}/Ti.nn.ascii"
@@ -355,7 +527,11 @@ install(TARGETS AccelNetPredictor accelnet-predict accelnet-predict-benchmark
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin)
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/modules/" DESTINATION include OPTIONAL)
-install(FILES include/accelnet.h DESTINATION include)
+if(ACCELNET_BUILD_OPENMP_TARGET)
+    install(TARGETS AccelNetTarget EXPORT AccelNetPredictorTargets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/target-modules/" DESTINATION include OPTIONAL)
+endif()
+install(FILES include/accelnet.h include/accelnet_target.h DESTINATION include)
 install(EXPORT AccelNetPredictorTargets NAMESPACE AccelNetPredictor::
     DESTINATION lib/cmake/AccelNetPredictor)
 configure_package_config_file(cmake/AccelNetPredictorConfig.cmake.in
@@ -367,3 +543,15 @@ write_basic_package_version_file(
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/AccelNetPredictorConfig.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/AccelNetPredictorConfigVersion.cmake"
     DESTINATION lib/cmake/AccelNetPredictor)
+
+# The serial comparison library has no device runtime. Its explicit host tests
+# remain enabled; tests requiring an actual GPU cannot run in this build.
+if(ACCELNET_TARGET_SERIAL AND ACCELNET_PREDICTOR_BUILD_TESTING)
+    get_property(_target_all_tests DIRECTORY PROPERTY TESTS)
+    foreach(_test IN LISTS _target_all_tests)
+        get_test_property(${_test} LABELS _labels)
+        if("gpu" IN_LIST _labels)
+            set_tests_properties(${_test} PROPERTIES DISABLED TRUE)
+        endif()
+    endforeach()
+endif()

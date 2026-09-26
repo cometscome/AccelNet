@@ -1,0 +1,22 @@
+[
+  {
+    "tile": 1,
+    "source_sha256": "a4b2ec55cb38b4665af4aab06274f8fda42c6f9db984ebc5b3963492c2e9b6c1",
+    "executable_sha256": "88bcde0dce8db9590a0e8ee48b344e7a52843d3865ad00ef98df18d554582fec"
+  },
+  {
+    "tile": 32,
+    "source_sha256": "d56519093a7af928ed79528f557ae232e1f560b5f859cd21be4023f2b793ef35",
+    "executable_sha256": "a326e8b0c8ee840dda9f2ac88385c731e9fb2f5bd2beaeb388b2c41469428b9b"
+  },
+  {
+    "tile": 128,
+    "source_sha256": "b7e91f26322f9fe257c7e5ee0019239c0af886649d88fc17babb8bb65fea3f47",
+    "executable_sha256": "af53f3fe129ddb44391989d695d6e3b97381cc0b6e1ff4fe571253b81de636ff"
+  },
+  {
+    "tile": 512,
+    "source_sha256": "5ca008be3131714ebc4b19857e8324569fa4d4008550c4e641fd69dbaa38c943",
+    "executable_sha256": "94be9e53797d6904b03d86ef6b3dc2c3e8ddc04d2d21f6503eade559431daf89"
+  }
+]

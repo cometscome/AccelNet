@@ -1,0 +1,13 @@
+Internal ctest changing into directory: /tmp/accelnet-other-descriptors/build-gnu-serial
+Test project /tmp/accelnet-other-descriptors/build-gnu-serial
+    Start 19: predictor_target_host_equivalence
+1/2 Test #19: predictor_target_host_equivalence .........   Passed    0.65 sec
+    Start 20: predictor_target_host_other_descriptors
+2/2 Test #20: predictor_target_host_other_descriptors ...   Passed    1.83 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Label Time Summary:
+target-host    =   2.48 sec*proc (2 tests)
+
+Total Test time (real) =   2.48 sec

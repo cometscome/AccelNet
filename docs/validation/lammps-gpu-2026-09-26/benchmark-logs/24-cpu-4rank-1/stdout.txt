@@ -1,0 +1,102 @@
+LAMMPS (29 Aug 2024 - Update 4)
+Reading data file ...
+  orthogonal box = (0 0 0) to (5.934 9.2969997 4.6489999)
+  2 by 2 by 1 MPI processor grid
+  reading atoms ...
+  24 atoms
+  read_data CPU = 0.003 seconds
+Replication is creating a 1x1x1 = 1 times larger system...
+  orthogonal box = (0 0 0) to (5.934 9.2969997 4.6489999)
+  2 by 2 by 1 MPI processor grid
+  24 atoms
+  replicate CPU = 0.001 seconds
+AccelNet Chebyshev evaluation mode: auto
+AccelNet G5 evaluation mode: auto
+Neighbor list info ...
+  update: every = 10 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7.1
+  ghost atom cutoff = 7.1
+  binsize = 3.55, bins = 2 3 2
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair accelnet, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.0001
+Per MPI rank memory allocation (min/avg/max) = 2.968 | 2.968 | 2.968 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  -19960.761441252627 40265.067485124528 -16705.812601314567 11508.768082456994 -3028.8180926367904 -1467.8868013891984 -225.48082527627651
+        10  -19960.749586519854 40301.831401562595 -16548.111272496659 11722.834850362397 -3199.204658761797 -1436.7027831122409 99.233724857591525
+Loop time of 0.0193019 on 4 procs for 10 steps with 24 atoms
+
+Performance: 4.476 ns/day, 5.362 hours/ns, 518.084 timesteps/s, 12.434 katom-step/s
+99.7% CPU use with 4 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.0041722  | 0.0083819  | 0.014745   |   4.9 | 43.43
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.0041678  | 0.010458   | 0.014599   |   4.3 | 54.18
+Output  | 0.00026729 | 0.0003016  | 0.00033274 |   0.0 |  1.56
+Modify  | 3.029e-06  | 5.6573e-06 | 8.419e-06  |   0.0 |  0.03
+Other   |            | 0.000155   |            |       |  0.80
+
+Nlocal:              6 ave           7 max           5 min
+Histogram: 1 0 0 0 0 2 0 0 0 1
+Nghost:            567 ave         568 max         566 min
+Histogram: 1 0 0 0 0 2 0 0 0 1
+Neighs:              0 ave           0 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 0 0
+FullNghs:          823 ave         959 max         681 min
+Histogram: 1 0 0 0 0 2 0 0 0 1
+
+Total # of neighbors = 3292
+Ave neighs/atom = 137.16667
+Neighbor list builds = 0
+Dangerous builds = 0
+AccelNet Chebyshev evaluation mode: auto
+AccelNet G5 evaluation mode: auto
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 10
+  Time step     : 0.0001
+Per MPI rank memory allocation (min/avg/max) = 2.968 | 2.968 | 2.968 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+        10  -19960.749586519854 40301.831401562595 -16548.111272496659 11722.834850362397 -3199.204658761797 -1436.7027831122409 99.233724857591525
+        50  -19960.805959338628 41167.613789748582 -17818.928717948711 10423.848414807195 -3748.9062510221265 -1552.0824037321859 1494.803652189531
+        60  -19960.843753975914 41528.228222139238 -18578.608540188547 9579.5559939919785 -3809.5081298342857 -1617.2804351872398 1838.2028687388301
+Loop time of 0.0540275 on 4 procs for 50 steps with 24 atoms
+
+Performance: 7.996 ns/day, 3.002 hours/ns, 925.455 timesteps/s, 22.211 katom-step/s
+99.8% CPU use with 4 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.018152   | 0.026543   | 0.041589   |   5.9 | 49.13
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.011936   | 0.026888   | 0.035231   |   5.8 | 49.77
+Output  | 0.00024139 | 0.00026407 | 0.00028695 |   0.0 |  0.49
+Modify  | 9.129e-06  | 1.3968e-05 | 1.9271e-05 |   0.0 |  0.03
+Other   |            | 0.0003186  |            |       |  0.59
+
+Nlocal:              6 ave           7 max           5 min
+Histogram: 1 0 0 0 0 2 0 0 0 1
+Nghost:            567 ave         568 max         566 min
+Histogram: 1 0 0 0 0 2 0 0 0 1
+Neighs:              0 ave           0 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 0 0
+FullNghs:        823.5 ave         960 max         682 min
+Histogram: 1 0 0 0 0 2 0 0 0 1
+
+Total # of neighbors = 3294
+Ave neighs/atom = 137.25
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:00

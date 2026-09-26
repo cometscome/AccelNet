@@ -1,0 +1,7 @@
+{
+  "accelnet-target-benchmark": "e081620ed2ea800261e425d3bc47c6900e1c45e005997d2006fcc367e89fc02d",
+  "accelnet_batch_target.f90": "2e71f9f3865c7c99ab480a454844fa2edc55a436b667421171b8946e6e7eaae8",
+  "accelnet_target_kernels.f90": "33c1619d01bc6885689545764c148f28af018539b1147d9cecdf2c03ec2c0bbb",
+  "accelnet_target_math.f90": "0a7926bcd41bca57ad23f2ce15a84a5142515eefe8109d6de773cd610c0df2b0",
+  "target_benchmark.f90": "eda274e17a585b17b5788507b3a6450689dfa6b7b3ef39e3d0738bfa97a81138"
+}

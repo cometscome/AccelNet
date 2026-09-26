@@ -1,0 +1,7 @@
+Failing in Thread:1
+Accelerator Fatal Error: call to cuMemFree returned error 4 (unknown): Deinitialized
+ File: nvomp_target.c
+ Function: finalizeDeviceMemoryPool:331
+ Line: 135
+
+double free or corruption (fasttop)

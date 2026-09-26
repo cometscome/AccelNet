@@ -37,6 +37,7 @@ add_library(AccelNetDescriptors
 add_library(AccelNetDescriptors::AccelNetDescriptors ALIAS AccelNetDescriptors)
 set_target_properties(AccelNetDescriptors PROPERTIES
     Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/modules")
+target_include_directories(AccelNetDescriptors PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/shared")
 target_include_directories(AccelNetDescriptors PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/modules>"
     "$<INSTALL_INTERFACE:include>")

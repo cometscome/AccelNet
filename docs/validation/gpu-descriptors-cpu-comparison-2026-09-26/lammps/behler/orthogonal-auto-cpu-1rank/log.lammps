@@ -1,0 +1,136 @@
+LAMMPS (29 Aug 2024 - Update 4)
+clear
+
+units metal
+atom_style atomic
+boundary p p p
+
+read_data /tmp/accelnet-other-descriptors/lammps/behler/orthogonal.data
+Reading data file ...
+  orthogonal box = (0 0 0) to (5.6 5.8 6)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  8 atoms
+  read_data CPU = 0.001 seconds
+replicate 1 1 1
+Replication is creating a 1x1x1 = 1 times larger system...
+  orthogonal box = (0 0 0) to (5.6 5.8 6)
+  1 by 1 by 1 MPI processor grid
+  8 atoms
+  replicate CPU = 0.000 seconds
+pair_style accelnet auto /tmp/accelnet-other-descriptors/lammps/behler-model/H.nn.ascii /tmp/accelnet-other-descriptors/lammps/behler-model/O.nn.ascii
+pair_coeff * *
+neighbor 0.6 bin
+neigh_modify every 1 delay 0 check no
+atom_modify sort 1 0.0
+velocity all create 100 4928459 mom yes rot no dist gaussian
+
+fix integrate all nve
+timestep 0.0001
+compute ea all pe/atom
+compute vir all pressure NULL virial
+thermo 1
+thermo_style custom step pe c_vir[1] c_vir[2] c_vir[3] c_vir[4] c_vir[5] c_vir[6]
+thermo_modify format float %.17g lost error
+run 0
+AccelNet Chebyshev evaluation mode: auto
+AccelNet G5 evaluation mode: auto
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = no
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 4
+  ghost atom cutoff = 4
+  binsize = 2, bins = 3 3 3
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair accelnet, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 2.685 | 2.685 | 2.685 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  5.9884201622826714 -0.53084790501539691 -1.1090939208020369 1.0613115259712065 0.41803913034728207 0.048564988383934797 0.18021178162694054
+Loop time of 6.82e-07 on 1 procs for 0 steps with 8 atoms
+
+0.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 6.82e-07   |            |       |100.00
+
+Nlocal:              8 ave           8 max           8 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:            117 ave         117 max         117 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:           56 ave          56 max          56 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 56
+Ave neighs/atom = 7
+Neighbor list builds = 0
+Dangerous builds not checked
+write_dump all custom initial.dump id type x y z fx fy fz c_ea modify sort id format float %.17g
+run 20
+AccelNet Chebyshev evaluation mode: auto
+AccelNet G5 evaluation mode: auto
+Per MPI rank memory allocation (min/avg/max) = 2.81 | 2.81 | 2.81 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  5.9884201622826714 -0.53084790501539691 -1.1090939208020369 1.0613115259712065 0.41803913034728207 0.048564988383934797 0.18021178162694054
+         1  5.9884200011076079 -0.53151660246346855 -1.1097307789311599 1.0607717958963268 0.41757478746457627 0.048283161740667664 0.18017956606517829
+         2  5.9884198399437256 -0.53218494692071627 -1.1103673895001245 1.0602319322473057 0.41711111257479949 0.048001450338969645 0.18014682742259183
+         3  5.9884196787910797 -0.53285293761383479 -1.1110037519767073 1.0596919344225717 0.41664810693659193 0.047719854309183032 0.18011356641071855
+         4  5.9884195176497217 -0.53352057376719852 -1.1116398658317292 1.0591518018213391 0.41618577180640898 0.047438373781573479 0.18007978374166447
+         5  5.9884193565197084 -0.53418785460285789 -1.1122757305390578 1.0586115338436266 0.41572410843850482 0.047157008886351576 0.1800454801281107
+         6  5.9884191954010912 -0.53485477934055303 -1.1129113455755977 1.0580711298902359 0.41526311808493926 0.046875759753656529 0.18001065628332782
+         7  5.9884190342939227 -0.53552134719770372 -1.1135467104212722 1.0575305893627844 0.4148028019955492 0.046594626513572449 0.1799753129211574
+         8  5.9884188731982571 -0.53618755738942547 -1.1141818245590469 1.0569899116636827 0.4143431614179498 0.046313609296117539 0.17993945075601145
+         9  5.988418712114151 -0.53685340912854151 -1.1148166874748973 1.0564490961961348 0.41388419759752554 0.046032708231243787 0.17990307050288587
+        10  5.9884185510416543 -0.53751890162557014 -1.1154512986578133 1.0559081423641581 0.41342591177741184 0.045751923448841797 0.17986617287733761
+        11  5.988418389980823 -0.53818403408875126 -1.1160856575997982 1.0553670495725624 0.41296830519849931 0.045471255078736325 0.17982875859550396
+        12  5.9884182289317094 -0.53884880572402849 -1.1167197637958544 1.0548258172269906 0.41251137909940622 0.045190703250698093 0.17979082837409574
+        13  5.9884180678943641 -0.53951321573508015 -1.1173536167439857 1.0542844447338606 0.41205513471648314 0.044910268094417581 0.1797523829303827
+        14  5.9884179068688477 -0.54017726332330718 -1.1179872159451822 1.0537429315004321 0.41159957328379571 0.044629949739540951 0.17971342298221263
+        15  5.9884177458552088 -0.54084094768784141 -1.1186205609034288 1.0532012769347405 0.41114469603312115 0.044349748315636248 0.17967394924799615
+        16  5.9884175848535008 -0.54150426802555951 -1.1192536511256868 1.052659480445667 0.4106905041939336 0.04406966395221245 0.17963396244671445
+        17  5.9884174238637806 -0.54216722353107916 -1.1198864861218878 1.0521175414428872 0.41023699899339405 0.043789696778720064 0.17959346329790934
+        18  5.9884172628860988 -0.54282981339677117 -1.1205190654049397 1.0515754593369013 0.40978418165634495 0.043509846924537493 0.17955245252168775
+        19  5.9884171019205095 -0.5434920368127617 -1.121151388490716 1.0510332335390224 0.40933205340529261 0.043230114518984869 0.17951093083872569
+        20  5.988416940967066 -0.54415389296694383 -1.1217834548980372 1.0504908634613879 0.40888061546041449 0.042950499691320372 0.17946889897025592
+Loop time of 0.0030406 on 1 procs for 20 steps with 8 atoms
+
+Performance: 56.831 ns/day, 0.422 hours/ns, 6577.638 timesteps/s, 52.621 katom-step/s
+100.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.0022076  | 0.0022076  | 0.0022076  |   0.0 | 72.61
+Neigh   | 8.1234e-05 | 8.1234e-05 | 8.1234e-05 |   0.0 |  2.67
+Comm    | 2.6831e-05 | 2.6831e-05 | 2.6831e-05 |   0.0 |  0.88
+Output  | 0.00071238 | 0.00071238 | 0.00071238 |   0.0 | 23.43
+Modify  | 4.698e-06  | 4.698e-06  | 4.698e-06  |   0.0 |  0.15
+Other   |            | 7.827e-06  |            |       |  0.26
+
+Nlocal:              8 ave           8 max           8 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:            111 ave         111 max         111 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:           56 ave          56 max          56 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 56
+Ave neighs/atom = 7
+Neighbor list builds = 20
+Dangerous builds not checked
+write_dump all custom final.dump id type x y z fx fy fz c_ea modify sort id format float %.17g
+Total wall time: 0:00:00

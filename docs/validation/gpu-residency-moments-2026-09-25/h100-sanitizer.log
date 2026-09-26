@@ -1,0 +1,1243 @@
+========= COMPUTE-SANITIZER
+========= Leaked 56 bytes at 0x7f48f0000000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAllocManaged [0x310a7f] in libcuda.so.1
+=========         Host Frame: enableDevice in hxCuda.c:1328 [0x48f11] in libnvomp.so
+=========         Host Frame: launchInternal in hxCuda.c:2991 [0x4cffd] in libnvomp.so
+=========         Host Frame: hxLaunch in hxInterface.c:155 [0x45abb] in libnvomp.so
+=========         Host Frame: launchHXTarget.constprop.0 in nvomp_target.c:462 [0x21109] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:1190 [0x21ecb] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: accelnet_batch_target_initialize_target_model_ in accelnet_batch_target.f90:131 [0x2a574] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:75 [0x8490] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1024000 bytes at 0x7f4915e00000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_stream in cuda_enter.c:313 [0xf128] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_cuda_init_device in cuda_init.c:1667 [0x1f4e3] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_cuda_select_valid in cuda_init.c:2708 [0x22813] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_select_devid in select.c:82 [0x3cfa8] in libacchost.so
+=========         Host Frame: __pgi_uacc_cuda_get_devid_for_devnum in cuda_init.c:2523 [0x222ff] in libaccdevice.so
+=========         Host Frame: __nvomp_targetenventerstart in nvomp_target.c:2132 [0x23207] in libnvomp.so
+=========         Host Frame: accelnet_batch_target_initialize_target_model_ in accelnet_batch_target.f90:129 [0x2a3d2] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:75 [0x8490] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915efa000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_initialize_target_model_ in accelnet_batch_target.f90:129 [0x2a45f] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:75 [0x8490] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 76800 bytes at 0x7f4915efa200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: allocMem in hxMemPool.c:50 [0x45fa3] in libnvomp.so
+=========         Host Frame: hxiMemPoolCreate in hxMemPool.c:118 [0x461ab] in libnvomp.so
+=========         Host Frame: enableDevice in hxCuda.c:1405 [0x4907f] in libnvomp.so
+=========         Host Frame: launchInternal in hxCuda.c:2991 [0x4cffd] in libnvomp.so
+=========         Host Frame: hxLaunch in hxInterface.c:155 [0x45abb] in libnvomp.so
+=========         Host Frame: launchHXTarget.constprop.0 in nvomp_target.c:462 [0x21109] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:1190 [0x21ecb] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: accelnet_batch_target_initialize_target_model_ in accelnet_batch_target.f90:131 [0x2a574] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:75 [0x8490] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f0ce00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d14f] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f0d000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d267] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f0d200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d37f] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 3072 bytes at 0x7f4915f0d400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d497] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f0e000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d5af] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f0e200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d6c7] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f0e400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d7cf] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f0e600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d8df] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1024 bytes at 0x7f4915f0e800
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3da3c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f0ec00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3db54] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f0ee00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3dccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1024 bytes at 0x7f4915f0f000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3f62b] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 4096 bytes at 0x7f4915f0f400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3f780] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 4096 bytes at 0x7f4915f10400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3f8d5] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 2048 bytes at 0x7f4915f11400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fa2a] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 2560 bytes at 0x7f4915f11c00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fb77] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 5632 bytes at 0x7f4915f12600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f13c00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fd9b] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f13e00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fe72] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f14000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3ff51] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f14200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40030] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f14400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4010f] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1536 bytes at 0x7f4915f14600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40200] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f14c00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x402b9] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f14e00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x403aa] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f15000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4049b] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 3584 bytes at 0x7f4915f15200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4058c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915f16000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40648] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1536 bytes at 0x7f4915f16200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40739] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1536 bytes at 0x7f4915f16800
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: omp_target_alloc in omp.c:955 [0x3100b] in libnvomp.so
+=========         Host Frame: devicepool_get.constprop.0.isra.0 in nvomp_target.c:638 [0x212a3] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:931 [0x218a0] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: accelnet_target_kernels_run_target_batch_ in accelnet_target_kernels.f90:122 [0x45be9] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:308 [0x3b5f6] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1536 bytes at 0x7f4915f16e00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: omp_target_alloc in omp.c:955 [0x3100b] in libnvomp.so
+=========         Host Frame: devicepool_get.constprop.0.isra.0 in nvomp_target.c:638 [0x212a3] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:931 [0x218a0] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: accelnet_target_kernels_run_target_batch_ in accelnet_target_kernels.f90:232 [0x4dc3b] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:308 [0x3b5f6] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1536 bytes at 0x7f4915f17400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: omp_target_alloc in omp.c:955 [0x3100b] in libnvomp.so
+=========         Host Frame: devicepool_get.constprop.0.isra.0 in nvomp_target.c:638 [0x212a3] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:931 [0x218a0] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: accelnet_target_kernels_run_target_batch_ in accelnet_target_kernels.f90:311 [0x50f3e] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:308 [0x3b5f6] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 24576 bytes at 0x7f4915f17a00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x8534] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 6144 bytes at 0x7f4915f1da00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40200] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x8534] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 14336 bytes at 0x7f4915f1f200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4058c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x8534] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 6144 bytes at 0x7f4915f22a00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40739] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x8534] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1536 bytes at 0x7f4915f24200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3da3c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 30720 bytes at 0x7f4915f24800
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 6144 bytes at 0x7f4915f2c000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40200] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 6144 bytes at 0x7f4915f2d800
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40739] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1024 bytes at 0x7f4915f2f000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3dccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 7168 bytes at 0x7f4915f2f400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fb77] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 36864 bytes at 0x7f4915f31000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:82 [0x84f3] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 5632 bytes at 0x7f4915f3a000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3da3c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:117 [0xdcad] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 73728 bytes at 0x7f4915f3b600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3f780] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:117 [0xdcad] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 73728 bytes at 0x7f4915f4d600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3f8d5] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:117 [0xdcad] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 168960 bytes at 0x7f4915f5f600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fb77] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:117 [0xdcad] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 400896 bytes at 0x7f4915f88a00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:117 [0xdcad] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 44544 bytes at 0x7f4915fea800
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40200] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:117 [0xdcad] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 7680 bytes at 0x7f4915ff5600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40648] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:117 [0xdcad] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 2048 bytes at 0x7f4915ff7400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4010f] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:119 [0xdcc6] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ff7c00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40739] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:126 [0xdd34] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ff7e00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_initialize_target_model_ in accelnet_batch_target.f90:129 [0x2a45f] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:152 [0x168c4] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ff8000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d8df] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:154 [0x168dd] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ff8200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3da3c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:154 [0x168dd] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ff8400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3db54] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:154 [0x168dd] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ff8600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3dccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:154 [0x168dd] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 9216 bytes at 0x7f4915ff8800
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3f8d5] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:154 [0x168dd] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 14336 bytes at 0x7f4915ffac00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4058c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:154 [0x168dd] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1024 bytes at 0x7f4915ffe400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d497] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ffe800
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3d8df] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ffea00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3da3c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ffec00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3db54] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915ffee00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_model_arrays_ in accelnet_batch_target.f90:338 [0x3dccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_map_model_ in accelnet_batch_target.f90:327 [0x3bc55] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:276 [0x393ac] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915fff000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3f62b] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915fff200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fb77] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915fff400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fd9b] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915fff600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fe72] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915fff800
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3ff51] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915fffa00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4010f] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915fffc00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x402b9] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f4915fffe00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x403aa] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1024000 bytes at 0x7f491a800000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAllocHost_v2 [0x3106bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_stream in cuda_enter.c:334 [0xf158] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_cuda_init_device in cuda_init.c:1667 [0x1f4e3] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_cuda_select_valid in cuda_init.c:2708 [0x22813] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_select_devid in select.c:82 [0x3cfa8] in libacchost.so
+=========         Host Frame: __pgi_uacc_cuda_get_devid_for_devnum in cuda_init.c:2523 [0x222ff] in libaccdevice.so
+=========         Host Frame: __nvomp_targetenventerstart in nvomp_target.c:2132 [0x23207] in libnvomp.so
+=========         Host Frame: accelnet_batch_target_initialize_target_model_ in accelnet_batch_target.f90:129 [0x2a3d2] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:75 [0x8490] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 103936 bytes at 0x7f491b000000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4058c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:117 [0xdcad] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 44544 bytes at 0x7f491b019600
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40739] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:117 [0xdcad] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 589824 bytes at 0x7f491b024400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3f780] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:119 [0xdcc6] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 589824 bytes at 0x7f491b0b4400
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3f8d5] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:119 [0xdcc6] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 1351680 bytes at 0x7f491b200000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fb77] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:119 [0xdcc6] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 355840 bytes at 0x7f491b34a000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40200] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:119 [0xdcc6] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 355840 bytes at 0x7f491b3a0e00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x40739] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:119 [0xdcc6] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 512 bytes at 0x7f491b3f7c00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4049b] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 14336 bytes at 0x7f491b3f7e00
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4058c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:180 [0x1aa71] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 3202048 bytes at 0x7f491b400000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x3fccc] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:119 [0xdcc6] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+========= Leaked 830464 bytes at 0x7f491b800000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_alloc.part.0 in cuda_alloc.c:180 [0x81e2] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_alloc_v2 in alloc.c:95 [0x284c7] in libacchost.so
+=========         Host Frame: do_create in create.c:320 [0x2c158] in libacchost.so
+=========         Host Frame: __pgi_uacc_create in create.c:446 [0x2c898] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataonb in dataonb.c:560 [0x32ee3] in libacchost.so
+=========         Host Frame: accelnet_batch_target_map_buffers_ in accelnet_batch_target.f90:354 [0x4058c] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:296 [0x3a82b] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:218 [0x1b907] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:119 [0xdcc6] in test_batch_target
+=========         Host Frame: main [0x4ab0] in test_batch_target
+========= 
+ GPU checks:           59  maximum absolute E/F/W error: 
+   4.5102810375396984E-016
+ GPU batch FP64 equivalence and finite differences passed
+========= LEAK SUMMARY: 10560056 bytes leaked in 88 allocations
+========= ERROR SUMMARY: 88 errors

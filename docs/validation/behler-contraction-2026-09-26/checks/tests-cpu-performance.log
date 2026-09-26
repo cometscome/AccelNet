@@ -1,0 +1,13 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-research/build-current
+Test project /tmp/accelnet-gpu-research/build-current
+    Start  8: predictor_cpu_performance_regression
+1/2 Test  #8: predictor_cpu_performance_regression .....   Passed   46.23 sec
+    Start 36: accelnet_order_scaling_benchmark_smoke
+2/2 Test #36: accelnet_order_scaling_benchmark_smoke ...   Passed    0.02 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Label Time Summary:
+performance    =  46.24 sec*proc (2 tests)
+
+Total Test time (real) =  46.25 sec

@@ -1,0 +1,524 @@
+--- before/accelnet_batch_target.f90
++++ adopted/accelnet_batch_target.f90
+@@ -35,7 +35,8 @@
+     type :: target_workspace
+         private
+         type(target_model) :: cached
+-        real(real64), allocatable :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:), moments(:,:,:), powers(:,:,:), radial(:,:,:)
++        real(real64), allocatable :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:), moments(:,:,:), &
++            powers(:,:,:), radial(:,:,:)
+         integer, allocatable :: species(:), centers(:), offsets(:), indices(:), use_moment(:), edge_row(:)
+         real(real64), allocatable :: dr(:,:), energies(:), forces(:,:), virial(:,:), geom(:,:), edge_force(:,:)
+         integer :: growth_count = 0, upload_count = 0
+@@ -260,7 +261,7 @@
+             return
+         end if
+         mm = max(1,mm); ma = max(1,ma)
+-        allocate(self%features(8,mn,ns),self%feature_params(7,mn,ns))
++        allocate(self%features(14,mn,ns),self%feature_params(7,mn,ns))
+         self%features = 0; self%feature_params = 0
+         allocate(self%mp(4,mm,ns),self%multiplicity(mm,ns),self%polynomial(ma,ma,ns))
+         self%mp = 0; self%multiplicity = 0; self%polynomial = 0
+@@ -343,7 +344,8 @@
+     subroutine release_buffers(self)
+         class(target_workspace), intent(inout) :: self
+         if (.not. allocated(self%g)) return
+-        call map_buffers(self%cached%device,.false.,self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%radial, &
++        call map_buffers(self%cached%device,.false.,self%g,self%values,self%deriv,self%delta,self%moments, &
++            self%powers,self%radial, &
+             self%species,self%centers,self%offsets,self%indices,self%use_moment,self%dr,self%energies,self%forces,self%virial, &
+             self%geom,self%edge_row,self%edge_force)
+         deallocate(self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%radial,self%species,self%centers, &
+--- before/accelnet_target_descriptors.f90
++++ adopted/accelnet_target_descriptors.f90
+@@ -1,6 +1,8 @@
+ ! Packed non-Chebyshev features. One column per output in the CPU model.
+ ! Integer fields: kind (G1..G5=1..5, LJ6=6, LJ12=7), species pair,
+ ! cutoff type, integer zeta, local species count, angular radial group, group representative.
++! Fields 9..12: angular group, representative, next member, maximum polynomial degree.
++! Fields 13/14: equal-power representative and next equal-power member.
+ ! Real fields: Rc, eta, Rs, lambda, zeta, kappa, cutoff alpha.
+ module accelnet_target_descriptors
+     use iso_fortran_env, only: real64
+@@ -16,12 +18,12 @@
+         real(real64), allocatable, intent(out) :: fr(:,:)
+         integer, intent(out) :: status
+         character(len=*), intent(out) :: message
+-        integer :: c,j,b,o,t,n,ct,ns,groups,k
++        integer :: c,j,b,o,t,n,ct,ns,groups,k,r,last
+         real(real64) :: alpha
+         status = 1
+         message = 'OpenMP target: invalid LJ/Behler descriptor metadata'
+         n = model%num_outputs
+-        allocate(fi(8,n),fr(7,n))
++        allocate(fi(14,n),fr(7,n))
+         fi = 0; fr = 0
+         if (n < 1) return
+         if (allocated(model%lj)) then
+@@ -142,6 +144,67 @@
+             groups = groups+1
+             fi(7:8,b) = [groups,b]
+         end do
+-        status = 0; message = ''
++        ! Contract only features with identical non-angular factors and lambda.
++        ! Positive integer zeta <= 16 shares a polynomial in t=(1+lambda*c)/2.
++        ! Fractional/high zeta retains its exact power and only identical powers combine.
++        groups = 0
++        do b = 1,n
++            if (fi(7,b) == 0) cycle
++            r = 0
++            do k = 1,b-1
++                if (fi(10,k) /= k) cycle
++                if (fi(1,b) /= fi(1,k) .or. fi(7,b) /= fi(7,k)) cycle
++                if (minval(fi(2:3,b)) /= minval(fi(2:3,k))) cycle
++                if (maxval(fi(2:3,b)) /= maxval(fi(2:3,k))) cycle
++                if (fr(4,b) /= fr(4,k)) cycle
++                if (fi(5,b) > 0 .and. fi(5,b) <= 16 .and. fr(5,b) == real(fi(5,b),real64) .and. fi(12,k) > 0) then
++                    r = k
++                else if (fi(12,k) == 0 .and. fr(5,b) == fr(5,k)) then
++                    r = k
++                end if
++                if (r /= 0) exit
++            end do
++            if (r == 0) then
++                groups = groups+1
++                fi(9,b) = groups; fi(10,b) = b
++                if (fi(5,b) > 0 .and. fi(5,b) <= 16 .and. fr(5,b) == real(fi(5,b),real64)) fi(12,b) = fi(5,b)
++            else
++                fi(9:10,b) = fi(9:10,r)
++                last = r
++                do while (fi(11,last) /= 0)
++                    last = fi(11,last)
++                end do
++                fi(11,last) = b
++                if (fi(12,r) > 0) fi(12,r) = max(fi(12,r),fi(5,b))
++            end if
++        end do
++        ! A single distinct power needs no polynomial recurrence. Keep the
++        ! original power helper, and only aggregate its scalar NN coefficient.
++        do b = 1,n
++            if (fi(10,b) /= b .or. fi(12,b) == 0) cycle
++            k = fi(11,b)
++            do while (k /= 0)
++                if (fi(5,k) /= fi(5,b)) exit
++                k = fi(11,k)
++            end do
++            if (k == 0) fi(12,b) = 0
++        end do
++        ! Equal-power coefficients occupy their original first NN-gradient slot.
++        ! Fields 13/14 link only equal powers, while field 11 links the full basis.
++        do b = 1,n
++            if (fi(10,b) == 0) cycle
++            k = fi(10,b)
++            do while (k /= b)
++                if (fr(5,k) == fr(5,b)) exit
++                k = fi(11,k)
++            end do
++            fi(13,b) = k
++            if (k == b) cycle
++            do while (fi(14,k) /= 0)
++                k = fi(14,k)
++            end do
++            fi(14,k) = b
++        end do
++        status = 0; message = ''   
+     end subroutine
+ end module
+--- before/accelnet_target_kernels.f90
++++ adopted/accelnet_target_kernels.f90
+@@ -12,7 +12,8 @@
+     subroutine run_target_batch(device, meta, nodes, acts, woffset, weights, params, shift, scale, spin, &
+                                 features, feature_params, local_species, mp, multiplicity, polynomial, &
+                                 species, centers, offsets, indices, dr, &
+-                                energies, forces, virial, g, values, deriv, delta, moments, powers, radial_cache, use_moment, &
++                                energies, forces, virial, g, values, deriv, delta, moments, powers, &
++            radial_cache, use_moment, &
+                                 geom, edge_row, edge_force, nrw, natoms, nedges, stages)
+         integer, contiguous, intent(in) :: features(:,:,:),local_species(:,:)
+         real(real64), contiguous, intent(in) :: feature_params(:,:,:)
+@@ -30,7 +31,7 @@
+         real(real64), contiguous, intent(inout) :: geom(:,:), edge_force(:,:)
+         real(real64), intent(out) :: stages(3)
+         integer :: row, s, nr, na, dim, multi, version, ct, j, k, b, l, i, o, nin, nout, a, c, target
+-        integer :: entry, q, ax, ay, az, angular_neighbors, nm
++        integer :: entry, q, ax, ay, az, angular_neighbors, nm, bb
+         real(real64) :: rj, rk, fcj, fck, dfcj, sj, sk, cosine, x, t0, t1, t2, dt0, dt1, dt2
+         real(real64) :: v, dv, z, rc, ac, alpha, xscale, vc, dc, coeff, radial, fj(3), center_f(3), w(3,3)
+         real(real64) :: self0, self1, mono, u(3), grad(3), dm(3), correction, started
+@@ -200,12 +201,19 @@
+             end do
+             !$omp end target teams distribute parallel do
+         end if
+-        if (any(meta(10,:) == 1)) call generic_values(device,nrw,meta,nodes,features,feature_params, &
+-            local_species,species,centers,offsets,indices,geom,radial_cache,g)
++        if (any(meta(10,:) == 1)) then
++            if (any(features(12,:,:) > 0)) then
++                call generic_values_grouped(device,nrw,meta,nodes,features,feature_params, &
++                    local_species,species,centers,offsets,indices,geom,radial_cache,g)
++            else
++                call generic_values(device,nrw,meta,nodes,features,feature_params, &
++                    local_species,species,centers,offsets,indices,geom,radial_cache,g)
++            end if
++        end if
+         stages(1) = omp_get_wtime()-started
+         started = omp_get_wtime()
+         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+-        !$omp& private(s,dim,l,nin,nout,o,j,i,z,v,b,q,nr,na,multi,entry,self0,self1)
++        !$omp& private(s,dim,l,nin,nout,o,j,i,z,v,b,q,nr,na,multi,entry,self0,self1,bb)
+         do row = 1, nrw
+             s = species(centers(row)); dim = nodes(1,s)
+             ! NN work is laid out with batch rows contiguous, including networks
+@@ -246,6 +254,20 @@
+             do b = 1, dim
+                 g(row,b) = -delta(row,b,1)*scale(b,s)/params(4,s)
+             end do
++            ! Reuse NN gradients for equal-power coefficient sums. Distinct
++            ! powers already have the desired coefficient, so leave them in place.
++            ! No additional array, allocation, transfer, or kernel launch.
++            if (meta(10,s) == 1) then
++                do b=1,dim
++                    if (features(13,b,s) /= b .or. features(14,b,s) == 0) cycle
++                    v=g(row,b); bb=features(14,b,s)
++                    do while (bb /= 0)
++                        v=v+g(row,bb)
++                        bb=features(14,bb,s)
++                    end do
++                    g(row,b)=v
++                end do
++            end if
+             nr = meta(1,s); na = meta(2,s); multi = meta(3,s)
+             if (use_moment(row) == 1) then
+                 do q = 1, na
+@@ -450,6 +472,87 @@
+         !$omp end target teams distribute parallel do
+     end subroutine
+ 
++    ! Share pair geometry/radials within each angular group. Integer power sums
++    ! remain local to the team, then each descriptor is written once. Stripping
++    ! OpenMP directives gives the identical serial numerical loop.
++    subroutine generic_values_grouped(device,nrw,meta,nodes,features,fp,local_species,species,centers,offsets, &
++            indices,geom,radial_cache,g)
++        integer, intent(in) :: device,nrw
++        integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),features(:,:,:),local_species(:,:)
++        integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:)
++        real(real64), contiguous, intent(in) :: fp(:,:,:),radial_cache(:,:,:),geom(:,:)
++        real(real64), contiguous, intent(inout) :: g(:,:)
++        integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group,bb,degree,d
++        real(real64) :: total,v,dv,gradient(3),qjk,dqjk,ujk(3),cosine,total12,v12,dv12,t,power,hvalues(0:16)
++        !$omp target teams distribute collapse(2) thread_limit(32) device(device) if(device /= omp_get_initial_device()) &
++        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g) &
++        !$omp& private(s,j,k,tj,tk,kind,t1,t2,group,bb,degree,d,total,v,dv,gradient,qjk,dqjk,ujk,cosine, &
++        !$omp& total12,v12,dv12,t,power,hvalues)
++        do row = 1,nrw
++            do b = 1,size(features,2)
++                s = species(centers(row))
++                if (meta(10,s) /= 1 .or. b > nodes(1,s)) cycle
++                kind = features(1,b,s); t1 = features(2,b,s); t2 = features(3,b,s)
++                if (kind == 7) cycle
++                if (features(10,b,s) /= 0 .and. features(10,b,s) /= b) cycle
++                degree = features(12,b,s)
++                hvalues = 0
++                group = features(7,b,s)
++                total = 0; total12 = 0
++                !$omp parallel do private(j,k,tj,tk,d,v,dv,v12,dv12,qjk,dqjk,ujk,cosine,t,power) &
++                !$omp& reduction(+:total,total12,hvalues)
++                do j = offsets(row),offsets(row+1)-1
++                    tj = local_species(species(indices(j)),s)
++                    if (kind /= 4 .and. kind /= 5) then
++                        if (tj /= t1) cycle
++                        if (kind == 6) then
++                            call generic_lj(geom(4,j),features(4,b,s),fp(:,b,s),.false.,v,v12,dv,dv12)
++                            total12 = total12+v12
++                        else
++                            v = generic_radial_value(kind,geom(4,j),features(4,b,s),fp(:,b,s))
++                        end if
++                        total = total+v
++                    else
++                        if (tj /= t1 .and. tj /= t2) cycle
++                        do k = j+1,offsets(row+1)-1
++                            tk = local_species(species(indices(k)),s)
++                            if (.not. ((tj == t1 .and. tk == t2) .or. (tj == t2 .and. tk == t1))) cycle
++                            call generic_pair_geometry(features(:,b,s),fp(:,b,s),geom(1:3,j),geom(1:3,k), &
++                                geom(4,j),geom(4,k),cosine,qjk,dqjk,ujk,.false.)
++                            if (qjk == 0) cycle
++                            v = 2*radial_cache(j,group,1)*radial_cache(k,group,1)*qjk
++                            if (degree > 0) then
++                                t = 0.5_real64*(1+fp(4,b,s)*cosine); power = 1
++                                do d=1,degree
++                                    power = power*t
++                                    hvalues(d) = hvalues(d)+v*power
++                                end do
++                            else
++                                total = total+v*angular_value(cosine,fp(4,b,s),fp(5,b,s),features(5,b,s))
++                            end if
++                        end do
++                    end if
++                end do
++                !$omp end parallel do
++                if (features(10,b,s) == b) then
++                    bb = b
++                    do while (bb /= 0)
++                        if (degree > 0) then
++                            g(row,bb) = hvalues(features(5,bb,s))
++                        else
++                            g(row,bb) = total
++                        end if
++                        bb = features(11,bb,s)
++                    end do
++                else
++                    g(row,b) = total
++                end if
++                if (kind == 6) g(row,b+1) = total12
++            end do
++        end do
++        !$omp end target teams distribute
++    end subroutine
++
+     subroutine generic_forces(device,nedges,meta,nodes,features,fp,local_species,species,centers,offsets, &
+                               indices,geom,edge_row,radial_cache,g,edge_force)
+         integer, intent(in) :: device,nedges
+@@ -457,12 +560,22 @@
+         integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:),edge_row(:)
+         real(real64), contiguous, intent(in) :: fp(:,:,:),radial_cache(:,:,:),geom(:,:),g(:,:)
+         real(real64), contiguous, intent(inout) :: edge_force(:,:)
+-        integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group
+-        real(real64) :: f(3),v,dv,gradient(3),v12,dv12,radial_force
++        integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group,degree,d,c,bb
++        real(real64) :: f(3),v,dv,gradient(3),gradient_k(3),v12,dv12,radial_force,hcoeff(0:16)
++        logical :: pair_once
++        ! CPU serial builds benefit from evaluating both sides once. GPU edge
++        ! ownership avoids contended force atomics; all scalar formulas are shared.
++        pair_once = device == omp_get_initial_device() .and. any(features(10,:,:) > 0)
++        if (pair_once) then
++            do j=1,nedges
++                row=edge_row(j); s=species(centers(row))
++                if (meta(10,s) == 1) edge_force(:,j)=0
++            end do
++        end if
+         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
+-        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
++        !$omp& firstprivate(pair_once) map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
+         !$omp& geom,edge_row,radial_cache,g,edge_force) &
+-        !$omp& private(row,b,s,k,tj,tk,kind,t1,t2,group,f,v,dv,gradient,v12,dv12,radial_force)
++        !$omp& private(row,b,s,k,tj,tk,kind,t1,t2,group,degree,d,c,bb,f,v,dv,gradient,gradient_k,v12,dv12,radial_force,hcoeff)
+         do j = 1,nedges
+             row = edge_row(j); s = species(centers(row))
+             if (meta(10,s) /= 1) cycle
+@@ -470,6 +583,7 @@
+             do b = 1,nodes(1,s)
+                 kind = features(1,b,s); t1 = features(2,b,s); t2 = features(3,b,s)
+                 if (kind == 7) cycle
++                if (features(10,b,s) /= 0 .and. features(10,b,s) /= b) cycle
+                 group = features(7,b,s)
+                 if (kind /= 4 .and. kind /= 5) then
+                     if (tj /= t1) cycle
+@@ -482,18 +596,43 @@
+                     end if
+                 else
+                     if (tj /= t1 .and. tj /= t2) cycle
+-                    do k = offsets(row),offsets(row+1)-1
++                    degree = features(12,b,s)
++                    hcoeff(:degree) = 0
++                    if (degree > 0) then
++                        bb=b
++                        do while (bb /= 0)
++                            if (features(13,bb,s) == bb) hcoeff(features(5,bb,s))=g(row,bb)
++                            bb=features(11,bb,s)
++                        end do
++                    else
++                        hcoeff(0)=g(row,b)
++                    end if
++                    do k = merge(j+1,offsets(row),pair_once),offsets(row+1)-1
+                         if (k == j) cycle
+                         tk = local_species(species(indices(k)),s)
+                         if (.not. ((tj == t1 .and. tk == t2) .or. (tj == t2 .and. tk == t1))) cycle
+-                        call generic_pair_cached(features(:,b,s),fp(:,b,s),geom(1:3,j),geom(1:3,k), &
++                        call generic_pair_contracted(features(:,b,s),fp(:,b,s),geom(1:3,j),geom(1:3,k), &
+                             geom(4,j),geom(4,k),radial_cache(j,group,1),radial_cache(k,group,1), &
+-                            radial_cache(j,group,2),gradient)
+-                        f = f+g(row,b)*gradient
++                            radial_cache(j,group,2),radial_cache(k,group,2),hcoeff,degree,pair_once,gradient,gradient_k)
++                        f = f+gradient
++                        if (pair_once) then
++                            do c=1,3
++                                !$omp atomic update
++                                edge_force(c,k) = edge_force(c,k)+gradient_k(c)
++                            end do
++                        end if
+                     end do
+                 end if
+             end do
+-            edge_force(:,j) = f+radial_force*geom(1:3,j)
++            f = f+radial_force*geom(1:3,j)
++            if (pair_once) then
++                do c=1,3
++                    !$omp atomic update
++                    edge_force(c,j) = edge_force(c,j)+f(c)
++                end do
++            else
++                edge_force(:,j) = f
++            end if
+         end do
+         !$omp end target teams distribute parallel do
+     end subroutine
+--- before/accelnet_target_math.f90
++++ adopted/accelnet_target_math.f90
+@@ -9,7 +9,8 @@
+     implicit none
+     private
+     real(real64), parameter :: PI_ACCELNET = 3.14159265358979_real64
+-    public :: generic_radial, generic_pair, generic_radial_value, generic_pair_value, generic_pair_cached, generic_lj
++    public :: generic_pair_geometry, generic_pair_contracted, generic_pair_value
++    public :: generic_radial, generic_radial_value, generic_lj
+     public :: angular_power, angular_value
+     public :: target_cutoff_value, target_cutoff_derivative, target_activate, target_activation_derivative
+ contains
+@@ -83,53 +84,6 @@
+         value = fc*h; derivative = dfc*h+fc*dh
+     end subroutine
+ 
+-    ! Unordered G4/G5 pair. derivative is with respect to the first neighbor.
+-    ! The force kernel visits the reverse pair to obtain the second derivative.
+-    pure subroutine generic_pair(f, p, uj, uk, rj, rk, value, derivative)
+-        !$omp declare target
+-        integer, intent(in) :: f(:)
+-        real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk
+-        real(real64), intent(out) :: value,derivative(3)
+-        real(real64) :: qj,qk,dqj,dqk,qjk,dqjk,rjk,ujk(3),cosine,a,da,product
+-        value = 0; derivative = 0
+-        if (rj <= 1e-12_real64 .or. rk <= 1e-12_real64 .or. rj > p(1) .or. rk > p(1)) return
+-        call generic_radial(2,rj,f(4),p,qj,dqj)
+-        call generic_radial(2,rk,f(4),p,qk,dqk)
+-        qjk = 1; dqjk = 0; ujk = 0
+-        if (f(1) == 4) then
+-            ujk = rk*uk-rj*uj; rjk = sqrt(sum(ujk**2))
+-            if (rjk <= 1e-12_real64 .or. rjk > p(1)) return
+-            ujk = ujk/rjk
+-            call generic_radial(2,rjk,f(4),p,qjk,dqjk)
+-        end if
+-        cosine = max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
+-        call angular_power(cosine,p(4),p(5),f(5),0.5_real64*p(5)*p(4),a,da)
+-        product = qj*qk*qjk
+-        value = 2*a*product
+-        derivative = 2*(da*product*(uk-cosine*uj)/rj+a*qk*(dqj*qjk*uj-qj*dqjk*ujk))
+-    end subroutine
+-    pure subroutine generic_pair_cached(f, p, uj, uk, rj, rk, qj, qk, dqj, derivative)
+-        !$omp declare target
+-        integer, intent(in) :: f(:)
+-        real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk
+-        real(real64), intent(in) :: qj,qk,dqj
+-        real(real64), intent(out) :: derivative(3)
+-        real(real64) :: qjk,dqjk,rjk,ujk(3),cosine,a,da,product
+-        derivative = 0
+-        if (rj <= 1e-12_real64 .or. rk <= 1e-12_real64 .or. rj > p(1) .or. rk > p(1)) return
+-        qjk = 1; dqjk = 0; ujk = 0
+-        if (f(1) == 4) then
+-            ujk = rk*uk-rj*uj; rjk = sqrt(sum(ujk**2))
+-            if (rjk <= 1e-12_real64 .or. rjk > p(1)) return
+-            ujk = ujk/rjk
+-            call generic_radial(2,rjk,f(4),p,qjk,dqjk)
+-        end if
+-        cosine = max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
+-        call angular_power(cosine,p(4),p(5),f(5),0.5_real64*p(5)*p(4),a,da)
+-        product = qj*qk*qjk
+-        derivative = 2*(da*product*(uk-cosine*uj)/rj+a*qk*(dqj*qjk*uj-qj*dqjk*ujk))
+-    end subroutine
+-
+     ! Value-only Behler radial terms; LJ uses the fused 6/12 helper.
+     pure real(real64) function generic_radial_value(kind,r,ct,p) result(value)
+         !$omp declare target
+@@ -146,21 +100,6 @@
+         value = target_cutoff_value(r,p(1),ct,p(7))*h
+     end function
+ 
+-    pure real(real64) function generic_pair_value(f,p,uj,uk,rj,rk,qj,qk) result(value)
+-        !$omp declare target
+-        integer, intent(in) :: f(:)
+-        real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk,qj,qk
+-        real(real64) :: qjk,rjk,cosine
+-        value = 0
+-        if (rj <= 1e-12_real64 .or. rk <= 1e-12_real64 .or. rj > p(1) .or. rk > p(1)) return
+-        qjk = 1
+-        if (f(1) == 4) then
+-            rjk = sqrt(sum((rk*uk-rj*uj)**2))
+-            qjk = generic_radial_value(2,rjk,f(4),p)
+-        end if
+-        cosine = max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
+-        value = 2*angular_value(cosine,p(4),p(5),f(5))*qj*qk*qjk
+-    end function
+ 
+     ! LJ columns are emitted in adjacent 6/12 pairs by the validated packer.
+     pure subroutine generic_lj(r,ct,p,force,v,v12,dv,dv12)
+@@ -180,4 +119,72 @@
+             dv=ir6*(dfc-6*fc/r); dv12=ir12*(dfc-12*fc/r)
+         end if
+     end subroutine
++
++    pure subroutine generic_pair_geometry(f,p,uj,uk,rj,rk,cosine,qjk,dqjk,ujk,force)
++        !$omp declare target
++        integer, intent(in) :: f(:)
++        real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk
++        logical, intent(in) :: force
++        real(real64), intent(out) :: cosine,qjk,dqjk,ujk(3)
++        real(real64) :: rjk
++        cosine=0; qjk=0; dqjk=0; ujk=0
++        if (rj <= 1e-12_real64 .or. rk <= 1e-12_real64 .or. rj > p(1) .or. rk > p(1)) return
++        qjk=1
++        if (f(1) == 4) then
++            ujk=rk*uk-rj*uj; rjk=sqrt(sum(ujk**2))
++            if (rjk <= 1e-12_real64 .or. rjk > p(1)) then
++                qjk=0; return
++            end if
++            if (force) then
++                ujk=ujk/rjk
++                call generic_radial(2,rjk,f(4),p,qjk,dqjk)
++            else
++                qjk=generic_radial_value(2,rjk,f(4),p)
++            end if
++        end if
++        cosine=max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
++    end subroutine
++
++    pure subroutine generic_pair_contracted(f,p,uj,uk,rj,rk,qj,qk,dqj,dqk,coeff,degree,both,gradient,gradient_k)
++        !$omp declare target
++        logical, intent(in) :: both
++        integer, intent(in) :: f(:),degree
++        real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk,qj,qk,dqj,dqk,coeff(0:16)
++        real(real64), intent(out) :: gradient(3),gradient_k(3)
++        real(real64) :: cosine,qjk,dqjk,ujk(3),a,da,t,product
++        integer :: d
++        gradient=0; gradient_k=0
++        call generic_pair_geometry(f,p,uj,uk,rj,rk,cosine,qjk,dqjk,ujk,.true.)
++        if (qjk == 0) return
++        if (degree > 0) then
++            t=0.5_real64*(1+p(4)*cosine)
++            a=coeff(degree); da=0
++            do d=degree-1,0,-1
++                da=da*t+a
++                a=a*t+coeff(d)
++            end do
++            da=da*0.5_real64*p(4)
++        else
++            call angular_power(cosine,p(4),p(5),f(5),0.5_real64*p(5)*p(4),a,da)
++            a=a*coeff(0); da=da*coeff(0)
++        end if
++        product=qj*qk*qjk
++        gradient=2*(da*product*(uk-cosine*uj)/rj+a*qk*(dqj*qjk*uj-qj*dqjk*ujk))
++        if (both) gradient_k=2*(da*product*(uj-cosine*uk)/rk+a*qj*(dqk*qjk*uk+qk*dqjk*ujk))
++    end subroutine
++    pure real(real64) function generic_pair_value(f,p,uj,uk,rj,rk,qj,qk) result(value)
++        !$omp declare target
++        integer, intent(in) :: f(:)
++        real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk,qj,qk
++        real(real64) :: qjk,rjk,cosine
++        value = 0
++        if (rj <= 1e-12_real64 .or. rk <= 1e-12_real64 .or. rj > p(1) .or. rk > p(1)) return
++        qjk = 1
++        if (f(1) == 4) then
++            rjk = sqrt(sum((rk*uk-rj*uj)**2))
++            qjk = generic_radial_value(2,rjk,f(4),p)
++        end if
++        cosine = max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
++        value = 2*angular_value(cosine,p(4),p(5),f(5))*qj*qk*qjk
++    end function
+ end module

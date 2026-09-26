@@ -1,0 +1,43 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-research/build-nvhpc
+Test project /tmp/accelnet-gpu-research/build-nvhpc
+      Start  9: predictor_target_equivalence
+ 1/17 Test  #9: predictor_target_equivalence ............   Passed    3.98 sec
+      Start 10: predictor_target_direct_equivalence
+ 2/17 Test #10: predictor_target_direct_equivalence .....   Passed    3.83 sec
+      Start 11: predictor_target_moment_equivalence
+ 3/17 Test #11: predictor_target_moment_equivalence .....   Passed    3.98 sec
+      Start 12: predictor_target_reject_offset
+ 4/17 Test #12: predictor_target_reject_offset ..........   Passed    0.39 sec
+      Start 13: predictor_target_reject_monotonic
+ 5/17 Test #13: predictor_target_reject_monotonic .......   Passed    0.39 sec
+      Start 14: predictor_target_reject_target
+ 6/17 Test #14: predictor_target_reject_target ..........   Passed    0.37 sec
+      Start 15: predictor_target_reject_center
+ 7/17 Test #15: predictor_target_reject_center ..........   Passed    0.36 sec
+      Start 16: predictor_target_reject_species
+ 8/17 Test #16: predictor_target_reject_species .........   Passed    0.37 sec
+      Start 17: predictor_target_reject_shape
+ 9/17 Test #17: predictor_target_reject_shape ...........   Passed    0.35 sec
+      Start 18: predictor_target_reject_unsupported
+10/17 Test #18: predictor_target_reject_unsupported .....   Passed    0.00 sec
+      Start 19: predictor_target_reject_activation
+11/17 Test #19: predictor_target_reject_activation ......   Passed    0.00 sec
+      Start 20: predictor_target_reject_version10
+12/17 Test #20: predictor_target_reject_version10 .......   Passed    0.33 sec
+      Start 21: predictor_target_reject_uninitialized
+13/17 Test #21: predictor_target_reject_uninitialized ...   Passed    0.00 sec
+      Start 22: predictor_target_reject_host_fallback
+14/17 Test #22: predictor_target_reject_host_fallback ...   Passed    0.00 sec
+      Start 43: predictor_target_aenet_golden
+15/17 Test #43: predictor_target_aenet_golden ...........   Passed    2.88 sec
+      Start 44: predictor_target_aenet_mode1
+16/17 Test #44: predictor_target_aenet_mode1 ............   Passed    3.88 sec
+      Start 45: predictor_target_aenet_mode2
+17/17 Test #45: predictor_target_aenet_mode2 ............   Passed    2.83 sec
+
+100% tests passed, 0 tests failed out of 17
+
+Label Time Summary:
+gpu    =  23.96 sec*proc (17 tests)
+
+Total Test time (real) =  23.98 sec

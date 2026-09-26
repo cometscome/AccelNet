@@ -1,0 +1,12 @@
+========= COMPUTE-SANITIZER
+Failing in Thread:1
+Accelerator Fatal Error: call to cuMemFree returned error 4 (unknown): Deinitialized
+ File: nvomp_target.c
+ Function: finalizeDeviceMemoryPool:331
+ Line: 135
+
+double free or corruption (fasttop)
+========= Error: process didn't terminate successfully
+========= Target application returned an error
+========= LEAK SUMMARY: 0 bytes leaked in 0 allocations
+========= ERROR SUMMARY: 0 errors

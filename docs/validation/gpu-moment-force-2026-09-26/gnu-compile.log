@@ -1,0 +1,6 @@
+[ 36%] Built target AccelNetDescriptors
+[ 73%] Built target AccelNetPredictor
+Scanning dependencies of target AccelNetTarget
+[ 78%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetTarget.dir/src/accelnet_target_kernels.f90.o
+[ 84%] Linking Fortran static library ../lib/libaccelnet_target.a
+[100%] Built target AccelNetTarget

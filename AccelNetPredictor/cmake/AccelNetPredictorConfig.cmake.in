@@ -8,3 +8,9 @@ if(TARGET AccelNetPredictor::AccelNetPredictor AND NOT TARGET AccelNet::AccelNet
     set_property(TARGET AccelNet::AccelNet PROPERTY INTERFACE_LINK_LIBRARIES
         AccelNetPredictor::AccelNetPredictor)
 endif()
+
+if(TARGET AccelNetPredictor::AccelNetTarget AND NOT TARGET AccelNet::Target)
+    add_library(AccelNet::Target INTERFACE IMPORTED)
+    set_property(TARGET AccelNet::Target PROPERTY INTERFACE_LINK_LIBRARIES
+        AccelNetPredictor::AccelNetTarget)
+endif()

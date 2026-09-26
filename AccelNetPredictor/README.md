@@ -1,8 +1,17 @@
 # AccelNetPredictor
 
 Fortran energy/force predictor built on the single canonical
-`AccelNetDescriptors` implementation. No descriptor source is copied into this
-package.
+`AccelNetDescriptors` CPU implementation. The optional target backend shares
+scalar formulas with it and provides batch kernels that run on either the GPU
+or the CPU, checked against the established CPU evaluator.
+
+The optional [batch API and CPU performance checks](../docs/batch-api.md) provide
+CSR-based CPU evaluation with reusable work buffers. The separate
+[OpenMP target backend](../docs/openmp-target.md) evaluates Chebyshev, LJ and Behler G1–G5 models in FP64,
+with explicit host execution for numerical and performance comparisons.
+The default CPU batch path uses a serial compilation of those same kernels for
+Chebyshev direct and moment. `evaluate_batch_reference` retains the former CPU
+batch evaluator. Object and atomic evaluation APIs remain unchanged.
 
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release

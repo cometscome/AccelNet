@@ -1,0 +1,17 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-stage23/build-gnu-target
+Test project /tmp/accelnet-gpu-stage23/build-gnu-target
+    Start 17: predictor_target_reject_unsupported
+1/4 Test #17: predictor_target_reject_unsupported .....   Passed    0.10 sec
+    Start 18: predictor_target_reject_activation
+2/4 Test #18: predictor_target_reject_activation ......   Passed    0.10 sec
+    Start 20: predictor_target_reject_uninitialized
+3/4 Test #20: predictor_target_reject_uninitialized ...   Passed    0.10 sec
+    Start 21: predictor_target_reject_host_fallback
+4/4 Test #21: predictor_target_reject_host_fallback ...   Passed    0.11 sec
+
+100% tests passed, 0 tests failed out of 4
+
+Label Time Summary:
+gpu    =   0.42 sec*proc (4 tests)
+
+Total Test time (real) =   0.42 sec

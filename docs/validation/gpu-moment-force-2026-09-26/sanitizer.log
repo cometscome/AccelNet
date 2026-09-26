@@ -1,0 +1,5 @@
+========= COMPUTE-SANITIZER
+ GPU checks:           61  maximum absolute E/F/W error: 
+   7.8409501114151681E-016
+ GPU batch FP64 equivalence and finite differences passed
+========= ERROR SUMMARY: 0 errors

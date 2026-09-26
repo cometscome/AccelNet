@@ -1,0 +1,42 @@
+{
+  "gnu-before": {
+    "path": "/tmp/accelnet-cheb-common/before-gnu/accelnet-target-benchmark",
+    "sha256": "60726bb3c4fb5e20d13ffba311e67432c99b05b884f5f8ffbf4d5b4d146954c0"
+  },
+  "gnu-geometry": {
+    "path": "/tmp/accelnet-cheb-common/geometry-gnu-bin/accelnet-target-benchmark",
+    "sha256": "e325c7bd7c7454094b961cf82778e70885752466c848a5a18a459050d00815b3"
+  },
+  "nvhpc-before": {
+    "path": "/tmp/accelnet-cheb-common/before-nvhpc/accelnet-target-benchmark",
+    "sha256": "eed137bbb26fab2b74e29359d6c6fbd4d2fb7b17887be09285de98e3a0ab3860"
+  },
+  "gpu-before": {
+    "path": "/tmp/accelnet-cheb-common/before-gpu/accelnet-target-benchmark",
+    "sha256": "890d743f5cc408c968540937eb545e6e37bd0841eb26fddb76c122a835f36776"
+  },
+  "gpu-geometry": {
+    "path": "/tmp/accelnet-cheb-common/geometry-gpu-bin/accelnet-target-benchmark",
+    "sha256": "6edf004a1d26003eaf9918308f6b3fe7e195b957f4aedaf1d37f398276efcd6e"
+  },
+  "gnu-after": {
+    "path": "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+    "sha256": "10f6b79a5d6768bfc7e24deacdc4add1463ed1eefa063d16e9c0c0f21ed88dfe"
+  },
+  "nvhpc-after": {
+    "path": "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+    "sha256": "18096bac6f46b4a67d947103748a71e4d28140c79b52d0b45fca005386de6728"
+  },
+  "gpu-after": {
+    "path": "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+    "sha256": "b2d337fd484f7da264d901bab5e44f3d889d527f510736ded29d1d7d20f5e17b"
+  },
+  "lammps-before": {
+    "path": "/tmp/accelnet-cheb-common/lmp-before",
+    "sha256": "2676d486a81bc903fb08787b76c0d1bb84dcac365e428e14327659a93a24437f"
+  },
+  "lammps-after": {
+    "path": "/tmp/accelnet-lammps-gpu/build/lmp",
+    "sha256": "d7a93267303946c00e5c21c72c73f99760733c6205525df1b4db969bc4fc408c"
+  }
+}
