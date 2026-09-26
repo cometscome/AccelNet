@@ -1,0 +1,8 @@
+flat32 h100 512 g4-distinct 1.345 0.078
+flat32 h100 512 g4-series 1.491 0.036
+flat32 h100 4096 g4-distinct 4.682 0.047
+flat32 h100 4096 g4-series 5.327 0.022
+flat32 blackwell 512 g4-distinct 3.06 0.246
+flat32 blackwell 512 g4-series 2.84 0.096
+flat32 blackwell 4096 g4-distinct 12.567 0.126
+flat32 blackwell 4096 g4-series 11.154 0.047

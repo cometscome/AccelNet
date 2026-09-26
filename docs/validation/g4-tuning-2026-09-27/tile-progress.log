@@ -1,0 +1,16 @@
+tile8 h100 512 g4-distinct 3.53 0.205
+tile8 h100 512 g4-series 17.356 0.416
+tile8 h100 4096 g4-distinct 4.265 0.043
+tile8 h100 4096 g4-series 27.232 0.115
+tile8 blackwell 512 g4-distinct 9.397 0.758
+tile8 blackwell 512 g4-series 24.978 0.83
+tile8 blackwell 4096 g4-distinct 9.715 0.098
+tile8 blackwell 4096 g4-series 27.602 0.116
+tile8 gnu 512 g4-distinct 9.402 0.601
+tile8 gnu 512 g4-series 26.525 0.84
+tile8 gnu 4096 g4-distinct 77.382 0.62
+tile8 gnu 4096 g4-series 228.143 0.905
+tile8 nvhpc 512 g4-distinct 6.951 0.561
+tile8 nvhpc 512 g4-series 24.057 0.821
+tile8 nvhpc 4096 g4-distinct 56.733 0.568
+tile8 nvhpc 4096 g4-series 204.769 0.878

@@ -1,0 +1,16 @@
+local-jac h100 4096 g4-distinct 4.247 0.043
+local-jac h100 4096 g4-series 28.0 0.118
+local-jac blackwell 4096 g4-distinct 10.023 0.101
+local-jac blackwell 4096 g4-series 34.111 0.143
+local-jac gnu 4096 g4-distinct 76.483 0.611
+local-jac gnu 4096 g4-series 216.814 0.856
+local-jac nvhpc 4096 g4-distinct 55.536 0.558
+local-jac nvhpc 4096 g4-series 198.504 0.829
+pair-parallel h100 4096 g4-distinct 8.437 0.085
+pair-parallel h100 4096 g4-series 36.708 0.153
+pair-parallel blackwell 4096 g4-distinct 13.622 0.137
+pair-parallel blackwell 4096 g4-series 44.05 0.185
+pair-parallel gnu 4096 g4-distinct 76.051 0.607
+pair-parallel gnu 4096 g4-series 224.131 0.878
+pair-parallel nvhpc 4096 g4-distinct 57.488 0.579
+pair-parallel nvhpc 4096 g4-series 209.854 0.876

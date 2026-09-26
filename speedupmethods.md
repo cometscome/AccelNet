@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.4 — 2026-09-27 (JST).**
+**Document version 1.5 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -18,7 +18,7 @@ not bitwise equality.
 | AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | `gpu` checkpoint **`cd00106`**, followed by the common G4 value/Jacobian changes in Section 15; the earlier base commit alone does not identify this implementation |
+| Optimization source revision | `gpu` checkpoint **`2bcc603`** (revision 1.4), followed by the G4 scheduling and scalar-cache changes in Section 16; source hashes and the implementation diff identify the measured revision 1.5 |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -34,7 +34,7 @@ record. Each validation report and its JSON files specify the commands and input
 used in that measurement campaign.
 
 The validation archives retain the original hashes and descriptions of the
-pre-commit working trees used for their measurements. The `gpu` checkpoint
+pre-commit working trees used for their measurements. The initial `gpu` checkpoint `cd00106`
 collects the implementation, tests, and records; commit preparation only removed
 trailing whitespace from one source line and added Python-cache ignore rules.
 
@@ -72,7 +72,7 @@ are recorded in the [G4 report](docs/validation/g4-common-2026-09-27/README.md).
 | LJ and Behler G1–G5 | GPU support implemented; G4/G5 use direct pairs; forced GPU G5 moments are rejected |
 | Generic radial caching and LJ component fusion | Implemented in the common serial CPU/GPU source; measurements in Section 12 |
 | Behler angular coefficient contraction and differentiated Horner | Retained for G5; the former G4 path in Sections 13–14 is superseded by Section 15 |
-| G4 value/Jacobian evaluation | One shared center → unordered pair → descriptor traversal for values and both derivatives; force contraction reads the saved Jacobian; Section 15 |
+| G4 value/Jacobian evaluation | Shared value/derivative loop with scalar caches and disjoint descriptor owners; CPU uses one owner, GPU uses a flat center/owner launch; force contraction reads the saved Jacobian; Sections 15–16 |
 | LAMMPS GPU package integration | CUDA adapter plus Fortran OpenMP target; AMD/HIP/OpenCL interoperability is not implemented |
 
 The default CPU shared path applies to the **CSR batch API when every element has
@@ -1255,3 +1255,139 @@ Validation passed 135 descriptor cases, the GNU/NVHPC and H100/Blackwell suites,
 memcheck passed three selected benchmark smoke cases. The common one-traversal
 source is retained, and a separate `lmp-g4-fused` executable preserves this
 measured candidate alongside the previous installed `lmp`.
+
+## 16. G4 scalar caches and flat descriptor ownership (revision 1.5)
+
+Revision 1.4 proved that a shared value/Jacobian traversal could improve the small
+CPU G4 models, but its GPU implementation regressed. Revision 1.5 retains the
+same value/derivative mathematics and saved-Jacobian force contraction, and
+changes the reuse and execution layout. The reference checkpoint is `2bcc603`;
+the older two-traversal reference remains `cd00106` (revision 1.3).
+
+### 16.1 Scalar pair reuse
+
+For each matching species-pair list, retain the last cutoff, exponential, radial
+group, and angular group identities and their computed values in scalar locals.
+Recompute a factor when its identity changes. The radial group caches
+
+$$
+P=q_jq_kq_{jk},\qquad
+\mathbf R_j=q'_j\mathbf u_jq_kq_{jk}-q_jq_kq'_{jk}\mathbf u_{jk},\qquad
+\mathbf R_k=q_jq'_k\mathbf u_kq_{jk}+q_jq_kq'_{jk}\mathbf u_{jk}.
+$$
+
+With $A=[(1+\lambda c)/2]^\zeta$ and $A'=dA/dc$, each descriptor contributes
+
+$$
+g_b=2AP,\qquad
+\nabla_jg_b=2A'P\,\frac{\mathbf u_k-c\mathbf u_j}{r_j}+2A\mathbf R_j,\qquad
+\nabla_kg_b=2A'P\,\frac{\mathbf u_j-c\mathbf u_k}{r_k}+2A\mathbf R_k.
+$$
+
+The pair loop visits only its matching descriptor list; it no longer scans all
+G4 descriptors to fill global cutoff/exponential/radial scratch for unrelated
+species pairs. Reuse is consecutive within an owner. Interleaved groups are
+recomputed, so arbitrary model ordering is supported without a stale cache.
+Cutoff type/alpha, eta/shift, and the original real angular power remain separate
+keys. A cutoff-excluded representative need not run before a later descriptor:
+the current descriptor initializes its own required factor.
+
+Removing `g4_scratch` saves $8\cdot12DN$ bytes of resident storage and the same
+host reservation: **18 MiB at 4096 atoms and 48 inputs**. The saved Jacobian
+$J_{\mu b e}$ remains; its storage is $8\cdot3DE$ bytes. This is not a
+Jacobian-free implementation.
+
+### 16.2 One owner per descriptor column
+
+Flatten each species-pair descriptor list into packed positions $p=1,\ldots,D_4$.
+Fields 19–21 store the descriptor index at a packed position and each list's
+start/count; the packed integer extent becomes 21. For owner $\ell$ among $L$
+owners, assign
+
+$$
+\ell=(p-1)\bmod L.
+$$
+
+Initialization and every pair visit use this same assignment. Each $(i,b)$
+descriptor value and every edge derivative in its Jacobian column have one
+writer. Consequently the G4 value/Jacobian kernel needs **no atomic additions**
+and no synchronization inside the pair loop. The subsequent force/virial scatter
+still uses its existing atomics. Models wider than $L$ assign multiple columns
+to each owner; there is no descriptor-count limit of 32.
+
+The flat work index is
+
+$$
+t=(i-1)L+\ell,\qquad t=0,\ldots,NL-1.
+$$
+
+One `target teams distribute parallel do` distributes these work items, with
+`thread_limit(32)`. A small preceding kernel builds immutable species-pair heads.
+The CPU compiled without OpenMP uses $L=1$. The GPU chooses a power of two up to
+32, increasing it until it covers the largest matching G4 list and exposes at
+least 16384 center/owner work items, or reaches the cap. This portable launch
+heuristic was measured on H100 and Blackwell; it is not a promise of optimality
+on every GPU or model. An OpenMP conditional source line/block changes only the
+launch count. There is one numerical loop, with no separate CPU/GPU G4 formula.
+
+GPU owners independently compute pair geometry and maintain their own scalar
+caches. This intentionally trades some repeated geometry/radial work for more
+parallelism and nearby descriptor-column writes. Each descriptor's value and
+both derivatives are still computed together; the force stage never revisits
+G4 pairs. The CPU retains the one-owner, pair-first sharing of geometry across
+all matching descriptors.
+
+### 16.3 Experiments that informed the layout
+
+The [validation report](docs/validation/g4-tuning-2026-09-27/README.md) preserves
+successful and rejected trials, commands, raw timings, compiler resource reports,
+and Nsight Systems launch traces.
+
+- A 32-thread limit improved the original center-only kernel over 64/128.
+- Scalar caches removed global intermediate traffic and unrelated group work,
+  improving both GPU and OpenMP-disabled CPU timings.
+- A bounded private Jacobian increased GPU stack use to about 99 KB per thread
+  and slowed the 48-input case; it was rejected. Declaring an array private does
+  not guarantee register or shared-memory placement.
+- Distributing neighbor pairs with atomic accumulation was slower in the tested
+  nested implementation. The experiment does not isolate atomic cost from the
+  nested execution overhead.
+- An eight-center interleaved Jacobian layout did not improve GPU timing. It was
+  rejected; the final Jacobian remains `(Cartesian, descriptor, CSR edge)`.
+- Nested descriptor worksharing avoided atomics but generated 64-thread CUDA
+  blocks despite a 32-thread OpenMP limit, with about 1.5 KB of stack per thread.
+  Explicit team counts helped but were insufficient. Flat ownership removed the
+  nested parallel region. Grid/block sizes were measured with Nsight Systems;
+  stack/register counts come from `cuobjdump`, not inferred hardware counters.
+- Nsight Compute counter collection was denied with `ERR_NVGPUCTRPERM`. No
+  bandwidth, occupancy, or cache-hit measurements are claimed from that attempt.
+
+### 16.4 Final measurements
+
+The report compares revision 1.5 against **both** the one-traversal revision 1.4
+and the older two-traversal revision 1.3. The established CPU evaluator is a third
+reference, timed in the same single-core executable with OpenMP compilation off.
+These baselines answer different questions and must not be conflated.
+
+At 4096 atoms, the following table compares the starting one-traversal v1.4
+against the final v1.5. Times are milliseconds per complete batch evaluation.
+
+| Backend | 4 distinct inputs: v1.4 → v1.5 ms | 48 inputs: v1.4 → v1.5 ms |
+|---|---:|---:|
+| gnu | 104.175 → 77.746 | 296.399 → 213.038 |
+| nvhpc | 80.511 → 59.906 | 259.779 → 204.053 |
+| h100 | 6.840 → 3.420 | 30.262 → 4.620 |
+| blackwell | 14.224 → 7.680 | 34.911 → 10.837 |
+
+Every measured CPU/GPU case improved relative to v1.4. Final common CPU time
+relative to the established CPU evaluator ranges from **0.592 to
+0.853** across the tested compilers, sizes and models.
+GPU speedups over v1.4 range from **1.85x to 17.62x**.
+
+
+Some comparisons against v1.3 remain slower, notably the tested H100 four-input
+4096-atom case; consult the full table rather than interpreting the v1.4 speedup
+as a universal win over the older two-traversal algorithm. Numerical validation
+passed 137 descriptor cases, all stated CPU/GPU suites, three selected memcheck
+cases, 63 LAMMPS comparisons, and the ordinary CPU correctness/performance gates.
+The validated `lmp-g4-optimized` candidate is kept alongside the previous binaries.

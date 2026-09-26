@@ -1,0 +1,34 @@
+{
+  "before-gpu": {
+    "path": "/tmp/accelnet-g4-tuning/before/gpu",
+    "sha256": "fd3faca1515b6c473066150fd731b084d8ce65409f404dcdd16690fce8b7b8c6"
+  },
+  "before-gnu": {
+    "path": "/tmp/accelnet-g4-tuning/before/gnu",
+    "sha256": "f28584173c8378af60737dc44a3841a6d221fc33b12b1553a3ea7f0d8a8b8a78"
+  },
+  "before-nvhpc": {
+    "path": "/tmp/accelnet-g4-tuning/before/nvhpc",
+    "sha256": "45dcef2f757d16c058a5a8c78308e0d6f324f99803622f66b49f61ba55f53b96"
+  },
+  "final-gpu": {
+    "path": "/tmp/accelnet-g4-tuning/final/gpu",
+    "sha256": "a65da96a348cc82de3e3f68480ab3bb1122c01aa4b9b98fb941b9fdfacb3132b"
+  },
+  "final-gnu": {
+    "path": "/tmp/accelnet-g4-tuning/final/gnu",
+    "sha256": "dc0ce00a729b17968fb9193dbf22f53090d2f98578cfb1992867243fa7e20b1b"
+  },
+  "final-nvhpc": {
+    "path": "/tmp/accelnet-g4-tuning/final/nvhpc",
+    "sha256": "01dc36e8ba07161df0ee04ceeaf8cbd68f94e0ffa0b6c72e4d41de2da361d92b"
+  },
+  "lammps": {
+    "path": "/tmp/accelnet-lammps-gpu/build/lmp",
+    "sha256": "65eed07e83101d91f45a61f76d9f02e1354ec1d72c37fa729ed1a03e5e245be4"
+  },
+  "lammps_candidate": {
+    "path": "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp-g4-optimized",
+    "sha256": "65eed07e83101d91f45a61f76d9f02e1354ec1d72c37fa729ed1a03e5e245be4"
+  }
+}

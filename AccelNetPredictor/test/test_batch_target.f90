@@ -198,6 +198,26 @@ program test_batch_target
         call packed%initialize(model,use_host=host)
         call check(s)
         call finite_differences(s)
+        ! Interleaved radial and angular groups must refresh scalar pair caches
+        ! when a previously visited group is encountered again.
+        do i = 1,2
+            model%setups(i)%model = descriptor_model()
+            call initialize_behler_config(grouped_config,2)
+            call add_g4(grouped_config,1,2,3.4_real64,1.0_real64,2.0_real64,0.2_real64,0.4_real64)
+            call add_g4(grouped_config,2,1,3.4_real64,-1.0_real64,3.0_real64,0.3_real64,0.1_real64)
+            call add_g4(grouped_config,1,2,3.4_real64,1.0_real64,1.5_real64,0.2_real64,0.4_real64)
+            call add_g4(grouped_config,2,1,3.4_real64,1.0_real64,2.0_real64,0.3_real64,0.1_real64)
+            call add_behler(model%setups(i)%model,grouped_config)
+        end do
+        call packed%initialize(model,use_host=host)
+        call check(s)
+        call finite_differences(s)
+        ! More G4 columns than the GPU owner count: each owner must retain all
+        ! its columns across every pair without races or skipped derivatives.
+        call make_model('g4-series',model,order=12)
+        call packed%initialize(model,use_host=host)
+        call check(s)
+        call finite_differences(s)
         ! Mixed species families share NN and scatter kernels, but descriptors
         ! take different paths. Reload metadata and the local species map.
         call make_model('chebyshev',source_model,order=4)

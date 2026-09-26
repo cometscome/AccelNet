@@ -1,0 +1,11 @@
+feature-teams h100 512 g4-distinct 1.532 0.089
+feature-teams h100 512 g4-series 2.229 0.054
+feature-teams h100 4096 g4-distinct 9.155 0.09
+feature-teams h100 4096 g4-series 14.025 0.059
+feature-teams blackwell 512 g4-distinct 3.315 0.267
+feature-teams blackwell 512 g4-series 3.898 0.132
+feature-teams blackwell 4096 g4-distinct 17.189 0.173
+feature-teams blackwell 4096 g4-series 20.536 0.086
+PROFILED scalars
+PROFILED feature-parallel
+PROFILED feature-teams

@@ -73,6 +73,11 @@ changes common G4 evaluation to the established CPU traversal: each unordered
 pair contributes values and both derivatives once, and forces read the saved
 Jacobian after the NN. CPU and GPU compile that same numerical loop. G5 keeps
 coefficient contraction; earlier reports describe the former G4 implementation.
+The [G4 GPU tuning report](validation/g4-tuning-2026-09-27/README.md) retains
+that value/Jacobian algorithm and replaces per-pair global scratch with scalar
+caches. A flat GPU launch assigns disjoint descriptor columns to owners within
+each center, avoiding Jacobian atomics and nested parallel regions. The
+OpenMP-disabled CPU executes the same numerical loop with one owner.
 
 ## Build and test on H100
 
@@ -169,7 +174,8 @@ The evaluation stages are:
 2. In moment mode, construct moments in parallel over both atoms and monomials,
    then form angular descriptors using the CPU model's polynomial coefficients.
 3. For G4, accumulate descriptor values and edge Jacobians together in one
-   center/pair/descriptor traversal, reusing cutoff, exponential and angular factors.
+   center/pair/descriptor traversal, reusing cutoff, exponential and angular factors
+   within each descriptor owner. GPU owners independently evaluate pair geometry.
 4. Evaluate NN outputs and input gradients; transform G5/Chebyshev angular coefficients.
 5. Contract derivatives in parallel over neighbor edges, reusing cached geometry,
    and moments. In moment mode, nested x/y/z Horner recurrences evaluate the
@@ -177,8 +183,9 @@ The evaluation stages are:
    three force components per edge. G4 reads saved Jacobians without another pair traversal.
 6. Aggregate edge contributions by center and scatter forces/virial with FP64 atomics.
 
-G4 adds a persistent `(3, descriptor, edge)` Jacobian and per-center pair caches.
-They remain on the device and are allocated/reused with the workspace. Other
+G4 adds a persistent `(3, descriptor, edge)` Jacobian and small species-pair head
+tables. Per-pair intermediate caches are scalar locals; the revision-1.4 global
+pair-cache array has been removed. Resident arrays are allocated/reused with the workspace. Other
 families do not materialize this Jacobian. Main scratch storage also scales
 with rows × network size, rows × number of moments, and edges × angular order
 (for cached coordinate powers). Generic angular rows also use a persistent
@@ -186,8 +193,11 @@ edge × radial-group × 2 cache for values and derivatives. G5 angular force coe
 reuse existing NN-gradient slots, with no new global coefficient buffer. Polynomial
 degree is bounded at 16; higher/noninteger powers keep their original evaluation.
 CSR batching bounds this memory. Chebyshev row kernels use
-32-thread teams, while G4 distributes centers and monomial/edge kernels expose more parallel work to the
-runtime. These are portable OpenMP constructs, with performance validated here
+32-thread teams. G4 distributes a flat center/owner index with a 32-thread limit;
+the owner count is a power of two capped at 32, chosen from the largest matching
+G4 list and a target of at least 16384 center/owner work items. The CPU uses one
+owner. This is a launch heuristic, not a universal optimum. Monomial/edge kernels
+also expose parallel work to the runtime. These are portable OpenMP constructs, with performance validated here
 on NVIDIA GPUs only.
 
 Moment metadata is packed in lexicographic x/y/z order so the force recurrence

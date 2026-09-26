@@ -1,0 +1,48 @@
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/accelnet-other-descriptors/build-gnu-serial
+Scanning dependencies of target AccelNetDescriptors
+[ 27%] Built target AccelNetDescriptors
+Scanning dependencies of target AccelNetPredictor
+[ 33%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/serial/accelnet_target_kernels.F90.o
+[ 38%] Linking Fortran static library ../lib/libaccelnet.a
+[ 88%] Built target AccelNetPredictor
+Scanning dependencies of target accelnet-model-converter-fortran
+[ 88%] Linking Fortran executable ../bin/accelnet-model-converter-fortran
+[100%] Built target accelnet-model-converter-fortran
+[ 20%] Built target AccelNetDescriptors
+[ 64%] Built target AccelNetPredictor
+Scanning dependencies of target batch_test_support
+Scanning dependencies of target AccelNetTarget
+[ 68%] Built target batch_test_support
+[ 72%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetTarget.dir/src/accelnet_target_kernels.f90.o
+[ 76%] Linking Fortran static library ../lib/libaccelnet_target.a
+[ 92%] Built target AccelNetTarget
+Scanning dependencies of target accelnet-target-benchmark
+[ 96%] Linking Fortran executable ../bin/accelnet-target-benchmark
+[100%] Built target accelnet-target-benchmark
+[ 26%] Built target AccelNetDescriptors
+[ 84%] Built target AccelNetPredictor
+[ 89%] Built target batch_test_support
+Scanning dependencies of target test_batch
+[ 94%] Linking Fortran executable ../bin/test_batch
+[100%] Built target test_batch
+[ 20%] Built target AccelNetDescriptors
+[ 64%] Built target AccelNetPredictor
+[ 68%] Built target batch_test_support
+[ 92%] Built target AccelNetTarget
+Scanning dependencies of target test_batch_target
+[ 96%] Linking Fortran executable ../bin/test_batch_target
+[100%] Built target test_batch_target
+[ 21%] Built target AccelNetDescriptors
+[ 69%] Built target AccelNetPredictor
+[ 95%] Built target AccelNetTarget
+Consolidate compiler generated dependencies of target test_target_c
+[100%] Linking Fortran executable ../bin/test_target_c
+[100%] Built target test_target_c
+[ 26%] Built target AccelNetDescriptors
+[ 84%] Built target AccelNetPredictor
+[ 89%] Built target batch_test_support
+Scanning dependencies of target write_target_fixtures
+[ 94%] Linking Fortran executable ../bin/write_target_fixtures
+[100%] Built target write_target_fixtures

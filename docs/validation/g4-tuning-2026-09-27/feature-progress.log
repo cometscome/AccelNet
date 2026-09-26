@@ -1,0 +1,16 @@
+feature-parallel h100 512 g4-distinct 4.248 0.246
+feature-parallel h100 512 g4-series 6.394 0.156
+feature-parallel h100 4096 g4-distinct 29.912 0.299
+feature-parallel h100 4096 g4-series 46.357 0.195
+feature-parallel blackwell 512 g4-distinct 7.663 0.617
+feature-parallel blackwell 512 g4-series 8.711 0.297
+feature-parallel blackwell 4096 g4-distinct 50.545 0.508
+feature-parallel blackwell 4096 g4-series 58.406 0.247
+feature-parallel gnu 512 g4-distinct 9.49 0.612
+feature-parallel gnu 512 g4-series 26.876 0.864
+feature-parallel gnu 4096 g4-distinct 77.235 0.619
+feature-parallel gnu 4096 g4-series 231.081 0.914
+feature-parallel nvhpc 512 g4-distinct 7.329 0.593
+feature-parallel nvhpc 512 g4-series 25.035 0.841
+feature-parallel nvhpc 4096 g4-distinct 59.705 0.599
+feature-parallel nvhpc 4096 g4-series 217.703 0.892

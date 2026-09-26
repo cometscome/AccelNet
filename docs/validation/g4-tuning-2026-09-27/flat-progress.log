@@ -1,0 +1,16 @@
+flat h100 512 g4-distinct 2.743 0.159
+flat h100 512 g4-series 1.848 0.044
+flat h100 4096 g4-distinct 3.601 0.036
+flat h100 4096 g4-series 4.6 0.019
+flat blackwell 512 g4-distinct 7.467 0.601
+flat blackwell 512 g4-series 3.793 0.127
+flat blackwell 4096 g4-distinct 8.156 0.082
+flat blackwell 4096 g4-series 11.004 0.046
+flat gnu 512 g4-distinct 9.519 0.612
+flat gnu 512 g4-series 25.402 0.806
+flat gnu 4096 g4-distinct 77.494 0.619
+flat gnu 4096 g4-series 213.318 0.851
+flat nvhpc 512 g4-distinct 7.354 0.594
+flat nvhpc 512 g4-series 23.791 0.793
+flat nvhpc 4096 g4-distinct 59.323 0.597
+flat nvhpc 4096 g4-series 203.077 0.859

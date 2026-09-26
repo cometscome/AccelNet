@@ -1,0 +1,15 @@
+[
+  "cmake",
+  "--build",
+  "/tmp/accelnet-gpu-research/build-nvhpc",
+  "-j",
+  "8",
+  "--target",
+  "accelnet-model-converter-fortran",
+  "accelnet-target-benchmark",
+  "test_batch",
+  "test_batch_target",
+  "test_openmp_target",
+  "test_target_c",
+  "write_target_fixtures"
+]
