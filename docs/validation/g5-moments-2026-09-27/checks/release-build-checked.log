@@ -1,0 +1,58 @@
+-- n2p2 descriptor reference tests disabled: nnp-scaling not found
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/accelnet-gpu-stage23/build-gnu-target
+Scanning dependencies of target AccelNetDescriptors
+[ 30%] Built target AccelNetDescriptors
+Scanning dependencies of target AccelNetPredictor
+[ 34%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/serial/accelnet_target_descriptors.F90.o
+[ 39%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/serial/accelnet_target_math.F90.o
+[ 43%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/serial/accelnet_target_kernels.F90.o
+[ 47%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/serial/accelnet_batch_target.F90.o
+[ 52%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/src/accelnet_batch.f90.o
+[ 56%] Linking Fortran static library ../lib/libaccelnet.a
+[ 82%] Built target AccelNetPredictor
+Scanning dependencies of target batch_test_support
+[ 86%] Building Fortran object AccelNetPredictor/CMakeFiles/batch_test_support.dir/test/batch_test_support.f90.o
+[ 91%] Linking Fortran static library ../lib/libbatch_test_support.a
+[ 91%] Built target batch_test_support
+Scanning dependencies of target test_batch
+[ 95%] Building Fortran object AccelNetPredictor/CMakeFiles/test_batch.dir/test/test_batch.f90.o
+[100%] Linking Fortran executable ../bin/test_batch
+[100%] Built target test_batch
+[ 23%] Built target AccelNetDescriptors
+[ 63%] Built target AccelNetPredictor
+Scanning dependencies of target AccelNetTarget
+[ 70%] Built target batch_test_support
+[ 73%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetTarget.dir/src/accelnet_target_descriptors.f90.o
+[ 76%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetTarget.dir/src/accelnet_target_math.f90.o
+[ 80%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetTarget.dir/src/accelnet_target_kernels.f90.o
+[ 83%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetTarget.dir/src/accelnet_batch_target.f90.o
+[ 86%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetTarget.dir/src/accelnet_target_c.f90.o
+[ 90%] Linking Fortran static library ../lib/libaccelnet_target.a
+[ 93%] Built target AccelNetTarget
+Scanning dependencies of target test_batch_target
+[ 96%] Building Fortran object AccelNetPredictor/CMakeFiles/test_batch_target.dir/test/test_batch_target.f90.o
+[100%] Linking Fortran executable ../bin/test_batch_target
+[100%] Built target test_batch_target
+[ 25%] Built target AccelNetDescriptors
+[ 67%] Built target AccelNetPredictor
+[ 92%] Built target AccelNetTarget
+Consolidate compiler generated dependencies of target test_target_c
+[ 96%] Linking Fortran executable ../bin/test_target_c
+[100%] Built target test_target_c
+[ 23%] Built target AccelNetDescriptors
+[ 63%] Built target AccelNetPredictor
+[ 70%] Built target batch_test_support
+[ 93%] Built target AccelNetTarget
+Scanning dependencies of target accelnet-target-benchmark
+[ 96%] Building Fortran object AccelNetPredictor/CMakeFiles/accelnet-target-benchmark.dir/benchmark/target_benchmark.f90.o
+[100%] Linking Fortran executable ../bin/accelnet-target-benchmark
+[100%] Built target accelnet-target-benchmark
+[ 30%] Built target AccelNetDescriptors
+[ 82%] Built target AccelNetPredictor
+[ 91%] Built target batch_test_support
+Scanning dependencies of target accelnet-cpu-regression-benchmark
+[ 95%] Building Fortran object AccelNetPredictor/CMakeFiles/accelnet-cpu-regression-benchmark.dir/benchmark/cpu_regression_benchmark.F90.o
+[100%] Linking Fortran executable ../bin/accelnet-cpu-regression-benchmark
+[100%] Built target accelnet-cpu-regression-benchmark

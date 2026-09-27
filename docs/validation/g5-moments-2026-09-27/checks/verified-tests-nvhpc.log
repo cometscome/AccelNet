@@ -1,0 +1,199 @@
+Internal ctest changing into directory: /tmp/accelnet-other-descriptors/build-nvhpc-serial
+UpdateCTestConfiguration  from :/tmp/accelnet-other-descriptors/build-nvhpc-serial/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-other-descriptors/build-nvhpc-serial/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/tmp/accelnet-other-descriptors/build-nvhpc-serial/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-other-descriptors/build-nvhpc-serial/DartConfiguration.tcl
+Test project /tmp/accelnet-other-descriptors/build-nvhpc-serial
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 19
+      Start 19: predictor_target_host_g5_moments
+
+19: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch_target "--host" "--g5-moments"
+19: Test timeout computed to be: 300
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19:  GPU checks:          185  maximum absolute E/F/W error:
+19:    2.2204460492503131E-016
+19:  GPU batch FP64 equivalence and finite differences passed
+ 1/11 Test #19: predictor_target_host_g5_moments ..........   Passed    2.04 sec
+test 21
+      Start 21: predictor_target_host_equivalence
+
+21: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch_target "--host"
+21: Environment variables:
+21:  OMP_NUM_THREADS=1
+21: Test timeout computed to be: 300
+21:  GPU checks:           78  maximum absolute E/F/W error:
+21:    8.7299958928532817E-016
+21:  GPU batch FP64 equivalence and finite differences passed
+ 2/11 Test #21: predictor_target_host_equivalence .........   Passed    2.39 sec
+test 22
+      Start 22: predictor_target_host_other_descriptors
+
+22: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch_target "--host" "--descriptors"
+22: Environment variables:
+22:  OMP_NUM_THREADS=1
+22: Test timeout computed to be: 300
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22:  DESCRIPTOR CASE lj            0
+22:  DESCRIPTOR CASE lj            1
+22:  DESCRIPTOR CASE lj            2
+22:  DESCRIPTOR CASE lj            3
+22:  DESCRIPTOR CASE lj            4
+22:  DESCRIPTOR CASE lj            5
+22:  DESCRIPTOR CASE lj            6
+22:  DESCRIPTOR CASE lj            7
+22:  DESCRIPTOR CASE lj            8
+22:  DESCRIPTOR CASE lj            9
+22:  DESCRIPTOR CASE behler            0
+22:  DESCRIPTOR CASE behler            1
+22:  DESCRIPTOR CASE behler            2
+22:  DESCRIPTOR CASE behler            3
+22:  DESCRIPTOR CASE behler            4
+22:  DESCRIPTOR CASE behler            5
+22:  DESCRIPTOR CASE behler            6
+22:  DESCRIPTOR CASE behler            7
+22:  DESCRIPTOR CASE behler            8
+22:  DESCRIPTOR CASE behler            9
+22:  DESCRIPTOR CASE g4            0
+22:  DESCRIPTOR CASE g4            1
+22:  DESCRIPTOR CASE g4            2
+22:  DESCRIPTOR CASE g4            3
+22:  DESCRIPTOR CASE g4            4
+22:  DESCRIPTOR CASE g4            5
+22:  DESCRIPTOR CASE g4            6
+22:  DESCRIPTOR CASE g4            7
+22:  DESCRIPTOR CASE g4            8
+22:  DESCRIPTOR CASE g4            9
+22:  DESCRIPTOR CASE g5            0
+22:  DESCRIPTOR CASE g5            1
+22:  DESCRIPTOR CASE g5            2
+22:  DESCRIPTOR CASE g5            3
+22:  DESCRIPTOR CASE g5            4
+22:  DESCRIPTOR CASE g5            5
+22:  DESCRIPTOR CASE g5            6
+22:  DESCRIPTOR CASE g5            7
+22:  DESCRIPTOR CASE g5            8
+22:  DESCRIPTOR CASE g5            9
+22:  DESCRIPTOR CASE lj-behler            0
+22:  DESCRIPTOR CASE lj-behler            1
+22:  DESCRIPTOR CASE lj-behler            2
+22:  DESCRIPTOR CASE lj-behler            3
+22:  DESCRIPTOR CASE lj-behler            4
+22:  DESCRIPTOR CASE lj-behler            5
+22:  DESCRIPTOR CASE lj-behler            6
+22:  DESCRIPTOR CASE lj-behler            7
+22:  DESCRIPTOR CASE lj-behler            8
+22:  DESCRIPTOR CASE lj-behler            9
+22:  GPU checks:          137  maximum absolute E/F/W error:
+22:    2.2204460492503131E-016
+22:  GPU batch FP64 equivalence and finite differences passed
+ 3/11 Test #22: predictor_target_host_other_descriptors ...   Passed    2.26 sec
+test 39
+      Start 39: predictor_batch_equivalence
+
+39: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data"
+39: Test timeout computed to be: 1500
+39:  Batch energies, forces, virials, partitions and workspace reuse passed
+ 4/11 Test #39: predictor_batch_equivalence ...............   Passed    0.84 sec
+test 40
+      Start 40: predictor_batch_reject_offset
+
+40: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "offset"
+40: Test timeout computed to be: 1500
+40: Warning: ieee_inexact is signaling
+40: ERROR STOP 1
+40:  OpenMP target: CSR offset out of range
+ 5/11 Test #40: predictor_batch_reject_offset .............   Passed    0.00 sec
+test 41
+      Start 41: predictor_batch_reject_monotonic
+
+41: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "monotonic"
+41: Test timeout computed to be: 1500
+41: Warning: ieee_inexact is signaling
+41: ERROR STOP 1
+41:  OpenMP target: CSR offsets must be nondecreasing
+ 6/11 Test #41: predictor_batch_reject_monotonic ..........   Passed    0.01 sec
+test 42
+      Start 42: predictor_batch_reject_target
+
+42: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "target"
+42: Test timeout computed to be: 1500
+42: Warning: ieee_inexact is signaling
+42: ERROR STOP 1
+42:  OpenMP target: neighbor index out of range
+ 7/11 Test #42: predictor_batch_reject_target .............   Passed    0.00 sec
+test 43
+      Start 43: predictor_batch_reject_center
+
+43: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "center"
+43: Test timeout computed to be: 1500
+43: Warning: ieee_inexact is signaling
+43: ERROR STOP 1
+43:  OpenMP target: center index out of range
+ 8/11 Test #43: predictor_batch_reject_center .............   Passed    0.00 sec
+test 44
+      Start 44: predictor_batch_reject_species
+
+44: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "species"
+44: Test timeout computed to be: 1500
+44: Warning: ieee_inexact is signaling
+44: ERROR STOP 1
+44:  OpenMP target: species out of range
+ 9/11 Test #44: predictor_batch_reject_species ............   Passed    0.00 sec
+test 45
+      Start 45: predictor_batch_reject_shape
+
+45: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "shape"
+45: Test timeout computed to be: 1500
+45: Warning: ieee_inexact is signaling
+45: ERROR STOP 1
+45:  OpenMP target: wrong CSR offset count
+10/11 Test #45: predictor_batch_reject_shape ..............   Passed    0.01 sec
+test 72
+      Start 72: predictor_batch_aenet_golden
+
+72: Test command: /tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "--aenet" "/home/nagai/AccelNetGPU/AccelNet-clone/../AccelNetTrainer.jl/test/data/fortran_predict"
+72: Test timeout computed to be: 1500
+72: Warning: ieee_inexact is signaling
+72: FORTRAN STOP
+72:  Batch real aenet model equivalence passed
+11/11 Test #72: predictor_batch_aenet_golden ..............   Passed    0.72 sec
+
+The following tests passed:
+	predictor_target_host_g5_moments
+	predictor_target_host_equivalence
+	predictor_target_host_other_descriptors
+	predictor_batch_equivalence
+	predictor_batch_reject_offset
+	predictor_batch_reject_monotonic
+	predictor_batch_reject_target
+	predictor_batch_reject_center
+	predictor_batch_reject_species
+	predictor_batch_reject_shape
+	predictor_batch_aenet_golden
+
+100% tests passed, 0 tests failed out of 11
+
+Label Time Summary:
+target-host    =   6.68 sec*proc (3 tests)
+
+Total Test time (real) =   8.28 sec

@@ -1,0 +1,284 @@
+Internal ctest changing into directory: /tmp/accelnet-other-descriptors/build-gnu-serial
+UpdateCTestConfiguration  from :/tmp/accelnet-other-descriptors/build-gnu-serial/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-other-descriptors/build-gnu-serial/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/tmp/accelnet-other-descriptors/build-gnu-serial/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-other-descriptors/build-gnu-serial/DartConfiguration.tcl
+Test project /tmp/accelnet-other-descriptors/build-gnu-serial
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 19
+      Start 19: predictor_target_host_g5_moments
+
+19: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch_target "--host" "--g5-moments"
+19: Test timeout computed to be: 300
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19:  GPU checks:         185  maximum absolute E/F/W error:   2.2204460492503131E-016
+19:  GPU batch FP64 equivalence and finite differences passed
+ 1/11 Test #19: predictor_target_host_g5_moments ..........   Passed    0.89 sec
+test 21
+      Start 21: predictor_target_host_equivalence
+
+21: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch_target "--host"
+21: Environment variables:
+21:  OMP_NUM_THREADS=1
+21: Test timeout computed to be: 300
+21:  GPU checks:          78  maximum absolute E/F/W error:   1.2212453270876722E-015
+21:  GPU batch FP64 equivalence and finite differences passed
+ 2/11 Test #21: predictor_target_host_equivalence .........   Passed    0.65 sec
+test 22
+      Start 22: predictor_target_host_other_descriptors
+
+22: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch_target "--host" "--descriptors"
+22: Environment variables:
+22:  OMP_NUM_THREADS=1
+22: Test timeout computed to be: 300
+22:  DESCRIPTOR CASE lj           0
+22:  DESCRIPTOR CASE lj           1
+22:  DESCRIPTOR CASE lj           2
+22:  DESCRIPTOR CASE lj           3
+22:  DESCRIPTOR CASE lj           4
+22:  DESCRIPTOR CASE lj           5
+22:  DESCRIPTOR CASE lj           6
+22:  DESCRIPTOR CASE lj           7
+22:  DESCRIPTOR CASE lj           8
+22:  DESCRIPTOR CASE lj           9
+22:  DESCRIPTOR CASE behler           0
+22:  DESCRIPTOR CASE behler           1
+22:  DESCRIPTOR CASE behler           2
+22:  DESCRIPTOR CASE behler           3
+22:  DESCRIPTOR CASE behler           4
+22:  DESCRIPTOR CASE behler           5
+22:  DESCRIPTOR CASE behler           6
+22:  DESCRIPTOR CASE behler           7
+22:  DESCRIPTOR CASE behler           8
+22:  DESCRIPTOR CASE behler           9
+22:  DESCRIPTOR CASE g4           0
+22:  DESCRIPTOR CASE g4           1
+22:  DESCRIPTOR CASE g4           2
+22:  DESCRIPTOR CASE g4           3
+22:  DESCRIPTOR CASE g4           4
+22:  DESCRIPTOR CASE g4           5
+22:  DESCRIPTOR CASE g4           6
+22:  DESCRIPTOR CASE g4           7
+22:  DESCRIPTOR CASE g4           8
+22:  DESCRIPTOR CASE g4           9
+22:  DESCRIPTOR CASE g5           0
+22:  DESCRIPTOR CASE g5           1
+22:  DESCRIPTOR CASE g5           2
+22:  DESCRIPTOR CASE g5           3
+22:  DESCRIPTOR CASE g5           4
+22:  DESCRIPTOR CASE g5           5
+22:  DESCRIPTOR CASE g5           6
+22:  DESCRIPTOR CASE g5           7
+22:  DESCRIPTOR CASE g5           8
+22:  DESCRIPTOR CASE g5           9
+22:  DESCRIPTOR CASE lj-behler           0
+22:  DESCRIPTOR CASE lj-behler           1
+22:  DESCRIPTOR CASE lj-behler           2
+22:  DESCRIPTOR CASE lj-behler           3
+22:  DESCRIPTOR CASE lj-behler           4
+22:  DESCRIPTOR CASE lj-behler           5
+22:  DESCRIPTOR CASE lj-behler           6
+22:  DESCRIPTOR CASE lj-behler           7
+22:  DESCRIPTOR CASE lj-behler           8
+22:  DESCRIPTOR CASE lj-behler           9
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22:  GPU checks:         137  maximum absolute E/F/W error:   2.2204460492503131E-016
+22:  GPU batch FP64 equivalence and finite differences passed
+ 3/11 Test #22: predictor_target_host_other_descriptors ...   Passed    0.73 sec
+test 39
+      Start 39: predictor_batch_equivalence
+
+39: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data"
+39: Test timeout computed to be: 1500
+39:  Batch energies, forces, virials, partitions and workspace reuse passed
+ 4/11 Test #39: predictor_batch_equivalence ...............   Passed    0.38 sec
+test 40
+      Start 40: predictor_batch_reject_offset
+
+40: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "offset"
+40: Test timeout computed to be: 1500
+40:  OpenMP target: CSR offset out of range
+40: ERROR STOP 1
+40:
+40: Error termination. Backtrace:
+40: #0  0x7f521e468960 in ???
+40: #1  0x7f521e4694d9 in ???
+40: #2  0x7f521e46abb2 in ???
+40: #3  0x55df26afecbd in ???
+40: #4  0x55df26b10723 in ???
+40: #5  0x55df26afca8c in ???
+40: #6  0x55df26ade3c0 in ???
+40: #7  0x55df26ada66e in ???
+40: #8  0x7f521e03fd8f in __libc_start_call_main
+40: 	at ../sysdeps/nptl/libc_start_call_main.h:58
+40: #9  0x7f521e03fe3f in __libc_start_main_impl
+40: 	at ../csu/libc-start.c:392
+40: #10  0x55df26ada6a4 in ???
+40: #11  0xffffffffffffffff in ???
+ 5/11 Test #40: predictor_batch_reject_offset .............   Passed    0.11 sec
+test 41
+      Start 41: predictor_batch_reject_monotonic
+
+41: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "monotonic"
+41: Test timeout computed to be: 1500
+41:  OpenMP target: CSR offsets must be nondecreasing
+41: ERROR STOP 1
+41:
+41: Error termination. Backtrace:
+41: #0  0x7f67a6533960 in ???
+41: #1  0x7f67a65344d9 in ???
+41: #2  0x7f67a6535bb2 in ???
+41: #3  0x55fbcd185cbd in ???
+41: #4  0x55fbcd197795 in ???
+41: #5  0x55fbcd183a8c in ???
+41: #6  0x55fbcd1653c0 in ???
+41: #7  0x55fbcd16166e in ???
+41: #8  0x7f67a610ad8f in __libc_start_call_main
+41: 	at ../sysdeps/nptl/libc_start_call_main.h:58
+41: #9  0x7f67a610ae3f in __libc_start_main_impl
+41: 	at ../csu/libc-start.c:392
+41: #10  0x55fbcd1616a4 in ???
+41: #11  0xffffffffffffffff in ???
+ 6/11 Test #41: predictor_batch_reject_monotonic ..........   Passed    0.11 sec
+test 42
+      Start 42: predictor_batch_reject_target
+
+42: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "target"
+42: Test timeout computed to be: 1500
+42:  OpenMP target: neighbor index out of range
+42: ERROR STOP 1
+42:
+42: Error termination. Backtrace:
+42: #0  0x7f58ab9ac960 in ???
+42: #1  0x7f58ab9ad4d9 in ???
+42: #2  0x7f58ab9aebb2 in ???
+42: #3  0x557b7cdeccbd in ???
+42: #4  0x557b7cdff463 in ???
+42: #5  0x557b7cdeaa8c in ???
+42: #6  0x557b7cdcc3c0 in ???
+42: #7  0x557b7cdc866e in ???
+42: #8  0x7f58ab583d8f in __libc_start_call_main
+42: 	at ../sysdeps/nptl/libc_start_call_main.h:58
+42: #9  0x7f58ab583e3f in __libc_start_main_impl
+42: 	at ../csu/libc-start.c:392
+42: #10  0x557b7cdc86a4 in ???
+42: #11  0xffffffffffffffff in ???
+ 7/11 Test #42: predictor_batch_reject_target .............   Passed    0.11 sec
+test 43
+      Start 43: predictor_batch_reject_center
+
+43: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "center"
+43: Test timeout computed to be: 1500
+43:  OpenMP target: center index out of range
+43: ERROR STOP 1
+43:
+43: Error termination. Backtrace:
+43: #0  0x7f0c61b57960 in ???
+43: #1  0x7f0c61b584d9 in ???
+43: #2  0x7f0c61b59bb2 in ???
+43: #3  0x55e74c56bcbd in ???
+43: #4  0x55e74c57e37f in ???
+43: #5  0x55e74c569a8c in ???
+43: #6  0x55e74c54b3c0 in ???
+43: #7  0x55e74c54766e in ???
+43: #8  0x7f0c6172ed8f in __libc_start_call_main
+43: 	at ../sysdeps/nptl/libc_start_call_main.h:58
+43: #9  0x7f0c6172ee3f in __libc_start_main_impl
+43: 	at ../csu/libc-start.c:392
+43: #10  0x55e74c5476a4 in ???
+43: #11  0xffffffffffffffff in ???
+ 8/11 Test #43: predictor_batch_reject_center .............   Passed    0.11 sec
+test 44
+      Start 44: predictor_batch_reject_species
+
+44: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "species"
+44: Test timeout computed to be: 1500
+44:  OpenMP target: species out of range
+44: ERROR STOP 1
+44:
+44: Error termination. Backtrace:
+44: #0  0x7f715c302960 in ???
+44: #1  0x7f715c3034d9 in ???
+44: #2  0x7f715c304bb2 in ???
+44: #3  0x55b5a03f4cbd in ???
+44: #4  0x55b5a03f4d4a in ???
+44: #5  0x55b5a03f2a8c in ???
+44: #6  0x55b5a03d43c0 in ???
+44: #7  0x55b5a03d066e in ???
+44: #8  0x7f715bed9d8f in __libc_start_call_main
+44: 	at ../sysdeps/nptl/libc_start_call_main.h:58
+44: #9  0x7f715bed9e3f in __libc_start_main_impl
+44: 	at ../csu/libc-start.c:392
+44: #10  0x55b5a03d06a4 in ???
+44: #11  0xffffffffffffffff in ???
+ 9/11 Test #44: predictor_batch_reject_species ............   Passed    0.11 sec
+test 45
+      Start 45: predictor_batch_reject_shape
+
+45: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "shape"
+45: Test timeout computed to be: 1500
+45:  OpenMP target: wrong CSR offset count
+45: ERROR STOP 1
+45:
+45: Error termination. Backtrace:
+45: #0  0x7fe9213a9960 in ???
+45: #1  0x7fe9213aa4d9 in ???
+45: #2  0x7fe9213abbb2 in ???
+45: #3  0x5564736a0cbd in ???
+45: #4  0x5564736b1ce3 in ???
+45: #5  0x55647369ea8c in ???
+45: #6  0x5564736803c0 in ???
+45: #7  0x55647367c66e in ???
+45: #8  0x7fe920f80d8f in __libc_start_call_main
+45: 	at ../sysdeps/nptl/libc_start_call_main.h:58
+45: #9  0x7fe920f80e3f in __libc_start_main_impl
+45: 	at ../csu/libc-start.c:392
+45: #10  0x55647367c6a4 in ???
+45: #11  0xffffffffffffffff in ???
+10/11 Test #45: predictor_batch_reject_shape ..............   Passed    0.11 sec
+test 72
+      Start 72: predictor_batch_aenet_golden
+
+72: Test command: /tmp/accelnet-other-descriptors/build-gnu-serial/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "--aenet" "/home/nagai/AccelNetGPU/AccelNet-clone/../AccelNetTrainer.jl/test/data/fortran_predict"
+72: Test timeout computed to be: 1500
+72:  Batch real aenet model equivalence passed
+11/11 Test #72: predictor_batch_aenet_golden ..............   Passed    0.13 sec
+
+The following tests passed:
+	predictor_target_host_g5_moments
+	predictor_target_host_equivalence
+	predictor_target_host_other_descriptors
+	predictor_batch_equivalence
+	predictor_batch_reject_offset
+	predictor_batch_reject_monotonic
+	predictor_batch_reject_target
+	predictor_batch_reject_center
+	predictor_batch_reject_species
+	predictor_batch_reject_shape
+	predictor_batch_aenet_golden
+
+100% tests passed, 0 tests failed out of 11
+
+Label Time Summary:
+target-host    =   2.27 sec*proc (3 tests)
+
+Total Test time (real) =   3.47 sec

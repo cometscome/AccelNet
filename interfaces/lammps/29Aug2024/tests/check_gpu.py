@@ -24,6 +24,7 @@ p.add_argument('--replicate', type=int, default=1)
 p.add_argument('--rebuild-every', type=int, default=1)
 p.add_argument('--cases', nargs='+', default=['orthogonal', 'triclinic', 'empty'])
 p.add_argument('--modes', nargs='+', default=['auto'])
+p.add_argument('--g5-mode', choices=['auto','direct','moment'], default='auto')
 a = p.parse_args()
 a.output.mkdir(parents=True, exist_ok=True)
 a.output = a.output.resolve()
@@ -71,7 +72,7 @@ boundary p p p
 {processors}
 read_data {datafile(case)}
 replicate {a.replicate} {a.replicate} {a.replicate}
-pair_style accelnet{'/gpu' if gpu else ''} {mode} {a.golden}/{a.elements[0]}.nn.ascii {a.golden}/{a.elements[1]}.nn.ascii
+pair_style accelnet{'/gpu' if gpu else ''} {mode} {a.golden}/{a.elements[0]}.nn.ascii {a.golden}/{a.elements[1]}.nn.ascii g5 {a.g5_mode if gpu else "direct"}
 pair_coeff * *
 neighbor 0.6 bin
 neigh_modify every {a.rebuild_every} delay 0 check no
@@ -135,7 +136,7 @@ for case in a.cases:
                     np.testing.assert_allclose(got[:, 2:], ref[:, 2:], atol=2e-8, rtol=2e-9)
                     diffs[snapshot] = {'max_force_error': float(np.max(np.abs(got[:, 5:8]-ref[:, 5:8]))),
                                       'max_atom_energy_error': float(np.max(np.abs(got[:, 8]-ref[:, 8])))}
-                entry = dict(case=case, mode=mode, backend=backend, ranks=ranks,
+                entry = dict(case=case, mode=mode, g5_mode=a.g5_mode, backend=backend, ranks=ranks,
                              max_total_energy_error=float(np.max(np.abs(thermo[:, 1]-rt[:, 1]))),
                              max_virial_pressure_error=float(np.max(np.abs(thermo[:, 2:]-rt[:, 2:]))), **diffs)
                 report.append(entry)

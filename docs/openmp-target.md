@@ -8,8 +8,10 @@ compiler options and do not acquire an OpenMP/GPU runtime dependency.
 Supported configurations include one Chebyshev component per element (versions
 0, 1 and 10), LJ/Behler components and their combinations, and different families
 for different elements. All ten cutoff types, element-specific network shapes,
-and all twelve activation codes are supported. G4/G5 use direct pair evaluation;
-GPU G5 moments are not implemented and forced G5 moment modes are rejected.
+and all twelve activation codes are supported. G4 uses direct pairs. G5 supports
+common direct/moment kernels on CPU and GPU. Auto retains the original 16-neighbor
+threshold inside each component's maximum angular cutoff. Exact integer powers
+1–10 use moments; fractional/near-integer/higher powers remain direct.
 Mixed/multiple Chebyshev components within a single element remain unsupported.
 Angular parameters require finite values, |lambda| <= 1 and zeta >= 1.
 
@@ -67,17 +69,36 @@ The [G4 follow-up report](validation/g4-common-2026-09-27/README.md) adds
 equal-power value reuse, squared-distance rejection before expensive pair work,
 explicit packed-argument extents, and scalar force contraction. These changes
 remain in the common source; the report includes a four-input model with no
-duplicate descriptors as a control. The default CPU LJ/Behler dispatch is unchanged.
+duplicate descriptors as a control. Those measurements preceded the default
+CPU LJ/Behler dispatch switch in methods revision 1.6.
 The subsequent [G4 value/Jacobian comparison](validation/g4-fused-2026-09-27/README.md)
 changes common G4 evaluation to the established CPU traversal: each unordered
 pair contributes values and both derivatives once, and forces read the saved
-Jacobian after the NN. CPU and GPU compile that same numerical loop. G5 keeps
-coefficient contraction; earlier reports describe the former G4 implementation.
+Jacobian after the NN. CPU and GPU compile that same numerical loop. G5 direct
+keeps coefficient contraction; revision 1.7 adds G5 moments. Earlier reports
+describe the former G4 implementation.
 The [G4 GPU tuning report](validation/g4-tuning-2026-09-27/README.md) retains
 that value/Jacobian algorithm and replaces per-pair global scratch with scalar
 caches. A flat GPU launch assigns disjoint descriptor columns to owners within
 each center, avoiding Jacobian atomics and nested parallel regions. The
 OpenMP-disabled CPU executes the same numerical loop with one owner.
+
+G5 selection is independent of Chebyshev selection:
+
+```fortran
+call packed%initialize(model, mode=0, g5_mode=3)  ! G5 force-moment override
+! Or preserve the G5 mode stored in each descriptor component:
+call packed%initialize(model)
+```
+
+G5 modes are 0 (auto), 1 (direct), 2 (moment with the 16-neighbor threshold),
+and 3 (force moments below that threshold too). All retain the order bound and
+direct fallback for ineligible powers. The C API adds
+`accelnet_target_create_modes(..., chebyshev_mode, g5_mode, ...)`; the original
+`accelnet_target_create` ABI remains available and uses G5 auto.
+The [G5 moment report](validation/g5-moments-2026-09-27/README.md) compares the
+retained CPU direct/moment implementations with common direct/moment using the
+original G5 scaling fixture, rather than changing the model between methods.
 
 ## Build and test on H100
 
@@ -190,8 +211,11 @@ families do not materialize this Jacobian. Main scratch storage also scales
 with rows × network size, rows × number of moments, and edges × angular order
 (for cached coordinate powers). Generic angular rows also use a persistent
 edge × radial-group × 2 cache for values and derivatives. G5 angular force coefficients
-reuse existing NN-gradient slots, with no new global coefficient buffer. Polynomial
-degree is bounded at 16; higher/noninteger powers keep their original evaluation.
+in the direct path reuse NN-gradient slots. Direct polynomial grouping is bounded
+at degree 16. G5 moments use a separate order-10 bound and compact radial groups.
+Their raw moments and adjoints have layout `(row, monomial, group/species channel)`,
+with an extra self-correction entry. Degree contractions reuse the NN delta buffer,
+expanded for the required group/species pairs. Higher/noninteger powers stay direct.
 CSR batching bounds this memory. Chebyshev row kernels use
 32-thread teams. G4 distributes a flat center/owner index with a 32-thread limit;
 the owner count is a power of two capped at 32, chosen from the largest matching

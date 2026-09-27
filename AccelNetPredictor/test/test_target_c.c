@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     REQUIRE(accelnet_target_compute(first,2,2,2,species,centers,offsets,indices,dr,reference,rf,rw,error)==0);
     for (int iteration=0;iteration<8;iteration++) {
         double e[2],f[6]={0},w[9]={0};
-        REQUIRE(accelnet_target_create(2,paths,0,iteration%3,&cutoff,&second,error)==0);
+        REQUIRE(accelnet_target_create_modes(2,paths,0,iteration%3,iteration%4,&cutoff,&second,error)==0);
         REQUIRE(second && second!=first);
         offsets[0]=0;
         REQUIRE(accelnet_target_compute(second,2,2,2,species,centers,offsets,indices,dr,e,f,w,error)!=0);
@@ -32,6 +32,7 @@ int main(int argc, char **argv) {
     accelnet_target_destroy(first);
     accelnet_target_destroy(NULL);
     REQUIRE(accelnet_target_create(2,paths,0,99,&cutoff,&second,error)!=0 && !second);
+    REQUIRE(accelnet_target_create_modes(2,paths,0,0,99,&cutoff,&second,error)!=0 && !second);
     const char *reversed[2]={argv[2],argv[1]};
     REQUIRE(accelnet_target_create(2,reversed,0,0,&cutoff,&second,error)!=0 && !second);
     FILE *bad=fopen("target-invalid.nn.ascii","w");

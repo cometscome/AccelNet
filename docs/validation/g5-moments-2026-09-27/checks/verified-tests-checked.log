@@ -1,0 +1,294 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-stage23/build-gnu-target
+UpdateCTestConfiguration  from :/tmp/accelnet-gpu-stage23/build-gnu-target/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-gpu-stage23/build-gnu-target/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/tmp/accelnet-gpu-stage23/build-gnu-target/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-gpu-stage23/build-gnu-target/DartConfiguration.tcl
+Test project /tmp/accelnet-gpu-stage23/build-gnu-target
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 17
+      Start 17: predictor_target_host_g5_moments
+
+17: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch_target "--host" "--g5-moments"
+17: Test timeout computed to be: 300
+17: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+17:  GPU checks:         185  maximum absolute E/F/W error:   2.2204460492503131E-016
+17:  GPU batch FP64 equivalence and finite differences passed
+ 1/10 Test #17: predictor_target_host_g5_moments ..........   Passed    2.31 sec
+test 19
+      Start 19: predictor_target_host_equivalence
+
+19: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch_target "--host"
+19: Environment variables:
+19:  OMP_NUM_THREADS=1
+19: Test timeout computed to be: 300
+19:  GPU checks:          78  maximum absolute E/F/W error:   8.8817841970012523E-016
+19:  GPU batch FP64 equivalence and finite differences passed
+ 2/10 Test #19: predictor_target_host_equivalence .........   Passed    1.18 sec
+test 20
+      Start 20: predictor_target_host_other_descriptors
+
+20: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch_target "--host" "--descriptors"
+20: Environment variables:
+20:  OMP_NUM_THREADS=1
+20: Test timeout computed to be: 300
+20:  DESCRIPTOR CASE lj           0
+20:  DESCRIPTOR CASE lj           1
+20:  DESCRIPTOR CASE lj           2
+20:  DESCRIPTOR CASE lj           3
+20:  DESCRIPTOR CASE lj           4
+20:  DESCRIPTOR CASE lj           5
+20:  DESCRIPTOR CASE lj           6
+20:  DESCRIPTOR CASE lj           7
+20:  DESCRIPTOR CASE lj           8
+20:  DESCRIPTOR CASE lj           9
+20:  DESCRIPTOR CASE behler           0
+20:  DESCRIPTOR CASE behler           1
+20:  DESCRIPTOR CASE behler           2
+20:  DESCRIPTOR CASE behler           3
+20:  DESCRIPTOR CASE behler           4
+20:  DESCRIPTOR CASE behler           5
+20:  DESCRIPTOR CASE behler           6
+20:  DESCRIPTOR CASE behler           7
+20:  DESCRIPTOR CASE behler           8
+20:  DESCRIPTOR CASE behler           9
+20:  DESCRIPTOR CASE g4           0
+20:  DESCRIPTOR CASE g4           1
+20:  DESCRIPTOR CASE g4           2
+20:  DESCRIPTOR CASE g4           3
+20:  DESCRIPTOR CASE g4           4
+20:  DESCRIPTOR CASE g4           5
+20:  DESCRIPTOR CASE g4           6
+20:  DESCRIPTOR CASE g4           7
+20:  DESCRIPTOR CASE g4           8
+20:  DESCRIPTOR CASE g4           9
+20:  DESCRIPTOR CASE g5           0
+20:  DESCRIPTOR CASE g5           1
+20:  DESCRIPTOR CASE g5           2
+20:  DESCRIPTOR CASE g5           3
+20:  DESCRIPTOR CASE g5           4
+20:  DESCRIPTOR CASE g5           5
+20:  DESCRIPTOR CASE g5           6
+20:  DESCRIPTOR CASE g5           7
+20:  DESCRIPTOR CASE g5           8
+20:  DESCRIPTOR CASE g5           9
+20:  DESCRIPTOR CASE lj-behler           0
+20:  DESCRIPTOR CASE lj-behler           1
+20:  DESCRIPTOR CASE lj-behler           2
+20:  DESCRIPTOR CASE lj-behler           3
+20:  DESCRIPTOR CASE lj-behler           4
+20:  DESCRIPTOR CASE lj-behler           5
+20:  DESCRIPTOR CASE lj-behler           6
+20:  DESCRIPTOR CASE lj-behler           7
+20:  DESCRIPTOR CASE lj-behler           8
+20:  DESCRIPTOR CASE lj-behler           9
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20:  GPU checks:         137  maximum absolute E/F/W error:   2.2204460492503131E-016
+20:  GPU batch FP64 equivalence and finite differences passed
+ 3/10 Test #20: predictor_target_host_other_descriptors ...   Passed    1.73 sec
+test 36
+      Start 36: predictor_batch_equivalence
+
+36: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data"
+36: Test timeout computed to be: 1500
+36:  Batch energies, forces, virials, partitions and workspace reuse passed
+ 4/10 Test #36: predictor_batch_equivalence ...............   Passed    0.42 sec
+test 37
+      Start 37: predictor_batch_reject_offset
+
+37: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "offset"
+37: Test timeout computed to be: 1500
+37:  OpenMP target: CSR offset out of range
+37: ERROR STOP 1
+37:
+37: Error termination. Backtrace:
+37: #0  0x7f6af9717960 in ???
+37: #1  0x7f6af97184d9 in ???
+37: #2  0x7f6af9719bb2 in ???
+37: #3  0x557d0f8f934d in target_failure
+37: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:531
+37: #4  0x557d0f8f93e4 in target_failure
+37: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:534
+37: #5  0x557d0f909c51 in __accelnet_batch_target_serial_MOD_evaluate_batch_target
+37: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:475
+37: #6  0x557d0f8f71fd in __accelnet_batch_MOD_evaluate_batch
+37: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch.f90:112
+37: #7  0x557d0f8b905b in invalid_input
+37: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:196
+37: #8  0x557d0f8b9e7e in test_batch
+37: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:36
+37: #9  0x557d0f8c1d19 in main
+37: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:3
+ 5/10 Test #37: predictor_batch_reject_offset .............   Passed    0.11 sec
+test 38
+      Start 38: predictor_batch_reject_monotonic
+
+38: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "monotonic"
+38: Test timeout computed to be: 1500
+38:  OpenMP target: CSR offsets must be nondecreasing
+38: ERROR STOP 1
+38:
+38: Error termination. Backtrace:
+38: #0  0x7f8881570960 in ???
+38: #1  0x7f88815714d9 in ???
+38: #2  0x7f8881572bb2 in ???
+38: #3  0x55c52845c34d in target_failure
+38: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:531
+38: #4  0x55c52845c3e4 in target_failure
+38: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:534
+38: #5  0x55c52846cdf1 in __accelnet_batch_target_serial_MOD_evaluate_batch_target
+38: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:479
+38: #6  0x55c52845a1fd in __accelnet_batch_MOD_evaluate_batch
+38: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch.f90:112
+38: #7  0x55c52841c05b in invalid_input
+38: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:196
+38: #8  0x55c52841ce7e in test_batch
+38: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:36
+38: #9  0x55c528424d19 in main
+38: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:3
+ 6/10 Test #38: predictor_batch_reject_monotonic ..........   Passed    0.11 sec
+test 39
+      Start 39: predictor_batch_reject_target
+
+39: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "target"
+39: Test timeout computed to be: 1500
+39:  OpenMP target: neighbor index out of range
+39: ERROR STOP 1
+39:
+39: Error termination. Backtrace:
+39: #0  0x7f16db6cc960 in ???
+39: #1  0x7f16db6cd4d9 in ???
+39: #2  0x7f16db6cebb2 in ???
+39: #3  0x5571baab734d in target_failure
+39: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:531
+39: #4  0x5571baab73e4 in target_failure
+39: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:534
+39: #5  0x5571baac8006 in __accelnet_batch_target_serial_MOD_evaluate_batch_target
+39: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:489
+39: #6  0x5571baab51fd in __accelnet_batch_MOD_evaluate_batch
+39: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch.f90:112
+39: #7  0x5571baa7705b in invalid_input
+39: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:196
+39: #8  0x5571baa77e7e in test_batch
+39: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:36
+39: #9  0x5571baa7fd19 in main
+39: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:3
+ 7/10 Test #39: predictor_batch_reject_target .............   Passed    0.11 sec
+test 40
+      Start 40: predictor_batch_reject_center
+
+40: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "center"
+40: Test timeout computed to be: 1500
+40:  OpenMP target: center index out of range
+40: ERROR STOP 1
+40:
+40: Error termination. Backtrace:
+40: #0  0x7fb466aca960 in ???
+40: #1  0x7fb466acb4d9 in ???
+40: #2  0x7fb466accbb2 in ???
+40: #3  0x55ec0f04434d in target_failure
+40: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:531
+40: #4  0x55ec0f0443e4 in target_failure
+40: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:534
+40: #5  0x55ec0f054ec9 in __accelnet_batch_target_serial_MOD_evaluate_batch_target
+40: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:483
+40: #6  0x55ec0f0421fd in __accelnet_batch_MOD_evaluate_batch
+40: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch.f90:112
+40: #7  0x55ec0f00405b in invalid_input
+40: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:196
+40: #8  0x55ec0f004e7e in test_batch
+40: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:36
+40: #9  0x55ec0f00cd19 in main
+40: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:3
+ 8/10 Test #40: predictor_batch_reject_center .............   Passed    0.11 sec
+test 41
+      Start 41: predictor_batch_reject_species
+
+41: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "species"
+41: Test timeout computed to be: 1500
+41:  OpenMP target: species out of range
+41: ERROR STOP 1
+41:
+41: Error termination. Backtrace:
+41: #0  0x7fd2537d2960 in ???
+41: #1  0x7fd2537d34d9 in ???
+41: #2  0x7fd2537d4bb2 in ???
+41: #3  0x564d656f834d in target_failure
+41: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:531
+41: #4  0x564d656f83e4 in target_failure
+41: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:534
+41: #5  0x564d657090f1 in __accelnet_batch_target_serial_MOD_evaluate_batch_target
+41: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:493
+41: #6  0x564d656f61fd in __accelnet_batch_MOD_evaluate_batch
+41: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch.f90:112
+41: #7  0x564d656b805b in invalid_input
+41: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:196
+41: #8  0x564d656b8e7e in test_batch
+41: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:36
+41: #9  0x564d656c0d19 in main
+41: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:3
+ 9/10 Test #41: predictor_batch_reject_species ............   Passed    0.11 sec
+test 42
+      Start 42: predictor_batch_reject_shape
+
+42: Test command: /tmp/accelnet-gpu-stage23/build-gnu-target/bin/test_batch "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data" "shape"
+42: Test timeout computed to be: 1500
+42:  OpenMP target: wrong CSR offset count
+42: ERROR STOP 1
+42:
+42: Error termination. Backtrace:
+42: #0  0x7f069d787960 in ???
+42: #1  0x7f069d7884d9 in ???
+42: #2  0x7f069d789bb2 in ???
+42: #3  0x558aa32d034d in target_failure
+42: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:531
+42: #4  0x558aa32d03e4 in target_failure
+42: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:534
+42: #5  0x558aa32e09d5 in __accelnet_batch_target_serial_MOD_evaluate_batch_target
+42: 	at /tmp/accelnet-gpu-stage23/build-gnu-target/AccelNetPredictor/serial/accelnet_batch_target.F90:458
+42: #6  0x558aa32ce1fd in __accelnet_batch_MOD_evaluate_batch
+42: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_batch.f90:112
+42: #7  0x558aa328fc8e in invalid_input
+42: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:193
+42: #8  0x558aa3290e7e in test_batch
+42: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:36
+42: #9  0x558aa3298d19 in main
+42: 	at /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/test_batch.f90:3
+10/10 Test #42: predictor_batch_reject_shape ..............   Passed    0.11 sec
+
+The following tests passed:
+	predictor_target_host_g5_moments
+	predictor_target_host_equivalence
+	predictor_target_host_other_descriptors
+	predictor_batch_equivalence
+	predictor_batch_reject_offset
+	predictor_batch_reject_monotonic
+	predictor_batch_reject_target
+	predictor_batch_reject_center
+	predictor_batch_reject_species
+	predictor_batch_reject_shape
+
+100% tests passed, 0 tests failed out of 10
+
+Label Time Summary:
+target-host    =   5.23 sec*proc (3 tests)
+
+Total Test time (real) =   6.32 sec

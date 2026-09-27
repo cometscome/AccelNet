@@ -10,21 +10,24 @@ module accelnet_target_descriptors
     use accelnet_descriptor_models, only: descriptor_model
     implicit none
     private
-    public :: pack_generic_descriptors, PACKED_FEATURE_FIELDS
-    integer, parameter :: PACKED_FEATURE_FIELDS = 21
+    public :: pack_generic_descriptors, PACKED_FEATURE_FIELDS, PACKED_PARAMETER_FIELDS
+    integer, parameter :: PACKED_FEATURE_FIELDS = 25
+    integer, parameter :: PACKED_PARAMETER_FIELDS = 19
 contains
-    subroutine pack_generic_descriptors(model, fi, fr, status, message)
+    subroutine pack_generic_descriptors(model, fi, fr, status, message, g5_mode)
         type(descriptor_model), intent(in) :: model
         integer, allocatable, intent(out) :: fi(:,:)
         real(real64), allocatable, intent(out) :: fr(:,:)
         integer, intent(out) :: status
         character(len=*), intent(out) :: message
-        integer :: c,j,b,o,t,n,ct,ns,groups,k,r,last
+        integer, optional, intent(in) :: g5_mode
+        integer :: c,j,b,o,t,n,ct,ns,groups,k,r,last,q,zeta
+        real(real64) :: binomial
         real(real64) :: alpha
         status = 1
         message = 'OpenMP target: invalid LJ/Behler descriptor metadata'
         n = model%num_outputs
-        allocate(fi(PACKED_FEATURE_FIELDS,n),fr(7,n))
+        allocate(fi(PACKED_FEATURE_FIELDS,n),fr(PACKED_PARAMETER_FIELDS,n))
         fi = 0; fr = 0
         if (n < 1) return
         if (allocated(model%lj)) then
@@ -48,10 +51,6 @@ contains
                 associate(cfg => model%behler(c)%config)
                 o = model%behler(c)%output_offset; ns = cfg%num_species
                 ct = cfg%cutoff_type; alpha = cfg%cutoff_alpha
-                if (cfg%g5_evaluation_mode > 1) then
-                    message = 'OpenMP target: G5 currently supports auto/direct; forced G5 moments are not implemented'
-                    return
-                end if
                 if (allocated(cfg%g1)) then
                     do j = 1,size(cfg%g1)
                         associate(p => cfg%g1(j))
@@ -107,6 +106,10 @@ contains
                         if (b < 1 .or. b > n) return
                         if (fi(1,b) /= 0) return
                         fi(:6,b) = [5,p%species1,p%species2,ct,p%integer_zeta,ns]
+                        fi(22,b) = cfg%g5_evaluation_mode
+                        if (present(g5_mode)) fi(22,b) = g5_mode
+                        fr(19,b) = cfg%maximum_angular_cutoff
+                        if (fi(22,b) < 0 .or. fi(22,b) > 3) return
                         fr(1,b) = p%rc; fr(7,b) = alpha
                         fr(2,b) = p%eta; fr(3,b) = p%rs
                         fr(4,b) = p%lambda; fr(5,b) = p%zeta
@@ -145,6 +148,32 @@ contains
             groups = groups+1
             fi(7:8,b) = [groups,b]
         end do
+        ! G5 integer moments: compact only radial groups actually requested.
+        ! Exact integer powers 1..10 use a polynomial; fractional/near-integer
+        ! and higher powers keep the direct formula. Auto retains the original
+        ! per-component angular-neighbor threshold. Fields 22/23/24: mode/group/rep.
+        groups = 0
+        do b = 1,n
+            if (fi(1,b) /= 5 .or. fi(22,b) == 1) cycle
+            zeta = fi(5,b)
+            if (zeta < 1 .or. zeta > 10) cycle
+            if (fr(5,b) /= real(zeta,real64)) cycle
+            do k = 1,b-1
+                if (fi(23,k) == 0 .or. fi(7,k) /= fi(7,b)) cycle
+                fi(23:24,b) = fi(23:24,k)
+                exit
+            end do
+            if (fi(23,b) == 0) then
+                groups = groups+1
+                fi(23:24,b) = [groups,b]
+                fi(25,groups) = b
+            end if
+            binomial = 1
+            do q = 0,zeta
+                fr(8+q,b) = 2.0_real64**(1-zeta)*binomial*fr(4,b)**q
+                binomial = binomial*real(zeta-q,real64)/real(q+1,real64)
+            end do
+        end do
         ! Contract only features with identical non-angular factors and lambda.
         ! Positive integer zeta <= 16 shares a polynomial in t=(1+lambda*c)/2.
         ! Fractional/high zeta retains its exact power and only identical powers combine.
@@ -155,6 +184,8 @@ contains
             do k = 1,b-1
                 if (fi(10,k) /= k) cycle
                 if (fi(1,b) /= fi(1,k) .or. fi(7,b) /= fi(7,k)) cycle
+                if (fi(22,b) /= fi(22,k) .or. fr(19,b) /= fr(19,k)) cycle
+                if ((fi(23,b) > 0) .neqv. (fi(23,k) > 0)) cycle
                 if (minval(fi(2:3,b)) /= minval(fi(2:3,k))) cycle
                 if (maxval(fi(2:3,b)) /= maxval(fi(2:3,k))) cycle
                 if (fr(4,b) /= fr(4,k)) cycle

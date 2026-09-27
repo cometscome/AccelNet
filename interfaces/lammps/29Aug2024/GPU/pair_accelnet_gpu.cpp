@@ -34,8 +34,6 @@ PairAccelNetGPU::~PairAccelNetGPU() {
 void PairAccelNetGPU::settings(int narg,char **arg) {
   if (target_context) error->all(FLERR,"Recreate pair_style accelnet/gpu to load another model");
   PairAccelNet::settings(narg,arg);
-  if (g5_evaluation_mode > 1)
-    error->all(FLERR,"accelnet/gpu currently supports G5 auto/direct only");
   if (n2p2_mode) error->all(FLERR,"accelnet/gpu requires embedded networks; convert n2p2 with accelnet-model-converter-fortran first");
 }
 void PairAccelNetGPU::init_style() {
@@ -52,8 +50,8 @@ void PairAccelNetGPU::init_style() {
   GPU_EXTRA::check_flag(status,error,world);
   if (!target_context) {
     char detail[512] = {};
-    status = accelnet_target_create(atom->ntypes,const_cast<const char **>(pot_files),
-        device,chebyshev_evaluation_mode,&cut_global,&target_context,detail);
+    status = accelnet_target_create_modes(atom->ntypes,const_cast<const char **>(pot_files),
+        device,chebyshev_evaluation_mode,g5_evaluation_mode,&cut_global,&target_context,detail);
     if (status) error->one(FLERR,std::string("accelnet/gpu: ")+detail);
   }
   if (gpu_mode == 0) {

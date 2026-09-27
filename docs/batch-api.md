@@ -3,9 +3,12 @@
 This batch API executes on the CPU. Supported Chebyshev, LJ and Behler G1–G5
 models use the same numerical source as the
 [OpenMP target backend](openmp-target.md), compiled without OpenMP directives.
-Chebyshev supports direct/moment; common G4/G5 use direct pairs. Unsupported
-configurations (mixed/multiple Chebyshev components within an element and forced
-G5 moment modes) fall back to the established CPU evaluator.
+Chebyshev and G5 support direct/moment; G4 uses direct pairs. Unsupported
+configurations, such as mixed/multiple Chebyshev components within an element,
+fall back to the established CPU evaluator. Forced G5 moments now use the
+common implementation. G5 auto retains the original per-component threshold:
+16 neighbors inside its maximum angular cutoff, exact integer orders 1–10.
+Fractional, near-integer and higher orders retain direct evaluation.
 Existing object, Fortran/C atomic, CLI and ordinary LAMMPS CPU
 evaluation paths are unchanged. No OpenMP runtime or GPU compiler is required
 for a normal CPU build.
@@ -64,10 +67,10 @@ On the common path, G4 computes values and derivatives in one pair traversal,
 then contracts the saved Jacobian after the NN evaluation. CPU and GPU use the
 same formulas with different descriptor-owner counts. Other common descriptors
 use cached geometry and direct derivative contraction. The fallback follows the
-existing structure evaluator and preserves explicitly selected G5 moment modes.
-G5 auto mode on the common path currently uses direct pairs; the reference's auto
-policy can select moments. Neither auto policy guarantees the fastest choice
-for every model or neighbor density.
+existing structure evaluator. G5 moments share cached radial groups, reuse raw
+moments after the NN, and evaluate contracted force polynomials with differentiated
+Horner. Auto follows the established neighbor threshold; this policy is not a
+guarantee of the fastest choice for every model or neighbor density.
 The separate GPU API uses packed arrays, persistent device buffers and model
 parameters, and GPU direct/moment kernels. See the [GPU API](openmp-target.md)
 for lifetime rules and phase profiling.

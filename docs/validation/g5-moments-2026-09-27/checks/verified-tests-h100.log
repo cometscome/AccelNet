@@ -1,0 +1,446 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-research/build-nvhpc
+UpdateCTestConfiguration  from :/tmp/accelnet-gpu-research/build-nvhpc/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-gpu-research/build-nvhpc/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/tmp/accelnet-gpu-research/build-nvhpc/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-gpu-research/build-nvhpc/DartConfiguration.tcl
+Test project /tmp/accelnet-gpu-research/build-nvhpc
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 8
+      Start  8: openmp_target_device_smoke
+
+8: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_openmp_target
+8: Environment variables:
+8:  OMP_TARGET_OFFLOAD=MANDATORY
+8: Test timeout computed to be: 60
+8:  OpenMP target device execution and FP64 atomic accumulation passed
+ 1/33 Test  #8: openmp_target_device_smoke ................   Passed    0.35 sec
+test 9
+      Start  9: predictor_target_c_api
+
+9: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_target_c "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii"
+9: Test timeout computed to be: 120
+9: GPU C API: independent instances, validation, cleanup passed
+ 2/33 Test  #9: predictor_target_c_api ....................   Passed    0.40 sec
+test 10
+      Start 10: predictor_target_equivalence
+
+10: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target
+10: Test timeout computed to be: 300
+10:  GPU checks:           78  maximum absolute E/F/W error:
+10:    7.9797279894933126E-016
+10:  GPU batch FP64 equivalence and finite differences passed
+ 3/33 Test #10: predictor_target_equivalence ..............   Passed    4.03 sec
+test 11
+      Start 11: predictor_target_direct_equivalence
+
+11: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--direct"
+11: Test timeout computed to be: 300
+11:  GPU checks:           78  maximum absolute E/F/W error:
+11:    1.0685896612017132E-015
+11:  GPU batch FP64 equivalence and finite differences passed
+ 4/33 Test #11: predictor_target_direct_equivalence .......   Passed    4.20 sec
+test 12
+      Start 12: predictor_target_moment_equivalence
+
+12: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--moment"
+12: Test timeout computed to be: 300
+12:  GPU checks:           78  maximum absolute E/F/W error:
+12:    7.9797279894933126E-016
+12:  GPU batch FP64 equivalence and finite differences passed
+ 5/33 Test #12: predictor_target_moment_equivalence .......   Passed    4.02 sec
+test 13
+      Start 13: predictor_target_write_fixtures
+
+13: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/write_target_fixtures "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures"
+13: Test timeout computed to be: 1500
+ 6/33 Test #13: predictor_target_write_fixtures ...........   Passed    0.00 sec
+test 14
+      Start 14: predictor_target_embedded_lj
+
+14: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--embedded" "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures/H.lj.nn.ascii" "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures/O.lj.nn.ascii"
+14: Test timeout computed to be: 120
+14:  GPU checks:            1  maximum absolute E/F/W error:
+14:    2.2204460492503131E-016
+14:  GPU batch FP64 equivalence and finite differences passed
+ 7/33 Test #14: predictor_target_embedded_lj ..............   Passed    0.41 sec
+test 15
+      Start 15: predictor_target_c_lj
+
+15: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_target_c "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures/H.lj.nn.ascii" "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures/O.lj.nn.ascii"
+15: Test timeout computed to be: 120
+15: GPU C API: independent instances, validation, cleanup passed
+ 8/33 Test #15: predictor_target_c_lj .....................   Passed    0.41 sec
+test 16
+      Start 16: predictor_target_embedded_behler
+
+16: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--embedded" "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures/H.behler.nn.ascii" "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures/O.behler.nn.ascii"
+16: Test timeout computed to be: 120
+16:  GPU checks:            1  maximum absolute E/F/W error:
+16:    2.2204460492503131E-016
+16:  GPU batch FP64 equivalence and finite differences passed
+ 9/33 Test #16: predictor_target_embedded_behler ..........   Passed    0.45 sec
+test 17
+      Start 17: predictor_target_c_behler
+
+17: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_target_c "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures/H.behler.nn.ascii" "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures/O.behler.nn.ascii"
+17: Test timeout computed to be: 120
+17: GPU C API: independent instances, validation, cleanup passed
+10/33 Test #17: predictor_target_c_behler .................   Passed    0.40 sec
+test 18
+      Start 18: predictor_target_g5_moments
+
+18: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--g5-moments"
+18: Test timeout computed to be: 300
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18:  GPU checks:          185  maximum absolute E/F/W error:
+18:    2.2204460492503131E-016
+18:  GPU batch FP64 equivalence and finite differences passed
+11/33 Test #18: predictor_target_g5_moments ...............   Passed    6.74 sec
+test 19
+      Start 19: predictor_target_host_g5_moments
+
+19: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--host" "--g5-moments"
+19: Test timeout computed to be: 300
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+19:  GPU checks:          185  maximum absolute E/F/W error:
+19:    2.2204460492503131E-016
+19:  GPU batch FP64 equivalence and finite differences passed
+12/33 Test #19: predictor_target_host_g5_moments ..........   Passed    2.32 sec
+test 20
+      Start 20: predictor_target_other_descriptors
+
+20: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--descriptors"
+20: Test timeout computed to be: 300
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20:  DESCRIPTOR CASE lj            0
+20:  DESCRIPTOR CASE lj            1
+20:  DESCRIPTOR CASE lj            2
+20:  DESCRIPTOR CASE lj            3
+20:  DESCRIPTOR CASE lj            4
+20:  DESCRIPTOR CASE lj            5
+20:  DESCRIPTOR CASE lj            6
+20:  DESCRIPTOR CASE lj            7
+20:  DESCRIPTOR CASE lj            8
+20:  DESCRIPTOR CASE lj            9
+20:  DESCRIPTOR CASE behler            0
+20:  DESCRIPTOR CASE behler            1
+20:  DESCRIPTOR CASE behler            2
+20:  DESCRIPTOR CASE behler            3
+20:  DESCRIPTOR CASE behler            4
+20:  DESCRIPTOR CASE behler            5
+20:  DESCRIPTOR CASE behler            6
+20:  DESCRIPTOR CASE behler            7
+20:  DESCRIPTOR CASE behler            8
+20:  DESCRIPTOR CASE behler            9
+20:  DESCRIPTOR CASE g4            0
+20:  DESCRIPTOR CASE g4            1
+20:  DESCRIPTOR CASE g4            2
+20:  DESCRIPTOR CASE g4            3
+20:  DESCRIPTOR CASE g4            4
+20:  DESCRIPTOR CASE g4            5
+20:  DESCRIPTOR CASE g4            6
+20:  DESCRIPTOR CASE g4            7
+20:  DESCRIPTOR CASE g4            8
+20:  DESCRIPTOR CASE g4            9
+20:  DESCRIPTOR CASE g5            0
+20:  DESCRIPTOR CASE g5            1
+20:  DESCRIPTOR CASE g5            2
+20:  DESCRIPTOR CASE g5            3
+20:  DESCRIPTOR CASE g5            4
+20:  DESCRIPTOR CASE g5            5
+20:  DESCRIPTOR CASE g5            6
+20:  DESCRIPTOR CASE g5            7
+20:  DESCRIPTOR CASE g5            8
+20:  DESCRIPTOR CASE g5            9
+20:  DESCRIPTOR CASE lj-behler            0
+20:  DESCRIPTOR CASE lj-behler            1
+20:  DESCRIPTOR CASE lj-behler            2
+20:  DESCRIPTOR CASE lj-behler            3
+20:  DESCRIPTOR CASE lj-behler            4
+20:  DESCRIPTOR CASE lj-behler            5
+20:  DESCRIPTOR CASE lj-behler            6
+20:  DESCRIPTOR CASE lj-behler            7
+20:  DESCRIPTOR CASE lj-behler            8
+20:  DESCRIPTOR CASE lj-behler            9
+20:  GPU checks:          137  maximum absolute E/F/W error:
+20:    2.2204460492503131E-016
+20:  GPU batch FP64 equivalence and finite differences passed
+13/33 Test #20: predictor_target_other_descriptors ........   Passed    5.88 sec
+test 21
+      Start 21: predictor_target_host_equivalence
+
+21: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--host"
+21: Environment variables:
+21:  OMP_NUM_THREADS=1
+21: Test timeout computed to be: 300
+21:  GPU checks:           78  maximum absolute E/F/W error:
+21:    8.7299958928532817E-016
+21:  GPU batch FP64 equivalence and finite differences passed
+14/33 Test #21: predictor_target_host_equivalence .........   Passed    2.44 sec
+test 22
+      Start 22: predictor_target_host_other_descriptors
+
+22: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--host" "--descriptors"
+22: Environment variables:
+22:  OMP_NUM_THREADS=1
+22: Test timeout computed to be: 300
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+22:  DESCRIPTOR CASE lj            0
+22:  DESCRIPTOR CASE lj            1
+22:  DESCRIPTOR CASE lj            2
+22:  DESCRIPTOR CASE lj            3
+22:  DESCRIPTOR CASE lj            4
+22:  DESCRIPTOR CASE lj            5
+22:  DESCRIPTOR CASE lj            6
+22:  DESCRIPTOR CASE lj            7
+22:  DESCRIPTOR CASE lj            8
+22:  DESCRIPTOR CASE lj            9
+22:  DESCRIPTOR CASE behler            0
+22:  DESCRIPTOR CASE behler            1
+22:  DESCRIPTOR CASE behler            2
+22:  DESCRIPTOR CASE behler            3
+22:  DESCRIPTOR CASE behler            4
+22:  DESCRIPTOR CASE behler            5
+22:  DESCRIPTOR CASE behler            6
+22:  DESCRIPTOR CASE behler            7
+22:  DESCRIPTOR CASE behler            8
+22:  DESCRIPTOR CASE behler            9
+22:  DESCRIPTOR CASE g4            0
+22:  DESCRIPTOR CASE g4            1
+22:  DESCRIPTOR CASE g4            2
+22:  DESCRIPTOR CASE g4            3
+22:  DESCRIPTOR CASE g4            4
+22:  DESCRIPTOR CASE g4            5
+22:  DESCRIPTOR CASE g4            6
+22:  DESCRIPTOR CASE g4            7
+22:  DESCRIPTOR CASE g4            8
+22:  DESCRIPTOR CASE g4            9
+22:  DESCRIPTOR CASE g5            0
+22:  DESCRIPTOR CASE g5            1
+22:  DESCRIPTOR CASE g5            2
+22:  DESCRIPTOR CASE g5            3
+22:  DESCRIPTOR CASE g5            4
+22:  DESCRIPTOR CASE g5            5
+22:  DESCRIPTOR CASE g5            6
+22:  DESCRIPTOR CASE g5            7
+22:  DESCRIPTOR CASE g5            8
+22:  DESCRIPTOR CASE g5            9
+22:  DESCRIPTOR CASE lj-behler            0
+22:  DESCRIPTOR CASE lj-behler            1
+22:  DESCRIPTOR CASE lj-behler            2
+22:  DESCRIPTOR CASE lj-behler            3
+22:  DESCRIPTOR CASE lj-behler            4
+22:  DESCRIPTOR CASE lj-behler            5
+22:  DESCRIPTOR CASE lj-behler            6
+22:  DESCRIPTOR CASE lj-behler            7
+22:  DESCRIPTOR CASE lj-behler            8
+22:  DESCRIPTOR CASE lj-behler            9
+22:  GPU checks:          137  maximum absolute E/F/W error:
+22:    2.2204460492503131E-016
+22:  GPU batch FP64 equivalence and finite differences passed
+15/33 Test #22: predictor_target_host_other_descriptors ...   Passed    2.47 sec
+test 23
+      Start 23: predictor_target_n2p2
+
+23: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--n2p2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2"
+23: Test timeout computed to be: 300
+23:  GPU checks:            3  maximum absolute E/F/W error:
+23:    2.6645352591003757E-015
+23:  GPU batch FP64 equivalence and finite differences passed
+16/33 Test #23: predictor_target_n2p2 .....................   Passed    0.39 sec
+test 24
+      Start 24: predictor_target_n2p2-per-element
+
+24: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--n2p2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2-per-element"
+24: Test timeout computed to be: 300
+24:  GPU checks:            3  maximum absolute E/F/W error:
+24:    9.7144514654701197E-017
+24:  GPU batch FP64 equivalence and finite differences passed
+17/33 Test #24: predictor_target_n2p2-per-element .........   Passed    0.54 sec
+test 25
+      Start 25: predictor_target_n2p2-per-element-depth
+
+25: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--n2p2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2-per-element-depth"
+25: Test timeout computed to be: 300
+25:  GPU checks:            3  maximum absolute E/F/W error:
+25:    3.5527136788005009E-015
+25:  GPU batch FP64 equivalence and finite differences passed
+18/33 Test #25: predictor_target_n2p2-per-element-depth ...   Passed    0.46 sec
+test 26
+      Start 26: predictor_target_n2p2-virial-angular
+
+26: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--n2p2" "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2-virial-angular"
+26: Test timeout computed to be: 300
+26:  GPU checks:            3  maximum absolute E/F/W error:
+26:    2.2204460492503131E-015
+26:  GPU batch FP64 equivalence and finite differences passed
+19/33 Test #26: predictor_target_n2p2-virial-angular ......   Passed    0.55 sec
+test 27
+      Start 27: predictor_target_reject_offset
+
+27: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "offset"
+27: Test timeout computed to be: 1500
+27: Warning: ieee_inexact is signaling
+27: ERROR STOP 1
+27:  OpenMP target: CSR offset out of range
+20/33 Test #27: predictor_target_reject_offset ............   Passed    0.34 sec
+test 28
+      Start 28: predictor_target_reject_monotonic
+
+28: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "monotonic"
+28: Test timeout computed to be: 1500
+28: Warning: ieee_inexact is signaling
+28: ERROR STOP 1
+28:  OpenMP target: CSR offsets must be nondecreasing
+21/33 Test #28: predictor_target_reject_monotonic .........   Passed    0.35 sec
+test 29
+      Start 29: predictor_target_reject_target
+
+29: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "target"
+29: Test timeout computed to be: 1500
+29: Warning: ieee_inexact is signaling
+29: ERROR STOP 1
+29:  OpenMP target: neighbor index out of range
+22/33 Test #29: predictor_target_reject_target ............   Passed    0.35 sec
+test 30
+      Start 30: predictor_target_reject_center
+
+30: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "center"
+30: Test timeout computed to be: 1500
+30: Warning: ieee_inexact is signaling
+30: ERROR STOP 1
+30:  OpenMP target: center index out of range
+23/33 Test #30: predictor_target_reject_center ............   Passed    0.32 sec
+test 31
+      Start 31: predictor_target_reject_species
+
+31: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "species"
+31: Test timeout computed to be: 1500
+31: Warning: ieee_inexact is signaling
+31: ERROR STOP 1
+31:  OpenMP target: species out of range
+24/33 Test #31: predictor_target_reject_species ...........   Passed    0.37 sec
+test 32
+      Start 32: predictor_target_reject_shape
+
+32: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "shape"
+32: Test timeout computed to be: 1500
+32: Warning: ieee_inexact is signaling
+32: ERROR STOP 1
+32:  OpenMP target: wrong CSR offset count
+25/33 Test #32: predictor_target_reject_shape .............   Passed    0.31 sec
+test 33
+      Start 33: predictor_target_reject_unsupported
+
+33: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "unsupported"
+33: Test timeout computed to be: 1500
+33: Warning: ieee_inexact is signaling
+33: ERROR STOP 1
+33:  OpenMP target: mixed or multiple Chebyshev components are not supported
+26/33 Test #33: predictor_target_reject_unsupported .......   Passed    0.00 sec
+test 34
+      Start 34: predictor_target_reject_activation
+
+34: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "activation"
+34: Test timeout computed to be: 1500
+34: Warning: ieee_inexact is signaling
+34: ERROR STOP 1
+34:  OpenMP target: unsupported network activation
+27/33 Test #34: predictor_target_reject_activation ........   Passed    0.01 sec
+test 35
+      Start 35: predictor_target_reject_version10
+
+35: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "version10"
+35: Test timeout computed to be: 1500
+35: Warning: ieee_inexact is signaling
+35: ERROR STOP 1
+35:  OpenMP target: too few neighbors for version 10 center lookup
+28/33 Test #35: predictor_target_reject_version10 .........   Passed    0.36 sec
+test 36
+      Start 36: predictor_target_reject_uninitialized
+
+36: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "uninitialized"
+36: Test timeout computed to be: 1500
+36: Warning: ieee_inexact is signaling
+36: ERROR STOP 1
+36:  OpenMP target: initialize target_model first
+29/33 Test #36: predictor_target_reject_uninitialized .....   Passed    0.00 sec
+test 37
+      Start 37: predictor_target_reject_host_fallback
+
+37: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "fallback"
+37: Environment variables:
+37:  OMP_TARGET_OFFLOAD=DISABLED
+37: Test timeout computed to be: 1500
+37: Warning: ieee_inexact is signaling
+37: ERROR STOP 1
+37:  OpenMP target: GPU device unavailable
+30/33 Test #37: predictor_target_reject_host_fallback .....   Passed    0.01 sec
+test 58
+      Start 58: predictor_target_aenet_golden
+
+58: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--aenet" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict"
+58: Test timeout computed to be: 300
+58:  GPU checks:           18  maximum absolute E/F/W error:
+58:    3.2258640203508548E-012
+58:  GPU batch FP64 equivalence and finite differences passed
+31/33 Test #58: predictor_target_aenet_golden .............   Passed    2.05 sec
+test 59
+      Start 59: predictor_target_aenet_mode1
+
+59: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--aenet" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict" "1"
+59: Test timeout computed to be: 300
+59:  GPU checks:           18  maximum absolute E/F/W error:
+59:    3.3821834222180769E-012
+59:  GPU batch FP64 equivalence and finite differences passed
+32/33 Test #59: predictor_target_aenet_mode1 ..............   Passed    2.68 sec
+test 60
+      Start 60: predictor_target_aenet_mode2
+
+60: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--aenet" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict" "2"
+60: Test timeout computed to be: 300
+60:  GPU checks:           18  maximum absolute E/F/W error:
+60:    3.2258640203508548E-012
+60:  GPU batch FP64 equivalence and finite differences passed
+33/33 Test #60: predictor_target_aenet_mode2 ..............   Passed    1.72 sec
+
+100% tests passed, 0 tests failed out of 33
+
+Label Time Summary:
+gpu            =  38.11 sec*proc (30 tests)
+target-host    =   7.23 sec*proc (3 tests)
+
+Total Test time (real) =  45.37 sec

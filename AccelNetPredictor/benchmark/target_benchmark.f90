@@ -22,11 +22,12 @@ program target_benchmark
     integer, allocatable :: centers(:)
     real(real64) :: wc(3,3), wg(3,3), seconds, elapsed, times(4), error, phase(8), phase_sum(8), mark, neighbor_seconds, spacing
     integer(int64) :: start, finish, rate, repeats
-    integer :: n, i, sample, order, method, j, mode, allocations, uploads, methods
+    integer :: n, i, sample, order, method, j, mode, allocations, uploads, methods, fixed_neighbors
     character(len=128) :: arg, family, backend
     logical :: host
-    if (command_argument_count() < 3 .or. command_argument_count() > 8) &
-        error stop 'usage: accelnet-target-benchmark N ORDER SECONDS [MODE] [SPACING] [gpu|host|cpu-shared] [FAMILY] [no-neighbors]'
+    if (command_argument_count() < 3 .or. command_argument_count() > 9) &
+        error stop 'usage: accelnet-target-benchmark N ORDER SECONDS [MODE] [SPACING] '// &
+            '[gpu|host|cpu-shared] [FAMILY] [no-neighbors] [ENV_NEIGHBORS]'
     call get_command_argument(1,arg); read(arg,*) n
     call get_command_argument(2,arg); read(arg,*) order
     call get_command_argument(3,arg); read(arg,*) seconds
@@ -35,6 +36,11 @@ program target_benchmark
         call get_command_argument(8,arg)
         if (arg /= 'no-neighbors') error stop 'expected no-neighbors'
         methods = 2
+    end if
+    fixed_neighbors = 0
+    if (command_argument_count() == 9) then
+        call get_command_argument(9,arg); read(arg,*) fixed_neighbors
+        if (fixed_neighbors < 1) error stop 'positive environment neighbor count required'
     end if
     mode = 0; spacing = 1.7_real64
     if (command_argument_count() >= 4) then
@@ -61,10 +67,18 @@ program target_benchmark
     call make_structure(n,2,s)
     if (spacing <= 0) error stop 'spacing must be positive'
     s%positions = s%positions*(spacing/1.7_real64); s%lattice = s%lattice*(spacing/1.7_real64)
-    call packed%initialize(model,mode=mode,use_host=host)
+    if (family == 'chebyshev') then
+        call packed%initialize(model,mode=mode,use_host=host)
+    else
+        call packed%initialize(model,g5_mode=mode,use_host=host)
+    end if
     allocate(ec(n),eg(n),fc(3,n),fg(3,n),centers(n))
     centers = [(i,i=1,n)]
-    call build_neighbor_list(s,model%maximum_cutoff,nb,model%minimum_distance)
+    if (fixed_neighbors > 0) then
+        call make_g5_scaling_neighbors(n,fixed_neighbors,nb)
+    else
+        call build_neighbor_list(s,model%maximum_cutoff,nb,model%minimum_distance)
+    end if
     call evaluate(1); call evaluate(2)
     error = max(maxval(abs(ec-eg)),maxval(abs(fc-fg)),maxval(abs(wc-wg)))
     call check()

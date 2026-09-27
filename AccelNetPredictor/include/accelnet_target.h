@@ -9,6 +9,12 @@ extern "C" {
    Error buffer must have 512 bytes. Status zero means success. */
 int accelnet_target_create(int nspecies, const char *const *paths, int device,
                            int mode, double *cutoff, void **handle, char *error);
+/* Independent modes: Chebyshev 0 auto / 1 direct / 2 moment;
+   G5 0 auto (16 angular neighbors) / 1 direct / 2 moment with 16-neighbor threshold /
+   3 forced moment. Ineligible fractional/high G5 powers remain direct. */
+int accelnet_target_create_modes(int nspecies, const char *const *paths, int device,
+                                 int chebyshev_mode, int g5_mode, double *cutoff,
+                                 void **handle, char *error);
 void accelnet_target_destroy(void *handle);
 int accelnet_target_compute(void *handle, int natoms, int nrows, int nedges,
                             const int *species, const int *centers,

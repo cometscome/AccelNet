@@ -29,8 +29,10 @@ The method and its validation are described in the
   Supported CPU batches use the same kernel source with OpenMP disabled:
   Chebyshev direct/moment, LJ, and Behler G1–G5. The former CPU implementation
   remains available as `evaluate_batch_reference` for independent comparisons
-  and as a fallback for unsupported configurations, including forced G5 moments.
-  G4/G5 currently use direct pair evaluation; Chebyshev supports direct/moment.
+  and as a fallback for unsupported configurations.
+  Chebyshev and G5 support direct/moment in the common source; G4 uses direct
+  pairs. G5 auto retains the original 16-angular-neighbor threshold and order-10
+  bound; fractional/higher powers remain direct.
   Existing CLI, C atomic and `pair_style accelnet` calls continue using the CPU backend.
   The optional [LAMMPS `accelnet/gpu` interface](docs/lammps-gpu.md) uses the GPU package
   with the Fortran OpenMP target backend.

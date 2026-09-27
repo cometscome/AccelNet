@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.6 — 2026-09-27 (JST).**
+**Document version 1.7 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -18,7 +18,7 @@ not bitwise equality.
 | AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | `gpu` checkpoint **`b5e2fcd`** (revision 1.5), followed by the common CPU dispatch change in Section 17; each validation archive identifies its measured sources |
+| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18; each validation archive identifies its measured sources |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -69,7 +69,7 @@ are recorded in the [G4 report](docs/validation/g4-common-2026-09-27/README.md).
 | Reused unit directions and differentiated Clenshaw | Adopted in common code |
 | Precomputed moment force coefficients and contracted polynomial gradient | Adopted in common code |
 | Differentiated multivariate Horner and lexicographic coefficient packing | Adopted and validated |
-| LJ and Behler G1–G5 | GPU support implemented; G4/G5 use direct pairs; forced GPU G5 moments are rejected |
+| LJ and Behler G1–G5 | GPU support implemented; G4 uses direct pairs; G5 supports shared direct/moment evaluation (Section 18) |
 | Generic radial caching and LJ component fusion | Implemented in the common serial CPU/GPU source; measurements in Section 12 |
 | Behler angular coefficient contraction and differentiated Horner | Retained for G5; the former G4 path in Sections 13–14 is superseded by Section 15 |
 | G4 value/Jacobian evaluation | Shared value/derivative loop with scalar caches and disjoint descriptor owners; CPU uses one owner, GPU uses a flat center/owner launch; force contraction reads the saved Jacobian; Sections 15–16 |
@@ -78,9 +78,9 @@ are recorded in the [G4 report](docs/validation/g4-common-2026-09-27/README.md).
 The default CPU shared path applies to the **CSR batch API** for supported
 Chebyshev, LJ and Behler G1–G5 models (revision 1.6, Section 17).
 `evaluate_batch_reference` retains the independent old CPU path and is the
-fallback for mixed/multiple Chebyshev components within one element or explicitly
-requested G5 moments. G5 auto uses direct pairs on the common path; the reference
-auto policy can select moments. Object APIs, atomic Fortran/C APIs, CLI, and
+fallback for mixed/multiple Chebyshev components within one element. G5 moments
+now use the common source. Auto retains the original per-component threshold of
+16 angular neighbors and the order-10 bound (revision 1.7, Section 18). Object APIs, atomic Fortran/C APIs, CLI, and
 ordinary LAMMPS `pair_style accelnet` still use their established CPU implementation.
 
 ## 2. Notation and force contraction
@@ -1395,6 +1395,9 @@ The validated `lmp-g4-optimized` candidate is kept alongside the previous binari
 
 ## 17. Default common CPU batch dispatch (revision 1.6)
 
+The G5 dispatch limitation described in this historical section is superseded
+by revision 1.7 below.
+
 Revision 1.6 adopts the shared numerical implementation for every CSR batch
 model accepted by the existing target-model packer. In addition to the already
 shared Chebyshev direct/moment path, this includes LJ, Behler G1–G5, multiple
@@ -1442,3 +1445,164 @@ added to the target descriptor suite; batch tests cover shared/fallback mode
 transitions, model reloads and partitioned/additive output. The opt-in
 `ACCELNET_TEST_COMMON_CPU_PERFORMANCE` CTest gate compares default batches with
 the independent structure evaluator, including real n2p2 G4/G5 models.
+
+
+## 18. Common G5 moments without losing the original advantage (revision 1.7)
+
+The earlier degree-8, short-cutoff synthetic tests do not answer whether the
+original G5 moment advantage survives. The original scaling benchmark uses
+orders $\zeta\in\{1,2,4\}$, three radial groups and controlled neighbor counts.
+Revision 1.7 reproduces those descriptor parameters and local environments, then
+compares **old direct, old moment, common direct and common moment** with the
+same network. CPU comparisons compile OpenMP out entirely. The
+[validation archive](docs/validation/g5-moments-2026-09-27/README.md) records all
+four methods, both CPU compilers, H100 and Blackwell.
+
+### 18.1 Exact species-resolved moment contraction
+
+For radial group $g=(\eta,R_s,R_c,\text{cutoff type},\alpha)$, define
+
+$$
+h_j^{g}=e^{-\eta(r_j-R_s)^2}f_c(r_j),\qquad
+M_{\boldsymbol\beta}^{g,t}=\sum_{j:s_j=t}h_j^{g}\,\mathbf u_j^{\boldsymbol\beta},
+\qquad S^{g,t}=\sum_{j:s_j=t}(h_j^{g})^2.
+$$
+
+Here $\boldsymbol\beta=(\beta_x,\beta_y,\beta_z)$ is a nonnegative multi-index,
+$|\boldsymbol\beta|=q$ and
+$\mathbf u^{\boldsymbol\beta}=u_x^{\beta_x}u_y^{\beta_y}u_z^{\beta_z}$.
+For descriptor $b$ with integer $\zeta_b$,
+
+$$
+a_{bq}=2^{1-\zeta_b}{\zeta_b\choose q}\lambda_b^q,\qquad
+G_b=\sum_{q=0}^{\zeta_b}a_{bq}B_q^{g,t_1,t_2},
+$$
+
+$$
+B_q^{g,a,b}=
+\begin{cases}
+\displaystyle\sum_{|\boldsymbol\beta|=q}{q!\over\boldsymbol\beta!}
+M_{\boldsymbol\beta}^{g,a}M_{\boldsymbol\beta}^{g,b},&a\ne b,\\[4pt]
+\displaystyle\frac12\left(\sum_{|\boldsymbol\beta|=q}{q!\over\boldsymbol\beta!}
+(M_{\boldsymbol\beta}^{g,a})^2-S^{g,a}\right),&a=b.
+\end{cases}
+$$
+
+The same-species term removes self pairs and counts each unordered pair once.
+It follows from $\mathbf u_j\cdot\mathbf u_j=1$; a self correction is required at
+every degree, including zero. Distinct species need neither the factor $1/2$
+nor a self correction. No neighbor-pair approximation is introduced.
+
+Raw moments are built once and kept through NN evaluation. The bilinear
+$B_q$ terms are computed **once per radial group, species pair and degree**,
+then reused by every descriptor with that radial group. Repeating that reduction
+for every descriptor would waste much of the moment method's benefit.
+
+### 18.2 NN contraction before monomial and neighbor loops
+
+Let $w_b=-\partial E/\partial G_b$ include the input-normalization derivative.
+Accumulate the symmetric species-pair coefficients
+
+$$
+C_q^{g,a,b}=\sum_{d\text{ matching }g,\{a,b\}}w_d a_{dq}.
+$$
+
+The raw-moment adjoint and self coefficient are
+
+$$
+A_{\boldsymbol\beta}^{g,a}={|\boldsymbol\beta|!\over\boldsymbol\beta!}
+\sum_b C_{|\boldsymbol\beta|}^{g,a,b}M_{\boldsymbol\beta}^{g,b},\qquad
+d^{g,a}=\sum_q C_q^{g,a,a}.
+$$
+
+Thus each group's contribution for neighbor $j$ of species $a$ is
+
+$$
+\mathbf F_j^g=
+(h_j^g)'\,[P^{g,a}(\mathbf u_j)-d^{g,a}h_j^g]\,\mathbf u_j
++{h_j^g\over r_j}
+\left[\nabla P^{g,a}(\mathbf u_j)
+-\mathbf u_j\big(\mathbf u_j\cdot\nabla P^{g,a}(\mathbf u_j)\big)\right],
+\qquad
+P^{g,a}(\mathbf u)=\sum_{\boldsymbol\beta}A_{\boldsymbol\beta}^{g,a}
+\mathbf u^{\boldsymbol\beta}.
+$$
+
+These are edge-force contributions; the existing scatter accounts for the
+central atom and virial. $P$ and its three derivatives are evaluated together by
+nested differentiated Horner, reusing the Chebyshev moment optimization. A step
+$H\leftarrow xH+c$ carries $D\leftarrow xD+H_{\rm old}$. This does not divide by
+coordinates, so zero components are safe. Descriptor work ends at the degree
+contraction; neither the monomial adjoint nor force loop scans all descriptors.
+
+With $K={p+3\choose3}$ monomials through degree $p$, $R$ radial groups, $S$
+species and $D$ descriptors, the main costs are moment construction
+$O(RSKN_n)$ in the current species-channel loops, bilinear contractions
+$O(RS^2K)$, descriptor/NN coefficient work $O(RS^2Dp)$ in the current matching
+loops, and forces $O(RKN_n)$. There is no $N_n^2$ pair loop for active moments.
+The padded maximum degree across groups is retained; group-specific degree
+bounds and skipping unused species-pair channels remain possible optimizations.
+
+### 18.3 Shared implementation, selection and storage
+
+CPU and GPU compile the same moment construction, degree contractions, adjoints
+and differentiated Horner source. GPU directives distribute disjoint
+center/channel/monomial work; CPU compilation removes those directives. Raw
+moments and adjoints occupy separate halves of the persistent moment buffer;
+self corrections use an extra entry. Degree coefficients reuse the NN delta
+buffer. Radial values/derivatives and unit-coordinate powers are cached. Rows
+containing only active moments skip the irrelevant direct feature scans.
+
+G5 selection is independent of Chebyshev selection. Auto (0) and thresholded
+moment (2) use moments at 16 valid neighbors inside **each component's maximum
+angular cutoff**. Direct (1) never uses moments. Forced moment (3) bypasses the
+neighbor threshold. All moment modes require exact integer $1\le\zeta\le10$;
+fractional, near-integer and higher powers retain the shared direct formula.
+Mixed modes, radial groups, cutoffs and element models can coexist. The original
+CPU evaluator remains an independent reference; G5 moment requests no longer
+need its fallback.
+
+`target_model%initialize` adds optional `g5_mode`. The C API adds
+`accelnet_target_create_modes` without changing the old creation ABI. LAMMPS uses
+`pair_style accelnet/gpu auto ... g5 moment`; the first mode controls Chebyshev,
+and the trailing mode controls G5. Auto retains the original neighbor threshold;
+that threshold is a compatibility policy, not a promise of optimal performance
+for every degree, density, compiler or GPU batch size.
+
+### 18.4 Validation and performance regression protection
+
+The new 185-case suite compares energy, every force component and virial against
+independent original CPU direct evaluation. It covers ten cutoffs, all four
+modes, finite differences, integer/noninteger/high orders, collinear and zero
+components, isolated atoms, periodic images, mixed components and central-element
+models, per-component cutoff thresholds, and workspace reuse. GNU, NVHPC,
+checked GNU, H100 and Blackwell validation passed. H100 memcheck found no errors;
+63 LAMMPS comparisons include forced G5 moments against CPU direct, multiple
+neighbor modes, MPI/empty ranks, triclinic cells and short trajectories.
+
+The opt-in `ACCELNET_TEST_G5_MOMENT_PERFORMANCE` CTest requires the serial target
+benchmark. Its controlled 64-center/64-neighbor degree-4 fixture measures all
+four paths with alternating method order. It requires common moment time to be
+at most 1.10 times original moment time and no slower than common direct. It
+checks numerical agreement and rejects a binary importing known OpenMP runtime
+symbols. The general default-CPU performance gate remains separate.
+
+
+On the original degree-4 scaling fixture at 512 centers and 64 neighbors, the
+final times (ms per complete fixed-neighbor evaluation) are:
+
+| Backend | Old direct | Old moment | Common direct | Common moment |
+|---|---:|---:|---:|---:|
+| GNU single core, OpenMP off | 189.614 | 145.568 | 171.331 | 22.418 |
+| NVHPC single core, OpenMP off | 165.276 | 149.391 | 151.821 | 18.684 |
+| H100 | — | — | 4.412 | 1.937 |
+| Blackwell | — | — | 6.667 | 2.384 |
+
+The shared CPU timing includes per-call model packing; GPU timing uses a prepared
+model and includes transfers. Neighbor construction is excluded. Original
+moment beats original direct here, and common moment improves further. The
+separate degree-8/small-cutoff H100 control gives 1.345 ms direct versus 1.361 ms
+moment: almost equal, with moment slightly slower. Neither the original threshold
+nor this optimization guarantees a moment win for every workload. Full tables,
+measurement scope, ordinary direct controls, and regression gates are in the
+revision-1.7 validation archive.

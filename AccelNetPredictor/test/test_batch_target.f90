@@ -50,6 +50,98 @@ program test_batch_target
         call make_structure(8,2,s)
         call check(s)
         call finite_differences(s)
+    else if (argument == '--g5-moments') then
+        ! Compare shared moments with the independent CPU evaluator across
+        ! cutoffs, mixed integer/fractional powers, group reuse and sparse rows.
+        do v = 1,4
+            select case(v)
+            case(1); argument = 'g5'
+            case(2); argument = 'g5-series'
+            case(3); argument = 'behler'
+            case(4); argument = 'lj-behler'
+            end select
+            do cutoff = 0,9
+                call make_model(trim(argument),model,order=8)
+                do i = 1,2
+                    model%setups(i)%model%behler(1)%config%cutoff_type = cutoff
+                    model%setups(i)%model%behler(1)%config%cutoff_alpha = 0.2_real64
+                end do
+                do mode = 0,3
+                    call model%set_g5_evaluation(mode)
+                    call packed%initialize(model,use_host=host)
+                    call make_structure(8,2,s)
+                    s%positions = 1.03_real64*s%positions; s%lattice = 1.03_real64*s%lattice
+                    s%lattice(1,2) = 0.4_real64
+                    call check(s)
+                    if (mode == 3 .and. cutoff /= 0) call finite_differences(s)
+                end do
+            end do
+            call make_structure(1,2,s)
+            call check(s) ! periodic self images
+            s%pbc = .false.
+            call check(s) ! no neighbors
+        end do
+        do v = 1,5
+            call make_model('g5',model)
+            do i = 1,2
+                model%setups(i)%model = descriptor_model()
+                ! Separate components may request different modes while sharing
+                ! a radial cache; only eligible exact powers enter moments.
+                do n = 1,4
+                    call initialize_behler_config(grouped_config,2,cutoff_type=1)
+                    degree_test = real(n,real64)
+                    if (n == 2) degree_test = 10
+                    if (n == 3) degree_test = 1.5_real64
+                    if (n == 4) degree_test = 11
+                    if (v == 2 .and. n == 2) degree_test = 2+4e-13_real64
+                    if (v == 3 .and. n == 4) degree_test = 16
+                    lambda_test = -1
+                    if (v == 4) lambda_test = 0.7_real64
+                    if (v == 5) lambda_test = 0
+                    call add_g5(grouped_config,1,merge(1,2,mod(n,2) == 0), &
+                        3.4_real64,lambda_test,degree_test,merge(0.2_real64,0.3_real64,n < 3),0.4_real64)
+                    grouped_config%g5_evaluation_mode = 3
+                    if (n == 1 .and. i == 1) grouped_config%g5_evaluation_mode = 1
+                    call add_behler(model%setups(i)%model,grouped_config)
+                end do
+            end do
+            call packed%initialize(model,use_host=host)
+            call make_structure(8,2,s)
+            call check(s)
+            call finite_differences(s)
+            call make_structure(4,2,s)
+            s%pbc = .false.; s%positions = 0
+            s%positions(1,:) = [0.0_real64,0.9_real64,-1.2_real64,1.8_real64]
+            call check(s) ! zero direction components and both angular endpoints
+            call finite_differences(s)
+        end do
+        ! Mixed cutoffs/components: auto counts neighbors inside each component's
+        ! angular cutoff, not the full CSR list or a different component's Rc.
+        call make_model('g5',model)
+        do i = 1,2
+            model%setups(i)%model = descriptor_model()
+            do n = 1,2
+                call initialize_behler_config(grouped_config,2)
+                call add_g5(grouped_config,1,1,real(n+1,real64),1.0_real64,2.0_real64,0.2_real64)
+                call add_g5(grouped_config,1,2,real(n+1,real64),-1.0_real64,4.0_real64,0.2_real64)
+                call add_behler(model%setups(i)%model,grouped_config)
+            end do
+        end do
+        call make_structure(64,2,s)
+        do mode = 0,3
+            call model%set_g5_evaluation(mode)
+            call packed%initialize(model,use_host=host)
+            call check(s)
+        end do
+        ! Mixed central-element algorithms and reload of group/basis capacities.
+        call make_model('g5-series',model,order=4)
+        do mode = 1,3
+            model%setups(1)%model%behler(1)%config%g5_evaluation_mode = mode
+            model%setups(2)%model%behler(1)%config%g5_evaluation_mode = 4-mode
+            call packed%initialize(model,use_host=host)
+            call make_structure(8,2,s)
+            call check(s)
+        end do
     else if (argument == '--descriptors') then
         do v = 1,size(families)
             do cutoff = 0,9

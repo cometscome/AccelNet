@@ -23,16 +23,17 @@ def main():
     parser.add_argument('--sizes', type=int, nargs='+', default=[512, 4096])
     parser.add_argument('--orders', type=int, nargs='+', default=[5])
     parser.add_argument('--modes', type=int, nargs='+', default=[1, 2])
-    parser.add_argument('--family', choices=['chebyshev', 'lj', 'g4', 'g4-distinct', 'g5', 'behler', 'lj-behler', 'g4-series', 'g5-series'],
+    parser.add_argument('--family', choices=['chebyshev', 'lj', 'g4', 'g4-distinct', 'g5', 'behler', 'lj-behler', 'g4-series', 'g5-series', 'g5-scaling'],
                         default='chebyshev')
+    parser.add_argument('--neighbors', type=int, default=0, help='fixed original G5 scaling environment size')
     parser.add_argument('--rounds', type=int, default=3)
     parser.add_argument('--seconds', type=float, default=0.12)
     parser.add_argument('--cpu', type=int, default=6)
     args = parser.parse_args()
     if args.rounds < 1 or args.seconds <= 0:
         parser.error('rounds and seconds must be positive')
-    if args.family != 'chebyshev' and any(mode not in (0, 1) for mode in args.modes):
-        parser.error('generic descriptor comparisons support modes 0 (auto) and 1 (direct)')
+    if args.family != 'chebyshev' and any(mode not in (0, 1, 2, 3) for mode in args.modes):
+        parser.error('generic modes: 0 auto, 1 direct, 2 moments with threshold, 3 forced moments')
     labels = [v[0] for v in args.variant]
     if len(set(labels)) != len(labels):
         parser.error('variant labels must be unique')
@@ -49,6 +50,8 @@ def main():
                     for label, backend, exe in variants:
                         command = [str(Path(exe).resolve()), str(n), str(order), str(args.seconds),
                                    str(mode), '1.7', backend, args.family, 'no-neighbors']
+                        if args.neighbors:
+                            command.append(str(args.neighbors))
                         result = subprocess.run(command, env=env, text=True, capture_output=True,
                                                 timeout=600)
                         name = f'{label}-n{n}-order{order}-mode{mode}-round{repeat}'

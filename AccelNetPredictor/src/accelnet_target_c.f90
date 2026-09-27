@@ -12,8 +12,19 @@ module accelnet_target_c
         type(target_workspace), pointer :: work => null()
     end type
 contains
+    ! Preserve the existing ABI and its Chebyshev mode argument.
     function accelnet_target_create(nspecies,paths,device,mode,cutoff,handle,message) result(status) bind(C)
         integer(c_int), value :: nspecies,device,mode
+        type(c_ptr), intent(in) :: paths(nspecies)
+        real(c_double), intent(out) :: cutoff
+        type(c_ptr), intent(out) :: handle
+        character(c_char), intent(out) :: message(512)
+        integer(c_int) :: status
+        status = accelnet_target_create_modes(nspecies,paths,device,mode,0_c_int,cutoff,handle,message)
+    end function
+
+    function accelnet_target_create_modes(nspecies,paths,device,mode,g5_mode,cutoff,handle,message) result(status) bind(C)
+        integer(c_int), value :: nspecies,device,mode,g5_mode
         type(c_ptr), intent(in) :: paths(nspecies)
         real(c_double), intent(out) :: cutoff
         type(c_ptr), intent(out) :: handle
@@ -30,7 +41,7 @@ contains
         character(len=511) :: detail
         integer :: i,j,unit,ios
         handle = c_null_ptr; cutoff = 0; message = c_null_char; status = 1
-        if (nspecies < 1 .or. mode < 0 .or. mode > 2) then
+        if (nspecies < 1 .or. mode < 0 .or. mode > 2 .or. g5_mode < 0 .or. g5_mode > 3) then
             call c_message('Invalid species count or evaluation mode',message)
             return
         end if
@@ -135,7 +146,7 @@ contains
         call load_predictor_from_network_data(nets,source)
         allocate(ctx)
         allocate(ctx%model,ctx%work)
-        call ctx%model%initialize(source,device,mode,status,detail)
+        call ctx%model%initialize(source,device,mode,status,detail,g5_mode=g5_mode)
         if (status /= 0) then
             call c_message(detail,message)
             deallocate(ctx%model,ctx%work)

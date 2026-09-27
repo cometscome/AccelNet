@@ -231,6 +231,10 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
             set_tests_properties(predictor_target_embedded_${_family} predictor_target_c_${_family}
                 PROPERTIES FIXTURES_REQUIRED target-models LABELS "gpu" TIMEOUT 120)
         endforeach()
+        add_test(NAME predictor_target_g5_moments COMMAND test_batch_target --g5-moments)
+        set_tests_properties(predictor_target_g5_moments PROPERTIES LABELS "gpu" TIMEOUT 300)
+        add_test(NAME predictor_target_host_g5_moments COMMAND test_batch_target --host --g5-moments)
+        set_tests_properties(predictor_target_host_g5_moments PROPERTIES LABELS "target-host" TIMEOUT 300)
         add_test(NAME predictor_target_other_descriptors COMMAND test_batch_target --descriptors)
         set_tests_properties(predictor_target_other_descriptors PROPERTIES LABELS "gpu" TIMEOUT 300)
         add_test(NAME predictor_target_host_equivalence COMMAND test_batch_target --host)
@@ -267,6 +271,21 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
                 --max-slowdown "${ACCELNET_CPU_MAX_SLOWDOWN}"
                 --output "${CMAKE_CURRENT_BINARY_DIR}/common-cpu-performance.json")
         set_tests_properties(predictor_common_cpu_performance PROPERTIES
+            LABELS "performance" RUN_SERIAL TRUE TIMEOUT 300)
+    endif()
+    option(ACCELNET_TEST_G5_MOMENT_PERFORMANCE
+        "Protect the G5 moment advantage using an OpenMP-disabled CPU build" OFF)
+    if(ACCELNET_TEST_G5_MOMENT_PERFORMANCE)
+        if(NOT ACCELNET_TARGET_SERIAL OR NOT TARGET accelnet-target-benchmark)
+            message(FATAL_ERROR "G5 performance tests need the serial target benchmark and OpenMP disabled")
+        endif()
+        find_package(Python3 COMPONENTS Interpreter REQUIRED)
+        add_test(NAME predictor_g5_moment_performance
+            COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/benchmark/check_g5_moment_performance.py"
+                --executable $<TARGET_FILE:accelnet-target-benchmark>
+                --max-slowdown "${ACCELNET_CPU_MAX_SLOWDOWN}"
+                --output "${CMAKE_CURRENT_BINARY_DIR}/g5-moment-performance.json")
+        set_tests_properties(predictor_g5_moment_performance PROPERTIES
             LABELS "performance" RUN_SERIAL TRUE TIMEOUT 300)
     endif()
     if(ACCELNET_CPU_BASELINE_EXECUTABLE)

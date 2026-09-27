@@ -12,9 +12,16 @@ module accelnet_target_math
     real(real64), parameter :: PI_ACCELNET = 3.14159265358979_real64
     public :: generic_pair_geometry, generic_pair_contracted, generic_pair_value
     public :: generic_radial, generic_radial_value, generic_lj
-    public :: angular_power, angular_value
+    public :: angular_power, angular_value, g5_moment_active
     public :: target_cutoff_value, target_cutoff_derivative, target_activate, target_activation_derivative
 contains
+    pure logical function g5_moment_active(mode,group,neighbors) result(active)
+        !$omp declare target
+        integer, intent(in) :: mode,group,neighbors
+        ! Mode 2 keeps the established 16-neighbor threshold; 3 forces moments.
+        active = group > 0 .and. (mode == 3 .or. ((mode == 0 .or. mode == 2) .and. neighbors >= 16))
+    end function
+
     pure real(real64) function target_cutoff_value(distance, rc, cutoff_type, alpha) result(value)
         !$omp declare target
         include 'cutoff_value.inc'

@@ -1,0 +1,11 @@
+Internal ctest changing into directory: /tmp/accelnet-other-descriptors/build-gnu-serial
+Test project /tmp/accelnet-other-descriptors/build-gnu-serial
+    Start 19: predictor_target_host_g5_moments
+1/1 Test #19: predictor_target_host_g5_moments ...   Passed    0.70 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Label Time Summary:
+target-host    =   0.70 sec*proc (1 test)
+
+Total Test time (real) =   0.70 sec

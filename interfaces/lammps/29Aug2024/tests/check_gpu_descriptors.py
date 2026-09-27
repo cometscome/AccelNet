@@ -17,6 +17,7 @@ p.add_argument('--converter', required=True, type=Path)
 p.add_argument('--output', required=True, type=Path)
 p.add_argument('--ranks', nargs='+', type=int, default=[1, 2])
 p.add_argument('--cases', nargs='+', default=['orthogonal', 'triclinic', 'empty'])
+p.add_argument('--g5-mode', choices=['auto','direct','moment'], default='auto')
 a = p.parse_args()
 repo = Path(__file__).resolve().parents[4]
 a.output = a.output.resolve()
@@ -49,4 +50,4 @@ for family in ['lj', 'behler', 'n2p2']:
     (model/'structure0001.xsf').write_text(structure)
     subprocess.run([sys.executable, str(Path(__file__).with_name('check_gpu.py')),
                     '--lammps', str(a.lammps.resolve()), '--golden', str(model), '--elements', 'H', 'O',
-                    '--output', str(a.output/family), '--ranks', *map(str, a.ranks), '--cases', *a.cases], check=True)
+                    '--output', str(a.output/family), '--g5-mode', a.g5_mode, '--ranks', *map(str, a.ranks), '--cases', *a.cases], check=True)

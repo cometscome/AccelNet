@@ -1,0 +1,14 @@
+[
+  {
+    "compiler": "gnu",
+    "revision": "1d6985d",
+    "path": "/tmp/accelnet-g5-moment/before-gnu",
+    "sha256": "c56704752b923be5c4540f5fae6fb7f66a9dd45d469fc6ef318452e453937fac"
+  },
+  {
+    "compiler": "nvhpc",
+    "revision": "1d6985d",
+    "path": "/tmp/accelnet-g5-moment/before-nvhpc",
+    "sha256": "c66096b4cb186b8745603c24b7a337d5e4c4aaa2f708818c592dcbf1f02f6658"
+  }
+]

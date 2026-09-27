@@ -14,7 +14,7 @@ H100・24,000原子のTi/Oでは25.07→10.81 ms/step、Blackwellでは54.25→1
 - GPU: H100 / Blackwellを検証済み。[実測結果と検証報告](validation/lammps-gpu-2026-09-26/README.md)を参照。
 - モデル: `.nn` / `.nn.ascii` の埋込みChebyshev・LJ・Behler G1〜G5モデル。LAMMPSのtype順は
   ネットワークに埋め込まれたglobal species順と一致させる。バージョンは既存LAMMPS CPU版と同じ0。
-- Chebyshevの`auto` / `direct` / `moment`。G4/G5はdirect計算で、G5のmoment指定は拒否する。
+- Chebyshevの`auto` / `direct` / `moment`と、独立した`g5 auto` / `g5 direct` / `g5 moment`。G4はdirect計算。
 - 局所原子・ghost原子、周期境界、直交セル・制限三斜晶。
 - 全体エネルギー・力・全体virial・原子別エネルギー。`newton on`、旧GPU packageでは`split 1`が必要。
 - `pair_style accelnet` とGPUを無効にしたCPUビルドは引き続き利用可能。
@@ -171,7 +171,15 @@ pair_style accelnet/gpu auto converted/H.nn.ascii converted/O.nn.ascii
 pair_coeff * *
 ```
 
-type順は変換後モデルのglobal species順に合わせる。GPUのG5は現在direct計算であり、
-Chebyshev用の`moment`指定はG5のmoment化を意味しない。
+type順は変換後モデルのglobal species順に合わせる。G5のmoment法は次のように指定する。
+
+```lammps
+pair_style accelnet/gpu auto converted/H.nn.ascii converted/O.nn.ascii g5 moment
+```
+
+末尾の`g5 moment`がG5を選択し、先頭の`auto`はChebyshev用である。
+G5の`auto`は従来と同じく、各成分の角度カットオフ内に16以上の近傍があると
+moment法を選ぶ。整数次数1〜10が対象で、非整数・高次数はdirect法を併用する。
+`g5 moment`は近傍数の閾値を解除するが、次数の上限は解除しない。
 `tests/check_gpu_descriptors.py` はLJ、G1〜G5、変換n2p2について、CPU・GPU近傍各方式、
 1/2 MPIランク、直交・三斜晶・空ランクの短時間MDを比較する。

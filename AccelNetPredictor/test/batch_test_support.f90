@@ -4,7 +4,7 @@
 module batch_test_support
     use iso_fortran_env, only: real64
     use accelnet_predictor, only: predictor_model
-    use accelnet_descriptors, only: atomic_structure, descriptor_config, initialize_config
+    use accelnet_descriptors, only: atomic_structure, neighbor_data, descriptor_config, initialize_config
     use accelnet_lj, only: lj_config, initialize_lj_config
     use accelnet_descriptor_models, only: add_chebyshev, add_lj, add_behler
     use accelnet_behler, only: behler_config, initialize_behler_config, add_g1, add_g2, add_g3, add_g4, add_g5
@@ -17,7 +17,9 @@ contains
         type(descriptor_config) :: chebyshev
         type(lj_config) :: lj
         type(behler_config) :: behler
-        integer :: s, d, l, nw, j, degree, v, pair, sign, t1, t2
+        integer :: s, d, l, nw, j, degree, v, pair, sign, t1, t2, eta_index
+        real(real64), parameter :: scaling_eta(3) = [0.000357_real64,0.028569_real64,0.089277_real64]
+        integer, parameter :: scaling_zeta(3) = [1,2,4]
         degree = 3
         v = 0
         if (present(order)) degree = order
@@ -34,6 +36,22 @@ contains
                 call initialize_config(chebyshev, 2, 3.4_real64, degree, 3.4_real64, degree, &
                     version=v, central_type_index=s)
                 call add_chebyshev(model%setups(s)%model, chebyshev)
+            case ('g5-scaling')
+                ! Same 54 descriptors as benchmark_g5_scaling.f90.
+                model%maximum_cutoff = 6.5_real64
+                call initialize_behler_config(behler,2)
+                do eta_index = 1,3
+                    do j = 1,3
+                        do pair = 1,3
+                            t1 = merge(2,1,pair == 3); t2 = merge(1,2,pair == 1)
+                            do sign = 1,2
+                                call add_g5(behler,t1,t2,6.5_real64,real(2*sign-3,real64), &
+                                    real(scaling_zeta(j),real64),scaling_eta(eta_index),0.35_real64)
+                            end do
+                        end do
+                    end do
+                end do
+                call add_behler(model%setups(s)%model,behler)
             case ('g4-series', 'g5-series')
                 call initialize_behler_config(behler,2)
                 do pair = 1,3
@@ -120,6 +138,29 @@ contains
             s%positions(:,i) = 1.7_real64*real([mod(i-1,side),mod((i-1)/side,side),(i-1)/side**2],real64) &
                 + 0.07_real64*sin(real([i,2*i,3*i],real64))
             s%species(i) = 1+mod(i-1,ntypes)
+        end do
+    end subroutine
+    subroutine make_g5_scaling_neighbors(natoms,count,neighbors)
+        integer, intent(in) :: natoms,count
+        type(neighbor_data), intent(out) :: neighbors
+        integer :: row,j,edge
+        real(real64) :: radius,cp,sp,azimuth
+        if (natoms < 2 .or. mod(natoms,2) /= 0 .or. count < 1) error stop 'invalid fixed environment size'
+        allocate(neighbors%offsets(natoms+1),neighbors%atom_indices(natoms*count), &
+            neighbors%displacements(3,natoms*count))
+        neighbors%offsets = [(1+row*count,row=0,natoms)]
+        do row = 1,natoms
+            do j = 1,count
+                edge = (row-1)*count+j
+                radius = 1.5_real64+3.5_real64*real(mod(7*j,31),real64)/31.0_real64
+                cp = 1.0_real64-2.0_real64*(real(j,real64)-0.5_real64)/real(count,real64)
+                sp = sqrt(max(0.0_real64,1.0_real64-cp*cp))
+                azimuth = 2.39996322972865332_real64*real(j,real64)
+                neighbors%displacements(:,edge) = radius*[sp*cos(azimuth),sp*sin(azimuth),cp]
+                ! The benchmark's global species alternate 1,2 by atom ID.
+                ! Repeated targets are valid CSR images, without an MD lattice.
+                neighbors%atom_indices(edge) = 1+mod(j,natoms)
+            end do
         end do
     end subroutine
 end module

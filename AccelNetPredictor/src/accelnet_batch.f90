@@ -116,8 +116,8 @@ contains
     end subroutine
 
     ! Retained as an independent numerical/performance reference and as the
-    ! fallback for unsupported packing (e.g. mixed Chebyshev components or
-    ! explicitly requested G5 moments). Do not silently change those modes.
+    ! fallback for unsupported packing (e.g. mixed Chebyshev components).
+    ! Supported G5 direct/auto/moment modes all use the common implementation.
     subroutine evaluate_batch_reference(model, species, centers, offsets, indices, displacements, energies, forces, work, virial)
         type(predictor_model), intent(in) :: model
         integer, intent(in) :: species(:), centers(:), offsets(:), indices(:)
