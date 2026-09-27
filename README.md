@@ -47,6 +47,9 @@ repository.
 
 ## Compatibility overview
 
+For current CPU/GPU, direct/moment, auto-selection, and ænet coverage, see
+[the implementation status](docs/implementation-status.md).
+
 The following table summarizes compatibility with ænet 2.0.4 and n2p2 2.3.0.
 "Conditional" means that only the model families and settings listed in the
 Notes column are accepted; unsupported settings are rejected with an error.
@@ -54,7 +57,7 @@ Notes column are accepted; unsupported settings are rejected with an error.
 | Feature | ænet / AccelNet | n2p2 | Notes |
 |---|---|---|---|
 | Model input | Supported | Conditional | ænet/AccelNet ASCII and compatible native binary; n2p2 short-range 2G model directories |
-| Descriptors | Supported | Conditional | ænet Chebyshev and Behler G1--G5, plus AccelNet LJ; n2p2 SF types 2, 3, and 9 |
+| Descriptors | Supported | Conditional | ænet Chebyshev and Behler G1--G5, plus AccelNet LJ; n2p2 SF types 2/3/9/12/13/20--25 |
 | Activation functions | Supported | Supported | ænet native codes 0--4; all n2p2 2.3.0 activation characters |
 | Cutoff functions | Supported | Supported | Standard ænet metadata; n2p2 cutoff types 0--8 and the [Mori *et al.* fractional cutoff](https://doi.org/10.1103/PhysRevMaterials.7.063605) as extension type 9 |
 | Descriptor scaling | Supported | Supported | Affine ænet scaling; n2p2 scale, center, scale+center, and sigma modes |
@@ -65,7 +68,8 @@ Notes column are accepted; unsupported settings are rejected with an error.
 | LAMMPS `pair_style accelnet` | Supported | Supported | n2p2 directories can be loaded directly with an explicit atom-type mapping |
 | Model conversion | Conditional | Conditional | Only features representable by both formats are converted |
 | Potential training | Not supported | Not supported | Use ænet, ænet-PyTorch, or n2p2 for training |
-| 4G/Q, charge, weighted, or compact models | Not applicable | Not supported | n2p2 4G/Q and SF types 12, 13, and 20--25 are rejected |
+| Weighted / compact descriptors | AccelNet extension | Supported | n2p2 SF types 12/13/20--25 use common CPU/GPU kernels |
+| 4G/Q and charge models | Not applicable | Not supported | Charge equilibration and electrostatics are not implemented |
 | Per-element topology and `normalize_nodes` | Not applicable | Supported | n2p2 global defaults and per-element overrides are accepted; node normalization is folded into weights and biases |
 
 The exact accepted syntax, formulas, ordering conversions, and tested cases are
@@ -279,14 +283,13 @@ modes are in [`interfaces/lammps/README.md`](interfaces/lammps/README.md).
 
 AccelNet supports ænet Chebyshev and Behler-style descriptors used by the
 documented network formats. Its n2p2 loader supports short-range 2G models
-with symmetry-function types 2, 3, and 9, supported cutoff functions, network
+with symmetry-function types 2/3/9/12/13/20--25, supported cutoff functions, network
 activations, scaling, energy normalization, and atomic reference energies.
 
 The following are not currently supported:
 
 - training of neural-network potentials;
 - n2p2 4G/charge models;
-- weighted and compact n2p2 symmetry functions;
 - direct input of general ASE formats or ænet training-set files.
 
 Unsupported model settings are rejected rather than silently approximated.

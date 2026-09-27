@@ -1,10 +1,13 @@
 # AccelNet Compatibility with ænet and n2p2 Models
 
 Assessment date: 2026-09-27<br>
-AccelNet version assessed: `1.0.1` (methods revision 1.8)<br>
+AccelNet version assessed: `1.0.1` (methods revision 1.11)<br>
 Reference implementations: ænet `2.0.4`, n2p2 `v2.3.0`
 
 ## 1. Summary
+
+See [implementation status](implementation-status.md) for current CPU/GPU
+execution paths, direct/moment coverage, and automatic method selection.
 
 AccelNet can load existing models and calculate energies and analytical forces
 within the following limits.
@@ -535,7 +538,7 @@ n2p2 v2.3.0.
 |---|---|---|
 | `H2O_RPBE-D3` | Loaded and wrote AccelNet ASCII successfully | Types 2/3 and all three normalization entries |
 | `Cu2S_PBE` | Loaded and wrote AccelNet ASCII successfully | Types 2/3/9 and all three normalization entries |
-| `Anisole_SCAN` | Rejected as expected | Compact types 20/22 |
+| `Anisole_SCAN` | Rejected in the original August loader; now supported | Compact types 20/22; current independent validation is in Section 10 |
 | `H2O_RPBE-D3_4G` | Rejected as expected | 4G-related settings |
 
 “Successfully” here means that parsing and conversion completed. A separate

@@ -7,10 +7,12 @@ or the CPU, checked against the established CPU evaluator.
 
 The optional [batch API and CPU performance checks](../docs/batch-api.md) provide
 CSR-based CPU evaluation with reusable work buffers. The separate
-[OpenMP target backend](../docs/openmp-target.md) evaluates Chebyshev, LJ and Behler G1–G5 models in FP64,
+[OpenMP target backend](../docs/openmp-target.md) evaluates Chebyshev, LJ, Behler G1–G5 and n2p2 weighted/compact models in FP64,
 with explicit host execution for numerical and performance comparisons.
 The default CPU batch path uses a serial compilation of those same kernels for
-Chebyshev direct and moment. `evaluate_batch_reference` retains the former CPU
+all supported descriptor families, including Chebyshev/G5 direct and moment.
+See [implementation status](../docs/implementation-status.md) for restrictions
+and auto-selection rules. `evaluate_batch_reference` retains the former CPU
 batch evaluator. Object and atomic evaluation APIs remain unchanged.
 
 ```sh
@@ -36,13 +38,13 @@ build/accelnet-predict --n2p2 /path/to/model structure.xsf
 
 From Fortran, use `load_predictor_from_n2p2(model_directory, model)` or reload
 an existing object with `call model%reload_from_n2p2(model_directory)`.
-Imported models currently support 2G symmetry-function types 2, 3, and 9,
+Imported models currently support 2G symmetry-function types 2/3/9/12/13/20--25,
 all n2p2 `cutoff_type` values 0 through 8 and AccelNet's fractional extension
 as type 9, with `0 <= cutoff_alpha < 1` (`cutoff_alpha > 0` for type 9),
 all n2p2 activation functions,
 the standard scaling modes, data-set energy normalization, and atomic energy
-offsets, per-element network topologies, and `normalize_nodes`. Weighted/compact
-symmetry functions and 4G/charge models are rejected with an error rather than
+offsets, per-element network topologies, and `normalize_nodes`.
+4G/charge models are rejected with an error rather than
 evaluated with different semantics. XSF coordinates and
 the parameters in `input.nn` must use the same physical length unit; returned
 energies and forces use the model's physical energy and length units.
