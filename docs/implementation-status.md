@@ -1,6 +1,6 @@
 # CPU/GPU implementation status
 
-Assessment: 2026-09-27; AccelNet 1.0.1, methods revision 1.13; migration baseline `gpu`
+Assessment: 2026-09-27; AccelNet 1.1.0, methods revision 1.13; migration baseline `gpu`
 checkpoint `543b180`. This describes evaluation of models **inside AccelNet**,
 not GPU support in the upstream ænet or n2p2 programs.
 

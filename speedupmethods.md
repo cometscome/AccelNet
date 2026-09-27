@@ -15,7 +15,8 @@ not bitwise equality.
 
 | Item | Version or identity |
 |---|---|
-| AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
+| Current AccelNet / AccelNetPredictor release | **1.1.0**, as declared by CMake |
+| Library version used in the archived measurements through Section 24 | **1.0.1** |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
 | Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20, exact high-order moments/threading in Section 21, atomic removal in Section 22, and unified inference APIs in Section 23, and energy-only recovery in Section 24; each validation archive identifies its measured sources |
@@ -879,7 +880,7 @@ complete validation log, binary/source identities, and reproduction commands.
 | 1.2 | CPU-style Jacobian experiments; Behler angular coefficient contraction, differentiated Horner, grouped values, and measured force-accumulation choices |
 
 These are documentation revisions, not new AccelNet release numbers; the CMake
-project version remains 1.0.1.
+project version at that checkpoint was 1.0.1; the current release is 1.1.0.
 
 ## 13. Reusing the Chebyshev lessons for Behler descriptors
 

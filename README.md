@@ -6,7 +6,7 @@ energies, analytic forces and configurational virials, provides Fortran/C APIs,
 and integrates with LAMMPS on CPU and GPU. It is an inference package; training
 remains in the upstream tools.
 
-**Library version: 1.0.1.** The CPU/GPU methods and validation are documented in
+**Library version: 1.1.0.** The CPU/GPU methods and validation are documented in
 [speedupmethods.md](speedupmethods.md), revision 1.13. The method is described
 in the [AccelNet paper](https://arxiv.org/abs/2608.03280).
 
