@@ -1,15 +1,23 @@
 # LAMMPS interfaces
 
-This directory contains only the source files and build integration needed to
-compile AccelNet into LAMMPS.  It intentionally excludes trained potentials,
-atomic structures, trajectories, benchmark output and validation logs.
+This directory contains pair styles, build integration and tests for using
+AccelNet in LAMMPS. Supply your trained models separately. Numerical results
+and timings are recorded in the [validation reports](../../docs/implementation-status.md#validation-and-performance-scope).
 
 Two LAMMPS generations are supported:
 
 | Directory | LAMMPS version | Build system | Pair style |
 |---|---|---|---|
 | `4Feb2020` | 4 Feb 2020 | traditional make | `accelnet` |
-| `29Aug2024` | 29 Aug 2024 Update 4 | CMake | `accelnet` |
+| `29Aug2024` | 29 Aug 2024 Update 4 | CMake | `accelnet`, optional `accelnet/gpu` |
+
+Both pair styles use the common Fortran inference kernels. `accelnet` is
+serial within each MPI rank; it does not switch to GPU when OpenMP threads or
+GPU visibility variables are set. `accelnet/gpu` uses the LAMMPS CUDA GPU
+package together with Fortran OpenMP target. See the
+[GPU build and execution guide](../../docs/lammps-gpu.md).
+
+## CPU build
 
 First build the static AccelNet libraries from the repository root:
 
@@ -45,8 +53,9 @@ cmake -S /path/to/lammps/cmake -B /path/to/lammps/build-accelnet \
 cmake --build /path/to/lammps/build-accelnet --parallel
 ```
 
-`ACCELNET.cmake` enables the Fortran language so that the correct GNU Fortran
-runtime libraries and search paths are propagated to the final LAMMPS link.
+`ACCELNET.cmake` enables Fortran and propagates its runtime libraries and
+search paths. Use the same Fortran compiler family as the AccelNet build.
+`ACCELNET_DIR` may instead point to a build directory containing `lib/`.
 
 ## LAMMPS 4Feb2020
 
@@ -69,6 +78,8 @@ cd /path/to/lammps/src
 make yes-user-accelnet
 make mpi -j8
 ```
+
+## CPU input and model mapping
 
 For both versions, the LAMMPS input syntax is:
 
@@ -116,3 +127,46 @@ pair_style accelnet O.nn Ti.nn g5 moment
 `direct` disables the integer-zeta G5 moment path. `moment` forces that path
 without applying the automatic neighbor-count threshold. Omitting the option,
 or selecting `g5 auto`, preserves the default automatic behavior.
+
+
+## GPU package interface (29Aug2024 Update 4)
+
+Use the [GPU installation guide](../../docs/lammps-gpu.md) to build
+`libaccelnet_target` and install the adapter with `29Aug2024/install.py`.
+The validated stack uses NVHPC 25.3, CUDA, `GPU_PREC=double`, and H100 or
+Blackwell GPUs. The installation helper also applies the required triclinic
+sorting patch; copying only the CPU package above is insufficient for GPU use.
+
+```lammps
+# Before read_data/create_box:
+package gpu 1 neigh yes newton on split 1
+# After creating the box, with atom types in the network's species order:
+pair_style accelnet/gpu auto Ti.nn.ascii O.nn.ascii
+pair_coeff * *
+```
+
+`neigh no`, `neigh yes` and `neigh hybrid` are supported. Direct n2p2-directory
+loading is a CPU pair-style feature; GPU input uses embedded network files.
+The [Fortran converter](../../AccelNetModelConverter/README.md) preserves the
+supported weighted/compact types as well as types 2/3/9. Follow the converted
+model's embedded global species order when assigning LAMMPS atom types.
+
+Chebyshev and G5 selectors are independent in the 2024 CPU/GPU interfaces:
+
+```lammps
+pair_style accelnet/gpu moment Ti.nn.ascii O.nn.ascii g5 auto
+```
+
+Chebyshev auto estimates work from angular order, moment count and neighbors.
+G5 auto uses exact integer powers 1--10 and at least 16 angular neighbors;
+`g5 moment` allows powers 1--16 without that neighbor-count threshold. Other
+powers remain direct. Types 13/21/24 are implemented with exact direct pairs.
+Neither selector benchmarks the hardware, and moment is not always faster.
+
+The adapter supports global energy/virial and per-atom energies. Per-atom
+stress, pair hybrid and the other unsupported configurations are listed in the
+[GPU scope](../../docs/lammps-gpu.md). The
+[latest shared-kernel validation](../../docs/validation/energy-common-2026-09-27/README.md)
+includes 21 LAMMPS CPU/GPU comparisons across 1/2 MPI ranks, neighbor modes,
+orthogonal/triclinic cells and empty ranks. Commands for numerical and MD-loop
+performance checks are in the GPU guide.

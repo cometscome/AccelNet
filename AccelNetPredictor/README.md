@@ -1,27 +1,37 @@
 # AccelNetPredictor
 
-Fortran energy/force predictor built on the single canonical
-`AccelNetDescriptors` CPU implementation. The optional target backend shares
-scalar formulas with it and provides batch kernels that run on either the GPU
-or the CPU, checked against the established CPU evaluator.
+Fortran inference library for supported ænet and n2p2 potentials. Energies,
+analytic forces and virials use the same maintained CPU/GPU numerical kernels.
+Structure/file, atomic Fortran/C, ordinary CSR batch and ænet-compatible SFB
+calls use their serial compilation, with OpenMP removed. The optional target
+library runs the common code on an explicitly selected GPU or threaded host.
 
-The optional [batch API and CPU performance checks](../docs/batch-api.md) provide
-CSR-based CPU evaluation with reusable work buffers. The separate
-[OpenMP target backend](../docs/openmp-target.md) evaluates Chebyshev, LJ, Behler G1–G5 and n2p2 weighted/compact models in FP64,
-with explicit host execution for numerical and performance comparisons.
-The default CPU batch path uses a serial compilation of those same kernels for
-all supported descriptor families, including Chebyshev/G5 direct and moment.
-See [implementation status](../docs/implementation-status.md) for restrictions
-and auto-selection rules. `evaluate_batch_reference` retains the former CPU
-batch evaluator in `legacy/cpu-reference/`. Structure/file, atomic Fortran/C,
-and ænet-compatible SFB APIs now call the common serial backend too; public
-argument lists and additive-force semantics are preserved.
+See [current descriptor/moment coverage](../docs/implementation-status.md),
+[model compatibility](../docs/model-compatibility.md), the
+[CSR batch API](../docs/batch-api.md), and the
+[OpenMP target API](../docs/openmp-target.md). Multiple Chebyshev blocks and
+mixed descriptor families are supported. The independent former evaluator is
+available as `evaluate_batch_reference` in
+[legacy/cpu-reference](../legacy/cpu-reference/README.md); production inference
+has no legacy fallback.
+
+## Build and command-line prediction
+
+Commands in this README assume the working directory is `AccelNetPredictor/`.
+The standalone build writes executables directly under `build/`. A build from
+the repository root writes them under `build/bin/`; see the
+[root quick start](../README.md#cpu-quick-start). Build the descriptors with the
+same Fortran compiler as the predictor.
 
 ```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+  -DN2P2_SCALING_EXECUTABLE=
 cmake --build build -j
-ctest --test-dir build --output-on-failure
+ctest --test-dir build -LE performance --output-on-failure
 ```
+
+Set `N2P2_SCALING_EXECUTABLE` to a compatible local `nnp-scaling` executable
+to enable the optional upstream descriptor comparison.
 
 Energy-only CLI:
 
@@ -31,8 +41,9 @@ build/accelnet-predict 2 Ti.fingerprint.stp O.fingerprint.stp \
 ```
 
 Standard n2p2 2G-HDNNP model directories can also be loaded directly. The
-directory must contain `input.nn`, `scaling.data`, and the conventional
-`weights.%03d.data` files (where the number is the element atomic number):
+directory must contain `input.nn` and the conventional `weights.%03d.data`
+files (where the number is the element atomic number), plus `scaling.data`
+when required by the selected scaling mode:
 
 ```sh
 build/accelnet-predict --n2p2 /path/to/model structure.xsf
@@ -73,13 +84,16 @@ normalize_nodes
 number of nodes in the preceding layer. The loader applies the equivalent
 transformation to that layer's weights and biases when the model is loaded.
 
-The integration tests also run n2p2 v2.3.0 `nnp-scaling` and compare its raw
+Optional integration tests also run n2p2 v2.3.0 `nnp-scaling` and compare its raw
 symmetry-function output with AccelNet atom by atom. They cover types 2, 3,
 and 9 for both elements and every n2p2 cutoff type from 0 through 8. A separate
 reference fixture checks per-element widths and activation functions together
 with `normalize_nodes`, comparing the energy and every force component with
 upstream n2p2 v2.3.0 values. Another fixture covers an element-specific hidden
-layer count.
+layer count. Weighted/compact and multi-element comparisons are recorded in
+the [n2p2 extension report](../docs/validation/n2p2-extensions-2026-09-27/README.md).
+Types 13/21/24 have exact direct implementations; lack of a finite moment
+representation is not missing descriptor support.
 
 The aenet-style atomic API can load the same directory without conversion:
 
@@ -134,8 +148,10 @@ are also accepted. Valid values are 0, 1, and 10. If the tag is omitted, the
 default is `version=0`, matching the newer ænet v2.04 Chebyshev convention.
 The tag has no effect on LJ or Behler2011 networks.
 
-Append `--forces` to print analytic Cartesian forces. A warm-up-separated
-whole-inference benchmark is also installed:
+Append `--forces` only to the explicit `NSPECIES SETUP... NETWORK... XSF`
+form to print analytic Cartesian forces. `predict.in`, `--n2p2` and
+`--n2p2-data` already print forces and do not accept that extra flag.
+A warm-up-separated whole-inference benchmark is also installed:
 
 ```sh
 build/accelnet-predict-benchmark 2 Ti.fingerprint.stp O.fingerprint.stp \
@@ -160,18 +176,22 @@ build/accelnet-predict-benchmark --n2p2 /path/to/model structure.xsf 1000 moment
 
 Model loading and XSF parsing are outside the reported in-memory API timings.
 
+## Object API
+
 The Fortran library also accepts an already-loaded structure, avoiding XSF
 I/O. The force array is caller-owned and can be reused between calls:
 
 ```fortran
 use iso_fortran_env, only: real64
 use accelnet_descriptors, only: atomic_structure, read_xsf
-use accelnet_predictor, only: predictor_model
+use accelnet_predictor, only: predictor_model, load_predictor_from_n2p2
 
+type(predictor_model) :: model
 type(atomic_structure) :: structure
 real(real64) :: energy
 real(real64), allocatable :: forces(:, :)
 
+call load_predictor_from_n2p2("/path/to/model", model)
 call read_xsf("structure.xsf", model%species_names, structure)
 allocate(forces(3, structure%natoms))
 call model%predict_energy(structure, energy)
@@ -235,11 +255,19 @@ Choose the Chebyshev angular evaluation algorithm at runtime with
 `ACCELNET_CHEBYSHEV_AUTO`, `ACCELNET_CHEBYSHEV_DIRECT`, and
 `ACCELNET_CHEBYSHEV_MOMENT`. The selection may be made before or after model
 loading and can be queried with `accelnet_get_chebyshev_evaluation()`. `AUTO`
-is the default and uses direct pairs below 16 angular neighbors and exact
-Cartesian moments from 16 neighbors onward. `DIRECT` and `MOMENT` force the
-corresponding path regardless of neighbor count.
+is the default. The common kernel selects moments when
+`N_angular * (angular_order + 1) >= M`, where `M` is the number of Cartesian
+moments. This estimates operation count rather than timing the hardware.
+`DIRECT` and `MOMENT` force the corresponding path regardless of neighbor count.
 
-The C ABI provides the same interface:
+G5 selection is independent: `accelnet_set_g5_evaluation(mode, stat)` accepts
+`ACCELNET_G5_AUTO`, `ACCELNET_G5_DIRECT`, `ACCELNET_G5_MOMENT`, and
+`ACCELNET_G5_MOMENT_FORCE`. Auto uses integer powers 1--10 and at least 16
+angular neighbors. The explicit moment modes support powers 1--16;
+`MOMENT_FORCE` also bypasses the neighbor-count threshold. Ineligible powers
+remain direct. See [the mode table](../docs/implementation-status.md#descriptor-coverage).
+
+The C ABI provides the same Chebyshev interface:
 
 ```c
 accelnet_set_chebyshev_evaluation(ACCELNET_CHEBYSHEV_DIRECT, &stat);
@@ -339,6 +367,8 @@ The equivalent module procedures are
 `reload_predictor(model, setups, networks)`. Reloading is intentionally not
 part of the timed inference path. If the replacement changes the species order,
 structures must be read or remapped again using the new `model%species_names`.
+
+## Validation and benchmarks
 
 `accelnet-predict-benchmark` reports the in-memory energy API, in-memory
 energy+force API, and the XSF energy API separately. For a direct comparison
@@ -449,4 +479,30 @@ Behler2011, and hard truncation for LJ.
 For Behler2011 networks, embedded functions are placed in ænet's canonical
 species/function ordering rather than their textual metadata order, matching
 the input order used by the trained neural network and scaling arrays.
-# AccelNetPredictor
+
+### CPU energy regression and GPU checks
+
+The [revision 1.13 report](../docs/validation/energy-common-2026-09-27/README.md)
+records the latest shared-kernel energy/force checks and performance limits.
+CPU comparisons compile OpenMP out on both sides; setting `OMP_NUM_THREADS=1`
+alone does not remove runtime overhead. To enable the Ti/O energy gate:
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+  -DACCELNET_PREDICTOR_GOLDEN_DIR=/path/to/fortran_predict \
+  -DACCELNET_PUBLIC_API_BASELINE_EXECUTABLE=/path/to/archived/accelnet-public-api-benchmark
+cmake --build build --parallel
+ctest --test-dir build -R predictor_aenet_energy_performance --output-on-failure
+```
+
+The archived and current executables must use the same driver, compiler and
+optimization flags. The test verifies energies at 64/192/512 atoms for both
+structure-energy and per-atom-energy APIs, checks the absence of OpenMP runtime
+symbols, and applies `ACCELNET_CPU_MAX_SLOWDOWN` (default 1.10). Use the Python
+comparison script directly to select another CPU core or measurement duration.
+
+GPU builds and `use_host=.true.` threading checks are described in the
+[target guide](../docs/openmp-target.md). Build all test dependencies before
+running a full CTest label. Performance tests should run separately, without
+concurrent builds or correctness tests. Energy-only target calls preserve the
+caller's force/virial accumulators; the suite tests reuse after force calls.
