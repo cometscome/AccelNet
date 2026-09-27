@@ -1,0 +1,538 @@
+[
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 512,
+    "order": 8,
+    "mode": 1,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-common-default/before-nvhpc",
+      "512",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.3592239273284576e-16,
+    "samples": [
+      [
+        0.0128031375,
+        0.019019016666666666,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128272375,
+        0.019003833333333334,
+        0.0,
+        0.0
+      ],
+      [
+        0.012803375,
+        0.019015866666666666,
+        0.0,
+        0.0
+      ],
+      [
+        0.0127980125,
+        0.019008983333333333,
+        0.0,
+        0.0
+      ],
+      [
+        0.0127986375,
+        0.019047183333333332,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.019015866666666666,
+    "reference_seconds": 0.0128031375,
+    "ratio_to_reference": 1.485307451710438,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "after",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 512,
+    "order": 8,
+    "mode": 1,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.3592239273284576e-16,
+    "samples": [
+      [
+        0.0128256,
+        0.018808683333333333,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128140125,
+        0.018818816666666665,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128082375,
+        0.018818983333333334,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128065,
+        0.018835666666666667,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128537625,
+        0.0188055,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.018818816666666665,
+    "reference_seconds": 0.0128140125,
+    "ratio_to_reference": 1.4686123231631518,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "after",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 512,
+    "order": 8,
+    "mode": 1,
+    "repeat": 1,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.3592239273284576e-16,
+    "samples": [
+      [
+        0.0128377625,
+        0.018901499999999998,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128496375,
+        0.019023133333333334,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128376125,
+        0.018908866666666666,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128425125,
+        0.01890818333333333,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128223875,
+        0.018905516666666667,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.01890818333333333,
+    "reference_seconds": 0.0128377625,
+    "ratio_to_reference": 1.47292704672825,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 512,
+    "order": 8,
+    "mode": 1,
+    "repeat": 1,
+    "command": [
+      "/tmp/accelnet-common-default/before-nvhpc",
+      "512",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.3592239273284576e-16,
+    "samples": [
+      [
+        0.0128030125,
+        0.018846166666666667,
+        0.0,
+        0.0
+      ],
+      [
+        0.0127951125,
+        0.018871,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128062375,
+        0.01884715,
+        0.0,
+        0.0
+      ],
+      [
+        0.0128029875,
+        0.018841183333333334,
+        0.0,
+        0.0
+      ],
+      [
+        0.0127958625,
+        0.018848649999999998,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.01884715,
+    "reference_seconds": 0.0128029875,
+    "ratio_to_reference": 1.4720103309019394,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "order": 8,
+    "mode": 1,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-common-default/before-nvhpc",
+      "4096",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 2.886579864025407e-15,
+    "samples": [
+      [
+        0.1022918,
+        0.1543861,
+        0.0,
+        0.0
+      ],
+      [
+        0.1024668,
+        0.1538799,
+        0.0,
+        0.0
+      ],
+      [
+        0.1022472,
+        0.1539212,
+        0.0,
+        0.0
+      ],
+      [
+        0.1022749,
+        0.1538761,
+        0.0,
+        0.0
+      ],
+      [
+        0.1023988,
+        0.1539769,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.1539212,
+    "reference_seconds": 0.1022918,
+    "ratio_to_reference": 1.5045343481147377,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "after",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "order": 8,
+    "mode": 1,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "4096",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 2.886579864025407e-15,
+    "samples": [
+      [
+        0.102735,
+        0.1548522,
+        0.0,
+        0.0
+      ],
+      [
+        0.101963,
+        0.1547699,
+        0.0,
+        0.0
+      ],
+      [
+        0.102012,
+        0.15487,
+        0.0,
+        0.0
+      ],
+      [
+        0.1020651,
+        0.155101,
+        0.0,
+        0.0
+      ],
+      [
+        0.1021769,
+        0.154953,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.15487,
+    "reference_seconds": 0.1020651,
+    "ratio_to_reference": 1.5179025725017898,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "after",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "order": 8,
+    "mode": 1,
+    "repeat": 1,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "4096",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 2.886579864025407e-15,
+    "samples": [
+      [
+        0.1020673,
+        0.154624,
+        0.0,
+        0.0
+      ],
+      [
+        0.102103,
+        0.1543842,
+        0.0,
+        0.0
+      ],
+      [
+        0.1020429,
+        0.1543858,
+        0.0,
+        0.0
+      ],
+      [
+        0.1021828,
+        0.154608,
+        0.0,
+        0.0
+      ],
+      [
+        0.1020651,
+        0.154552,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.154552,
+    "reference_seconds": 0.1020673,
+    "ratio_to_reference": 1.5130530774259463,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "order": 8,
+    "mode": 1,
+    "repeat": 1,
+    "command": [
+      "/tmp/accelnet-common-default/before-nvhpc",
+      "4096",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 2.886579864025407e-15,
+    "samples": [
+      [
+        0.1020451,
+        0.1556969,
+        0.0,
+        0.0
+      ],
+      [
+        0.1020429,
+        0.155447,
+        0.0,
+        0.0
+      ],
+      [
+        0.101943,
+        0.1568639,
+        0.0,
+        0.0
+      ],
+      [
+        0.1020062,
+        0.1554392,
+        0.0,
+        0.0
+      ],
+      [
+        0.1019919,
+        0.1554649,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.1554649,
+    "reference_seconds": 0.1020062,
+    "ratio_to_reference": 1.5242867325738612,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  }
+]

@@ -2,6 +2,7 @@ program test_batch_target
     use iso_fortran_env, only: real64
     use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
     use accelnet_batch, only: batch_workspace, evaluate_batch => evaluate_batch_reference
+    use accelnet_batch, only: evaluate_batch_default => evaluate_batch
     use accelnet_batch_target, only: target_model, target_workspace, evaluate_batch_target
     use accelnet_predictor, only: predictor_model, load_predictor_from_networks, load_predictor_from_n2p2
     use accelnet_descriptors, only: atomic_structure, neighbor_data, build_neighbor_list, read_xsf, &
@@ -13,7 +14,7 @@ program test_batch_target
     type(predictor_model) :: model, source_model
     type(target_model) :: packed, snapshot
     type(target_workspace) :: work, fresh_work
-    type(batch_workspace) :: cpuwork
+    type(batch_workspace) :: cpuwork, defaultwork
     type(atomic_structure) :: s
     type(descriptor_config) :: config
     type(behler_config) :: grouped_config
@@ -484,6 +485,14 @@ contains
         call build_neighbor_list(s,model%maximum_cutoff,nb,model%minimum_distance)
         f = 0; w = 0
         call evaluate_batch(model,s%species,centers,nb%offsets,nb%atom_indices,nb%displacements,e,f,cpuwork,w)
+        ! Exercise the public CPU dispatch against the independent reference
+        ! for every descriptor/cutoff/network case, even in GPU-enabled builds.
+        fg = 0; wg = 0
+        call evaluate_batch_default(model,s%species,centers,nb%offsets,nb%atom_indices, &
+            nb%displacements,eg,fg,defaultwork,wg)
+        call close_array(eg,e,'default CPU atomic energies')
+        call close_array(reshape(fg,[3*s%natoms]),reshape(f,[3*s%natoms]),'default CPU forces')
+        call close_array(reshape(wg,[9]),reshape(w,[9]),'default CPU virial')
         fg = 0; wg = 0
         call evaluate_batch_target(packed,s%species,centers,nb%offsets,nb%atom_indices,nb%displacements,eg,fg,work,wg)
         call close_array(eg,e,'atomic energies')

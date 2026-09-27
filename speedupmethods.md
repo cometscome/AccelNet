@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.5 — 2026-09-27 (JST).**
+**Document version 1.6 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -18,7 +18,7 @@ not bitwise equality.
 | AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | `gpu` checkpoint **`2bcc603`** (revision 1.4), followed by the G4 scheduling and scalar-cache changes in Section 16; source hashes and the implementation diff identify the measured revision 1.5 |
+| Optimization source revision | `gpu` checkpoint **`b5e2fcd`** (revision 1.5), followed by the common CPU dispatch change in Section 17; each validation archive identifies its measured sources |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -75,12 +75,13 @@ are recorded in the [G4 report](docs/validation/g4-common-2026-09-27/README.md).
 | G4 value/Jacobian evaluation | Shared value/derivative loop with scalar caches and disjoint descriptor owners; CPU uses one owner, GPU uses a flat center/owner launch; force contraction reads the saved Jacobian; Sections 15–16 |
 | LAMMPS GPU package integration | CUDA adapter plus Fortran OpenMP target; AMD/HIP/OpenCL interoperability is not implemented |
 
-The default CPU shared path applies to the **CSR batch API when every element has
-one Chebyshev component**. `evaluate_batch_reference` retains the independent old
-CPU path. Object APIs, atomic Fortran/C APIs, CLI, and ordinary LAMMPS
-`pair_style accelnet` still use their established CPU implementation. CPU LJ/Behler
-and composite Chebyshev batches also retain that implementation. Multiple or mixed
-Chebyshev components within one element are not supported by the GPU backend.
+The default CPU shared path applies to the **CSR batch API** for supported
+Chebyshev, LJ and Behler G1–G5 models (revision 1.6, Section 17).
+`evaluate_batch_reference` retains the independent old CPU path and is the
+fallback for mixed/multiple Chebyshev components within one element or explicitly
+requested G5 moments. G5 auto uses direct pairs on the common path; the reference
+auto policy can select moments. Object APIs, atomic Fortran/C APIs, CLI, and
+ordinary LAMMPS `pair_style accelnet` still use their established CPU implementation.
 
 ## 2. Notation and force contraction
 
@@ -1391,3 +1392,53 @@ as a universal win over the older two-traversal algorithm. Numerical validation
 passed 137 descriptor cases, all stated CPU/GPU suites, three selected memcheck
 cases, 63 LAMMPS comparisons, and the ordinary CPU correctness/performance gates.
 The validated `lmp-g4-optimized` candidate is kept alongside the previous binaries.
+
+## 17. Default common CPU batch dispatch (revision 1.6)
+
+Revision 1.6 adopts the shared numerical implementation for every CSR batch
+model accepted by the existing target-model packer. In addition to the already
+shared Chebyshev direct/moment path, this includes LJ, Behler G1–G5, multiple
+LJ/Behler components, and supported per-element combinations. The CPU uses the
+serial module instance generated from the GPU source: OpenMP directives are
+removed at configure time and no OpenMP runtime or GPU compiler is required.
+This dispatch change introduces no new descriptor formula.
+
+The public `evaluate_batch` repacks the model on each call to honor edits to its
+public fields. It retains the workspace, including the G4 Jacobian. Therefore
+its measured cost is
+
+$$
+T_{\mathrm{batch}} = T_{\mathrm{pack}} + T_{\mathrm{prepare}}
+ + T_{\mathrm{descriptor}} + T_{\mathrm{NN}} + T_{\mathrm{force/virial}}.
+$$
+
+Unlike prepared-`target_model` timings, these measurements include
+$T_{\mathrm{pack}}$. Fixed-neighbor timings exclude neighbor construction;
+the new end-to-end regression gate includes it for both implementations.
+Initial allocations are warmed up in either case. G4 retains the full
+$(3,\mathrm{descriptor},\mathrm{edge})$ Jacobian, so its storage grows with the
+batch's edge count, unlike the reference's per-center temporary Jacobian.
+
+Unsupported packing falls back to `evaluate_batch_reference`. In particular,
+mixed/multiple Chebyshev components within one element and explicitly requested
+G5 moments keep their established CPU behavior. G5 auto on the common path
+uses direct pairs; the reference's auto policy may select moments. The
+benchmark driver now allows generic mode 0 as well as mode 1 so that this
+policy difference is included in the comparison. The measured cases do not
+establish the optimal choice for arbitrary models or densities.
+
+The adoption concerns the CSR batch API. Object/atomic APIs, CLI and ordinary
+LAMMPS `pair_style accelnet` keep their existing evaluators. The old CPU code
+also remains an independent numerical/performance reference, rather than being
+deleted and then compared with itself. Earlier sections describe the adoption
+status at their respective revisions.
+
+The [revision-1.6 validation report](docs/validation/common-cpu-default-2026-09-27/README.md)
+records GNU/NVHPC single-core timings with OpenMP compilation disabled,
+8/512/4096-atom fixtures, two reversed rounds of five paired samples, and denser
+G5 cases. It also separates the pre-existing high-order Chebyshev direct
+slowdown from this dispatch change. Default CPU energy/force/virial checks were
+added to the target descriptor suite; batch tests cover shared/fallback mode
+transitions, model reloads and partitioned/additive output. The opt-in
+`ACCELNET_TEST_COMMON_CPU_PERFORMANCE` CTest gate compares default batches with
+the independent structure evaluator, including real n2p2 G4/G5 models.

@@ -1,0 +1,8 @@
+configure-gate-gnu 0
+build-gate-gnu 0
+gate-gnu 0
+configure-gate-nvhpc 0
+build-gate-nvhpc 0
+gate-nvhpc 0
+build-ordinary 0
+tests-ordinary 0

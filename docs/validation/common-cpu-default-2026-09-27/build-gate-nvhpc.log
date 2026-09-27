@@ -1,0 +1,10 @@
+Scanning dependencies of target AccelNetDescriptors
+[ 26%] Built target AccelNetDescriptors
+Scanning dependencies of target AccelNetPredictor
+[ 84%] Built target AccelNetPredictor
+Scanning dependencies of target batch_test_support
+[ 89%] Built target batch_test_support
+Scanning dependencies of target accelnet-cpu-regression-benchmark
+[ 94%] Building Fortran object AccelNetPredictor/CMakeFiles/accelnet-cpu-regression-benchmark.dir/benchmark/cpu_regression_benchmark.F90.o
+[100%] Linking Fortran executable ../bin/accelnet-cpu-regression-benchmark
+[100%] Built target accelnet-cpu-regression-benchmark

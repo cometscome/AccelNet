@@ -1,0 +1,48 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-research/build-nvhpc
+Test project /tmp/accelnet-gpu-research/build-nvhpc
+      Start 10: predictor_target_equivalence
+ 1/12 Test #10: predictor_target_equivalence ..............***Failed    0.04 sec
+Warning: ieee_inexact is signaling
+ERROR STOP 1
+ OpenMP target: GPU device unavailable
+
+      Start 18: predictor_target_other_descriptors
+ 2/12 Test #18: predictor_target_other_descriptors ........***Failed    0.02 sec
+Warning: ieee_inexact is signaling
+ERROR STOP 1
+ DESCRIPTOR CASE lj            0
+ OpenMP target: GPU device unavailable
+
+      Start 19: predictor_target_host_equivalence
+ 3/12 Test #19: predictor_target_host_equivalence .........   Passed    2.87 sec
+      Start 20: predictor_target_host_other_descriptors
+ 4/12 Test #20: predictor_target_host_other_descriptors ...   Passed    3.06 sec
+      Start 36: predictor_batch_equivalence
+ 5/12 Test #36: predictor_batch_equivalence ...............   Passed    1.07 sec
+      Start 37: predictor_batch_reject_offset
+ 6/12 Test #37: predictor_batch_reject_offset .............   Passed    0.01 sec
+      Start 38: predictor_batch_reject_monotonic
+ 7/12 Test #38: predictor_batch_reject_monotonic ..........   Passed    0.00 sec
+      Start 39: predictor_batch_reject_target
+ 8/12 Test #39: predictor_batch_reject_target .............   Passed    0.00 sec
+      Start 40: predictor_batch_reject_center
+ 9/12 Test #40: predictor_batch_reject_center .............   Passed    0.00 sec
+      Start 41: predictor_batch_reject_species
+10/12 Test #41: predictor_batch_reject_species ............   Passed    0.00 sec
+      Start 42: predictor_batch_reject_shape
+11/12 Test #42: predictor_batch_reject_shape ..............   Passed    0.00 sec
+      Start 59: predictor_batch_aenet_golden
+12/12 Test #59: predictor_batch_aenet_golden ..............   Passed    0.88 sec
+
+83% tests passed, 2 tests failed out of 12
+
+Label Time Summary:
+gpu            =   0.06 sec*proc (2 tests)
+target-host    =   5.93 sec*proc (2 tests)
+
+Total Test time (real) =   7.98 sec
+
+The following tests FAILED:
+	 10 - predictor_target_equivalence (Failed)
+	 18 - predictor_target_other_descriptors (Failed)
+Errors while running CTest

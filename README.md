@@ -26,9 +26,10 @@ The method and its validation are described in the
 - Evaluate Chebyshev, LJ and Behler G1–G5 batches in FP64 using an optional
   [OpenMP target GPU backend](docs/openmp-target.md) through the Fortran API,
   with persistent GPU buffers, direct/moment methods and phase profiling.
-  Chebyshev CPU batches use the same kernel source with OpenMP disabled, for
-  both direct and moment; the former CPU batch implementation remains available
-  as `evaluate_batch_reference` for independent comparisons.
+  Supported CPU batches use the same kernel source with OpenMP disabled:
+  Chebyshev direct/moment, LJ, and Behler G1–G5. The former CPU implementation
+  remains available as `evaluate_batch_reference` for independent comparisons
+  and as a fallback for unsupported configurations, including forced G5 moments.
   G4/G5 currently use direct pair evaluation; Chebyshev supports direct/moment.
   Existing CLI, C atomic and `pair_style accelnet` calls continue using the CPU backend.
   The optional [LAMMPS `accelnet/gpu` interface](docs/lammps-gpu.md) uses the GPU package

@@ -1,0 +1,8 @@
+[ 20%] Built target AccelNetDescriptors
+[ 64%] Built target AccelNetPredictor
+[ 68%] Built target batch_test_support
+[ 92%] Built target AccelNetTarget
+Scanning dependencies of target accelnet-target-benchmark
+[ 96%] Building Fortran object AccelNetPredictor/CMakeFiles/accelnet-target-benchmark.dir/benchmark/target_benchmark.f90.o
+[100%] Linking Fortran executable ../bin/accelnet-target-benchmark
+[100%] Built target accelnet-target-benchmark

@@ -1,9 +1,11 @@
 # Batch evaluation and CPU performance regression checks
 
-This batch API executes on the CPU. For single-component Chebyshev models,
-both direct and moment now use the same numerical source as the
+This batch API executes on the CPU. Supported Chebyshev, LJ and Behler G1–G5
+models use the same numerical source as the
 [OpenMP target backend](openmp-target.md), compiled without OpenMP directives.
-The GPU backend also supports LJ and Behler G1–G5.
+Chebyshev supports direct/moment; common G4/G5 use direct pairs. Unsupported
+configurations (mixed/multiple Chebyshev components within an element and forced
+G5 moment modes) fall back to the established CPU evaluator.
 Existing object, Fortran/C atomic, CLI and ordinary LAMMPS CPU
 evaluation paths are unchanged. No OpenMP runtime or GPU compiler is required
 for a normal CPU build.
@@ -53,24 +55,26 @@ Keep one `batch_workspace` per independently executing caller. It retains
 descriptor, gradient, species and force buffers and grows as necessary. Model
 metadata is refreshed at each call, so a workspace can be reused after reloads.
 `work%reserve(model, maximum_neighbors)` can preallocate the reference-path buffers;
-shared Chebyshev buffers grow on the first evaluation, when the CSR size is known.
+shared buffers grow on the first evaluation, when the CSR size is known.
 `work%allocations()` counts **growth events**, not individual allocator calls;
 `work%release()` frees the buffers and resets that counter. It does not own the
 model or neighbor list and is not safe for simultaneous use by multiple threads.
 
-For other descriptor models the CPU path follows the existing structure evaluator: it uses direct contraction
-when all species support it, otherwise the existing Jacobian implementation.
-This avoids a measured slowdown from mixing paths for small G4/G5 models.
-Automatic temporary arrays
-inside existing descriptor/NN routines are still present; this stage removes
-repeated allocation of the outer API buffers, not every internal allocation.
+On the common path, G4 computes values and derivatives in one pair traversal,
+then contracts the saved Jacobian after the NN evaluation. CPU and GPU use the
+same formulas with different descriptor-owner counts. Other common descriptors
+use cached geometry and direct derivative contraction. The fallback follows the
+existing structure evaluator and preserves explicitly selected G5 moment modes.
+G5 auto mode on the common path currently uses direct pairs; the reference's auto
+policy can select moments. Neither auto policy guarantees the fastest choice
+for every model or neighbor density.
 The separate GPU API uses packed arrays, persistent device buffers and model
 parameters, and GPU direct/moment kernels. See the [GPU API](openmp-target.md)
 for lifetime rules and phase profiling.
 
 `evaluate_batch_reference` has the same arguments as `evaluate_batch` and
 retains the former CPU implementation for independent correctness and speed
-comparisons. The default Chebyshev batch path repacks model metadata each call
+comparisons. The default batch path repacks model metadata each call
 to honor edits/reloads, while retaining scratch buffers. A prepared
 `target_model` in an `ACCELNET_TARGET_SERIAL=ON` build can avoid repeated packing
 when the caller explicitly manages the model snapshot.
@@ -80,7 +84,9 @@ names and removing OpenMP directives; there is no separately maintained CPU
 copy of these kernels. This also prevents OpenMP region startup when the user
 supplies global OpenMP flags. GPU builds can link both instances in one program.
 See the [Chebyshev validation report](validation/chebyshev-common-2026-09-26/README.md)
-for the measured effects of this switch and the direct arithmetic optimizations.
+for the earlier Chebyshev switch and direct arithmetic optimizations. The
+[LJ/Behler default-dispatch report](validation/common-cpu-default-2026-09-27/README.md)
+records the later switch, including model packing and G5 auto-mode comparisons.
 
 ## Correctness tests
 
@@ -100,6 +106,24 @@ differences check forces. The standard suite retains the existing virial strain
 finite-difference tests. Run a bounds-checked GNU build as well.
 
 ## CPU regression gate
+
+To guard the default common CPU dispatch against the retained structure
+evaluator, configure `-DACCELNET_TEST_COMMON_CPU_PERFORMANCE=ON`, build
+`accelnet-cpu-regression-benchmark`, and run:
+
+```sh
+ctest --test-dir build -R '^predictor_common_cpu_performance$' --output-on-failure
+```
+
+This opt-in test uses the same executable/compiler for both paths, includes
+neighbor construction, checks all energy/force/virial components, and compares
+seven alternating single-core samples. The default time-ratio limit is 1.10,
+configurable with `ACCELNET_CPU_MAX_SLOWDOWN`. Use a build without OpenMP flags
+and an otherwise idle machine. It covers Chebyshev, LJ and real n2p2 G4/G5
+fixtures at 8, 64 and 512 atoms. For fixed-neighbor measurements including model
+packing, `accelnet-target-benchmark ... cpu-shared FAMILY no-neighbors` compares
+the public default batch API against `evaluate_batch_reference`; generic mode 0
+also includes the reference's automatic G5 moment selection.
 
 `accelnet-cpu-regression-benchmark` is built when predictor testing is enabled.
 Its synthetic fixtures require no external training corpus. Benchmark cases use

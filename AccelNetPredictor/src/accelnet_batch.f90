@@ -101,39 +101,23 @@ contains
         type(batch_workspace), intent(inout) :: work
         real(real64), intent(inout), optional :: virial(3,3)
         type(target_model) :: packed
-        integer :: s, status
-        logical :: chebyshev
+        integer :: status
 
-        chebyshev = allocated(model%setups) .and. allocated(model%networks)
-        if (chebyshev) then
-            chebyshev = size(model%setups) > 0
-            do s = 1, size(model%setups)
-                if (.not. allocated(model%setups(s)%model%chebyshev)) then
-                    chebyshev = .false.
-                    exit
-                end if
-                if (size(model%setups(s)%model%chebyshev) /= 1 .or. &
-                    allocated(model%setups(s)%model%lj) .or. allocated(model%setups(s)%model%behler)) then
-                    chebyshev = .false.
-                    exit
-                end if
-            end do
-        end if
-        if (chebyshev) then
-            ! Repack to honor direct edits/reloads of the public model fields.
-            ! The persistent workspace reuses buffers and unchanged model data.
-            call packed%initialize(model,use_host=.true.,status=status)
-            if (status == 0) then
-                call evaluate_batch_target(packed,species,centers,offsets,indices,displacements, &
-                    energies,forces,work%shared_work,virial)
-                return
-            end if
+        ! Use the serial instance of the GPU numerical source for every model
+        ! supported by its packer, including LJ and Behler G1--G5. Repack to
+        ! honor direct edits/reloads; the workspace retains its scratch buffers.
+        call packed%initialize(model,use_host=.true.,status=status)
+        if (status == 0) then
+            call evaluate_batch_target(packed,species,centers,offsets,indices,displacements, &
+                energies,forces,work%shared_work,virial)
+            return
         end if
         call evaluate_batch_reference(model,species,centers,offsets,indices,displacements,energies,forces,work,virial)
     end subroutine
 
     ! Retained as an independent numerical/performance reference and as the
-    ! fallback for descriptor families not yet selected for shared CPU kernels.
+    ! fallback for unsupported packing (e.g. mixed Chebyshev components or
+    ! explicitly requested G5 moments). Do not silently change those modes.
     subroutine evaluate_batch_reference(model, species, centers, offsets, indices, displacements, energies, forces, work, virial)
         type(predictor_model), intent(in) :: model
         integer, intent(in) :: species(:), centers(:), offsets(:), indices(:)

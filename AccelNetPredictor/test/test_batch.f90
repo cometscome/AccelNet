@@ -11,6 +11,8 @@ program test_batch
     type(atomic_structure) :: s
     character(len=1024) :: directory, argument, network_files(2)
     integer :: family, version, mode, geometry
+    character(len=16), parameter :: generic_families(7) = [character(len=16) :: &
+        'g4-distinct', 'g4-series', 'g5', 'g5-series', 'behler', 'lj-behler', 'lj']
     call get_command_argument(1, directory)
     call get_command_argument(2, argument)
     if (argument == '--aenet') then
@@ -51,6 +53,20 @@ program test_batch
                     if (geometry == 3) s%lattice(1,2) = 0.4_real64
                     call check(s)
                 end do
+            end do
+        end do
+    end do
+    ! Check the default common path and forced-G5 fallback with one workspace,
+    ! including partitioned/reordered rows and additive forces/virials.
+    do family = 1, size(generic_families)
+        call make_model(trim(generic_families(family)), model, order=8)
+        do mode = 0, 3
+            call model%set_g5_evaluation(mode)
+            do geometry = 1, 3
+                call make_structure(8, 2, s)
+                s%pbc = geometry /= 1
+                if (geometry == 3) s%lattice(1,2) = 0.4_real64
+                call check(s)
             end do
         end do
     end do

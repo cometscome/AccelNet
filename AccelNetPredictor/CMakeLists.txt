@@ -255,6 +255,20 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
     target_link_libraries(accelnet-cpu-regression-benchmark PRIVATE batch_test_support)
     set(ACCELNET_CPU_BASELINE_EXECUTABLE "" CACHE FILEPATH "Archived CPU regression benchmark executable")
     set(ACCELNET_CPU_MAX_SLOWDOWN "1.10" CACHE STRING "Maximum median paired CPU time ratio")
+    option(ACCELNET_TEST_COMMON_CPU_PERFORMANCE
+        "Compare default common CPU batches against the retained structure evaluator" OFF)
+    if(ACCELNET_TEST_COMMON_CPU_PERFORMANCE)
+        find_package(Python3 COMPONENTS Interpreter REQUIRED)
+        add_test(NAME predictor_common_cpu_performance
+            COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/benchmark/compare_cpu_performance.py"
+                --baseline $<TARGET_FILE:accelnet-cpu-regression-benchmark>
+                --candidate $<TARGET_FILE:accelnet-cpu-regression-benchmark>
+                --candidate-mode batch
+                --max-slowdown "${ACCELNET_CPU_MAX_SLOWDOWN}"
+                --output "${CMAKE_CURRENT_BINARY_DIR}/common-cpu-performance.json")
+        set_tests_properties(predictor_common_cpu_performance PROPERTIES
+            LABELS "performance" RUN_SERIAL TRUE TIMEOUT 300)
+    endif()
     if(ACCELNET_CPU_BASELINE_EXECUTABLE)
         find_package(Python3 COMPONENTS Interpreter REQUIRED)
         add_test(NAME predictor_cpu_performance_regression

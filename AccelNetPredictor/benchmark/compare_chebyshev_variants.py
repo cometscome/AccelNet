@@ -4,7 +4,8 @@
 Example: --variant before host /path/to/before --variant after host /path/to/after
 Use serial builds for CPU comparisons. GPU selection is inherited from the
 environment. Each binary performs five alternating reference/candidate samples.
-Chebyshev is the default; use --family lj/g4/g5/behler --modes 1 for generic kernels.
+Chebyshev is the default; use --family lj/g4/g5/behler --modes 1 for generic
+direct kernels, or --modes 0 to include the CPU reference's automatic G5 policy.
 """
 import argparse
 import json
@@ -30,8 +31,8 @@ def main():
     args = parser.parse_args()
     if args.rounds < 1 or args.seconds <= 0:
         parser.error('rounds and seconds must be positive')
-    if args.family != 'chebyshev' and args.modes != [1]:
-        parser.error('generic descriptor comparisons require --modes 1 (direct)')
+    if args.family != 'chebyshev' and any(mode not in (0, 1) for mode in args.modes):
+        parser.error('generic descriptor comparisons support modes 0 (auto) and 1 (direct)')
     labels = [v[0] for v in args.variant]
     if len(set(labels)) != len(labels):
         parser.error('variant labels must be unique')

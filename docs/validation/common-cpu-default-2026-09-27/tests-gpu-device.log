@@ -1,0 +1,13 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-research/build-nvhpc
+Test project /tmp/accelnet-gpu-research/build-nvhpc
+    Start 10: predictor_target_equivalence
+1/2 Test #10: predictor_target_equivalence .........   Passed    4.03 sec
+    Start 18: predictor_target_other_descriptors
+2/2 Test #18: predictor_target_other_descriptors ...   Passed    6.49 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Label Time Summary:
+gpu    =  10.53 sec*proc (2 tests)
+
+Total Test time (real) =  10.53 sec

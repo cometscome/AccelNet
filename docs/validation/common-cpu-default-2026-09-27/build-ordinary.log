@@ -1,0 +1,125 @@
+-- n2p2 descriptor reference tests disabled: nnp-scaling not found
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/accelnet-gpu-research/build-current
+Scanning dependencies of target AccelNetDescriptors
+[ 77%] Built target AccelNetDescriptors
+Scanning dependencies of target accelnet-descriptor
+[100%] Built target accelnet-descriptor
+[ 31%] Built target AccelNetDescriptors
+Scanning dependencies of target AccelNetPredictor
+[ 36%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/src/accelnet_batch.f90.o
+[ 40%] Linking Fortran static library ../lib/libaccelnet.a
+[ 86%] Built target AccelNetPredictor
+Scanning dependencies of target accelnet-model-converter-fortran
+[ 90%] Linking Fortran executable ../bin/accelnet-model-converter-fortran
+[100%] Built target accelnet-model-converter-fortran
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target accelnet-predict
+[ 95%] Linking Fortran executable ../bin/accelnet-predict
+[100%] Built target accelnet-predict
+[ 77%] Built target AccelNetDescriptors
+Scanning dependencies of target accelnet-setup-descriptor
+[100%] Built target accelnet-setup-descriptor
+[ 77%] Built target AccelNetDescriptors
+Scanning dependencies of target dump_descriptor_reference
+[100%] Built target dump_descriptor_reference
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_accelnet_api
+[ 95%] Linking Fortran executable ../bin/test_accelnet_api
+[100%] Built target test_accelnet_api
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Consolidate compiler generated dependencies of target test_accelnet_c_api
+[ 95%] Linking C executable ../bin/test_accelnet_c_api
+[100%] Built target test_accelnet_c_api
+Scanning dependencies of target aenet_feedforward_reference
+[  8%] Built target aenet_feedforward_reference
+[ 39%] Built target AccelNetDescriptors
+[ 91%] Built target AccelNetPredictor
+Scanning dependencies of target test_aenet_activation_reference
+[ 95%] Linking Fortran executable ../bin/test_aenet_activation_reference
+[100%] Built target test_aenet_activation_reference
+[ 30%] Built target AccelNetDescriptors
+[ 82%] Built target AccelNetPredictor
+Scanning dependencies of target batch_test_support
+[ 91%] Built target batch_test_support
+Scanning dependencies of target test_batch
+[ 95%] Building Fortran object AccelNetPredictor/CMakeFiles/test_batch.dir/test/test_batch.f90.o
+[100%] Linking Fortran executable ../bin/test_batch
+[100%] Built target test_batch
+[ 77%] Built target AccelNetDescriptors
+Scanning dependencies of target test_behler
+[100%] Built target test_behler
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_binary_network
+[ 95%] Linking Fortran executable ../bin/test_binary_network
+[100%] Built target test_binary_network
+[ 77%] Built target AccelNetDescriptors
+Scanning dependencies of target test_combined_model
+[100%] Built target test_combined_model
+[ 77%] Built target AccelNetDescriptors
+Scanning dependencies of target test_descriptor
+[100%] Built target test_descriptor
+[ 77%] Built target AccelNetDescriptors
+Scanning dependencies of target test_lj_model
+[100%] Built target test_lj_model
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_n2p2_atomic_api
+[ 95%] Linking Fortran executable ../bin/test_n2p2_atomic_api
+[100%] Built target test_n2p2_atomic_api
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_n2p2_network
+[ 95%] Linking Fortran executable ../bin/test_n2p2_network
+[100%] Built target test_n2p2_network
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_n2p2_topology
+[ 95%] Linking Fortran executable ../bin/test_n2p2_topology
+[100%] Built target test_n2p2_topology
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_network
+[ 95%] Linking Fortran executable ../bin/test_network
+[100%] Built target test_network
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_network_activations
+[ 95%] Linking Fortran executable ../bin/test_network_activations
+[100%] Built target test_network_activations
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_predictor
+[ 95%] Linking Fortran executable ../bin/test_predictor
+[100%] Built target test_predictor
+[ 77%] Built target AccelNetDescriptors
+Scanning dependencies of target test_setup_parser
+[100%] Built target test_setup_parser
+[ 77%] Built target AccelNetDescriptors
+Scanning dependencies of target test_tio2
+[100%] Built target test_tio2
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_virial
+[ 95%] Linking Fortran executable ../bin/test_virial
+[100%] Built target test_virial
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Consolidate compiler generated dependencies of target test_virial_c
+[ 95%] Linking C executable ../bin/test_virial_c
+[100%] Built target test_virial_c
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_virial_convergence
+[ 95%] Linking Fortran executable ../bin/test_virial_convergence
+[100%] Built target test_virial_convergence
+[ 33%] Built target AccelNetDescriptors
+[ 90%] Built target AccelNetPredictor
+Scanning dependencies of target test_virial_invariants
+[ 95%] Linking Fortran executable ../bin/test_virial_invariants
+[100%] Built target test_virial_invariants

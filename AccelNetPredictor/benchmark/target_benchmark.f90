@@ -51,8 +51,13 @@ program target_benchmark
     host = backend /= 'gpu'
     call make_model(trim(family),model,order=order)
     call model%set_chebyshev_evaluation(mode)
-    ! Match direct Behler algorithms when comparing execution layouts.
-    call model%set_g5_evaluation(1)
+    ! Generic mode 0 also measures the established CPU's automatic G5 policy;
+    ! mode 1 compares direct algorithms. Chebyshev uses its own mode above.
+    if (family == 'chebyshev') then
+        call model%set_g5_evaluation(1)
+    else
+        call model%set_g5_evaluation(mode)
+    end if
     call make_structure(n,2,s)
     if (spacing <= 0) error stop 'spacing must be positive'
     s%positions = s%positions*(spacing/1.7_real64); s%lattice = s%lattice*(spacing/1.7_real64)
