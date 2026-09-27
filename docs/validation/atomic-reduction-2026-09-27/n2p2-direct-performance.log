@@ -1,0 +1,82 @@
+RUN type2 fixed 0 n2p2
+RUN type2 fixed 0 accelnet_cpu
+RUN type2 fixed 0 accelnet_prepared
+RUN type2 fixed 1 accelnet_prepared
+RUN type2 fixed 1 accelnet_cpu
+RUN type2 fixed 1 n2p2
+RUN type2 fixed 2 n2p2
+RUN type2 fixed 2 accelnet_cpu
+RUN type2 fixed 2 accelnet_prepared
+RUN type2 fixed 3 accelnet_prepared
+RUN type2 fixed 3 accelnet_cpu
+RUN type2 fixed 3 n2p2
+RUN type2 fixed 4 n2p2
+RUN type2 fixed 4 accelnet_cpu
+RUN type2 fixed 4 accelnet_prepared
+RUN type2 fixed 5 accelnet_prepared
+RUN type2 fixed 5 accelnet_cpu
+RUN type2 fixed 5 n2p2
+RESULT type2 fixed {'n2p2': 5.9288, 'accelnet_cpu': 4.501, 'accelnet_prepared': 4.3535} {'accelnet_cpu': 1.3171994597929952, 'accelnet_prepared': 1.3618449167166051}
+RUN type3 fixed 0 n2p2
+RUN type3 fixed 0 accelnet_cpu
+RUN type3 fixed 0 accelnet_prepared
+RUN type3 fixed 1 accelnet_prepared
+RUN type3 fixed 1 accelnet_cpu
+RUN type3 fixed 1 n2p2
+RUN type3 fixed 2 n2p2
+RUN type3 fixed 2 accelnet_cpu
+RUN type3 fixed 2 accelnet_prepared
+RUN type3 fixed 3 accelnet_prepared
+RUN type3 fixed 3 accelnet_cpu
+RUN type3 fixed 3 n2p2
+RUN type3 fixed 4 n2p2
+RUN type3 fixed 4 accelnet_cpu
+RUN type3 fixed 4 accelnet_prepared
+RUN type3 fixed 5 accelnet_prepared
+RUN type3 fixed 5 accelnet_cpu
+RUN type3 fixed 5 n2p2
+RESULT type3 fixed {'n2p2': 44.8368, 'accelnet_cpu': 41.4111, 'accelnet_prepared': 41.1678} {'accelnet_cpu': 1.0827258621921079, 'accelnet_prepared': 1.0891246222598503}
+RUN type21 fixed 0 n2p2
+RUN type21 fixed 0 accelnet_cpu
+RUN type21 fixed 0 accelnet_prepared
+RUN type21 fixed 1 accelnet_prepared
+RUN type21 fixed 1 accelnet_cpu
+RUN type21 fixed 1 n2p2
+RUN type21 fixed 2 n2p2
+RUN type21 fixed 2 accelnet_cpu
+RUN type21 fixed 2 accelnet_prepared
+RUN type21 fixed 3 accelnet_prepared
+RUN type21 fixed 3 accelnet_cpu
+RUN type21 fixed 3 n2p2
+RUN type21 fixed 4 n2p2
+RUN type21 fixed 4 accelnet_cpu
+RUN type21 fixed 4 accelnet_prepared
+RUN type21 fixed 5 accelnet_prepared
+RUN type21 fixed 5 accelnet_cpu
+RUN type21 fixed 5 n2p2
+RESULT type21 fixed {'n2p2': 27.6974, 'accelnet_cpu': 30.5044, 'accelnet_prepared': 30.4356} {'accelnet_cpu': 0.9079800391151652, 'accelnet_prepared': 0.9100327926665023}
+RUN type22 fixed 0 n2p2
+RUN type22 fixed 0 accelnet_cpu
+RUN type22 fixed 0 accelnet_prepared
+RUN type22 fixed 1 accelnet_prepared
+RUN type22 fixed 1 accelnet_cpu
+RUN type22 fixed 1 n2p2
+RUN type22 fixed 2 n2p2
+RUN type22 fixed 2 accelnet_cpu
+RUN type22 fixed 2 accelnet_prepared
+RUN type22 fixed 3 accelnet_prepared
+RUN type22 fixed 3 accelnet_cpu
+RUN type22 fixed 3 n2p2
+RUN type22 fixed 4 n2p2
+RUN type22 fixed 4 accelnet_cpu
+RUN type22 fixed 4 accelnet_prepared
+RUN type22 fixed 5 accelnet_prepared
+RUN type22 fixed 5 accelnet_cpu
+RUN type22 fixed 5 n2p2
+RESULT type22 fixed {'n2p2': 42.2983, 'accelnet_cpu': 46.3683, 'accelnet_prepared': 46.3004} {'accelnet_cpu': 0.9122241929887549, 'accelnet_prepared': 0.9135621131162346}
+Traceback (most recent call last):
+  File "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/benchmark/compare_n2p2_cpu.py", line 185, in <module>
+    main()
+  File "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/benchmark/compare_n2p2_cpu.py", line 179, in main
+    raise AssertionError(f"n2p2 parity check: {report['n2p2_regressions']}")
+AssertionError: n2p2 parity check: [('type21', 'fixed', 1.101345797176895)]

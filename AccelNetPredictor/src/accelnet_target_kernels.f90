@@ -62,6 +62,7 @@ contains
         real(real64) :: v, dv, z, rc, ac, alpha, xscale, vc, dc, coeff, radial, fj(3), center_f(3), w(3,3)
         real(real64) :: self0, self1, mono, u(3), grad(3), dm(3), correction, started
         real(real64) :: hy, hz, dhy, dhz, hyz
+        logical :: parallel_scatter
         ! All arrays have persistent mappings owned by target_workspace.
         ! Structured references here neither copy data nor allocate device memory.
         !$omp target data device(device) if(device /= omp_get_initial_device()) &
@@ -478,11 +479,19 @@ contains
             edge_force(:,j) = fj
         end do
         !$omp end target teams distribute parallel do
-        if (any(meta(10,:) == 1)) call generic_forces(device,nedges,meta,nodes,features,feature_params, &
+        if (any(meta(10,:) == 1)) call generic_forces(device,nrw,nedges,meta,nodes,features,feature_params, &
             local_species,species,centers,offsets,indices,geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force)
         if (any(meta(11,:) > 0)) call g5_moment_forces(device,nedges,meta,features,local_species, &
             species,centers,indices,geom,edge_row,radial_cache,moments,g5_active,edge_force)
-        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
+        ! Host scatter is a short serial streaming pass: avoid locks per edge.
+        ! Device scatter remains parallel; reduce the nine virial components
+        ! instead of issuing nine contended global atomic updates per center.
+        parallel_scatter = .false.
+        !$ parallel_scatter = device /= omp_get_initial_device()
+        ! Here if intentionally controls BOTH offload and parallel execution.
+        !$omp target teams distribute parallel do device(device) if(parallel_scatter) &
+        !$omp& num_teams(merge(max(1,(nrw+31)/32),1,parallel_scatter)) &
+        !$omp& thread_limit(32) reduction(+:virial) &
         !$omp& private(j,target,c,a,fj,center_f,w)
         do row = 1, nrw
             center_f = 0; w = 0
@@ -490,8 +499,12 @@ contains
                 fj = edge_force(:,j)
                 target = indices(j)
                 do c = 1, 3
-                    !$omp atomic update
-                    forces(c,target) = forces(c,target)+fj(c)
+                    if (parallel_scatter) then
+                        !$omp atomic update
+                        forces(c,target) = forces(c,target)+fj(c)
+                    else
+                        forces(c,target) = forces(c,target)+fj(c)
+                    end if
                     center_f(c) = center_f(c)-fj(c)
                     do a = 1, 3
                         w(a,c) = w(a,c)+dr(a,j)*fj(c)
@@ -500,10 +513,13 @@ contains
             end do
             target = centers(row)
             do c = 1, 3
-                !$omp atomic update
-                forces(c,target) = forces(c,target)+center_f(c)
-                do a = 1, 3
+                if (parallel_scatter) then
                     !$omp atomic update
+                    forces(c,target) = forces(c,target)+center_f(c)
+                else
+                    forces(c,target) = forces(c,target)+center_f(c)
+                end if
+                do a = 1, 3
                     virial(a,c) = virial(a,c)+w(a,c)
                 end do
             end do
@@ -798,103 +814,50 @@ contains
         !$omp end target teams distribute
     end subroutine
 
-    subroutine generic_forces(device,nedges,meta,nodes,features,fp,local_species,species,centers,offsets, &
+    subroutine generic_forces(device,nrw,nedges,meta,nodes,features,fp,local_species,species,centers,offsets, &
                               indices,geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force)
-        integer, intent(in) :: device,nedges
+        integer, intent(in) :: device,nrw,nedges
         integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),features(:,:,:),local_species(:,:)
         integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:),edge_row(:),g5_active(:,:)
         real(real64), contiguous, intent(in) :: fp(:,:,:),radial_cache(:,:,:),jacobian(:,:,:),geom(:,:),g(:,:)
         real(real64), contiguous, intent(inout) :: edge_force(:,:)
-        integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group,degree,d,c,bb
+        integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group,degree,d,c,bb,item,first,last
         real(real64) :: f(3),v,dv,gradient(3),gradient_k(3),v12,dv12,radial_force,hcoeff(0:16)
-        logical :: pair_once
-        ! CPU serial builds benefit from evaluating both sides once. GPU edge
-        ! ownership avoids contended force atomics; all scalar formulas are shared.
-        pair_once = device == omp_get_initial_device() .and. any(features(1,:,:) == 5)
-        if (pair_once) then
-            do j=1,nedges
-                row=edge_row(j); s=species(centers(row))
-                if (meta(10,s) == 1) edge_force(:,j)=0
-            end do
-        end if
-        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) &
-        !$omp& firstprivate(pair_once) map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
-        !$omp& geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force) &
-        !$omp& private(row,b,s,k,tj,tk,kind,t1,t2,group,degree,d,c,bb,f,v,dv,gradient,gradient_k,v12,dv12,radial_force,hcoeff)
-        do j = 1,nedges
-            row = edge_row(j); s = species(centers(row))
-            if (meta(10,s) /= 1) cycle
-            if (meta(11,s) > 0) then
-                if (g5_active(row,2*size(features,2)+1) == 1) then
-                    edge_force(:,j) = 0
-                    cycle
-                end if
-            end if
-            tj = local_species(species(indices(j)),s); f = 0; radial_force = 0
-            do b = 1,nodes(1,s)
-                kind = features(1,b,s); t1 = features(2,b,s); t2 = features(3,b,s)
-                if (kind == 7) cycle
-                if (meta(11,s) > 0) then
-                    if (g5_active(row,b) == 1) cycle
-                end if
-                if (kind == 4 .or. kind >= 12) then
-                    f = f+g(row,b)*jacobian(:,b,j)
-                    cycle
-                end if
-                if (features(10,b,s) /= 0 .and. features(10,b,s) /= b) cycle
-                group = features(7,b,s)
-                if (kind /= 4 .and. kind /= 5) then
-                    if (tj /= t1) cycle
-                    if (kind == 6) then
-                        call generic_lj(geom(4,j),features(4,b,s),fp(:,b,s),.true.,v,v12,dv,dv12)
-                        radial_force = radial_force+g(row,b)*dv+g(row,b+1)*dv12
-                    else if (kind == 2) then
-                        radial_force = radial_force+g(row,b)*radial_cache(j,group,2)
-                    else
-                        call generic_radial(kind,geom(4,j),features(4,b,s),fp(:,b,s),v,dv)
-                        radial_force = radial_force+g(row,b)*dv
-                    end if
-                else
-                    if (tj /= t1 .and. tj /= t2) cycle
-                    degree = features(12,b,s)
-                    hcoeff(:degree) = 0
-                    if (degree > 0) then
-                        bb=b
-                        do while (bb /= 0)
-                            if (features(13,bb,s) == bb) hcoeff(features(5,bb,s))=g(row,bb)
-                            bb=features(11,bb,s)
-                        end do
-                    else
-                        hcoeff(0)=g(row,b)
-                    end if
-                    do k = merge(j+1,offsets(row),pair_once),offsets(row+1)-1
-                        if (k == j) cycle
-                        tk = local_species(species(indices(k)),s)
-                        if (.not. ((tj == t1 .and. tk == t2) .or. (tj == t2 .and. tk == t1))) cycle
-                        call generic_pair_contracted(features(:,b,s),fp(:,b,s),geom(1:3,j),geom(1:3,k), &
-                            geom(4,j),geom(4,k),radial_cache(j,group,1),radial_cache(k,group,1), &
-                            radial_cache(j,group,2),radial_cache(k,group,2),hcoeff,degree,pair_once,gradient,gradient_k)
-                        f = f+gradient
-                        if (pair_once) then
-                            do c=1,3
-                                !$omp atomic update
-                                edge_force(c,k) = edge_force(c,k)+gradient_k(c)
-                            end do
-                        end if
-                    end do
-                end if
-            end do
-            f = f+radial_force*geom(1:3,j)
-            if (pair_once) then
-                do c=1,3
-                    !$omp atomic update
-                    edge_force(c,j) = edge_force(c,j)+f(c)
+        logical :: center_owned, pair_once
+        ! Host pair-once traversal assigns all edges of a center to one worker.
+        ! Both sides can then be accumulated without atomics. GPU edge ownership
+        ! retains its directed traversal; all scalar formulas are shared.
+        center_owned = device == omp_get_initial_device() .and. any(features(1,:,:) == 5)
+        pair_once = center_owned
+        if (center_owned) then
+            ! Keep the host target context used by the other compute stages;
+            ! mixing a persistent host pool with target teams adds contention.
+            !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) &
+            !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
+            !$omp& geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force) &
+            !$omp& private(pair_once,first,last,row,b,s,j,k,tj,tk,kind,t1,t2,group,degree,d,c,bb,f,v,dv, &
+            !$omp& gradient,gradient_k,v12,dv12,radial_force,hcoeff)
+            do item = 1,nrw
+                pair_once = .true.
+                first = offsets(item); last = offsets(item+1)-1
+                s = species(centers(item))
+                if (meta(10,s) == 1) edge_force(:,first:last) = 0
+                do j = first,last
+                    include 'generic_force_edge_body_noatomics.inc'
                 end do
-            else
-                edge_force(:,j) = f
-            end if
-        end do
-        !$omp end target teams distribute parallel do
+            end do
+            !$omp end target teams distribute parallel do
+        else
+            !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) &
+            !$omp& firstprivate(pair_once) map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
+            !$omp& geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force) &
+            !$omp& private(row,b,s,k,tj,tk,kind,t1,t2,group,degree,d,c,bb,f,v,dv,gradient,gradient_k, &
+            !$omp& v12,dv12,radial_force,hcoeff)
+            do j = 1,nedges
+                include 'generic_force_edge_body.inc'
+            end do
+            !$omp end target teams distribute parallel do
+        end if
     end subroutine
 
     ! Only occupied radial groups are packed. Raw moments survive the NN and

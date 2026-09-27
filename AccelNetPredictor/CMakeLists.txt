@@ -63,7 +63,9 @@ set_target_properties(AccelNetPredictor PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     OUTPUT_NAME accelnet
     Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/modules")
-target_include_directories(AccelNetPredictor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetDescriptors/src/shared")
+target_include_directories(AccelNetPredictor PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetDescriptors/src/shared"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/shared")
 target_include_directories(AccelNetPredictor PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/modules>"
     "$<INSTALL_INTERFACE:include>")
@@ -76,6 +78,14 @@ target_compile_options(AccelNetPredictor PRIVATE
 # Compile the same numerical kernels for the ordinary CPU batch API. Separate
 # module names let this serial instance coexist with a GPU-enabled instance.
 # Strip directives even when the caller supplies global OpenMP compiler flags.
+set(_edge_body "${CMAKE_CURRENT_SOURCE_DIR}/src/shared/generic_force_edge_body.inc")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_edge_body}")
+file(READ "${_edge_body}" _serial_source)
+string(REGEX REPLACE "[ \t]*!\\$omp[^\n]*" "" _serial_source "${_serial_source}")
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/shared")
+configure_file(cmake/serial-source.F90.in
+    "${CMAKE_CURRENT_BINARY_DIR}/shared/generic_force_edge_body_noatomics.inc" @ONLY)
+target_include_directories(AccelNetPredictor PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/shared")
 set(_shared_modules accelnet_target_runtime accelnet_target_descriptors
     accelnet_target_math accelnet_target_kernels accelnet_batch_target)
 foreach(_module IN LISTS _shared_modules)
@@ -86,6 +96,8 @@ foreach(_module IN LISTS _shared_modules)
     set(_source "${CMAKE_CURRENT_SOURCE_DIR}/src/${_module}.${_extension}")
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_source}")
     file(READ "${_source}" _serial_source)
+    string(REPLACE "'generic_force_edge_body.inc'" "'generic_force_edge_body_noatomics.inc'"
+        _serial_source "${_serial_source}")
     foreach(_name IN LISTS _shared_modules)
         string(REPLACE "${_name}" "${_name}_serial" _serial_source "${_serial_source}")
     endforeach()
@@ -119,7 +131,10 @@ if(ACCELNET_BUILD_OPENMP_TARGET)
     add_library(AccelNet::Target ALIAS AccelNetTarget)
     set_target_properties(AccelNetTarget PROPERTIES OUTPUT_NAME accelnet_target
         Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/target-modules")
-    target_include_directories(AccelNetTarget PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetDescriptors/src/shared")
+    target_include_directories(AccelNetTarget PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetDescriptors/src/shared"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/shared"
+        "${CMAKE_CURRENT_BINARY_DIR}/shared")
     target_include_directories(AccelNetTarget PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/target-modules>"
         "$<INSTALL_INTERFACE:include>")

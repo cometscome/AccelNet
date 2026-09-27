@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.10 — 2026-09-27 (JST).**
+**Document version 1.11 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -18,7 +18,7 @@ not bitwise equality.
 | AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20; each validation archive identifies its measured sources |
+| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20, exact high-order moments/threading in Section 21, and atomic removal in Section 22; each validation archive identifies its measured sources |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -2035,3 +2035,111 @@ This is an explicit host-target path. The normal CPU batch and LAMMPS CPU
 adapter still use the serial compilation. GPU target execution keeps the same
 math, while the retained atomic CPU evaluator remains the compatibility and
 independent reference implementation.
+
+
+## 22. Remove fine-grained force atomics (revision 1.11)
+
+Baseline: `gpu` **0e79af3**, AccelNet **1.0.1**. Revision 1.10 exposed the cost
+of enabling OpenMP on the host, including expensive locked updates even with
+one worker. This revision changes ownership and reduction of already-computed
+forces; descriptor and neural-network formulas stay shared and unchanged.
+[Validation and paired before/after timings](docs/validation/atomic-reduction-2026-09-27/README.md)
+include OpenMP OFF, ON/1/2/4/8 and H100.
+
+### 22.1 Give a center exclusive ownership of its CSR edge forces
+
+For center row $i$, define its edge interval
+
+$$E_i=\{\mathrm{offsets}(i),\ldots,\mathrm{offsets}(i+1)-1\}.$$
+
+These intervals are disjoint even when two rows refer to the same physical
+center or periodic images refer to the same target atom. The host G5 direct
+method evaluates an unordered pair $(j,k)$ once and writes both derivatives
+into `edge_force(:,j)` and `edge_force(:,k)`. Previously separate edge workers
+could update the same $k$, requiring atomic additions. Assigning the whole
+$E_i$ to one worker makes both writes exclusive and removes those atomics.
+Each worker zeros only its own edge interval before processing it.
+
+Two short scheduling wrappers use one Fortran arithmetic body,
+`AccelNetPredictor/src/shared/generic_force_edge_body.inc`. Host pair-once work
+items span a center's edge interval; GPU work items span one edge. Both
+schedules use `target teams distribute parallel do`, including the host
+target context selected by `if(target:...)`. Scalar pair geometry,
+angular/radial evaluation and contraction are not duplicated. Non-G5 families
+keep the one-edge work mapping.
+
+CMake generates the host center-owned include by removing only OpenMP atomic
+directives from that single body. The normal serial module also uses this
+stripped include even if global compiler flags enable OpenMP. Generated copies
+are build artifacts, not independently maintained numerical implementations.
+The GPU edge schedule preserves the original guarded pair-update directives;
+`pair_once` is false in this schedule, so they are not executed. Only the final
+physical-atom scatter executes explicit atomic additions on GPU.
+
+This distinction was required by an NVHPC 25.3 performance result. Removing
+atomic directives even from the GPU's inactive pair-once branch doubled the
+G5 direct force kernel's measured duration, about 0.95 to 1.96 ms. Whole
+low-order G5 evaluation regressed about 22%. Removing a one-iteration inner
+loop, changing the host schedule, and specializing the traversal flag did not
+cure it. Nsight Systems showed identical 1024-block/128-thread launches and
+156 registers per thread on H100; the final scatter stayed about 0.27 ms.
+Restoring the guarded GPU directives while stripping them only for host center
+ownership restored GPU performance. This isolates a compiler code-generation
+sensitivity to those directives; the exact compiler optimization responsible
+has not been established. It is not evidence that executing extra GPU atomics
+would be beneficial.
+
+### 22.2 Separate edge ownership from physical-atom scatter
+
+Exclusive edge ownership does not imply exclusive physical-atom ownership.
+With edge force $\mathbf f_e$ and edge displacement $\mathbf r_e$, assembly is
+
+$$\mathbf F_a=\sum_{e:\,\mathrm{target}(e)=a}\mathbf f_e
+ -\sum_{i:\,\mathrm{center}(i)=a}\sum_{e\in E_i}\mathbf f_e,$$
+
+$$W_{\alpha\beta}=\sum_i\sum_{e\in E_i}
+ r_{e,\alpha} f_{e,\beta}.$$
+
+On the host this final assembly is a serial streaming pass, with **no per-edge,
+per-center or per-pair atomic force updates**. Descriptor, NN, direct and moment
+force computation remain parallel. The serial pass avoids both contention and
+an additional reverse-neighbor structure or thread-private force arrays.
+Its cost must still be measured as atom and thread counts grow.
+
+On GPU, physical-atom scatter remains parallel and retains atomic updates for
+both incoming edge forces and center forces. Removing these safely would need
+a reverse adjacency/gather or another conflict-free ownership scheme, including
+periodic images and MPI ghost indices. This revision does not substitute a
+quadratic scan or introduce unmeasured preprocessing into that path.
+
+The nine virial components use an OpenMP reduction instead of nine explicit
+global atomics per center. The runtime may implement its final reduction with
+atomics internally; the claim is fewer explicit contended updates, not zero
+synchronization inside the OpenMP runtime. Host scatter intentionally uses one
+team and one worker; its unqualified `if(parallel_scatter)` deliberately applies
+to both the target and parallel constructs. The other compute loops retain
+`if(target:...)` so host computations remain parallel.
+
+### 22.3 Keep host worker management consistent and measure clocks
+
+Center ownership alone is insufficient to predict OpenMP performance. A native
+host `parallel do` mixed with the other stages' host target teams left 15 live
+threads for an eight-thread request on GNU 11.4. The unchanged descriptor stage
+slowed as well. Using host target teams for both ownership schedules restored
+eight live workers. This scheduling-only fix leaves the serial kernel's compiled
+`.text` unchanged. It is a runtime interaction observed with this compiler and
+configuration, not a claim about all OpenMP runtimes.
+
+The CPU governor also moved between 3.9 and 2.8 GHz. At matched frequencies the
+G5 direct OFF/1 before/after difference is below 1%; mixed-frequency wall times
+must not be mistaken for an arithmetic regression. The diagnostic script
+`probe_openmp_ownership.py` records live worker counts and frequency samples
+without changing machine-wide clock settings.
+
+In the final paired sweep, eight-thread before/after improvements range from
+1.03 to 1.48 times, while GPU times change by less than 0.5%. Thread scaling
+remains nonmonotonic for cheap workloads. The validation report retains the
+full OFF/1, ON/1/2/4/8 and H100 table, raw samples, and limitations. Numerical
+checks passed; a separate strict n2p2 type-21 direct parity gate narrowly missed
+its unchanged limit (CPU/n2p2 1.101346 versus 1.10). This is recorded as a failure,
+not hidden by the successful correctness and other performance tests.

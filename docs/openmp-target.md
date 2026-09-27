@@ -420,3 +420,12 @@ but retains the initial independent reference and every numerical check.
 The [revision 1.10 report](validation/high-g5-moments-2026-09-27/README.md)
 records raw timings, overhead and scaling. This measures host execution of the
 shared target kernels, not a new LAMMPS CPU threading integration.
+
+
+The [revision 1.11 atomic-reduction report](validation/atomic-reduction-2026-09-27/README.md)
+supersedes revision 1.10 host force timings. Host G5 pair-once evaluation now
+assigns an entire center's CSR edges to one worker, avoiding pair-force atomics.
+Host final force scatter is a short serial pass without atomic updates; other
+compute stages remain threaded. GPU force scatter retains atomic additions to
+shared physical atoms, while virial assembly uses a nine-component reduction.
+No descriptor math is forked into a separate CPU implementation.

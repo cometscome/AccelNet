@@ -1,0 +1,12 @@
+{
+  "baseline": "0e79af3e9b36f3acbae5369573d82d347ddb5b92",
+  "library_version": "1.0.1",
+  "document_version": "1.11",
+  "sources": {
+    "AccelNetPredictor/src/accelnet_target_kernels.f90": "a3ce003f5b3223ec79d6f5d85ab5b4ac8ef102b73b0858ee9f3c6408a7399c71",
+    "AccelNetPredictor/src/shared/generic_force_edge_body.inc": "d7edb0a0a6f28178caa2d29aeaf45b541fedc49388619dd770a81cbf2d1da50a",
+    "AccelNetPredictor/CMakeLists.txt": "657172ef4e73cbff8e5abe1d2ad1f7e315de39acb99ab6a44a2be688143ee258",
+    "AccelNetPredictor/benchmark/compare_atomic_reduction.py": "9e30876f432ab35b666d2bfe34d8c11a27899cd6f318e025c2e989166ea536b7",
+    "AccelNetPredictor/benchmark/probe_openmp_ownership.py": "5e83e2100c9044a9e96e9079b245a12c471c4695117f1c994e5aba099d26256f"
+  }
+}
