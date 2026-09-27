@@ -47,11 +47,12 @@ module accelnet_batch_target
         private
         type(packed_component) :: cached
         real(real64), allocatable :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:), moments(:,:,:), &
-            powers(:,:,:), radial(:,:,:), jacobian(:,:,:)
+            powers(:,:,:),cheb_scratch(:,:), radial(:,:,:), jacobian(:,:,:)
         integer, allocatable :: species(:), centers(:), offsets(:), indices(:), use_moment(:), edge_row(:), &
-            g4_first(:,:,:), g5_active(:,:)
+            g4_first(:,:,:), g5_active(:,:),cheb_head(:,:),cheb_next(:)
         real(real64), allocatable :: dr(:,:), energies(:), forces(:,:), virial(:,:), geom(:,:), edge_force(:,:)
         integer :: growth_count = 0, upload_count = 0
+        integer :: capacity_rows=0,capacity_atoms=0,capacity_edges=0
     contains
         procedure :: release => release_component_workspace
         procedure :: allocations => target_allocations
@@ -457,12 +458,14 @@ contains
 
     subroutine release_buffers(self)
         class(component_workspace), intent(inout) :: self
+        self%capacity_rows=0; self%capacity_atoms=0; self%capacity_edges=0
         if (.not. allocated(self%g)) return
         call map_buffers(self%cached%device,.false.,self%g,self%values,self%deriv,self%delta,self%moments, &
-            self%powers,self%radial,self%jacobian,self%g4_first,self%g5_active, &
+            self%powers,self%cheb_scratch,self%cheb_head,self%cheb_next,self%radial,self%jacobian,self%g4_first,self%g5_active, &
             self%species,self%centers,self%offsets,self%indices,self%use_moment,self%dr,self%energies,self%forces,self%virial, &
             self%geom,self%edge_row,self%edge_force)
-        deallocate(self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%radial, &
+        deallocate(self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%cheb_scratch,self%cheb_head, &
+            self%cheb_next,self%radial, &
             self%jacobian,self%g4_first,self%g5_active,self%species,self%centers, &
             self%offsets,self%indices,self%use_moment,self%dr,self%energies,self%forces,self%virial, &
             self%geom,self%edge_row,self%edge_force)
@@ -665,7 +668,7 @@ contains
         class(packed_component), intent(in) :: model
         class(component_workspace), intent(inout) :: work
         integer, intent(in) :: nrw,natoms,nedges
-        integer :: n,mn,ml,ne,na,mm,mpower,ngroups,njf,nje,njr,nlocal,nchannels,ndelta,mdelta,ng5,nfg5
+        integer :: n,mn,ml,ne,na,mm,mpower,ngroups,njf,nje,njr,nlocal,nchannels,ndelta,mdelta,ng5,nfg5,ncs,ncr
         logical, optional, intent(in) :: reuse_model
         logical :: grow,unchanged
         na = natoms
@@ -677,6 +680,12 @@ contains
         unchanged=.false.
         if (present(reuse_model)) unchanged=reuse_model.and.allocated(work%cached%meta)
         if (.not.unchanged) unchanged=same_model(model,work%cached)
+        ! Capacities were validated against this exact cached model. Avoid
+        ! repeating its shape/group scans for every single-center API call.
+        if (unchanged .and. allocated(work%g)) then
+            if (nrw<=work%capacity_rows .and. natoms<=work%capacity_atoms .and. &
+                nedges<=work%capacity_edges) return
+        end if
         if (.not.unchanged) then
             if (allocated(work%cached%meta)) call map_model(work%cached,.false.)
             work%cached = model
@@ -684,13 +693,20 @@ contains
             work%upload_count = work%upload_count+1
         end if
         n = nrw; mn = model%maxnodes; ml = model%maxlayers
+        ! Contiguous per-center/element moments and one-dimensional powers.
+        ! Explicit resident scratch avoids device-local allocation/descriptors.
+        ncs=1; ncr=1
+        if (any(model%meta(10,:)==0)) then
+            ncs=(maxval(model%meta(9,:),mask=model%meta(10,:)==0)+ &
+                3*maxval(model%meta(2,:),mask=model%meta(10,:)==0))*size(model%meta,2)
+            ncr=max(1,nrw)
+        end if
         ne = max(1,nedges); mm = size(model%mp,2); mpower = size(model%polynomial,1)
         ! Odd leading dimensions avoid power-of-two cache-set conflicts when
-        ! the pair loop updates many descriptor columns at a fixed CPU row.
+        ! descriptor/moment/network loops visit columns at a fixed CPU row.
         ! Identical storage is used on device; only capacity is padded.
-        if (any(model%features(31,1,:) > 0)) then
-            n=n+modulo(1-n,8); ne=ne+modulo(1-ne,8)
-        end if
+        n=n+modulo(1-n,8)
+        if (any(model%features(31,1,:) > 0)) ne=ne+modulo(1-ne,8)
         ngroups = max(1,maxval(model%features(7,:,:)))
         nchannels = max(2,2*maxval(model%meta(11,:)))
         ndelta = max(2,maxval(model%meta(11,:))*size(model%meta,2))
@@ -710,6 +726,7 @@ contains
         grow = .true.
         if (allocated(work%g)) then
             n = max(n,size(work%g,1)); mn = max(mn,size(work%g,2)); ml = max(ml,size(work%values,3))
+            ncs=max(ncs,size(work%cheb_scratch,1)); ncr=max(ncr,size(work%cheb_scratch,2))
             ne = max(ne,size(work%indices)); na = max(na,size(work%species)); mm = max(mm,size(work%moments,2))
             mpower = max(mpower,size(work%powers,2))
             nchannels = max(nchannels,size(work%moments,3))
@@ -718,7 +735,9 @@ contains
             ngroups = max(ngroups,size(work%radial,2))
             njf = max(njf,size(work%jacobian,2)); nje = max(nje,size(work%jacobian,3))
             njr = max(njr,size(work%g4_first,3)); nlocal = max(nlocal,size(work%g4_first,1))
-            grow = n > size(work%g,1) .or. mn > size(work%g,2) .or. ml > size(work%values,3) .or. &
+            grow = size(model%meta,2)>size(work%cheb_head,1) .or. &
+                ncs > size(work%cheb_scratch,1) .or. ncr > size(work%cheb_scratch,2) .or. &
+                n > size(work%g,1) .or. mn > size(work%g,2) .or. ml > size(work%values,3) .or. &
                 ne > size(work%indices) .or. na > size(work%species) .or. mm > size(work%moments,2) .or. &
                 mpower > size(work%powers,2) .or. ngroups > size(work%radial,2) .or. &
                 nchannels > size(work%moments,3) .or. &
@@ -729,18 +748,21 @@ contains
         end if
         if (grow) then
             call release_buffers(work)
-            allocate(work%g(n,mn),work%values(n,mn,ml),work%deriv(n,mn,ml),work%delta(n,mdelta,ndelta), &
+            allocate(work%cheb_head(size(model%meta,2),n),work%cheb_next(ne), &
+                work%cheb_scratch(ncs,ncr),work%g(n,mn),work%values(n,mn,ml),work%deriv(n,mn,ml),work%delta(n,mdelta,ndelta), &
                 work%moments(n,mm,nchannels),work%powers(ne,mpower,3),work%radial(ne,ngroups,2), &
                 work%jacobian(3,njf,nje),work%g4_first(nlocal,nlocal,njr),work%g5_active(ng5,nfg5),work%species(na), &
                 work%centers(n),work%offsets(n+1), &
                 work%indices(ne),work%use_moment(n),work%dr(3,ne),work%geom(7,ne),work%edge_row(ne),work%edge_force(3,ne), &
                 work%energies(n),work%forces(3,na),work%virial(3,3))
             call map_buffers(model%device,.true.,work%g,work%values,work%deriv,work%delta,work%moments, &
-                work%powers,work%radial,work%jacobian,work%g4_first,work%g5_active, &
+                work%powers,work%cheb_scratch,work%cheb_head,work%cheb_next,work%radial,work%jacobian, &
+                work%g4_first,work%g5_active, &
                 work%species,work%centers,work%offsets,work%indices,work%use_moment,work%dr, &
                 work%energies,work%forces,work%virial,work%geom,work%edge_row,work%edge_force)
             work%growth_count = work%growth_count+1
         end if
+        work%capacity_rows=nrw; work%capacity_atoms=natoms; work%capacity_edges=nedges
     end subroutine
 
     subroutine execute_workspace(model,work,nrw,natoms,nedges,energies,forces,virial,timing,energy_only,descriptor_values)
@@ -768,6 +790,14 @@ contains
             return
         end if
         mark = omp_get_wtime()
+        if (present(energy_only)) then
+            if (energy_only) then
+                call download_energies(model%device,nrw,work%energies)
+                energies=work%energies(:nrw)
+                timing%download=omp_get_wtime()-mark
+                return
+            end if
+        end if
         call download_outputs(model%device,natoms,nrw,work%energies,work%forces,work%virial)
         energies = work%energies(:nrw)
         forces = forces+work%forces(:,:natoms)
@@ -787,7 +817,8 @@ contains
             work%cached%features,work%cached%feature_params,work%cached%local_species, &
             work%cached%mp,work%cached%multiplicity,work%cached%polynomial,work%species,work%centers,work%offsets, &
             work%indices,work%dr,work%energies,work%forces,work%virial,work%g,work%values,work%deriv,work%delta, &
-            work%moments,work%powers,work%radial,work%jacobian,work%g4_first,work%g5_active,work%use_moment, &
+            work%moments,work%powers,work%cheb_scratch,work%cheb_head,work%cheb_next,work%radial,work%jacobian, &
+            work%g4_first,work%g5_active,work%use_moment, &
             work%geom,work%edge_row, &
             work%edge_force,nrw,natoms,nedges,stages,energy_only,phase)
     end subroutine
@@ -875,24 +906,24 @@ contains
         end if
     end subroutine
 
-    subroutine map_buffers(device,enter,g,values,deriv,delta,moments,powers,radial,jacobian,&
+    subroutine map_buffers(device,enter,g,values,deriv,delta,moments,powers,cheb_scratch,cheb_head,cheb_next,radial,jacobian,&
             g4_first,g5_active,species,centers,offsets,indices, &
                            use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
         integer, intent(in) :: device
         logical, intent(in) :: enter
         real(real64), contiguous, intent(inout) :: g(:,:),values(:,:,:),deriv(:,:,:),delta(:,:,:),moments(:,:,:), &
-            powers(:,:,:), radial(:,:,:), jacobian(:,:,:)
+            powers(:,:,:),cheb_scratch(:,:), radial(:,:,:), jacobian(:,:,:)
         integer, contiguous, intent(inout) :: species(:),centers(:),offsets(:),indices(:),use_moment(:),edge_row(:), &
-            g4_first(:,:,:),g5_active(:,:)
+            g4_first(:,:,:),g5_active(:,:),cheb_head(:,:),cheb_next(:)
         real(real64), contiguous, intent(inout) :: dr(:,:),energies(:),forces(:,:),virial(:,:),geom(:,:),edge_force(:,:)
         if (enter) then
             !$omp target enter data device(device) if(device /= omp_get_initial_device()) &
-            !$omp& map(alloc:g,values,deriv,delta,moments,powers,radial,jacobian,g4_first,g5_active,species, &
+            !$omp& map(alloc:g,values,deriv,delta,moments,powers,cheb_scratch,cheb_head,cheb_next,radial,jacobian,g4_first,g5_active,species, &
         !$omp& centers,offsets,indices, &
             !$omp& use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
         else
             !$omp target exit data device(device) if(device /= omp_get_initial_device()) &
-            !$omp& map(delete:g,values,deriv,delta,moments,powers,radial,jacobian,g4_first,g5_active,species, &
+            !$omp& map(delete:g,values,deriv,delta,moments,powers,cheb_scratch,cheb_head,cheb_next,radial,jacobian,g4_first,g5_active,species, &
         !$omp& centers,offsets,indices, &
             !$omp& use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
         end if
@@ -907,6 +938,12 @@ contains
         if (nedges > 0) then
             !$omp target update device(device) if(device /= omp_get_initial_device()) to(indices(:nedges),dr(:,:nedges))
         end if
+    end subroutine
+
+    subroutine download_energies(device,nrows,energies)
+        integer, intent(in) :: device,nrows
+        real(real64), contiguous, intent(inout) :: energies(:)
+        !$omp target update device(device) if(device /= omp_get_initial_device()) from(energies(:nrows))
     end subroutine
 
     subroutine download_outputs(device,natoms,nrows,energies,forces,virial)

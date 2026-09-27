@@ -20,7 +20,7 @@ program test_batch_target
     type(descriptor_config) :: config
     type(behler_config) :: grouped_config
     character(len=1024) :: argument, directory, filenames(2)
-    integer :: v, version, mode, geometry, cutoff, activation, i, n, l, nw, checks, gpu_mode
+    integer :: v, version, mode, geometry, cutoff, activation, i, j, n, l, nw, checks, gpu_mode
     integer, allocatable :: packed_features(:,:)
     real(real64), allocatable :: packed_parameters(:,:)
     integer :: pack_status
@@ -28,6 +28,7 @@ program test_batch_target
     logical :: host
     character(len=16), parameter :: families(5) = [character(len=16) :: 'lj','behler','g4','g5','lj-behler']
     real(real64) :: max_error, degree_test, lambda_test
+    real(real64), parameter :: custom_weights(4)=[0.0_real64,0.35_real64,-1.2_real64,2.1_real64]
     checks = 0; max_error = 0
     gpu_mode = 0; host = .false.
     call get_command_argument(1,argument)
@@ -433,6 +434,37 @@ program test_batch_target
                 if (v == 0) call finite_differences(s)
             end do
         end do
+    else if (argument == '--cheb-species') then
+        ! Arbitrary (including zero/fractional) species weights must work with
+        ! grouped moments and non-identity global-to-local species mappings.
+        do n=3,4
+            do v=0,2
+                version=merge(10,v,v==2)
+                call make_model('chebyshev',source_model,order=4,version=version)
+                model=source_model
+                deallocate(model%networks,model%setups,model%species_names)
+                allocate(model%networks(n),model%setups(n),model%species_names(n))
+                model%species_names(1:3)=[character(len=16)::'H','He','Li']
+                if (n==4) model%species_names(4)='Be'
+                do i=1,n
+                    model%networks(i)=source_model%networks(1)
+                    model%networks(i)%atomtype=model%species_names(i)
+                    model%networks(i)%atomic_references=[(0.1_real64*j,j=1,n)]
+                    model%setups(i)%global_to_local=[(modulo(j+i-2,n)+1,j=1,n)]
+                    call initialize_config(config,n,3.4_real64,4,3.4_real64,4, &
+                        version=version,central_type_index=i)
+                    config%species_weights=custom_weights(:n)
+                    call add_chebyshev(model%setups(i)%model,config)
+                end do
+                call make_structure(16,n,s)
+                do mode=0,2
+                    call model%set_chebyshev_evaluation(mode)
+                    call packed%initialize(model,use_host=host)
+                    call check(s)
+                    if (v==0.and.mode==2) call finite_differences(s)
+                end do
+            end do
+        end do
     else if (argument == '--composite' .or. argument == '--composite-quick') then
         do v=0,merge(0,2,argument=='--composite-quick')
             version=merge(10,v,v==2)
@@ -659,6 +691,12 @@ contains
         call close_array(eg,e,'atomic energies')
         call close_array(reshape(fg,[3*s%natoms]),reshape(f,[3*s%natoms]),'forces')
         call close_array(reshape(wg,[9]),reshape(w,[9]),'virial')
+        ! Energy-only reuse must neither expose nor scatter stale force scratch.
+        fg=0.25_real64; wg=0.5_real64
+        call evaluate_batch_target(packed,s%species,centers,nb%offsets,nb%atom_indices,nb%displacements, &
+            eg,fg,work,wg,energy_only=.true.)
+        call close_array(eg,e,'energy-only energies')
+        call require(all(fg==0.25_real64).and.all(wg==0.5_real64),'energy-only preserves accumulators')
         count = work%allocations(); uploads = work%uploads(); split = s%natoms/2
         fg = 0.25_real64; wg = 0.5_real64
         call evaluate_batch_target(packed,s%species,centers(:split),nb%offsets(:split+1),nb%atom_indices, &

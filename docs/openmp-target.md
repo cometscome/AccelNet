@@ -17,6 +17,13 @@ moments can regress. Fractional/near-integer and powers above 16 remain direct.
 Multiple/mixed Chebyshev components within one element use the common component
 pipeline: descriptor blocks are gathered into one NN, then its adjoints are
 distributed back to the same component kernels.
+There is no one-Chebyshev-component-per-element restriction since `e6a96d3`.
+A component means a full radial/angular basis block, not an individual
+polynomial feature. Each block may have different orders and cutoffs. The
+private `initialize_component` helper packs one already-separated block; the
+public `target_model%initialize` decomposes mixed/multiple blocks before calling
+it. Its internal single-block guard is not a public model restriction.
+
 Angular parameters require finite values, |lambda| <= 1 and zeta >= 1.
 
 The same target kernels can explicitly execute on the CPU:
@@ -447,3 +454,30 @@ was populated. Call `work%release()` before changing the model when using this
 option. The private per-atom/C cache uses this shortcut and releases its
 workspace whenever a loader or mode setter invalidates the cache. Ordinary
 mutable-object APIs retain the value comparison.
+
+
+### Energy-only regression check (methods revision 1.13)
+
+The common Chebyshev kernel accumulates moments once per center/species and
+forms weighted channels afterward. CPU and GPU execute the same arithmetic;
+only OpenMP scheduling differs. Energy-only calls preserve the caller's force
+and virial accumulators and skip their device download.
+
+To guard CPU energy performance, provide an archived **public API benchmark**
+compiled against the former CPU library with OpenMP disabled:
+
+```sh
+cmake -S . -B build-serial \
+  -DACCELNET_PUBLIC_API_BASELINE_EXECUTABLE=/path/to/old/accelnet-public-api-benchmark
+ctest --test-dir build-serial -R predictor_aenet_energy_performance --output-on-failure
+```
+
+Use the same compiler/options and benchmark source in both builds; the command
+above is an addition to the existing serial build configuration. The test
+requires the Ti/O golden model directory. It checks both energy APIs at 64,
+192 and 512 atoms, verifies energies, rejects linked OpenMP runtimes, and uses
+`ACCELNET_CPU_MAX_SLOWDOWN` (default 1.10). The direct script also accepts
+`--core`, `--rounds` and `--seconds`. Run performance tests without concurrent
+builds or other benchmarks. See the [validation report](validation/energy-common-2026-09-27/README.md)
+for final measurements and the distinction between original-CPU and previous
+common-GPU baselines.

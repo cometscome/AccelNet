@@ -3,13 +3,53 @@
 module accelnet_target_kernels
     use iso_fortran_env, only: real64,int64
     use accelnet_target_runtime, only: omp_get_wtime, omp_get_initial_device
-    use accelnet_target_math, unused_extended_angular => extended_angular
+    use accelnet_target_math, unused_extended_angular => extended_angular, &
+        external_cutoff_value => target_cutoff_value, external_cutoff_derivative => target_cutoff_derivative
+    use accelnet_descriptors, only: CUTOFF_HARD,CUTOFF_COS,CUTOFF_TANHU,CUTOFF_TANH, &
+        CUTOFF_EXP,CUTOFF_POLY1,CUTOFF_POLY2,CUTOFF_POLY3,CUTOFF_POLY4,CUTOFF_FRACTIONAL
     use accelnet_target_descriptors, only: MAX_SHARED_G5_MOMENT_ORDER, G5_COMPONENT_CUTOFF
     implicit none
     private
     public :: run_target_batch
     real(real64), parameter :: pi = 3.14159265358979_real64, eps = 1e-12_real64
 contains
+    pure real(real64) function target_cutoff_value(distance,rc,cutoff_type,alpha) result(value)
+        !$omp declare target
+        real(real64), parameter :: PI_ACCELNET=pi
+        include 'cutoff_value.inc'
+    end function
+
+    pure real(real64) function target_cutoff_derivative(distance,rc,cutoff_type,alpha) result(value)
+        !$omp declare target
+        real(real64), parameter :: PI_ACCELNET=pi
+        include 'cutoff_derivative.inc'
+    end function
+
+    subroutine chebyshev_species_moments(na,nm,head,next,geom,typed,px,py,pz)
+        !$omp declare target
+        integer, intent(in) :: na,nm,head,next(*)
+        real(real64), intent(in) :: geom(7,*)
+        real(real64), intent(inout) :: typed(nm),px(na),py(na),pz(na)
+        real(real64) :: fc,fcxy
+        integer :: j,e,q,k,ax,ay,nz
+        typed=0; j=head
+        do while (j>0)
+            e=j; j=next(j); fc=geom(5,e)
+            px(1)=1; py(1)=1; pz(1)=1
+            do q=2,na
+                px(q)=px(q-1)*geom(1,e); py(q)=py(q-1)*geom(2,e); pz(q)=pz(q-1)*geom(3,e)
+            end do
+            k=1
+            do ax=0,na-1
+                do ay=0,na-1-ax
+                    nz=na-ax-ay; fcxy=fc*(px(ax+1)*py(ay+1))
+                    typed(k:k+nz-1)=typed(k:k+nz-1)+fcxy*pz(:nz)
+                    k=k+nz
+                end do
+            end do
+        end do
+    end subroutine
+
     ! Keep the shared formula in this translation unit so serial Fortran can
     ! inline it in the hot G4 loop without requiring whole-program LTO.
     pure subroutine kernel_angular_power(cosine,lambda,zeta,integer_zeta,derivative_prefactor,value,derivative)
@@ -37,7 +77,8 @@ contains
     subroutine run_target_batch(device, meta, nodes, acts, woffset, weights, params, shift, scale, spin, &
                                 features, feature_params, local_species, mp, multiplicity, polynomial, &
                                 species, centers, offsets, indices, dr, &
-                                energies, forces, virial, g, values, deriv, delta, moments, powers, &
+                                energies, forces, virial, g, values, deriv, delta, moments, powers, cheb_scratch, &
+            cheb_head, cheb_next, &
             radial_cache, jacobian, g4_first, g5_active, use_moment, &
                                 geom, edge_row, edge_force, nrw, natoms, nedges, stages, energy_only, phase)
         integer, contiguous, intent(in) :: features(:,:,:),local_species(:,:)
@@ -53,21 +94,23 @@ contains
         real(real64), contiguous, intent(inout) :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:)
         real(real64), contiguous, intent(inout) :: moments(:,:,:), powers(:,:,:), radial_cache(:,:,:), &
             jacobian(:,:,:)
-        integer, contiguous, intent(inout) :: use_moment(:), edge_row(:), g4_first(:,:,:), g5_active(:,:)
-        real(real64), contiguous, intent(inout) :: geom(:,:), edge_force(:,:)
+        integer, contiguous, intent(inout) :: cheb_head(:,:),cheb_next(:),use_moment(:), edge_row(:), g4_first(:,:,:), &
+            g5_active(:,:)
+        real(real64), contiguous, intent(inout) :: geom(:,:), edge_force(:,:),cheb_scratch(:,:)
         real(real64), intent(out) :: stages(3)
         integer :: row, s, nr, na, dim, multi, version, ct, j, k, b, l, i, o, nin, nout, a, c, target
-        integer :: entry, q, ax, ay, az, angular_neighbors, nm, bb, tile, lane, active_lanes
-        integer :: mx(4),my(4),mz(4)
-        real(real64) :: sums0(4),sums1(4)
+        integer :: entry, q, ax, ay, az, angular_neighbors, nm, bb
         real(real64) :: rj, rk, fcj, fck, dfcj, sj, sk, cosine, x, t0, t1, t2, dt0, dt1, dt2
         real(real64) :: v, dv, z, rc, ac, alpha, xscale, vc, dc, coeff, radial, fj(3), center_f(3), w(3,3)
         real(real64) :: self0, self1, mono, u(3), grad(3), dm(3), correction, started
         real(real64) :: hy, hz, dhy, dhz, hyz
         integer, optional, intent(in) :: phase
-        integer :: selected_phase
+        integer :: selected_phase,nspecies,channel,channel_base,moment_threads
         logical, optional, intent(in) :: energy_only
         logical :: parallel_scatter, only_energy
+        nspecies=size(spin,1)
+        moment_threads=4
+        if (device==omp_get_initial_device()) moment_threads=32
         selected_phase=0
         if (present(phase)) selected_phase=phase
         stages=0
@@ -79,16 +122,16 @@ contains
         !$omp& map(alloc: features,feature_params,local_species) &
         !$omp& map(alloc: meta, nodes, acts, woffset, weights, params, shift, scale, spin, mp, multiplicity, polynomial) &
         !$omp& map(alloc: species, centers, offsets, indices, dr, energies, forces, virial, &
-        !$omp& g, values, deriv, delta, moments, powers, radial_cache, jacobian, g4_first, g5_active, &
+        !$omp& g, values, deriv, delta, moments, powers, cheb_scratch, cheb_head, cheb_next, radial_cache, jacobian, g4_first, g5_active, &
         !$omp& use_moment, geom, edge_row, edge_force)
         started = omp_get_wtime()
         if (selected_phase==0 .or. selected_phase==1) then
         !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& private(s,nr,na,dim,multi,version,ct,j,k,b,l,i,o,nin,nout,rj,rk,fcj,fck,sj,sk,cosine,x, &
-        !$omp& t0,t1,t2,v,z,rc,ac,alpha,xscale,entry,q,ax,ay,az,nm,angular_neighbors,self0,self1,mono,u)
-        do row = 1, max(nrw,natoms)
-            if (row <= natoms) forces(:,row) = 0.0_real64
-            if (row == 1) virial = 0.0_real64
+        !$omp& t0,t1,t2,v,z,rc,ac,alpha,xscale,entry,q,ax,ay,az,nm,angular_neighbors,self0,self1,mono,u,channel)
+        do row = 1, max(nrw,merge(0,natoms,only_energy))
+            if (row <= natoms .and. .not.only_energy) forces(:,row) = 0.0_real64
+            if (row == 1 .and. .not.only_energy) virial = 0.0_real64
             if (row > nrw) cycle
             s = species(centers(row))
             nr = meta(1,s); na = meta(2,s); multi = meta(3,s); version = meta(4,s); ct = meta(5,s)
@@ -157,7 +200,10 @@ contains
                 cycle
             end if
             angular_neighbors = 0
-            do j = offsets(row), offsets(row+1)-1
+            if (meta(8,s)/=1) cheb_head(:,row)=0
+            ! Build forward lists by prepending in reverse CSR order. Each
+            ! element's accumulation retains the original neighbor order.
+            do j = offsets(row+1)-1, offsets(row), -1
                 rj = sqrt(sum(dr(:,j)**2))
                 if (rj <= ac .and. rj > eps) angular_neighbors = angular_neighbors+1
                 edge_row(j) = row
@@ -167,6 +213,10 @@ contains
                 geom(5,j) = target_cutoff_value(rj,ac,ct,alpha)
                 if (.not.only_energy) geom(6,j) = target_cutoff_derivative(rj,ac,ct,alpha)
                 geom(7,j) = spin(species(indices(j)),s)
+                if (meta(8,s)/=1 .and. rj<=ac .and. rj>=eps) then
+                    channel=species(indices(j))
+                    cheb_next(j)=cheb_head(channel,row); cheb_head(channel,row)=j
+                end if
             end do
             use_moment(row) = 0
             ! Initial operation-count heuristic. Forced direct/moment modes are
@@ -202,14 +252,7 @@ contains
                 end if
                 if (rj > ac .or. rj < eps) cycle
                 fcj = geom(5,j)
-                if (use_moment(row) == 1) then
-                    u = geom(1:3,j)
-                    powers(j,1,:) = 1
-                    do q = 2, na
-                        powers(j,q,:) = powers(j,q-1,:)*u
-                    end do
-                    cycle
-                end if
+                if (use_moment(row) == 1) cycle
                 do k = j+1, offsets(row+1)-1
                     rk = geom(4,k)
                     if (rk > ac .or. rk < eps) cycle
@@ -229,46 +272,34 @@ contains
         end do
         !$omp end target teams distribute parallel do
         if (any(meta(8,:) /= 1)) then
-            ! Four independent moments per work item: reuse neighbor geometry
-            ! and expose independent accumulators to CPU SIMD without changing
-            ! each moment's summation order. The CPU and GPU use this same loop.
+            ! Each center/element owns a contiguous moment block. GPU teams
+            ! and CPU threads execute the same element-partitioned arithmetic.
             !$omp target teams distribute parallel do collapse(2) device(device) &
-            !$omp& if(target:device /= omp_get_initial_device()) &
-            !$omp& private(s,j,entry,lane,active_lanes,mx,my,mz,sums0,sums1,mono,fcj,sj)
-            do row = 1, nrw
-                do tile = 1, (size(mp,2)+3)/4
-                    if (use_moment(row) /= 1) cycle
-                    s = species(centers(row))
-                    entry=4*(tile-1)+1
-                    active_lanes=min(4,meta(9,s)-entry+1)
-                    if (active_lanes<=0) cycle
-                    mx=1; my=1; mz=1; sums0=0; sums1=0
-                    do lane=1,active_lanes
-                        mx(lane)=mp(1,entry+lane-1,s)+1
-                        my(lane)=mp(2,entry+lane-1,s)+1
-                        mz(lane)=mp(3,entry+lane-1,s)+1
-                    end do
-                    do j = offsets(row), offsets(row+1)-1
-                        if (geom(4,j) > params(2,s) .or. geom(4,j) < eps) cycle
-                        fcj = geom(5,j); sj = geom(7,j)
-                        do lane=1,4
-                            mono=powers(j,mx(lane),1)*powers(j,my(lane),2)*powers(j,mz(lane),3)
-                            sums0(lane)=sums0(lane)+fcj*mono
-                            sums1(lane)=sums1(lane)+sj*fcj*mono
-                        end do
-                    end do
-                    do lane=1,active_lanes
-                        moments(row,entry+lane-1,1)=sums0(lane)
-                        moments(row,entry+lane-1,2)=sums1(lane)
-                    end do
+            !$omp& if(target:device /= omp_get_initial_device()) thread_limit(moment_threads) &
+            !$omp& private(s,nm,na,q)
+            do channel=1,nspecies
+                do row=1,nrw
+                    if (use_moment(row)/=1) cycle
+                    s=species(centers(row)); nm=meta(9,s); na=meta(2,s); q=(channel-1)*(nm+3*na)
+                    call chebyshev_species_moments(na,nm,cheb_head(channel,row),cheb_next,geom, &
+                        cheb_scratch(q+1:q+nm,row),cheb_scratch(q+nm+1:q+nm+na,row), &
+                        cheb_scratch(q+nm+na+1:q+nm+2*na,row),cheb_scratch(q+nm+2*na+1:q+nm+3*na,row))
                 end do
             end do
             !$omp end target teams distribute parallel do
             !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
-            !$omp& private(s,nr,na,multi,nm,entry,q,b,j,self0,self1,fcj,sj)
+            !$omp& private(s,nr,na,multi,nm,entry,q,b,j,self0,self1,fcj,sj,channel,channel_base)
             do row = 1, nrw
                 if (use_moment(row) /= 1) cycle
                 s = species(centers(row)); nr = meta(1,s); na = meta(2,s); multi = meta(3,s); nm = meta(9,s)
+                moments(row,1:nm,1:2)=0
+                do channel=1,nspecies
+                    channel_base=(channel-1)*(nm+3*na)
+                    do entry=1,nm
+                        moments(row,entry,1)=moments(row,entry,1)+cheb_scratch(channel_base+entry,row)
+                        moments(row,entry,2)=moments(row,entry,2)+spin(channel,s)*cheb_scratch(channel_base+entry,row)
+                    end do
+                end do
                 self0 = 0; self1 = 0
                 do j = offsets(row), offsets(row+1)-1
                     if (geom(4,j) > params(2,s) .or. geom(4,j) < eps) cycle

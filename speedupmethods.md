@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.12 — 2026-09-27 (JST).**
+**Document version 1.13 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -18,7 +18,7 @@ not bitwise equality.
 | AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20, exact high-order moments/threading in Section 21, atomic removal in Section 22, and unified inference APIs in Section 23; each validation archive identifies its measured sources |
+| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20, exact high-order moments/threading in Section 21, atomic removal in Section 22, and unified inference APIs in Section 23, and energy-only recovery in Section 24; each validation archive identifies its measured sources |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -2231,3 +2231,105 @@ about 5.19 ms. This diagnostic still leaves a roughly 22% energy-only regression
 force-inclusive and bulk API timings must be reported separately. Final paired
 measurements and raw samples are in the migration report. This is not a claim
 that all migrated entry points are faster.
+
+
+## 24. Restore energy-only CPU performance in the common kernels (revision 1.13)
+
+### 24.1 One accumulation per species, then form weighted channels
+
+The four-moment tile in Section 23.4 repeats a neighbor traversal for each tile
+and loads cached powers with a stride equal to the edge capacity. Both effects
+matter for a one-center CPU call. A diagnostic split on the real Ti/O model
+also found substantial geometry/radial time: about 2.50 ms there versus 2.08 ms
+in moment construction/contraction per 192 individual calls. The optimization
+therefore addresses both stages rather than assuming all time is in moments.
+
+For species $t$ and monomial $a=(a_x,a_y,a_z)$, accumulate
+
+$$M_a^{(t)}=\sum_{j:t_j=t} f_j
+u_{jx}^{a_x}u_{jy}^{a_y}u_{jz}^{a_z}.$$
+
+Here $u_j=r_j/|r_j|$, and the angular cutoff factor is $f_j$. For a central
+species $s$, the two required channels are exactly
+
+$$M_a^{(0)}=\sum_t M_a^{(t)},\qquad
+M_a^{(w)}=\sum_t w_{ts}M_a^{(t)}.$$
+
+These identities hold for zero, negative and fractional weights. Pair moments
+are still formed with the same diagonal subtraction,
+
+$$P_a^{(0)}=\tfrac12\left[(M_a^{(0)})^2-
+\sum_j f_j^2u_j^{2a}\right],\qquad
+P_a^{(w)}=\tfrac12\left[(M_a^{(w)})^2-
+\sum_j w_{t_js}^2f_j^2u_j^{2a}\right].$$
+
+The existing polynomial coefficients and multinomial factors contract these
+moments into Chebyshev values. The existing differentiated contraction supplies
+forces; only the moment construction has changed. Accumulation order changes
+between species, so the guarantee is FP64 tolerance agreement, not bitwise
+identity. No angular series is truncated.
+
+### 24.2 Contiguous powers and independent center/species work
+
+For each center, a reverse CSR traversal prepends active neighbors to a list
+for their species. Each resulting list retains its forward CSR order. Building
+these lists costs $O(N)$; traversing all species lists also visits each active
+neighbor once. A work item owns one center/species pair and its contiguous
+moment block. There are no shared writes or atomic additions.
+
+Generate the three one-dimensional powers by recurrence. At fixed $a_x,a_y$,
+hoist $c=f_j u_{jx}^{a_x}u_{jy}^{a_y}$ and update the consecutive $a_z$ entries:
+
+$$M_{(a_x,a_y,a_z)}^{(t)}\mathrel{+}=c\,u_{jz}^{a_z}.$$
+
+The contiguous inner update exposes vector operations to the serial CPU
+compiler. Per-edge global Chebyshev power construction is no longer needed;
+G5 retains its own power cache. Device scratch is allocated/mapped with the
+workspace, and the device helper receives explicit dimensions. An early
+assumed-shape helper produced an NVHPC 25.3 invalid device read; memcheck
+identified a host-like address, and the explicit-dimension version removed
+that failure.
+
+CPU and GPU execute the same species-list and power/moment loops. Only the
+OpenMP team-size limit differs (32 on host, 4 on device). Serial compilation
+removes the directives entirely. An earlier whole-center work item recovered
+CPU speed but lost GPU parallelism; splitting by species reduced that GPU
+penalty in paired probes. This is a scheduling choice, not a separate formula.
+
+### 24.3 Remove work that energy-only callers do not consume
+
+Energy-only evaluation does not clear, download or add force/virial arrays.
+Sentinel tests call energy-only immediately after a force calculation and then
+perform further force calls, checking both untouched caller accumulators and
+correct scratch reuse. The cutoff value/derivative helpers include the existing
+shared scalar bodies in the kernel translation unit to allow inlining.
+
+Workspace capacities are cached only after validation against the cached
+model. Repeated private atomic calls skip shape scans when that model and the
+requested dimensions still fit. Model changes bypass the fast path, and buffer
+release clears its capacities. Public mutable model handling and cache
+invalidation rules are unchanged.
+
+The leading row capacity is padded to $N\equiv1\pmod 8$ for all descriptor
+families. A fixed-row traversal of many columns at $N=512$ otherwise has a
+4096-byte stride, which can repeatedly map to the same CPU cache sets. This
+padding does not change active rows or arithmetic, and is used on GPU too.
+A paired 512-atom probe reduced structure energy from 162.06 to 151.11 ms
+(legacy 146.70 ms), and force-inclusive batch from 45.87 to 33.43 ms. This is
+evidence for a cache-layout effect, not a hardware-counter attribution.
+
+### 24.4 Exactness boundary for n2p2 types 13, 21 and 24
+
+All three descriptors already have exact direct values, analytic forces and
+virial in the common CPU/GPU implementation. They are not unsupported model
+types. The absence is a general finite single-neighbor moment factorization:
+type 13 has a third-distance Gaussian and cutoff; types 21/24 have a
+third-distance compact window and an angular window. General parameters do not
+reduce to the finite separable polynomial used for integer-power G5. A finite
+series approximation would violate the requested exactness. Special parameter
+cases need a separate algebraic justification before adding a moment dispatch.
+See the [upstream definitions](https://compphysvienna.github.io/n2p2/api/symmetry_function_types.html)
+and Sections 19--21 for the existing direct implementations and exact G5 scope.
+
+Final numerical checks, paired timings, version identities and limitations are
+recorded in the [energy-only validation report](docs/validation/energy-common-2026-09-27/README.md).

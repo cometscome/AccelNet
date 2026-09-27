@@ -1,5 +1,10 @@
 # OpenMP target stages 2–3 validation — 2026-09-25
 
+> Historical report: limitations below describe the measured revision. Since
+> `e6a96d3` (methods 1.12), mixed/multiple Chebyshev blocks per element use the
+> common CPU/GPU backend. See [current coverage](../../implementation-status.md)
+> and [migration validation](../unified-api-2026-09-27/README.md).
+
 This report records the initial implementation. See the subsequent
 [residency/moment validation](../gpu-residency-moments-2026-09-25/README.md)
 for the optimized implementation and updated measurements.

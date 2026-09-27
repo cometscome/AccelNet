@@ -1,5 +1,10 @@
 # G1–G5/LJ GPU対応と、同じカーネルのCPU比較（2026-09-26）
 
+> Historical report: limitations below describe the measured revision. Since
+> `e6a96d3` (methods 1.12), mixed/multiple Chebyshev blocks per element use the
+> common CPU/GPU backend. See [current coverage](../../implementation-status.md)
+> and [migration validation](../unified-api-2026-09-27/README.md).
+
 G1–G5/LJの記述子・NN・力・virialをFP64 OpenMP targetに追加した。
 既存CPUの数式（cutoff、angular power、activation）は共通includeから生成する。
 既存CPUの最適化ループは維持し、targetカーネルをCPUで実行する選択肢も追加した。

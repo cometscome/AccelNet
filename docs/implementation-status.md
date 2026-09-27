@@ -1,6 +1,6 @@
 # CPU/GPU implementation status
 
-Assessment: 2026-09-27; AccelNet 1.0.1, methods revision 1.12; migration baseline `gpu`
+Assessment: 2026-09-27; AccelNet 1.0.1, methods revision 1.13; migration baseline `gpu`
 checkpoint `543b180`. This describes evaluation of models **inside AccelNet**,
 not GPU support in the upstream ænet or n2p2 programs.
 
@@ -18,11 +18,20 @@ implemented; radial descriptors already use a single neighbor sum.
 | ænet Behler G4 / n2p2 type 3 | Yes | — | Direct, grouped pair values and Jacobians |
 | ænet Behler G5 / n2p2 type 9 | Yes | Exact integer powers 1--16 | Integer powers 1--10 and at least 16 angular neighbors; otherwise direct |
 | n2p2 type 12 (weighted radial) | Yes | — (radial sum) | Direct |
-| n2p2 type 13 (weighted narrow angular) | Yes | — | Direct |
+| n2p2 type 13 (weighted narrow angular) | Yes | No general finite single-neighbor moment factorization | Exact direct |
 | n2p2 types 20/23 (compact / weighted compact radial) | Yes | — (radial sum) | Direct |
-| n2p2 types 21/24 (compact / weighted compact narrow angular) | Yes | — | Direct |
+| n2p2 types 21/24 (compact / weighted compact narrow angular) | Yes | No general finite single-neighbor moment factorization | Exact direct |
 | n2p2 types 22/25 (compact / weighted compact wide angular) | Yes | — | Direct; no approximate angular moment expansion |
 | AccelNet LJ extension | Yes | — (radial sum) | Direct |
+
+Types 13/21/24 are **implemented**, including values, analytic forces and virial
+on the common CPU/GPU path. The moment column is not an exclusion from model
+support. Type 13 contains a third-distance Gaussian/cutoff; types 21/24 contain
+third-distance and angle windows. General parameters do not admit the finite,
+separable single-neighbor polynomial expansion used by G5. They therefore use
+exact pair evaluation, not a truncated moment series. Special parameter cases
+must be justified separately before adding a moment dispatch. See the
+[n2p2 definitions](https://compphysvienna.github.io/n2p2/api/symmetry_function_types.html).
 
 Chebyshev auto selects moment when `N_angular * (angular_order + 1) >= M`,
 where `M` is the number of angular moments. This is a heuristic, not a timed
@@ -50,6 +59,10 @@ CPU/GPU timing or thread count.
   Ti/O golden-model comparisons, and historical H100/Blackwell and LAMMPS
   comparisons of the same model. This does not establish every ænet model or
   binary compiler format as tested.
+
+Since `e6a96d3`, there is **no one-Chebyshev-component-per-element limit**.
+A component is a complete radial/angular basis block with its own orders and
+cutoffs, not one polynomial or one NN input.
 
 Multiple Chebyshev components and Chebyshev/LJ/Behler mixtures inside an element
 now use the common component pipeline, preserving original descriptor offsets
@@ -80,6 +93,9 @@ AMD/Intel GPU execution has not been validated by the archived measurements.
 
 The [revision 1.12 migration report](validation/unified-api-2026-09-27/README.md)
 records public API, composite descriptor, lifecycle and performance checks.
+The [revision 1.13 energy-only report](validation/energy-common-2026-09-27/README.md)
+adds species-partitioned Chebyshev moments, padded row storage, energy-only
+checks and an optional CPU energy regression gate.
 
 * [Latest atomic-removal validation](validation/atomic-reduction-2026-09-27/README.md):
   CPU functional/reference tests, host 2/8-thread checks, H100/Blackwell
@@ -94,8 +110,8 @@ records public API, composite descriptor, lifecycle and performance checks.
 
 The latest direct/moment timing table uses **forced methods**, not auto.
 High-order G5 moment can lose on CPU even when it wins on GPU. No universal
-moment speed advantage is claimed. The strict n2p2 type-21 CPU parity test
-currently misses its 10% limit narrowly (10.13% slower); numerical checks pass.
+moment speed advantage is claimed. The previously recorded strict n2p2 type-21 CPU parity test
+missed its 10% limit narrowly (10.13% slower); numerical checks pass.
 For compact angular windows, the exact-collinearity/upstream endpoint limitation
 is documented in [model compatibility](model-compatibility.md#10-weightedcompact-validation-methods-revision-18).
 

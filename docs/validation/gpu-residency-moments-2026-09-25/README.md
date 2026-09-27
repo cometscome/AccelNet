@@ -1,5 +1,10 @@
 # GPU residency and Chebyshev moments — 2026-09-25
 
+> Historical report: limitations below describe the measured revision. Since
+> `e6a96d3` (methods 1.12), mixed/multiple Chebyshev blocks per element use the
+> common CPU/GPU backend. See [current coverage](../../implementation-status.md)
+> and [migration validation](../unified-api-2026-09-27/README.md).
+
 This change retains model parameters and scratch buffers on the GPU, adds angular
 moment descriptors and their force contraction, and exposes phase timings. Both
 monomial construction and neighbor-edge contraction now expose parallel work

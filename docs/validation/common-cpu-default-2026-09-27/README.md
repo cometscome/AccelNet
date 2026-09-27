@@ -1,5 +1,10 @@
 # Default common CPU batch dispatch — 2026-09-27
 
+> Historical report: limitations below describe the measured revision. Since
+> `e6a96d3` (methods 1.12), mixed/multiple Chebyshev blocks per element use the
+> common CPU/GPU backend. See [current coverage](../../implementation-status.md)
+> and [migration validation](../unified-api-2026-09-27/README.md).
+
 Methods document **revision 1.6**, AccelNet **1.0.1**. Source baseline: `gpu`
 checkpoint **b5e2fcd** (revision 1.5). `source-sha256.json` identifies the measured
 sources; `serial-audit.json` records executable hashes and compilation flags.

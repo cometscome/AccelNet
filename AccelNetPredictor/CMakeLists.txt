@@ -234,6 +234,8 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
         target_link_libraries(test_batch_target PRIVATE batch_test_support AccelNetTarget)
         add_executable(accelnet-target-benchmark benchmark/target_benchmark.f90)
         target_link_libraries(accelnet-target-benchmark PRIVATE batch_test_support AccelNetTarget)
+        add_executable(accelnet-target-energy-benchmark benchmark/target_energy_benchmark.f90)
+        target_link_libraries(accelnet-target-energy-benchmark PRIVATE batch_test_support AccelNetTarget)
         add_test(NAME predictor_target_equivalence COMMAND test_batch_target)
         set_tests_properties(predictor_target_equivalence PROPERTIES LABELS "gpu" TIMEOUT 300)
         foreach(_gpu_mode IN ITEMS direct moment)
@@ -256,6 +258,11 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
             set_tests_properties(predictor_target_embedded_${_family} predictor_target_c_${_family}
                 PROPERTIES FIXTURES_REQUIRED target-models LABELS "gpu" TIMEOUT 120)
         endforeach()
+        add_test(NAME predictor_target_cheb_species COMMAND test_batch_target --cheb-species)
+        set_tests_properties(predictor_target_cheb_species PROPERTIES LABELS "gpu" TIMEOUT 300)
+        add_test(NAME predictor_target_host_cheb_species COMMAND test_batch_target --host --cheb-species)
+        set_tests_properties(predictor_target_host_cheb_species PROPERTIES LABELS "target-host"
+            ENVIRONMENT "OMP_NUM_THREADS=1" TIMEOUT 300)
         add_test(NAME predictor_target_composite COMMAND test_batch_target --composite)
         set_tests_properties(predictor_target_composite PROPERTIES LABELS "gpu" TIMEOUT 300)
         add_test(NAME predictor_target_host_composite COMMAND test_batch_target --host --composite)
@@ -291,6 +298,8 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
     target_compile_definitions(accelnet-cpu-regression-benchmark PRIVATE ACCELNET_HAVE_BATCH)
     target_link_libraries(accelnet-cpu-regression-benchmark PRIVATE batch_test_support)
     set(ACCELNET_CPU_BASELINE_EXECUTABLE "" CACHE FILEPATH "Archived CPU regression benchmark executable")
+    set(ACCELNET_PUBLIC_API_BASELINE_EXECUTABLE "" CACHE FILEPATH
+        "Archived OpenMP-disabled public API benchmark for the aenet energy regression test")
     set(ACCELNET_CPU_MAX_SLOWDOWN "1.10" CACHE STRING "Maximum median paired CPU time ratio")
     option(ACCELNET_TEST_COMMON_CPU_PERFORMANCE
         "Compare default common CPU batches against the retained structure evaluator" OFF)
@@ -447,6 +456,19 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetTrainer.jl/test/data/fortran_predict"
         CACHE PATH "Existing immutable NN/XSF golden data")
     if(EXISTS "${ACCELNET_PREDICTOR_GOLDEN_DIR}/Ti.nn.ascii")
+        if(ACCELNET_PUBLIC_API_BASELINE_EXECUTABLE)
+            find_package(Python3 COMPONENTS Interpreter REQUIRED)
+            add_test(NAME predictor_aenet_energy_performance
+                COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/benchmark/compare_public_apis.py"
+                    --before "${ACCELNET_PUBLIC_API_BASELINE_EXECUTABLE}"
+                    --after $<TARGET_FILE:accelnet-public-api-benchmark>
+                    --aenet "${ACCELNET_PREDICTOR_GOLDEN_DIR}"
+                    --n2p2 "${CMAKE_CURRENT_SOURCE_DIR}/test/data/n2p2-virial-angular"
+                    --aenet-energy-only --max-energy-ratio "${ACCELNET_CPU_MAX_SLOWDOWN}"
+                    --output "${CMAKE_CURRENT_BINARY_DIR}/aenet-energy-performance")
+            set_tests_properties(predictor_aenet_energy_performance PROPERTIES
+                LABELS "performance" RUN_SERIAL TRUE TIMEOUT 300)
+        endif()
         if(ACCELNET_BUILD_OPENMP_TARGET)
             add_test(NAME predictor_target_aenet_golden COMMAND test_batch_target
                 --aenet "${ACCELNET_PREDICTOR_GOLDEN_DIR}")
