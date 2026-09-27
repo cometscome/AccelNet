@@ -10,6 +10,7 @@ module accelnet_target_math
     implicit none
     private
     real(real64), parameter :: PI_ACCELNET = 3.14159265358979_real64
+    public :: extended_radial, extended_pair
     public :: generic_pair_geometry, generic_pair_contracted, generic_pair_value
     public :: generic_radial, generic_radial_value, generic_lj
     public :: angular_power, angular_value, g5_moment_active
@@ -207,4 +208,13 @@ contains
         cosine = max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
         value = 2*angular_value(cosine,p(4),p(5),f(5))*qj*qk*qjk
     end function
+    pure real(real64) function sf_cutoff_value(distance,rc,cutoff_type,alpha) result(value)
+        !$omp declare target
+        include 'cutoff_value.inc'
+    end function
+    pure real(real64) function sf_cutoff_derivative(distance,rc,cutoff_type,alpha) result(value)
+        !$omp declare target
+        include 'cutoff_derivative.inc'
+    end function
+    include 'n2p2_extended.inc'
 end module

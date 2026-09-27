@@ -449,8 +449,8 @@ contains
         integer, allocatable :: temporary_atom_indices(:), temporary_image_shifts(:, :)
         real(real64), allocatable :: temporary_positions(:, :), temporary_displacements(:, :)
         real(real64) :: inverse_lattice(3, 3), rmin
-        real(real64) :: center_translation(3)
-        integer :: atom, nmax, n, total, entry, local_entry, maximum_entries, initial_capacity
+        real(real64) :: center_translation(3), image_bound
+        integer :: atom, nmax, n, total, entry, local_entry, maximum_entries, initial_capacity, neighbor_status
         logical :: use_legacy_order
 
         ! The legacy linked-cell path can omit periodic images in skew cells.
@@ -479,10 +479,18 @@ contains
         call lcl_init(rmin, cutoff, structure%lattice, structure%natoms, &
                       species_copy, fractional, structure%pbc)
         nmax = lcl_nmax_nbdist(rmin, cutoff)
+        ! A small model rmin makes the packing bound enormous even for a few
+        ! hundred atoms. Bound each atom's periodic copies geometrically too:
+        ! an interval of length 2*Rc*|inverse_lattice_row| contains at most
+        ! ceil(length)+1 integers, independently of its fractional origin.
+        image_bound = real(structure%natoms,real64)* &
+            product(ceiling(2*(cutoff+NEIGHBOR_SKIN)*sqrt(sum(inverse_lattice**2,dim=2)))+1.0_real64)
+        nmax = min(nmax,int(min(image_bound,real(huge(nmax),real64))))
         allocate(coordinates(3, nmax), distances(nmax), atom_indices(nmax), species(nmax))
-        if (nmax > 0 .and. structure%natoms > huge(maximum_entries)/nmax) &
-            error stop "neighbor-list capacity exceeds integer range"
-        maximum_entries = structure%natoms*nmax
+        ! CSR offsets need room for the terminal entry; only actual growth,
+        ! not the loose N*nmax upper bound, should exhaust the index range.
+        maximum_entries = int(min(real(structure%natoms,real64)*real(nmax,real64), &
+            real(huge(maximum_entries)-1,real64)))
         if (structure%natoms > maximum_entries/64) then
             initial_capacity = maximum_entries
         else
@@ -502,8 +510,10 @@ contains
                 real(nint(matmul(inverse_lattice, structure%positions(:,atom)) - fractional(:,atom)), real64))
             n = nmax
             call lcl_nbdist_cart(atom, n, coordinates, distances, r_cut=cutoff, &
-                                 nblist=atom_indices, nbtype=species)
+                                 nblist=atom_indices, nbtype=species, stat=neighbor_status)
+            if (neighbor_status /= 0) error stop "neighbor-list geometric capacity exceeded"
             coordinates(:,1:n) = coordinates(:,1:n) + spread(center_translation, 2, n)
+            if (entry > maximum_entries-n) error stop "neighbor-list entries exceed integer range"
             if (entry + n > size(temporary_atom_indices)) &
                 call grow_neighbor_buffers(temporary_atom_indices, temporary_image_shifts, &
                     temporary_positions, temporary_displacements, entry, entry + n, maximum_entries)

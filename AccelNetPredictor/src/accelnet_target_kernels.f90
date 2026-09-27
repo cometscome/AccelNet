@@ -77,8 +77,13 @@ contains
                     if (features(8,b,s) /= b) cycle
                     o = features(7,b,s)
                     do j = offsets(row),offsets(row+1)-1
-                        call generic_radial(2,geom(4,j),features(4,b,s),feature_params(:,b,s), &
-                            radial_cache(j,o,1),radial_cache(j,o,2))
+                        if (features(1,b,s) >= 12) then
+                            call extended_radial(features(1,b,s),features(4,b,s),feature_params(:,b,s),geom(4,j), &
+                                radial_cache(j,o,1),radial_cache(j,o,2))
+                        else
+                            call generic_radial(2,geom(4,j),features(4,b,s),feature_params(:,b,s), &
+                                radial_cache(j,o,1),radial_cache(j,o,2))
+                        end if
                     end do
                 end do
                 if (meta(11,s) > 0) then
@@ -229,9 +234,11 @@ contains
         end if
         if (any(meta(11,:) > 0)) call g5_moment_values(device,nrw,meta,nodes,features,feature_params, &
             local_species,species,centers,offsets,indices,mp,multiplicity,powers,radial_cache,moments,delta,g5_active,g)
+        if (any(features(1,:,:) >= 12)) call extended_values_derivatives(device,nrw,meta,nodes,features,feature_params, &
+            local_species,spin,species,centers,offsets,indices,geom,radial_cache,g,jacobian)
         if (any(features(1,:,:) == 4)) call g4_values_derivatives(device,nrw,meta,nodes,features,feature_params, &
             local_species,species,centers,offsets,indices,dr,geom,radial_cache,g,jacobian,g4_first)
-        if (any(features(1,:,:) > 0 .and. features(1,:,:) /= 4 .and. features(1,:,:) /= 7)) then
+        if (any(features(1,:,:) > 0 .and. features(1,:,:) < 12 .and. features(1,:,:) /= 4 .and. features(1,:,:) /= 7)) then
             if (any(features(12,:,:) > 0 .and. features(1,:,:) == 5)) then
                 call generic_values_grouped(device,nrw,meta,nodes,features,feature_params, &
                     local_species,species,centers,offsets,indices,geom,radial_cache,g5_active,g)
@@ -614,7 +621,7 @@ contains
                 s = species(centers(row))
                 if (meta(10,s) /= 1 .or. b > nodes(1,s)) cycle
                 kind = features(1,b,s); t1 = features(2,b,s); t2 = features(3,b,s)
-                if (kind == 4 .or. kind == 7) cycle
+                if (kind == 4 .or. kind == 7 .or. kind >= 12) cycle
                 if (meta(11,s) > 0) then
                     if (g5_active(row,b) == 1) cycle
                 end if
@@ -678,7 +685,7 @@ contains
                 s = species(centers(row))
                 if (meta(10,s) /= 1 .or. b > nodes(1,s)) cycle
                 kind = features(1,b,s); t1 = features(2,b,s); t2 = features(3,b,s)
-                if (kind == 4 .or. kind == 7) cycle
+                if (kind == 4 .or. kind == 7 .or. kind >= 12) cycle
                 if (meta(11,s) > 0) then
                     if (g5_active(row,b) == 1) cycle
                 end if
@@ -780,7 +787,7 @@ contains
                 if (meta(11,s) > 0) then
                     if (g5_active(row,b) == 1) cycle
                 end if
-                if (kind == 4) then
+                if (kind == 4 .or. kind >= 12) then
                     f = f+g(row,b)*jacobian(:,b,j)
                     cycle
                 end if
@@ -1041,4 +1048,60 @@ contains
         end do
         !$omp end target teams distribute parallel do
     end subroutine
+
+    subroutine extended_values_derivatives(device,nrw,meta,nodes,fi,fp,local_species,weights, &
+            species,centers,offsets,indices,geom,radial,g,jacobian)
+        integer, intent(in) :: device,nrw
+        integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),fi(:,:,:),local_species(:,:), &
+            species(:),centers(:),offsets(:),indices(:)
+        real(real64), contiguous, intent(in) :: fp(:,:,:),weights(:,:),geom(:,:),radial(:,:,:)
+        real(real64), contiguous, intent(inout) :: g(:,:),jacobian(:,:,:)
+        integer :: row,b,s,kind,j,k,tj,tk,t1,t2,group
+        real(real64) :: total,v,factor,gj(3),gk(3),qj,qk,dqj,dqk
+        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
+        !$omp& map(alloc:meta,nodes,fi,fp,local_species,weights,species,centers,offsets,indices,geom,radial,g,jacobian) &
+        !$omp& private(s,kind,j,k,tj,tk,t1,t2,group,total,v,factor,gj,gk,qj,qk,dqj,dqk)
+        do row=1,nrw
+            do b=1,size(fi,2)
+                s=species(centers(row))
+                if (b > nodes(1,s) .or. meta(10,s) /= 1) cycle
+                kind=fi(1,b,s)
+                if (kind < 12) cycle
+                t1=fi(2,b,s); t2=fi(3,b,s); group=fi(7,b,s); total=0
+                jacobian(:,b,offsets(row):offsets(row+1)-1)=0
+                do j=offsets(row),offsets(row+1)-1
+                    tj=local_species(species(indices(j)),s)
+                    if (tj == 0) cycle
+                    if (t1 > 0 .and. t2 == 0 .and. tj /= t1) cycle
+                    qj=radial(j,group,1); dqj=radial(j,group,2)
+                    if (qj == 0 .and. dqj == 0) cycle
+                    if (kind == 12 .or. kind == 20 .or. kind == 23) then
+                        factor=1
+                        if (t1 == 0) factor=weights(species(indices(j)),s)
+                        total=total+factor*qj
+                        jacobian(:,b,j)=factor*dqj*geom(1:3,j)
+                    else
+                        do k=j+1,offsets(row+1)-1
+                            tk=local_species(species(indices(k)),s)
+                            if (tk == 0) cycle
+                            if (t1 > 0) then
+                                if (.not. ((tj == t1 .and. tk == t2) .or. (tj == t2 .and. tk == t1))) cycle
+                            end if
+                            qk=radial(k,group,1); dqk=radial(k,group,2)
+                            call extended_pair(kind,fi(4,b,s),fp(:,b,s),geom(1:3,j),geom(1:3,k), &
+                                geom(4,j),geom(4,k),qj,qk,dqj,dqk,v,gj,gk)
+                            factor=1
+                            if (t1 == 0) factor=weights(species(indices(j)),s)*weights(species(indices(k)),s)
+                            total=total+factor*v
+                            jacobian(:,b,j)=jacobian(:,b,j)+factor*gj
+                            jacobian(:,b,k)=jacobian(:,b,k)+factor*gk
+                        end do
+                    end if
+                end do
+                g(row,b)=total
+            end do
+        end do
+        !$omp end target teams distribute parallel do
+    end subroutine
+
 end module

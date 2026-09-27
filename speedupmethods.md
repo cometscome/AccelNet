@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.7 — 2026-09-27 (JST).**
+**Document version 1.8 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -18,7 +18,7 @@ not bitwise equality.
 | AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18; each validation archive identifies its measured sources |
+| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19; each validation archive identifies its measured sources |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -1606,3 +1606,107 @@ moment: almost equal, with moment slightly slower. Neither the original threshol
 nor this optimization guarantees a moment win for every workload. Full tables,
 measurement scope, ordinary direct controls, and regression gates are in the
 revision-1.7 validation archive.
+
+
+## 19. n2p2 weighted/compact descriptors and multi-element validation (revision 1.8)
+
+This revision adds n2p2 types 12, 13, and 20--25 to the Fortran importer,
+shared CPU/OpenMP-target evaluation, and Fortran conversion in both directions.
+It builds on `gpu` checkpoint `f8c19a0` (revision 1.7). The independent oracle is
+n2p2 **v2.3.0**, built with GNU C++ **11.4.0**, `-O3`, Eigen **3.4.0**, and no
+OpenMP. The CPU candidate is GNU Fortran **11.4.0**, `-O3`, with OpenMP compiled
+out. GPU builds use NVHPC **25.3** and the flags in Section 1.1.
+
+### 19.1 Exact formulas and moment applicability
+
+Let $Z_j$ denote atomic number, $r_j=|\mathbf r_{ij}|$,
+$\mathbf u_j=\mathbf r_{ij}/r_j$, $c=\mathbf u_j\cdot\mathbf u_k$, and
+$\theta=\arccos c$. Species-resolved descriptors restrict the neighbor sum;
+weighted descriptors sum all species with $Z_j$ or $Z_jZ_k$.
+
+For type 12, $q(r)=\exp[-\eta(r-R_s)^2]f_c(r)$ and
+$G_{12}=\sum_j Z_j q(r_j)$. Type 13 is
+
+$$G_{13}=\sum_{j<k} Z_j Z_k\,2^{1-\zeta}(1+\lambda c)^\zeta
+q(r_j)q(r_k)q(r_{jk}).$$
+
+For compact types, define
+
+$$t=\left|\frac{x-(L+R)/2}{(R-L)/2}\right|,\qquad
+W(x;L,R)=\begin{cases}P(t),&L<x<R,\\0,&\text{otherwise}.\end{cases}$$
+
+The supported cores are
+
+$$\begin{aligned}
+P_1(t)&=1-3t^2+2t^3,\\
+P_2(t)&=1-10t^3+15t^4-6t^5,\\
+P_3(t)&=1-35t^4+84t^5-70t^6+20t^7,\\
+P_4(t)&=1-126t^5+420t^6-540t^7+315t^8-70t^9,\\
+P_e(t)&=\exp\!\left(1+\frac{1}{t^2-1}\right).
+\end{aligned}$$
+
+Asymmetric radial subtypes replace $t$ by $t(2-t)$ and apply its derivative
+$2(1-t)$. Angular windows retain the symmetric core. Put
+$q(r)=W(r;R_{\rm low},R_c)$ and $A(c)=W(\arccos c;\theta_L,\theta_R)$.
+Types 20/23 are radial sums of $q$. Types 21/24 sum
+$A(c)q(r_j)q(r_k)q(r_{jk})$, and types 22/25 omit $q(r_{jk})$.
+Types 23--25 apply the atomic-number weights above.
+
+An exact finite G5 moment contraction requires a finite polynomial in $c$
+and separable radial factors. The G5/type-9 integer-$\zeta$ direct and moment
+paths remain implemented and tested. Types 12/20/23 already cost $O(N_n)$;
+there is no pair sum for moments to remove. Types 13/21/24 depend on $r_{jk}$.
+Types 22/25 contain a window polynomial in **angle**, $\arccos c$, with compact
+support; it is not a finite polynomial in $c$. Thus these general families
+have no exact finite moment implementation analogous to G5. A truncated
+expansion would change the potential and is not used.
+
+### 19.2 Value and derivative in one pair traversal
+
+For $V=A(c)q_jq_kq_{jk}$, put $P=q_jq_kq_{jk}$ and
+$\mathbf u_{jk}=(\mathbf r_{ik}-\mathbf r_{ij})/r_{jk}$. Then
+
+$$\nabla_{\mathbf r_{ij}}V=
+ A'(c)P\frac{\mathbf u_k-c\mathbf u_j}{r_j}
+ +A(c)q_k\left(q'_jq_{jk}\mathbf u_j-q_jq'_{jk}\mathbf u_{jk}\right),$$
+
+$$\nabla_{\mathbf r_{ik}}V=
+ A'(c)P\frac{\mathbf u_j-c\mathbf u_k}{r_k}
+ +A(c)q_j\left(q'_kq_{jk}\mathbf u_k+q_kq'_{jk}\mathbf u_{jk}\right).$$
+
+For wide types, set $q_{jk}=1$, $q'_{jk}=0$. Compact angular differentiation
+uses $A'(c)=-W'(\theta)/\sqrt{1-c^2}$. The implementation caches $q_j,q'_j$
+by radial-parameter group, evaluates value and both derivatives together, and
+contracts the retained Jacobian after NN backpropagation. A center/descriptor
+owns its Jacobian column, so pair accumulation needs no atomics. CPU and GPU
+share the same code; OpenMP changes execution placement only.
+
+This layout repeats some pair geometry across descriptor channels. n2p2's
+grouped evaluator can reuse that work more widely, so shared angular CPU code
+is not uniformly faster than n2p2. Reusing pair geometry while retaining enough
+GPU parallelism is a concrete further optimization; no speedup is inferred
+merely from removing transcendental radial functions.
+
+### 19.3 Multi-element bugs caught by real models
+
+Official Anisole has 354/351/331 descriptors for C/H/O, while DMABN has
+333/334/219 for C/H/N. The tests caught two integration issues:
+
+* The converter treated differing **input dimensions** as differing hidden
+  topology, emitting redundant per-element overrides that upstream rejected.
+  Hidden topology comparison now excludes the descriptor dimension.
+* A minimum-distance packing bound could request tens of millions of neighbor
+  slots per atom. A second bound uses actual atom count and cell geometry:
+  $N\prod_a[\lceil2(R_c+\delta)\|L^{-1}_{a,:}\|\rceil+1]$, with the existing
+  neighbor skin $\delta$. Dynamic CSR storage checks actual integer capacity.
+  This changes allocation bounds, not selected neighbors.
+
+The importer preserves n2p2 descriptor order and the associated scaling and
+first-layer weights. New native metadata separates type-specific parameters
+from global cutoff metadata. Force and strain finite differences, converted
+models, two/four-element mixtures, and real trained models exercise the full
+path. The known n2p2 collinear-window discontinuity is documented explicitly in
+[model compatibility](docs/model-compatibility.md#10-weightedcompact-validation-methods-revision-18).
+
+Measurements, source hashes, commands, oracle model hashes, and numerical
+errors are in [the revision-1.8 archive](docs/validation/n2p2-extensions-2026-09-27/README.md).

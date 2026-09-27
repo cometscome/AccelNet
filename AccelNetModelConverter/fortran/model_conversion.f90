@@ -6,6 +6,7 @@ module model_conversion
         ACTIVATION_EXPONENTIAL, ACTIVATION_HARMONIC
     use accelnet_predictor, only: predictor_model, load_predictor_from_n2p2
     use n2p2_network, only: atomic_number
+    use accelnet_behler, only: compact_subtype_name
     implicit none
     private
     integer, parameter :: PATH_LENGTH = 4096
@@ -71,10 +72,13 @@ contains
         allocate(order(size(networks)))
         do i = 1, size(networks)
             order(i) = i
-            if (trim(lowercase(networks(i)%descriptor_name)) /= "behler2011") &
+            if (trim(lowercase(networks(i)%descriptor_name)) /= "behler2011" .and. &
+                trim(lowercase(networks(i)%descriptor_name)) /= "n2p2_extended") &
                 error stop "only Behler2011 AccelNet networks can be converted to n2p2"
             if (any(networks(i)%descriptor_kinds /= 2 .and. &
-                    networks(i)%descriptor_kinds /= 4 .and. networks(i)%descriptor_kinds /= 5)) &
+                    networks(i)%descriptor_kinds /= 4 .and. networks(i)%descriptor_kinds /= 5 .and. &
+                    networks(i)%descriptor_kinds /= 12 .and. networks(i)%descriptor_kinds /= 13 .and. &
+                    (networks(i)%descriptor_kinds < 20 .or. networks(i)%descriptor_kinds > 25))) &
                 error stop "only Behler G2/G4/G5 descriptors can be converted to n2p2"
             if (any(networks(i)%species_names /= networks(1)%species_names) .or. &
                 any(networks(i)%atomic_references /= networks(1)%atomic_references) .or. &
@@ -150,6 +154,10 @@ contains
         integer :: ka(8), kb(8)
         real(real64) :: ra(6), rb(6)
 
+        if (trim(lowercase(network%descriptor_name)) == 'n2p2_extended') then
+            less=extended_descriptor_less(network,ia,ib)
+            return
+        end if
         call descriptor_key(network, ia, aenet_order, ka, ra)
         call descriptor_key(network, ib, aenet_order, kb, rb)
         if (aenet_order) then
@@ -173,6 +181,37 @@ contains
             less = integer_key_less(ka(2:3), kb(2:3))
         end if
     end function descriptor_less
+
+    logical function extended_descriptor_less(network,ia,ib) result(less)
+        type(atomic_network), intent(in) :: network
+        integer, intent(in) :: ia,ib
+        real(real64) :: keys(9,2),p(7)
+        integer :: side,i,k,t
+        keys=0
+        do side=1,2
+            i=merge(ia,ib,side == 1); k=network%descriptor_kinds(i)
+            p=network%descriptor_parameters(1:7,i)
+            t=k
+            if (k == 4) t=3
+            if (k == 5) t=9
+            keys(1,side)=t
+            if (k >= 20) then
+                t=nint(p(5))
+                keys(2,side)=2*mod(t,10)+merge(1,0,t > 10)
+                if (t == 5) keys(2,side)=0
+                keys(3:4,side)=network%descriptor_environments(:,i)
+                keys(5:8,side)=p(1:4)
+            else
+                select case(k)
+                case(2); keys(2:4,side)=[p(1),p(3),p(2)]
+                case(4,5); keys(2:6,side)=[p(1),p(4),p(7),p(3),p(2)]
+                case(12,13); keys(2:6,side)=[p(1),p(2),p(3),p(5),p(4)]
+                end select
+                keys(7:8,side)=network%descriptor_environments(:,i)
+            end if
+        end do
+        less=real_key_less(keys(:,1),keys(:,2))
+    end function
 
     subroutine descriptor_key(network, i, aenet_order, integers, reals)
         type(atomic_network), intent(in) :: network
@@ -297,7 +336,9 @@ contains
         do i = 1, size(order)
             do j = 1, size(networks(order(i))%descriptor_kinds)
                 kind = networks(order(i))%descriptor_kinds(j)
-                if (kind == 2) then
+                if (kind >= 12) then
+                    call write_extended_setting(unit,networks(order(i)),j)
+                else if (kind == 2) then
                     write(unit, "(A,1X,A,1X,I0,1X,A,3(1X,ES25.17E3))") "symfunction_short", &
                         trim(networks(order(i))%atomtype), 2, &
                         trim(environment_name(networks(order(i)), 1, j)), &
@@ -320,11 +361,36 @@ contains
         write(*, "(A)") "WROTE "//trim(path)
     end subroutine write_n2p2_settings
 
+    subroutine write_extended_setting(unit,net,i)
+        integer, intent(in) :: unit,i
+        type(atomic_network), intent(in) :: net
+        integer :: k
+        real(real64) :: p(7)
+        k=net%descriptor_kinds(i); p=net%descriptor_parameters(1:7,i)
+        write(unit,'(A,1X,A,1X,I0)',advance='no') 'symfunction_short',trim(net%atomtype),k
+        select case(k)
+        case(12); write(unit,'(3(1X,ES25.17E3))') p(2),p(3),p(1)
+        case(13); write(unit,'(6(1X,ES25.17E3))') p(2),p(3),p(4),p(5),p(1)
+        case(20)
+            write(unit,'(1X,A,2(1X,ES25.17E3),1X,A)') &
+                trim(environment_name(net,1,i)),p(2),p(1),trim(compact_subtype_name(nint(p(5))))
+        case(21,22)
+            write(unit,'(2(1X,A),4(1X,ES25.17E3),1X,A)') &
+                trim(environment_name(net,1,i)),trim(environment_name(net,2,i)), &
+                p(2),p(1),p(3),p(4),trim(compact_subtype_name(nint(p(5))))
+        case(23)
+            write(unit,'(2(1X,ES25.17E3),1X,A)') p(2),p(1),trim(compact_subtype_name(nint(p(5))))
+        case(24,25)
+            write(unit,'(4(1X,ES25.17E3),1X,A)') p(2),p(1),p(3),p(4),trim(compact_subtype_name(nint(p(5))))
+        end select
+    end subroutine
+
     logical function same_topology(first, second) result(same)
         type(atomic_network), intent(in) :: first, second
         same = .false.
         if (first%nlayers /= second%nlayers) return
-        if (any(first%nodes /= second%nodes)) return
+        ! Input dimensions follow the element-specific descriptor lists.
+        if (any(first%nodes(2:) /= second%nodes(2:))) return
         if (any(first%activation /= second%activation)) return
         same = .true.
     end function same_topology

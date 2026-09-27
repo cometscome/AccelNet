@@ -1,0 +1,1041 @@
+{
+  "passed": true,
+  "independent_n2p2": true,
+  "backend": "cpu",
+  "cases": [
+    {
+      "case": "type12-p2",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 9.75781955236954e-19,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 9.75781955236954e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type13-p2",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 9.540979117872439e-18,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 9.540979117872439e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 8.673617379884035e-19
+        }
+      }
+    },
+    {
+      "case": "type20-e",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 1.0249098661777034e-19,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 1.0249098661777034e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 6.776263578034403e-21
+        }
+      }
+    },
+    {
+      "case": "type20-p1",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 8.809142651444724e-20,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 8.809142651444724e-20
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.3552527156068805e-20
+        }
+      }
+    },
+    {
+      "case": "type20-p1a",
+      "errors": {
+        "ENERGY": 2.220446049250313e-16,
+        "FORCE": 7.792703114739563e-20,
+        "converted": {
+          "ENERGY": 2.220446049250313e-16,
+          "FORCE": 7.792703114739563e-20
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 6.776263578034403e-21
+        }
+      }
+    },
+    {
+      "case": "type20-p2",
+      "errors": {
+        "ENERGY": 2.220446049250313e-16,
+        "FORCE": 2.676624113323589e-19,
+        "converted": {
+          "ENERGY": 2.220446049250313e-16,
+          "FORCE": 2.676624113323589e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 6.776263578034403e-21
+        }
+      }
+    },
+    {
+      "case": "type20-p2a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 9.147955830346444e-20,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 9.147955830346444e-20
+        },
+        "roundtrip": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type20-p3",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 2.307317748320714e-18,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 2.307317748320714e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.0164395367051604e-20
+        }
+      }
+    },
+    {
+      "case": "type20-p3a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 6.132518538121134e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 6.132518538121134e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 3.3881317890172014e-21
+        }
+      }
+    },
+    {
+      "case": "type20-p4",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 9.571472303973594e-18,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 9.571472303973594e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 6.776263578034403e-21
+        }
+      }
+    },
+    {
+      "case": "type20-p4a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.8053731213062427e-18,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.8053731213062427e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.710505431213761e-20
+        }
+      }
+    },
+    {
+      "case": "type21-e",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.981555974335137e-19,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.981555974335137e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.3552527156068805e-20
+        }
+      }
+    },
+    {
+      "case": "type21-p1",
+      "errors": {
+        "ENERGY": 2.220446049250313e-16,
+        "FORCE": 1.3552527156068805e-19,
+        "converted": {
+          "ENERGY": 2.220446049250313e-16,
+          "FORCE": 1.3552527156068805e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type21-p1a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.7618285302889447e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 1.7618285302889447e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 6.776263578034403e-21
+        }
+      }
+    },
+    {
+      "case": "type21-p2",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.981555974335137e-19,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.981555974335137e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type21-p2a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 2.168404344971009e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 2.168404344971009e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 6.776263578034403e-21
+        }
+      }
+    },
+    {
+      "case": "type21-p3",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 5.421010862427522e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 5.421010862427522e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type21-p3a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 4.87890977618477e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 4.87890977618477e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 5.421010862427522e-20
+        }
+      }
+    },
+    {
+      "case": "type21-p4",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 4.865357249028701e-18,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 4.865357249028701e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 5.421010862427522e-20
+        }
+      }
+    },
+    {
+      "case": "type21-p4a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 5.339695699491109e-18,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 5.339695699491109e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 5.421010862427522e-20
+        }
+      }
+    },
+    {
+      "case": "type22-e",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 2.168404344971009e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 2.168404344971009e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.0842021724855044e-19
+        }
+      }
+    },
+    {
+      "case": "type22-p1",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 1.6263032587282567e-19,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 1.6263032587282567e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type22-p1a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 2.168404344971009e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 2.168404344971009e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.6940658945086007e-20
+        }
+      }
+    },
+    {
+      "case": "type22-p2",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 5.827586677109586e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 5.827586677109586e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.710505431213761e-20
+        }
+      }
+    },
+    {
+      "case": "type22-p2a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 4.336808689942018e-19,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 4.336808689942018e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.710505431213761e-20
+        }
+      }
+    },
+    {
+      "case": "type22-p3",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.846030702774449e-18,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.846030702774449e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 3.3881317890172014e-21
+        }
+      }
+    },
+    {
+      "case": "type22-p3a",
+      "errors": {
+        "ENERGY": 2.220446049250313e-16,
+        "FORCE": 1.81603863891322e-18,
+        "converted": {
+          "ENERGY": 2.220446049250313e-16,
+          "FORCE": 1.81603863891322e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type22-p4",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 1.929879867024198e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 1.929879867024198e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.710505431213761e-20
+        }
+      }
+    },
+    {
+      "case": "type22-p4a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 8.104411239329146e-18,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 8.104411239329146e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.710505431213761e-20
+        }
+      }
+    },
+    {
+      "case": "type23-e",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.2315859053077527e-18,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 1.2315859053077527e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type23-p1",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 8.605854744103691e-19,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 8.605854744103691e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.710505431213761e-20
+        }
+      }
+    },
+    {
+      "case": "type23-p1a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 9.75781955236954e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 9.75781955236954e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.0842021724855044e-19
+        }
+      }
+    },
+    {
+      "case": "type23-p2",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.2768245622195593e-18,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.2768245622195593e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.0842021724855044e-19
+        }
+      }
+    },
+    {
+      "case": "type23-p2a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 8.673617379884035e-19,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 8.673617379884035e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type23-p3",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 1.677802861921318e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 1.677802861921318e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 5.421010862427522e-20
+        }
+      }
+    },
+    {
+      "case": "type23-p3a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 6.071532165918825e-18,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 6.071532165918825e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.0842021724855044e-19
+        }
+      }
+    },
+    {
+      "case": "type23-p4",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 7.082550691761558e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 7.082550691761558e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type23-p4a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 3.2742905609062234e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 3.2742905609062234e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type24-e",
+      "errors": {
+        "ENERGY": 2.220446049250313e-16,
+        "FORCE": 1.0842021724855044e-17,
+        "converted": {
+          "ENERGY": 2.220446049250313e-16,
+          "FORCE": 1.0842021724855044e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 7.806255641895632e-18
+        }
+      }
+    },
+    {
+      "case": "type24-p1",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 1.0408340855860843e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 1.0408340855860843e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 4.336808689942018e-18
+        }
+      }
+    },
+    {
+      "case": "type24-p1a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 1.3877787807814457e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 1.3877787807814457e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type24-p2",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 1.0842021724855044e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 1.0842021724855044e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 3.469446951953614e-18
+        }
+      }
+    },
+    {
+      "case": "type24-p2a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.5612511283791264e-17,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 1.5612511283791264e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.734723475976807e-18
+        }
+      }
+    },
+    {
+      "case": "type24-p3",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.1250362580715887e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.1250362580715887e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 3.469446951953614e-18
+        }
+      }
+    },
+    {
+      "case": "type24-p3a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.7755575615628914e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.7755575615628914e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type24-p4",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 3.170207152347615e-16,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 3.170207152347615e-16
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "type24-p4a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.393918396847994e-16,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.393918396847994e-16
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.734723475976807e-18
+        }
+      }
+    },
+    {
+      "case": "type25-e",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 1.5612511283791264e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 1.5612511283791264e-17
+        },
+        "roundtrip": {
+          "ENERGY": 2.220446049250313e-16,
+          "FORCE": 3.469446951953614e-18
+        }
+      }
+    },
+    {
+      "case": "type25-p1",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.0408340855860843e-17,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 1.0408340855860843e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 4.9873299934333204e-18
+        }
+      }
+    },
+    {
+      "case": "type25-p1a",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 2.2144829373016428e-17,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 2.2144829373016428e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 8.673617379884035e-19
+        }
+      }
+    },
+    {
+      "case": "type25-p2",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.862293735361732e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.862293735361732e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 5.204170427930421e-18
+        }
+      }
+    },
+    {
+      "case": "type25-p2a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 2.3418766925686896e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 2.3418766925686896e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.6020852139652106e-18
+        }
+      }
+    },
+    {
+      "case": "type25-p3",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 1.97758476261356e-16,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 1.97758476261356e-16
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 5.204170427930421e-18
+        }
+      }
+    },
+    {
+      "case": "type25-p3a",
+      "errors": {
+        "ENERGY": 1.1102230246251565e-16,
+        "FORCE": 9.280770596475918e-17,
+        "converted": {
+          "ENERGY": 1.1102230246251565e-16,
+          "FORCE": 9.280770596475918e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.734723475976807e-18
+        }
+      }
+    },
+    {
+      "case": "type25-p4",
+      "errors": {
+        "ENERGY": 4.440892098500626e-16,
+        "FORCE": 7.962380754733545e-16,
+        "converted": {
+          "ENERGY": 4.440892098500626e-16,
+          "FORCE": 7.962380754733545e-16
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 5.204170427930421e-18
+        }
+      }
+    },
+    {
+      "case": "type25-p4a",
+      "errors": {
+        "ENERGY": 1.6653345369377348e-15,
+        "FORCE": 7.251144129583054e-16,
+        "converted": {
+          "ENERGY": 1.6653345369377348e-15,
+          "FORCE": 7.251144129583054e-16
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.734723475976807e-18
+        }
+      }
+    },
+    {
+      "case": "weighted-cutoff0",
+      "errors": {
+        "ENERGY": 5.551115123125783e-17,
+        "FORCE": 5.204170427930421e-18,
+        "converted": {
+          "ENERGY": 5.551115123125783e-17,
+          "FORCE": 5.204170427930421e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.734723475976807e-18
+        }
+      }
+    },
+    {
+      "case": "weighted-cutoff1",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 8.673617379884035e-18,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 8.673617379884035e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "weighted-cutoff2",
+      "errors": {
+        "ENERGY": 5.551115123125783e-17,
+        "FORCE": 9.486769009248164e-20,
+        "converted": {
+          "ENERGY": 5.551115123125783e-17,
+          "FORCE": 9.486769009248164e-20
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "weighted-cutoff3",
+      "errors": {
+        "ENERGY": 5.551115123125783e-17,
+        "FORCE": 3.9302328752599536e-19,
+        "converted": {
+          "ENERGY": 5.551115123125783e-17,
+          "FORCE": 3.9302328752599536e-19
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "weighted-cutoff4",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 6.938893903907228e-18,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 6.938893903907228e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.734723475976807e-18
+        }
+      }
+    },
+    {
+      "case": "weighted-cutoff5",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 4.336808689942018e-18,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 4.336808689942018e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.168404344971009e-19
+        }
+      }
+    },
+    {
+      "case": "weighted-cutoff6",
+      "errors": {
+        "ENERGY": 5.551115123125783e-17,
+        "FORCE": 5.204170427930421e-18,
+        "converted": {
+          "ENERGY": 5.551115123125783e-17,
+          "FORCE": 5.204170427930421e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "weighted-cutoff7",
+      "errors": {
+        "ENERGY": 5.551115123125783e-17,
+        "FORCE": 6.071532165918825e-18,
+        "converted": {
+          "ENERGY": 5.551115123125783e-17,
+          "FORCE": 6.071532165918825e-18
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.734723475976807e-18
+        }
+      }
+    },
+    {
+      "case": "weighted-cutoff8",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 2.0816681711721685e-17,
+        "converted": {
+          "ENERGY": 0.0,
+          "FORCE": 2.0816681711721685e-17
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.734723475976807e-18
+        }
+      }
+    },
+    {
+      "case": "mixed-normalized",
+      "errors": {
+        "ENERGY": 2.220446049250313e-16,
+        "FORCE": 2.837560373301906e-20,
+        "converted": {
+          "ENERGY": 2.220446049250313e-16,
+          "FORCE": 2.837560373301906e-20
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.498747194400186e-20
+        }
+      }
+    },
+    {
+      "case": "isolated",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 0.0
+      }
+    },
+    {
+      "case": "collinear",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 6.617444900424221e-23
+      }
+    },
+    {
+      "case": "cluster",
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 3.8116482626443515e-21
+      }
+    },
+    {
+      "case": "four-elements-mode0",
+      "errors": {
+        "ENERGY": 4.440892098500626e-16,
+        "FORCE": 5.717472393966527e-21
+      }
+    },
+    {
+      "case": "four-elements-mode1",
+      "errors": {
+        "ENERGY": 4.440892098500626e-16,
+        "FORCE": 5.717472393966527e-21
+      }
+    },
+    {
+      "case": "four-elements-mode3",
+      "errors": {
+        "ENERGY": 4.440892098500626e-16,
+        "FORCE": 5.717472393966527e-21
+      }
+    }
+  ],
+  "max_strain_error": 6.431686864347545e-12,
+  "max_force_fd_error": 1.0411591504461642e-11
+}

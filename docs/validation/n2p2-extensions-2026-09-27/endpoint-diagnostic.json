@@ -1,0 +1,8 @@
+{
+  "known_incompatibility": true,
+  "errors": {
+    "ENERGY": 5.060950549973242e-06,
+    "FORCE": 6.531803491962793e-09
+  },
+  "reason": "Upstream compact angular endpoint exclusion is sensitive to cosine rounding."
+}

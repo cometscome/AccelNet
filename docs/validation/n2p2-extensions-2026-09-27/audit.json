@@ -1,0 +1,30 @@
+{
+  "base_commit": "f8c19a04f8c1f8acd2bf055ea47f260143d766df",
+  "branch": "gpu",
+  "methods_version": "1.8",
+  "cpu": "Intel Xeon Gold 6526Y, core 6",
+  "gpu_uuids": {
+    "H100": "GPU-2644154d-7268-af42-6631-59e1f3c6e7f3",
+    "Blackwell": "GPU-c8a7b723-d4eb-a67d-5ebd-139cedd981c9"
+  },
+  "compilers": {
+    "gnu": "GNU Fortran (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+    "n2p2": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+    "gpu": "NVHPC 25.3, -fast -O3 -mp=gpu -gpu=cc90,cc120"
+  },
+  "cpu_flags": "-O3; ACCELNET_TARGET_SERIAL=ON; no -fopenmp",
+  "reference_flags": "-O3 -std=c++11 -DEIGEN_DONT_PARALLELIZE; no -fopenmp",
+  "reference_library_sha256": "a4e614b487125e49d7296a4a6f2a9178176d9b8698f2fc0d6c2ace2ba427c763",
+  "eigen_version": "3.4.0",
+  "eigen_tar_sha256": "8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72",
+  "post_measurement_runtime_audit": {
+    "reference": {
+      "sha256": "4c8f0cf716ccb11cf08e7953accda629d7c496aaf5ecffdc899ae9dbba5b0951",
+      "openmp_runtime_symbols": []
+    },
+    "cpu": {
+      "sha256": "028abe2825e6eb53fee9a356a95112e98736f5f860e7ccb4da7e997cf65d4491",
+      "openmp_runtime_symbols": []
+    }
+  }
+}

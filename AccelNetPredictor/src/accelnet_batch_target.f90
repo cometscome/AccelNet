@@ -7,6 +7,7 @@ module accelnet_batch_target
     use accelnet_target_runtime, only: omp_get_initial_device, omp_get_num_devices, omp_get_default_device, &
         omp_is_initial_device, omp_get_wtime
     use accelnet_predictor, only: predictor_model
+    use n2p2_network, only: atomic_number
     use accelnet_descriptors, only: descriptor_config, validate_cutoff_parameters
     use aenet_network, only: atomic_network
     use accelnet_target_descriptors, only: pack_generic_descriptors, PACKED_FEATURE_FIELDS, PACKED_PARAMETER_FIELDS
@@ -316,6 +317,11 @@ contains
             else
                 call pack_generic_descriptors(model%setups(s)%model,fi,fr,pack_status,pack_message,g5_mode)
                 self%features(:,:d,s) = fi; self%feature_params(:,:d,s) = fr
+                if (any(fi(1,:) >= 12)) then
+                    do j=1,ns
+                        self%spin(j,s)=real(atomic_number(model%species_names(j)),real64)
+                    end do
+                end if
                 self%meta(6,s) = l; self%meta(8,s) = 1; self%meta(10,s) = 1
                 ! Lexicographic total-degree basis, shared with differentiated
                 ! Horner. One extra moment slot stores the self-pair correction.
@@ -561,11 +567,11 @@ contains
             ng5 = max(1,nrw); nfg5 = 2*size(model%features,2)+1
         end if
         ! The Jacobian has the CPU layout (Cartesian, descriptor, edge).
-        ! Reserve it only for species containing G4; all other models use a
+        ! Reserve it for species containing G4 or n2p2 extensions; other models use a
         ! minimal placeholder. It stays resident and is never uploaded/downloaded.
-        njf = max(1,maxval(model%nodes(1,:),mask=any(model%features(1,:,:) == 4,dim=1)))
+        njf = max(1,maxval(model%nodes(1,:),mask=any((model%features(1,:,:) == 4 .or. model%features(1,:,:) >= 12),dim=1)))
         nje = 1; njr = 1; nlocal = 1
-        if (any(model%features(1,:,:) == 4)) then
+        if (any((model%features(1,:,:) == 4 .or. model%features(1,:,:) >= 12))) then
             nje = ne; njr = max(1,nrw); nlocal = max(1,maxval(model%features(6,:,:)))
         end if
         grow = .true.

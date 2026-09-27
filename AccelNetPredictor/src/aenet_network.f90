@@ -330,6 +330,24 @@ contains
         end if
         network%descriptor_cutoff_alpha = 0.0_real64
         nparam = size(network%descriptor_parameters, 1)
+        if (trim(lowercase(network%descriptor_name)) == 'n2p2_extended') then
+            if (nparam /= 9) then
+                if (present(status)) then
+                    status=1; return
+                end if
+                error stop 'invalid n2p2 extended parameter count'
+            end if
+            network%descriptor_cutoff_type=nint(network%descriptor_parameters(8,1))
+            network%descriptor_cutoff_alpha=network%descriptor_parameters(9,1)
+            if (any(network%descriptor_parameters(8,:) /= real(network%descriptor_cutoff_type,real64)) .or. &
+                any(network%descriptor_parameters(9,:) /= network%descriptor_cutoff_alpha)) then
+                if (present(status)) then
+                    status=1; return
+                end if
+                error stop 'inconsistent extended cutoff metadata'
+            end if
+            return
+        end if
         if (nparam < 6) return
         network%descriptor_cutoff_type = nint(network%descriptor_parameters(5, 1))
         network%descriptor_cutoff_alpha = network%descriptor_parameters(6, 1)

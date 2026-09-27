@@ -51,7 +51,8 @@ program benchmark_g5_scaling
 
     write(*, "(A,1X,I0)") "DESCRIPTORS", config%num_descriptors()
     write(*, "(A,1X,I0)") "REPEATS", repeats
-    write(*, "(A)") "NEIGHBORS DIRECT_VALUE MOMENT_VALUE VALUE_SPEEDUP DIRECT_FORCE MOMENT_FORCE FORCE_SPEEDUP VALUE_ERROR FORCE_ERROR"
+    write(*, "(A)") "NEIGHBORS DIRECT_VALUE MOMENT_VALUE VALUE_SPEEDUP "// &
+        "DIRECT_FORCE MOMENT_FORCE FORCE_SPEEDUP VALUE_ERROR FORCE_ERROR"
     do count_index = 1, size(neighbor_counts)
         nneighbors = neighbor_counts(count_index)
         call make_environment(nneighbors)

@@ -1,0 +1,13 @@
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+ GPU checks:          185  maximum absolute E/F/W error: 
+   2.2204460492503131E-016
+ GPU batch FP64 equivalence and finite differences passed

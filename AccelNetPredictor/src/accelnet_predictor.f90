@@ -7,10 +7,10 @@ module accelnet_predictor
         add_chebyshev, add_lj, add_behler, set_model_g5_evaluation, set_model_chebyshev_evaluation
     use accelnet_lj, only: lj_config, initialize_lj_config
     use accelnet_behler, only: behler_config, initialize_behler_config, &
-        add_g1, add_g2, add_g3, add_g4, add_g5
+        add_g1, add_g2, add_g3, add_g4, add_g5, add_extended
     use accelnet_setup, only: descriptor_setup, read_accelnet_setup_set
     use aenet_network, only: atomic_network, read_aenet_network_ascii, read_aenet_network
-    use n2p2_network, only: load_n2p2_model
+    use n2p2_network, only: load_n2p2_model, atomic_number
     implicit none
     private
 
@@ -234,6 +234,11 @@ contains
                 network%descriptor_parameters(1, 1), network%descriptor_cutoff_type, &
                 network%descriptor_cutoff_alpha)
             call add_lj(setup%model, lj)
+        case("n2p2_extended")
+            call initialize_behler_config(behler,size(network%environment_names), &
+                network%descriptor_cutoff_type,network%descriptor_cutoff_alpha)
+            call add_n2p2_ordered_functions(behler,network)
+            call add_behler(setup%model,behler)
         case("behler2011")
             call initialize_behler_config(behler, size(network%environment_names), &
                 network%descriptor_cutoff_type, network%descriptor_cutoff_alpha)
@@ -245,6 +250,26 @@ contains
         if (setup%model%num_descriptors() /= network%nodes(1)) &
             error stop "embedded descriptor metadata has wrong dimension"
     end subroutine setup_from_network
+
+    subroutine add_n2p2_ordered_functions(config,network)
+        type(behler_config), intent(inout) :: config
+        type(atomic_network), intent(in) :: network
+        integer :: i,k,t1,t2
+        real(real64) :: p(7)
+        config%species_weights=[(real(atomic_number(network%environment_names(i)),real64), &
+            i=1,size(network%environment_names))]
+        if (size(network%descriptor_parameters,1) /= 9) error stop 'invalid n2p2 extended metadata'
+        do i=1,size(network%descriptor_kinds)
+            k=network%descriptor_kinds(i); p=network%descriptor_parameters(1:7,i)
+            t1=network%descriptor_environments(1,i); t2=network%descriptor_environments(2,i)
+            select case(k)
+            case(2); call add_g2(config,t1,p(1),p(2),p(3))
+            case(4); call add_g4(config,t1,t2,p(1),p(2),p(3),p(4),p(7))
+            case(5); call add_g5(config,t1,t2,p(1),p(2),p(3),p(4),p(7))
+            case default; call add_extended(config,k,t1,t2,p)
+            end select
+        end do
+    end subroutine
 
     subroutine add_aenet_ordered_behler_functions(config, network)
         type(behler_config), intent(inout) :: config

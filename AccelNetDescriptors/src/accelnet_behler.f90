@@ -1,6 +1,8 @@
 module accelnet_behler
     use iso_fortran_env, only: error_unit, real64
     use accelnet_descriptors, only: cutoff_value, cutoff_derivative, validate_cutoff_parameters, CUTOFF_COS
+    use accelnet_descriptors, only: sf_cutoff_value => cutoff_value, sf_cutoff_derivative => cutoff_derivative
+    use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
     implicit none
     private
 
@@ -58,6 +60,11 @@ module accelnet_behler
         real(real64), allocatable :: rc(:), kappa(:)
     end type
 
+    type :: extended_parameter
+        integer :: kind=0, species1=0, species2=0, output=0
+        real(real64) :: p(7)=0
+    end type
+
     type, public :: behler_config
         integer :: num_species = 0
         integer :: cutoff_type = CUTOFF_COS
@@ -88,6 +95,8 @@ module accelnet_behler
         type(g3_parameter), allocatable :: g3(:)
         type(angular_parameter), allocatable :: g4(:)
         type(angular_parameter), allocatable :: g5(:)
+        type(extended_parameter), allocatable :: extended(:)
+        real(real64), allocatable :: species_weights(:)
     contains
         procedure :: num_descriptors => behler_num_descriptors
     end type behler_config
@@ -95,6 +104,7 @@ module accelnet_behler
     public :: initialize_behler_config, add_g1, add_g2, add_g3, add_g4, add_g5
     public :: evaluate_behler_values, evaluate_behler_values_derivatives
     public :: contract_behler_derivatives, behler_supports_direct_contraction
+    public :: add_extended, compact_subtype, compact_subtype_name
     public :: set_behler_g5_evaluation
 
 contains
@@ -106,6 +116,7 @@ contains
         real(real64), intent(in), optional :: cutoff_alpha
         if (num_species < 1) error stop "Behler num_species must be positive"
         config%num_species = num_species
+        allocate(config%species_weights(num_species)); config%species_weights=1
         if (present(cutoff_type)) config%cutoff_type = cutoff_type
         if (present(cutoff_alpha)) config%cutoff_alpha = cutoff_alpha
         call validate_cutoff_parameters(config%cutoff_type, config%cutoff_alpha)
@@ -589,7 +600,7 @@ contains
 
     pure logical function behler_supports_direct_contraction(config) result(supported)
         type(behler_config), intent(in) :: config
-        supported = .not. allocated(config%g4)
+        supported = .not. allocated(config%g4) .and. .not. allocated(config%extended)
     end function behler_supports_direct_contraction
 
     subroutine contract_behler_derivatives(config, displacements, neighbor_species, coefficients, &
@@ -1185,6 +1196,41 @@ contains
                 end if
             end do
         end do
+        if (allocated(config%extended)) then
+            do p=1,size(config%extended)
+                associate(ep => config%extended(p))
+                output=ep%output
+                do j=1,nneighbors
+                    if (ep%species1 > 0 .and. ep%species2 == 0) then
+                        if (neighbor_species(j) /= ep%species1) cycle
+                    end if
+                    call extended_radial(ep%kind,config%cutoff_type,ep%p,distances(j),qj,dqj)
+                    if (qj == 0 .and. dqj == 0) cycle
+                    if (ep%kind == 12 .or. ep%kind == 20 .or. ep%kind == 23) then
+                        factor=1
+                        if (ep%species1 == 0) factor=config%species_weights(neighbor_species(j))
+                        values(output)=values(output)+factor*qj
+                        if (do_derivatives) call add_gradient(output,j,factor*dqj*unit_vectors(:,j))
+                    else
+                        do k=j+1,nneighbors
+                            if (ep%species1 > 0) then
+                                if (.not. species_pair_matches(neighbor_species(j),neighbor_species(k), &
+                                    ep%species1,ep%species2)) cycle
+                            end if
+                            call extended_radial(ep%kind,config%cutoff_type,ep%p,distances(k),qk,dqk)
+                            call extended_pair(ep%kind,config%cutoff_type,ep%p,unit_vectors(:,j),unit_vectors(:,k), &
+                                distances(j),distances(k),qj,qk,dqj,dqk,radial_value,gradient_j,gradient_k)
+                            factor=1
+                            if (ep%species1 == 0) factor=config%species_weights(neighbor_species(j))* &
+                                config%species_weights(neighbor_species(k))
+                            values(output)=values(output)+factor*radial_value
+                            if (do_derivatives) call add_pair_gradients(output,j,k,factor*gradient_j,factor*gradient_k)
+                        end do
+                    end if
+                end do
+                end associate
+            end do
+        end if
         if (allocated(config%g4)) call evaluate_g4_only()
         if (allocated(config%g5)) call evaluate_g5_only()
 
@@ -1514,5 +1560,83 @@ contains
             derivative_center(:, coefficient) = derivative_center(:, coefficient) - gradient1 - gradient2
         end subroutine
     end subroutine evaluate_core
+
+
+    integer function compact_subtype(name) result(code)
+        character(len=*), intent(in) :: name
+        integer :: ios
+        code=0
+        if (trim(name) == 'e') then
+            code=5
+        else if (len_trim(name) == 2 .or. len_trim(name) == 3) then
+            if (name(1:1) /= 'p') error stop 'invalid compact subtype'
+            read(name(2:2),*,iostat=ios) code
+            if (ios /= 0) error stop 'invalid compact subtype'
+            if (code < 1 .or. code > 4) error stop 'invalid compact polynomial'
+            if (len_trim(name) == 3) then
+                if (name(3:3) /= 'a') error stop 'invalid compact asymmetry'
+                code=code+10
+            end if
+        end if
+        if (code == 0) error stop 'invalid compact subtype'
+    end function
+
+    function compact_subtype_name(code) result(name)
+        integer, intent(in) :: code
+        character(len=3) :: name
+        name='e'
+        if (code /= 5) then
+            write(name,'(A,I1)') 'p',mod(code,10)
+            if (code > 10) name(3:3)='a'
+        end if
+    end function
+
+    subroutine add_extended(config,kind,species1,species2,parameters)
+        type(behler_config), intent(inout) :: config
+        integer, intent(in) :: kind,species1,species2
+        real(real64), intent(in) :: parameters(7)
+        type(extended_parameter) :: ep
+        integer :: subtype
+        real(real64) :: middle
+        if (.not. (kind == 12 .or. kind == 13 .or. (kind >= 20 .and. kind <= 25))) &
+            error stop 'invalid extended symmetry function'
+        if (.not. all(ieee_is_finite(parameters))) error stop 'nonfinite extended parameters'
+        if (parameters(1) <= 0) error stop 'invalid extended cutoff'
+        if (kind >= 20 .and. kind <= 22) then
+            call validate_radial(config,species1,parameters(1))
+            if (kind /= 20) call validate_radial(config,species2,parameters(1))
+        else
+            if (species1 /= 0 .or. species2 /= 0) error stop 'weighted SF must include all species'
+        end if
+        ep%kind=kind; ep%species1=species1; ep%species2=species2; ep%p=parameters
+        if (kind == 13) then
+            if (abs(parameters(4)) > 1 .or. parameters(5) < 1) error stop 'invalid weighted angular power'
+        end if
+        if (kind >= 20) then
+            if (parameters(2) >= parameters(1)) error stop 'empty compact radial interval'
+            subtype=nint(parameters(5))
+            if (parameters(5) /= real(subtype,real64)) error stop 'invalid compact subtype code'
+            if (.not. (subtype >= 1 .and. subtype <= 5) .and. &
+                .not. (subtype >= 11 .and. subtype <= 14)) error stop 'invalid compact subtype code'
+            if (kind /= 20 .and. kind /= 23) then
+                middle=0.5_real64*(parameters(3)+parameters(4))
+                if (parameters(3) >= parameters(4) .or. parameters(4)-parameters(3) > 360) &
+                    error stop 'invalid compact angle interval'
+                if ((parameters(3) < 0 .and. middle /= 0) .or. &
+                    (parameters(4) > 180 .and. middle /= 180)) error stop 'invalid compact angle center'
+                ep%p(3:4)=parameters(3:4)*(acos(-1.0_real64)/180)
+            end if
+        end if
+        config%number_of_descriptors=config%number_of_descriptors+1
+        ep%output=config%number_of_descriptors
+        if (allocated(config%extended)) then
+            config%extended=[config%extended,ep]
+        else
+            config%extended=[ep]
+        end if
+        config%maximum_cutoff=max(config%maximum_cutoff,parameters(1))
+    end subroutine
+
+    include 'n2p2_extended.inc'
 
 end module accelnet_behler

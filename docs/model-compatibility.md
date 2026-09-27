@@ -1,7 +1,7 @@
 # AccelNet Compatibility with ænet and n2p2 Models
 
-Assessment date: 2026-08-04<br>
-AccelNet version assessed: `1.0.0`<br>
+Assessment date: 2026-09-27<br>
+AccelNet version assessed: `1.0.1` (methods revision 1.8)<br>
 Reference implementations: ænet `2.0.4`, n2p2 `v2.3.0`
 
 ## 1. Summary
@@ -14,9 +14,9 @@ within the following limits.
 | ænet/AccelNet ASCII NN | Supported | Supported | Supported | Chebyshev, Behler2011, and the AccelNet LJ extension; ænet 2.0.4 activation codes 0--4 |
 | AccelNet native binary NN | Supported | Supported | Supported | Fortran sequential-unformatted format; the reader must use a compatible record representation |
 | ænet NN + explicit `.fingerprint.stp` | ASCII only | Supported | Supported | The number of NN inputs must match the number of setup descriptors |
-| n2p2 2G-HDNNP directory | Conditional | Supported | Supported | SF types 2/3/9, global or per-element topology, with optional `normalize_nodes` |
+| n2p2 2G-HDNNP directory | Conditional | Supported | Supported | SF types 2/3/9/12/13/20--25, global or per-element topology, with optional `normalize_nodes` |
 | n2p2 4G-HDNNP / Q-HDNNP | Not supported | Not supported | Not supported | Charge NNs, charge equilibration, and electrostatics are not implemented |
-| n2p2 weighted / compact SFs | Not supported | Not supported | Not supported | Types 12/13/20--25 are not implemented |
+| n2p2 weighted / compact SFs | Conditional | Supported | Supported | Shared CPU/OpenMP-target kernels; extended AccelNet ASCII metadata |
 
 Here, “ænet/AccelNet ASCII” means that the files use the same basic record
 layout. However, an extended ASCII file written by AccelNet may not have the
@@ -109,6 +109,7 @@ supports the following descriptors.
 | `Chebyshev` | Radial and angular Chebyshev terms with analytical derivatives | Version 0/1/10 must be specified outside the file |
 | `Behler2011` | G1, G2, G3, G4, and G5 with analytical derivatives | Reordered into ænet canonical order |
 | `LJ` | Per-element `sum(r^-6)` / `sum(r^-12)` with analytical derivatives | AccelNet extension; not a standard ænet 2.0.4 basis |
+| `n2p2_extended` | Mixed n2p2 types 2/3/9/12/13/20--25 | Nine parameter rows; AccelNet extension, preserving n2p2 canonical order |
 | Any other name | Not supported | Reports `unsupported embedded descriptor type` |
 
 The Chebyshev version is not stored in standard NN metadata. Select version 0,
@@ -201,19 +202,19 @@ accepts `2G`, `2g`, the official n2p2 v2.3.0 name `2G-HDNNP`
 ### 4.3 Symmetry functions
 
 Upstream n2p2 v2.3.0 implements types 2, 3, 9, 12, 13, and 20--25. AccelNet can
-directly load the following three types.
+directly load all eleven types below.
 
 | n2p2 type | Meaning | Direct inference | Forces | Notes |
 |---:|---|---:|---:|---|
 | 2 | exponential radial | Supported | Supported | `eta`, `rshift`, `rcutoff` |
 | 3 | narrow angular | Supported | Supported | An optional trailing radial shift is supported in direct inference |
 | 9 | wide angular | Supported | Supported | An optional trailing radial shift is supported in direct inference |
-| 12 | weighted radial | Not supported | Not supported |  |
-| 13 | weighted angular | Not supported | Not supported |  |
-| 20 | compact radial | Not supported | Not supported |  |
-| 21 | compact narrow angular | Not supported | Not supported |  |
-| 22 | compact wide angular | Not supported | Not supported |  |
-| 23--25 | weighted compact | Not supported | Not supported |  |
+| 12 | weighted radial | Supported | Supported | Atomic-number weights |
+| 13 | weighted angular | Supported | Supported | Narrow; includes neighbor-neighbor distance |
+| 20 | compact radial | Supported | Supported | `e`, `p1`--`p4`, `p1a`--`p4a` |
+| 21 | compact narrow angular | Supported | Supported | `e`, `p1`--`p4`, `p1a`--`p4a` |
+| 22 | compact wide angular | Supported | Supported | `e`, `p1`--`p4`, `p1a`--`p4a` |
+| 23--25 | weighted compact | Supported | Supported | `e`, `p1`--`p4`, `p1a`--`p4a` |
 
 AccelNet maps type 3 to its internal Behler G4 implementation and type 9 to G5.
 Functions are sorted into n2p2 canonical order before the scaling arrays and
@@ -454,9 +455,8 @@ models.
 Conversion is possible only when all the following conditions hold:
 
 - An NN is present for every element.
-- `descriptor_name = Behler2011`.
-- The descriptors contain only G2, G4, and G5:
-  - Internal kinds 2, 4, and 5, corresponding to n2p2 types 2, 3, and 9.
+- `descriptor_name = Behler2011` with G2/G4/G5, or `n2p2_extended` with any mixture of the eleven supported n2p2 types.
+- Internal kinds 2, 4, and 5 correspond to n2p2 types 2, 3, and 9; extended kinds retain their n2p2 numbers.
 - Species, atomic references, and energy scale/shift are consistent across all
   NNs.
 - Every element uses the same cutoff type and alpha.
@@ -468,7 +468,6 @@ The following features cannot be converted:
 - LJ.
 - Behler G1 and G3.
 - 4G/Q and charge/electrostatic models.
-- Weighted and compact symmetry functions.
 
 The converter writes `input.nn`, `scaling.data`, and one
 `weights.%03d.data` file per element. Descriptor order, scaling data, and
@@ -564,7 +563,7 @@ following conditions hold:
 
 - It is short-range 2G.
 - It has no `nnp_type`, or uses `2G`, `2G-HDNNP`, or `2`.
-- It uses only SF types 2, 3, and 9.
+- It uses SF types 2, 3, 9, 12, 13, or 20--25.
 - It may use global topology defaults, per-element topology overrides, and
   `normalize_nodes`.
 - It uses cutoff type 0--8.
@@ -577,10 +576,35 @@ following conditions hold:
 
 The following order is reasonable for expanding and clarifying compatibility:
 
-1. Add regression tests comparing energies and every force component of
-   official n2p2 models with upstream `nnp-predict`.
+1. Expand the official-model regression corpus beyond the four models tested in revision 1.8.
 2. Add real native ænet fixtures containing activation codes 3 and 4.
 3. Add extended angular-shift metadata to the Julia converter to match the
    Fortran converter.
-4. Add weighted types 12/13 to the Behler evaluator.
-5. Add descriptor kernels for compact types 20--25.
+4. Share pair geometry across multiple compact/weighted angular descriptors to reduce CPU work.
+5. Validate charge/electrostatic architectures separately before expanding beyond 2G.
+
+## 10. Weighted/compact validation (methods revision 1.8)
+
+The common CPU and OpenMP-target implementations use the same scalar formulas.
+Synthetic tests cover two and four elements, mixtures of all eleven SF types,
+canonical sorting, scaling/normalization, direct/G5-moment modes, conversion in
+both directions, and force/strain finite differences. Official trained models
+Ethylbenzene_SCAN (H/C), Anisole_SCAN (H/C/O), DMABN_SCAN (H/C/N), and
+H2O_RPBE-D3 (H/O) agree with an independently compiled serial n2p2 v2.3.0 library.
+See [the validation archive](validation/n2p2-extensions-2026-09-27/README.md).
+
+Models containing new types use `n2p2_extended` with nine real parameters per
+feature: seven type-specific fields and global cutoff type/alpha in rows 8/9.
+This prevents compact angle/subtype fields from overlapping the old Behler
+cutoff metadata. This is an AccelNet extension, not an upstream ænet format.
+The Python/Julia converters have not been extended by this change; use the
+Fortran converter.
+
+Known upstream endpoint limitation: compact angular windows centered on 0 or
+180 degrees can be nonzero at exact collinearity, but n2p2 skips pairs with
+cosine outside the open interval (-1,1). Rounding can change that branch,
+particularly for periodic self-image pairs in a cell shorter than the cutoff.
+Exact equality with n2p2 is not guaranteed for these degenerate configurations.
+The synthetic periodic accuracy fixture excludes self images; a separate axial
+collinear test checks the matching exclusion. No tolerance was relaxed to hide
+the discrepancy. Normal windows vanishing at 0/180 have no finite-value jump.

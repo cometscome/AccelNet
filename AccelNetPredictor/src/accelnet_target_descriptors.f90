@@ -116,11 +116,28 @@ contains
                         end associate
                     end do
                 end if
+                if (allocated(cfg%extended)) then
+                    do j=1,size(cfg%extended)
+                        associate(p => cfg%extended(j))
+                        b=o+p%output
+                        if (b < 1 .or. b > n) return
+                        if (fi(1,b) /= 0) return
+                        fi(:6,b)=[p%kind,p%species1,p%species2,ct,0,ns]
+                        fr(1:7,b)=p%p
+                        end associate
+                    end do
+                end if
                 end associate
             end do
         end if
         if (.not. all(ieee_is_finite(fr))) return
         do b = 1,n
+            if (fi(1,b) >= 12) then
+                if (.not. (fi(1,b) == 12 .or. fi(1,b) == 13 .or. &
+                    (fi(1,b) >= 20 .and. fi(1,b) <= 25))) return
+                if (fr(1,b) <= 0) return
+                cycle ! add_extended already validates compact and weighted parameters.
+            end if
             if (fi(1,b) < 1 .or. fi(1,b) > 7) return
             if (fi(2,b) < 1 .or. fi(2,b) > fi(6,b)) return
             if (fr(1,b) <= 0) return
@@ -147,6 +164,23 @@ contains
             if (fi(7,b) /= 0) cycle
             groups = groups+1
             fi(7:8,b) = [groups,b]
+        end do
+        ! Extended descriptors share radial values across angular windows/species.
+        do b=1,n
+            if (fi(1,b) < 12) cycle
+            do k=1,b-1
+                if (fi(1,k) < 12) cycle
+                if ((fi(1,b) >= 20) .neqv. (fi(1,k) >= 20)) cycle
+                if (fi(4,b) /= fi(4,k)) cycle
+                if (fi(1,b) >= 20) then
+                    if (any(fr(1:2,b) /= fr(1:2,k)) .or. fr(5,b) /= fr(5,k)) cycle
+                else
+                    if (any(fr(1:3,b) /= fr(1:3,k)) .or. fr(7,b) /= fr(7,k)) cycle
+                end if
+                fi(7:8,b)=fi(7:8,k); exit
+            end do
+            if (fi(7,b) /= 0) cycle
+            groups=groups+1; fi(7:8,b)=[groups,b]
         end do
         ! G5 integer moments: compact only radial groups actually requested.
         ! Exact integer powers 1..10 use a polynomial; fractional/near-integer
@@ -179,7 +213,7 @@ contains
         ! Fractional/high zeta retains its exact power and only identical powers combine.
         groups = 0
         do b = 1,n
-            if (fi(7,b) == 0) cycle
+            if (fi(7,b) == 0 .or. fi(1,b) >= 12) cycle
             r = 0
             do k = 1,b-1
                 if (fi(10,k) /= k) cycle

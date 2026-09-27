@@ -35,7 +35,7 @@ contains
         type(atomic_network), allocatable :: nets(:)
         integer :: k, nr, na, kind, env_count, expected_dim
         character(len=100) :: family
-        real(c_double) :: rc, ac, alpha
+        real(c_double) :: rc, ac, alpha, middle
         character(c_char), pointer :: path(:)
         character(len=4096), allocatable :: filenames(:)
         character(len=511) :: detail
@@ -111,6 +111,48 @@ contains
             case('lj')
                 if (nets(i)%descriptor_parameters(1,1) <= 0) return
                 expected_dim = 2*env_count
+            case('n2p2_extended')
+                expected_dim=size(nets(i)%descriptor_kinds)
+                if (size(nets(i)%descriptor_parameters,1) /= 9 .or. &
+                    size(nets(i)%descriptor_parameters,2) /= expected_dim .or. &
+                    size(nets(i)%descriptor_environments,1) /= 2 .or. &
+                    size(nets(i)%descriptor_environments,2) /= expected_dim) return
+                do j=1,expected_dim
+                    kind=nets(i)%descriptor_kinds(j)
+                    if (.not. (kind == 2 .or. kind == 4 .or. kind == 5 .or. kind == 12 .or. &
+                        kind == 13 .or. (kind >= 20 .and. kind <= 25))) return
+                    if (nets(i)%descriptor_parameters(1,j) <= 0) return
+                    k=nets(i)%descriptor_environments(1,j)
+                    if (kind < 12 .or. (kind >= 20 .and. kind <= 22)) then
+                        if (k < 1 .or. k > env_count) return
+                        if (kind /= 2 .and. kind /= 20) then
+                            k=nets(i)%descriptor_environments(2,j)
+                            if (k < 1 .or. k > env_count) return
+                        end if
+                    else
+                        if (any(nets(i)%descriptor_environments(:,j) /= 0)) return
+                    end if
+                    if (kind == 4 .or. kind == 5) then
+                        if (abs(nets(i)%descriptor_parameters(2,j)) > 1 .or. &
+                            nets(i)%descriptor_parameters(3,j) < 1 .or. &
+                            nets(i)%descriptor_parameters(3,j) > real(huge(1)-1,c_double)) return
+                    else if (kind == 13) then
+                        if (abs(nets(i)%descriptor_parameters(4,j)) > 1 .or. &
+                            nets(i)%descriptor_parameters(5,j) < 1) return
+                    end if
+                    if (kind >= 20) then
+                        if (nets(i)%descriptor_parameters(2,j) >= nets(i)%descriptor_parameters(1,j)) return
+                        k=nint(nets(i)%descriptor_parameters(5,j))
+                        if (real(k,c_double) /= nets(i)%descriptor_parameters(5,j)) return
+                        if (.not. (k >= 1 .and. k <= 5) .and. .not. (k >= 11 .and. k <= 14)) return
+                        if (kind /= 20 .and. kind /= 23) then
+                            rc=nets(i)%descriptor_parameters(3,j); ac=nets(i)%descriptor_parameters(4,j)
+                            middle=0.5_c_double*(rc+ac)
+                            if (rc >= ac .or. ac-rc > 360) return
+                            if ((rc < 0 .and. middle /= 0) .or. (ac > 180 .and. middle /= 180)) return
+                        end if
+                    end if
+                end do
             case('behler2011')
                 expected_dim = size(nets(i)%descriptor_kinds)
                 if (size(nets(i)%descriptor_parameters,1) < 4 .or. &
@@ -135,7 +177,7 @@ contains
                     end if
                 end do
             case default
-                call c_message('GPU supports embedded Chebyshev, LJ and Behler2011 descriptors',message)
+                call c_message('GPU supports embedded Chebyshev, LJ, Behler2011 and n2p2_extended descriptors',message)
                 return
             end select
             if (expected_dim /= nets(i)%nodes(1)) then
