@@ -31,6 +31,7 @@ PairStyle(accelnet,PairAccelNet)
 #define LMP_PAIR_ACCELNET
 
 #include "pair.h"
+#include <vector>
 
 namespace LAMMPS_NS {
 
@@ -62,6 +63,9 @@ class PairAccelNet : public Pair {
   char **pot_files;
   char *n2p2_directory;
   char error_buffer[128];
+  std::vector<int> batch_species, batch_centers, batch_offsets, batch_indices;
+  std::vector<int> batch_target_map, batch_targets;
+  std::vector<double> batch_dr, batch_energies, batch_forces;
   
 };
 

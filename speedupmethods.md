@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.8 — 2026-09-27 (JST).**
+**Document version 1.9 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -18,7 +18,7 @@ not bitwise equality.
 | AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19; each validation archive identifies its measured sources |
+| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20; each validation archive identifies its measured sources |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -1710,3 +1710,214 @@ path. The known n2p2 collinear-window discontinuity is documented explicitly in
 
 Measurements, source hashes, commands, oracle model hashes, and numerical
 errors are in [the revision-1.8 archive](docs/validation/n2p2-extensions-2026-09-27/README.md).
+
+## 20. Grouped extended angular evaluation and LAMMPS CPU batches (revision 1.9)
+
+The baseline for this revision is `gpu` commit **18d1ac3** (library version
+**1.0.1**). The measurement protocol and before/after results are archived in
+[the CPU/LAMMPS validation report](docs/validation/n2p2-cpu-2026-09-27/README.md).
+Both CPU inference binaries are compiled without OpenMP. The GPU implementation
+uses the same Fortran source with OpenMP target directives enabled.
+
+### 20.1 Reuse geometry before evaluating descriptor members
+
+For each center, the previous extension kernel traversed its unordered neighbor
+pairs once **per descriptor**. It already evaluated each descriptor's value and
+Jacobian together, but repeated the cosine, Cartesian angle derivatives,
+`acos`, and neighbor-neighbor distance for different descriptors. The G4 scalar
+cache/ownership strategy in Section 16 applies to these extensions as well.
+
+Let $g$ index identical radial parameters, $a$ identical angular parameters,
+and $h\in\{0,1\}$ select a wide or narrow descriptor. For each pair, cache
+
+$$P_{g,h}=q_g(r_j)q_g(r_k)\,[q_g(r_{jk})]^h,$$
+
+$$\mathbf R_{j,g,h}=q'_g(r_j)q_g(r_k)[q_g(r_{jk})]^h\mathbf u_j
+ -h q_g(r_j)q_g(r_k)q'_g(r_{jk})\mathbf u_{jk},$$
+
+$$\mathbf R_{k,g,h}=q_g(r_j)q'_g(r_k)[q_g(r_{jk})]^h\mathbf u_k
+ +h q_g(r_j)q_g(r_k)q'_g(r_{jk})\mathbf u_{jk}.$$
+
+A descriptor member then adds $w A_a(c)P_{g,h}$ to its value, and
+
+$$w\left[A'_a(c)P_{g,h}\frac{\mathbf u_k-c\mathbf u_j}{r_j}
+       +A_a(c)\mathbf R_{j,g,h}\right]$$
+
+to its $j$ derivative (analogously for $k$). Here $w=1$ for species-selected
+compact functions and $w=Z_jZ_k$ for weighted functions. These scalar products
+are evaluated before expanding Cartesian components, following the G4 lesson.
+
+The packer builds an auxiliary member order by unordered species pair, angular
+representative, narrow/wide flag, and radial group. It **does not reorder**
+descriptor outputs, scaling arrays, or NN inputs. A weighted list is separate
+from the species-pair list. Each constant-angular run evaluates its angular window once. If both its value
+and derivative vanish, the whole run is skipped. The narrow path also caches
+the last radial product and cutoff in scalars; no $O(N_n^2)$ geometry buffer is
+introduced. Compact radial
+asymmetry and angular symmetry use distinct keys: the angular key contains the
+base polynomial subtype, while the radial key retains the full subtype.
+
+A serial CPU owner visits a pair once and processes its matching members. GPU
+owners partition the ordered descriptor indices into disjoint lanes. Every
+Jacobian column has a single writer, avoiding atomics. Geometry is reused among
+the members owned by each lane; it can be repeated across lanes in exchange for
+more parallel work. The value and derivative formulas remain shared. GPU owners also retain the
+union of their radial supports and a species-pair mask, allowing irrelevant
+pairs to be rejected before angle evaluation. The mask accelerates the first
+ten local species; higher indices retain the unrestricted, correct path.
+The owner count is
+
+$$L=\min\left(256,N_{\mathrm{angular,max}},
+              \max(1,\lfloor65536/N_{\mathrm{rows}}\rfloor)\right).$$
+
+The serial build always uses $L=1$. Limiting GPU execution to 32 owners left
+small, descriptor-rich models underoccupied; additional owners plus early
+rejection restored and improved their GPU throughput.
+
+For wide types 22/25, let $\mathbf d_j=r_j\mathbf u_j$ and
+$\mathbf d_k=r_k\mathbf u_k$. Precompute the angular coefficients once per run:
+
+$$a_j=\frac{wA}{r_j},\quad a_k=\frac{wA}{r_k},\quad
+ b_j=\frac{wA'c}{r_j^2},\quad b_k=\frac{wA'c}{r_k^2},\quad
+ b_{jk}=\frac{wA'}{r_jr_k}.$$
+
+For each radial member, $P=q_jq_k$ and
+
+$$p_j=a_jq'_jq_k-b_jP,\quad
+ p_k=a_kq_jq'_k-b_kP,\quad p_c=b_{jk}P,$$
+
+$$\nabla_{\mathbf d_j}V=p_j\mathbf d_j+p_c\mathbf d_k,\qquad
+  \nabla_{\mathbf d_k}V=p_k\mathbf d_k+p_c\mathbf d_j.$$
+
+Compact angular windows additionally pack their center $m=(\theta_l+\theta_r)/2$
+and inverse half-width $h=2/(\theta_r-\theta_l)$ at model load. Their normalized
+argument is $y=(\theta-m)h$, avoiding repeated divisions in the pair loop.
+
+This removes repeated angular scaling and narrow-only distance/cache branches
+from the wide inner loop. It retains one pair pass for values and derivatives,
+as in the optimized CPU G4 implementation. A trial array of radial products
+increased CPU time and was removed: saving arithmetic does not guarantee a win
+when it adds indexing, loads, and cache traffic.
+
+### 20.2 Exact powers for weighted angular type 13
+
+With $t=(1+\lambda c)/2$, the weighted angular factor is
+$A=2t^\zeta$ and $A'=\lambda\zeta t^{\zeta-1}$.
+Exact integer exponents 1--16 reuse the G4/G5 integer-power helper. For other
+valid exponents, compute $p=t^{\zeta-1}$ once, then $A=2tp$ and
+$A'=\lambda\zeta p$. Near-integer exponents are never rounded. This reduces
+power evaluations without a polynomial approximation. It does not create a
+finite exact moment representation for the nonseparable narrow radial term.
+
+The same scalar Cartesian contraction now applies to G4. For a narrow member,
+define
+
+$$C=\frac{q_jq_kq'_{jk}}{r_{jk}},\quad
+ R_j=\frac{q'_jq_kq_{jk}}{r_j}+C,\quad
+ R_k=\frac{q_jq'_kq_{jk}}{r_k}+C.$$
+
+With $P=q_jq_kq_{jk}$, the coefficients are
+
+$$p_j=wA R_j-wA'P\frac{c}{r_j^2},\quad
+ p_k=wA R_k-wA'P\frac{c}{r_k^2},\quad
+ p_c=wA'P\frac{1}{r_jr_k}-wA C.$$
+
+The Cartesian derivatives again equal $p_j\mathbf d_j+p_c\mathbf d_k$ and
+$p_k\mathbf d_k+p_c\mathbf d_j$. Cache $R_j,R_k,C$ by radial group before
+processing angular members. This removes repeated vector normalizations and
+vector-valued radial intermediates from the pair loop.
+
+Value/derivative evaluation also shares the hyperbolic tangent cutoff:
+
+$$t=\tanh(1-r/R_c),\qquad f_c=t^3,\qquad
+ f'_c=3t^2(t^2-1)/R_c.$$
+
+For normalized tanh, divide both outputs by $\tanh^3(1)$. A single `tanh`
+evaluation supplies both outputs; the cutoff boundary and all other cutoff
+formulas are unchanged. This matters for the published water model, whose G4
+functions use the unnormalized tanh cutoff.
+
+G2 uses exactly the same $q(r)=\exp[-\eta(r-R_s)^2]f_c(r)$ as the radial
+factors of G4/G5. The packed radial cache therefore includes G2, sharing
+identical $(\eta,R_s,R_c,\mathrm{cutoff},\alpha)$ groups across chemical
+species and angular functions. Both its value pass and its force pass read
+$q,q'$ instead of recomputing the exponential and cutoff independently.
+Angular polynomial grouping still applies only to G4/G5; it must not merge
+G2 output slots into an angular contraction group. If a radial group contains
+only G2 functions for one neighbor species, cache preparation skips all other
+species. Unrestricted caching would perform extra work for these small models.
+
+When all standard descriptors for a central species have the same cutoff,
+geometry preparation also stores $f_c(r),f'_c(r)$ once per edge. Different
+$\eta,R_s$ groups then apply their Gaussian factor to these cached cutoffs.
+Compact or mixed-cutoff models retain their general path; exact metadata
+comparison selects the optimization without changing any cutoff support.
+
+The G4 angular derivative prefactor $\lambda\zeta/2$ is packed once. Its
+factor of two is applied when the angular cache changes. Hot angular-power and
+paired-cutoff helpers, and compact angular/window helpers, include the same
+scalar source in the kernel translation
+unit, allowing GNU Fortran to inline them without whole-program LTO. The
+Jacobian's Cartesian extent is explicitly **3**, matching its allocation;
+this exposes fixed-size stores and strides to both compilers.
+
+### 20.3 Remove repeated neighbor candidate searches
+
+The standalone orthogonal linked-cell builder previously checked candidate
+membership with `any(nblist(1:count)==candidate)`. For $K$ visited candidates,
+this can require $O(K^2)$ comparisons per center. Track visited wrapped cell
+indices instead: each cell list is traversed once. With $C$ candidate cells,
+the work is $O(K+C^2)$ per center, without resetting an $N$-atom membership
+array for every center. A repeated central cell inserts the central atom once
+at its original first-revisit position. Candidates retain their original
+first-visit order; periodic
+image expansion and distance filtering are unchanged. The independent neighbor
+test enumerates all relevant images, including small cells, self images,
+unwrapped coordinates, and multiple linked-cell grid shapes.
+
+This optimization affects AccelNet's standalone neighbor builder. **LAMMPS
+constructs its own neighbor lists**, so it cannot account for a LAMMPS speedup.
+
+### 20.4 Connect the LAMMPS CPU interface to the shared batch implementation
+
+The previous `pair_style accelnet` called the retained atomic C API separately
+for every center. Consequently, changing the shared batch kernel alone did not
+change that LAMMPS execution path. The new CSR C entry point uses the loaded
+model and reuses a serial batch workspace. It preserves additive local/ghost
+forces and one energy per center; finalization releases the workspace.
+
+The LAMMPS adapter packs full, image-aware neighbor rows in chunks of at most
+4 centers, bounding Jacobian scratch space while retaining the common CPU/GPU
+numerical implementation. Edges in the neighbor-list skin beyond the model's
+maximum cutoff are excluded while packing; their descriptor contribution is
+zero. Each chunk remaps only its touched center/neighbor targets, then scatters
+its forces back to LAMMPS local/ghost slots. The target map is initialized once
+per step and only touched entries are reset after each chunk. This avoids
+scanning all $N$ force targets once per chunk, an $O(N^2/B)$ overhead for fixed
+chunk size $B$, while preserving ordinary Newton reverse communication.
+
+The C API retains packed metadata for its private
+loaded model. Every successful model load and evaluation-mode setter invalidates
+this cache; finalization releases both packed metadata and scratch storage.
+The public Fortran batch API still repacks metadata because callers can edit
+its model directly. Smaller chunks improve locality without repeating the
+relatively expensive metadata preparation. Normal LAMMPS Newton
+reverse communication and energy/virial tallying remain in place. GPU inference
+continues through the existing independent target-model interface.
+
+### 20.5 Compare the actual LAMMPS force path
+
+Standalone n2p2 and LAMMPS do not have identical force-assembly costs.
+`Mode::calculateForces` in the standalone oracle searches neighboring centers'
+neighbor lists, whereas `InterfaceLammps::getForces` scatters their stored
+contributions directly to local/ghost force slots. Matching standalone timing
+therefore does not establish LAMMPS parity. This revision measures both paths
+and uses the actual LAMMPS integration loop for the MD comparison.
+
+LAMMPS measurements use one CPU core with OpenMP compiled out, unmodified
+published models, matching neighbor settings, and the same short NVE
+trajectory. Initial/final forces, positions, energy, and six virial-pressure
+components must agree before timings are accepted. GPU timings include the
+LAMMPS GPU neighbor path and host/device transfers. They use the same model
+converted to native format without retraining or descriptor changes. Detailed
+timing samples and build versions are retained in the validation archive.

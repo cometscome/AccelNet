@@ -60,6 +60,7 @@ add_library(AccelNetPredictor
 add_library(AccelNetPredictor::AccelNetPredictor ALIAS AccelNetPredictor)
 add_library(AccelNet::AccelNet ALIAS AccelNetPredictor)
 set_target_properties(AccelNetPredictor PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
     OUTPUT_NAME accelnet
     Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/modules")
 target_include_directories(AccelNetPredictor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetDescriptors/src/shared")

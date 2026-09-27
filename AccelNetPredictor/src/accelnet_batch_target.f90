@@ -279,7 +279,7 @@ contains
         self%features = 0; self%feature_params = 0
         allocate(self%mp(4,mm,ns),self%multiplicity(mm,ns),self%polynomial(ma,ma,ns))
         self%mp = 0; self%multiplicity = 0; self%polynomial = 0
-        allocate(self%meta(11,ns), self%nodes(ml,ns), self%acts(ml,ns), self%woffset(ml,ns), &
+        allocate(self%meta(12,ns), self%nodes(ml,ns), self%acts(ml,ns), self%woffset(ml,ns), &
             self%local_species(ns,ns), self%weights(mw,ns), self%params(5,ns), &
             self%shift(mn,ns), self%scale(mn,ns), self%spin(ns,ns))
         self%meta = 0; self%params = 0
@@ -323,6 +323,12 @@ contains
                     end do
                 end if
                 self%meta(6,s) = l; self%meta(8,s) = 1; self%meta(10,s) = 1
+                ! Reuse one cutoff value/derivative per edge when all standard
+                ! functions share it; eta/Rs and angular powers may still differ.
+                if (all(fi(1,:) < 12) .and. any(fi(7,:) > 0)) then
+                    if (all(fi(4,:) == fi(4,1)) .and. all(fr(1,:) == fr(1,1)) .and. &
+                        all(fr(7,:) == fr(7,1))) self%meta(12,s)=1
+                end if
                 ! Lexicographic total-degree basis, shared with differentiated
                 ! Horner. One extra moment slot stores the self-pair correction.
                 degree = maxval(fi(5,:),mask=fi(23,:) > 0)
@@ -558,6 +564,12 @@ contains
         end if
         n = nrw; mn = model%maxnodes; ml = model%maxlayers
         ne = max(1,nedges); mm = size(model%mp,2); mpower = size(model%polynomial,1)
+        ! Odd leading dimensions avoid power-of-two cache-set conflicts when
+        ! the pair loop updates many descriptor columns at a fixed CPU row.
+        ! Identical storage is used on device; only capacity is padded.
+        if (any(model%features(31,1,:) > 0)) then
+            n=n+modulo(1-n,8); ne=ne+modulo(1-ne,8)
+        end if
         ngroups = max(1,maxval(model%features(7,:,:)))
         nchannels = max(2,2*maxval(model%meta(11,:)))
         ndelta = max(2,maxval(model%meta(11,:))*size(model%meta,2))

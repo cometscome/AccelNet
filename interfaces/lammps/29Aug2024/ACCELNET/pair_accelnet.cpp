@@ -21,6 +21,7 @@
    Contributing author: Michael S. Chen, Markland Group, Stanford University
 ------------------------------------------------------------------------- */
 
+#include <algorithm>
 #include <stdio.h>
 #include <string.h>
 #include <string>
@@ -82,8 +83,8 @@ PairAccelNet::~PairAccelNet()
 
 void PairAccelNet::compute(int eflag, int vflag)
 {
-  int i,ii,inum,itype;
-  int j,jj,jnum;
+  int i,ii,inum;
+  int j,jj;
   int *ilist,*numneigh,**firstneigh;
 
   ev_init(eflag,vflag);
@@ -98,48 +99,75 @@ void PairAccelNet::compute(int eflag, int vflag)
   numneigh = list->numneigh;
   firstneigh = list->firstneigh;
 
-  std::vector<int> jtype;
-  std::vector<int> jlist;
-  std::vector<double> jcoo;
-
-  // loop over neighbors of my atoms
-  for (ii = 0; ii < inum; ii++) {
-    double E_i = 0.0;
-    i = ilist[ii];
-    itype = type_map[type[i]];
-    double icoo[3] = { x[i][0], x[i][1], x[i][2] };
-      
-    jnum = numneigh[i];
-    jtype.resize(jnum);
-    jlist.resize(jnum);
-    jcoo.resize(3*jnum);
-    for (jj = 0; jj < jnum; jj++) {
-      j = firstneigh[i][jj];
-      j &= NEIGHMASK;
-      jlist[jj] = j + 1;
-      jtype[jj] = type_map[type[j]];
-      jcoo[3*jj] = x[j][0];
-      jcoo[3*jj+1] = x[j][1];
-      jcoo[3*jj+2] = x[j][2];
+  // Bound Jacobian storage while reusing the common serial batch kernel.
+  // All local/ghost target forces remain additive for Newton communication.
+  const int ntargets = atom->nlocal + atom->nghost;
+  batch_target_map.assign(ntargets, -1);
+  const int chunk = 4;
+  const double model_cutoff_sq = accelnet_Rc_max * accelnet_Rc_max;
+  for (int begin = 0; begin < inum; begin += chunk) {
+    const int rows = std::min(chunk, inum - begin);
+    batch_centers.resize(rows);
+    batch_offsets.resize(rows + 1);
+    batch_energies.resize(rows);
+    batch_indices.clear();
+    batch_dr.clear();
+    batch_targets.clear();
+    batch_species.clear();
+    // Remap only touched local/ghost slots. Clearing/scanning all ntargets
+    // for every small chunk would make force-buffer work quadratic in N.
+    const auto target_slot = [&](int global) {
+      int &slot = batch_target_map[global];
+      if (slot < 0) {
+        slot = static_cast<int>(batch_targets.size());
+        batch_targets.push_back(global);
+        batch_species.push_back(type_map[type[global]]);
+      }
+      return slot + 1; // Fortran indices are one-based.
+    };
+    batch_offsets[0] = 1;
+    for (ii = 0; ii < rows; ++ii) {
+      i = ilist[begin + ii];
+      batch_centers[ii] = target_slot(i);
+      for (jj = 0; jj < numneigh[i]; ++jj) {
+        j = firstneigh[i][jj] & NEIGHMASK;
+        double dr[3];
+        double rsq = 0.0;
+        for (int d = 0; d < 3; ++d) {
+          dr[d] = x[j][d] - x[i][d];
+          rsq += dr[d] * dr[d];
+        }
+        // LAMMPS retains a skin for list reuse. These edges contribute zero
+        // to every descriptor; filter them once before packing pair work.
+        if (rsq > model_cutoff_sq) continue;
+        batch_indices.push_back(target_slot(j));
+        for (int d = 0; d < 3; ++d) batch_dr.push_back(dr[d]);
+      }
+      if (batch_indices.size() >= static_cast<size_t>(MAXSMALLINT))
+        error->all(FLERR,"AccelNet batch neighbor count exceeds integer range");
+      batch_offsets[ii + 1] = static_cast<int>(batch_indices.size()) + 1;
     }
-
-    accelnet_atomic_energy_and_forces(icoo, itype, i+1,
-				   jnum, jnum ? &jcoo[0] : NULL,
-				   jnum ? &jtype[0] : NULL,
-				   jnum ? &jlist[0] : NULL,
-				   atom->nmax, &E_i,
-				   (double*)&(f[0][0]), &stat);
-    
+    batch_forces.assign(3 * batch_targets.size(), 0.0);
+    accelnet_batch_energy_and_forces(static_cast<int>(batch_targets.size()), rows, static_cast<int>(batch_indices.size()),
+        batch_species.data(), batch_centers.data(), batch_offsets.data(), batch_indices.data(),
+        batch_dr.data(), batch_energies.data(), batch_forces.data(), &stat);
     if (stat != 0) {
       snprintf(error_buffer,sizeof(error_buffer),"AccelNet error code: %d",stat);
       error->all(FLERR,error_buffer);
     }
-
-    if (evflag) ev_tally(i,i,nlocal, 1,
-			 E_i,0.0,0.0,0.0,0.0,0.0);
-    
+    for (size_t slot = 0; slot < batch_targets.size(); ++slot) {
+      i = batch_targets[slot];
+      for (int d = 0; d < 3; ++d) f[i][d] += batch_forces[3 * slot + d];
+      batch_target_map[i] = -1;
+    }
+    if (evflag) {
+      for (ii = 0; ii < rows; ++ii) {
+        i = ilist[begin + ii];
+        ev_tally(i,i,nlocal,1,batch_energies[ii],0.0,0.0,0.0,0.0,0.0);
+      }
+    }
   }
-  
+
   if (vflag_fdotr) virial_fdotr_compute();
   
 }

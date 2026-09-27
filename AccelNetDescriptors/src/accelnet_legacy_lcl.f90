@@ -293,7 +293,9 @@ contains
 
         integer, dimension(3) :: ic0, ic
         integer :: inb, iat
-        integer :: iv
+        integer :: iv, v, nvisited
+        integer :: visited_cells(3,nCvecs)
+        logical :: repeated_cell, central_added
 
         if (.not. isInit) then
             write (0, *) "Error: module not initialized in `nblist'."
@@ -318,6 +320,9 @@ contains
 
         ! (1) other atoms in the same cell:
 
+        ! An atom belongs to one cell. Deduplicate wrapped cells, not atoms,
+        ! so candidate discovery needs no O(nAtoms) reset for every center.
+        nvisited = 0; central_added = .false.
         inb = 0
         iat = cell(ic0(3), ic0(2), ic0(1))
         if (iat /= 0) then
@@ -349,27 +354,46 @@ contains
             ic(1:3) = cell_from_Cvec(ic0, Cvec(1:3, iv), nCells, pbc)
             if (any(ic < 1) .or. any(ic > nCells)) cycle ivloop
 
-            ! all atoms in that cell:
+            ! A wrapped revisit of the central cell contributes only iatom:
+            ! every other member was appended in pass (1). Retain that original
+            ! insertion point, including periodic self-image candidates.
+            if (all(ic == ic0)) then
+                if (central_added) cycle ivloop
+                inb = inb + 1
+                if (inb > nnb) then
+                    if (present(stat)) stat = merge(3,4,cell(ic(3),ic(2),ic(1)) == iatom)
+                    return
+                end if
+                nblist(inb) = iatom; central_added = .true.
+                cycle ivloop
+            end if
+            repeated_cell = .false.
+            do v = 1,nvisited
+                if (all(ic == visited_cells(:,v))) then
+                    repeated_cell = .true.
+                    exit
+                end if
+            end do
+            if (repeated_cell) cycle ivloop
+            nvisited = nvisited + 1; visited_cells(:,nvisited) = ic
+
+            ! First visit: append the cell's linked list in its original order.
             iat = cell(ic(3), ic(2), ic(1))
             if (iat /= 0) then
-                if (.not. any(nblist(1:inb) == iat)) then
+                inb = inb + 1
+                if (inb > nnb) then
+                    if (present(stat)) stat = 3
+                    return
+                end if
+                nblist(inb) = iat
+                do while (atomList(iat) /= 0)
+                    iat = atomList(iat)
                     inb = inb + 1
                     if (inb > nnb) then
-                        if (present(stat)) stat = 3
+                        if (present(stat)) stat = 4
                         return
                     end if
                     nblist(inb) = iat
-                end if
-                do while (atomList(iat) /= 0)
-                    iat = atomList(iat)
-                    if (.not. any(nblist(1:inb) == iat)) then
-                        inb = inb + 1
-                        if (inb > nnb) then
-                            if (present(stat)) stat = 4
-                            return
-                        end if
-                        nblist(inb) = iat
-                    end if
                 end do
             end if
 

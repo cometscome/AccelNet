@@ -1,14 +1,38 @@
 ! All arguments are plain contiguous arrays. No derived-type deep mapping,
 ! device allocation is performed inside the kernels. G4 saves its Jacobian.
 module accelnet_target_kernels
-    use iso_fortran_env, only: real64
+    use iso_fortran_env, only: real64,int64
     use accelnet_target_runtime, only: omp_get_wtime, omp_get_initial_device
-    use accelnet_target_math
+    use accelnet_target_math, unused_extended_angular => extended_angular
     implicit none
     private
     public :: run_target_batch
     real(real64), parameter :: pi = 3.14159265358979_real64, eps = 1e-12_real64
 contains
+    ! Keep the shared formula in this translation unit so serial Fortran can
+    ! inline it in the hot G4 loop without requiring whole-program LTO.
+    pure subroutine kernel_angular_power(cosine,lambda,zeta,integer_zeta,derivative_prefactor,value,derivative)
+        !$omp declare target
+        include 'angular_power.inc'
+    end subroutine
+
+    pure subroutine kernel_cutoff_pair(distance,rc,kind,alpha,value,derivative)
+        !$omp declare target
+        include 'cutoff_pair.inc'
+    end subroutine
+
+    ! Include the same formulas locally so the compiler can inline compact
+    ! windows as it does the G4 angular helper, on both CPU and GPU.
+    pure subroutine extended_angular(kind,p,c,theta,inv_sin,a,da,angular_cache)
+        !$omp declare target
+        include 'extended_angular_body.inc'
+    end subroutine
+
+    pure subroutine compact_window(x,left,right,subtype,value,derivative,angular_cache)
+        !$omp declare target
+        include 'compact_window_body.inc'
+    end subroutine
+
     subroutine run_target_batch(device, meta, nodes, acts, woffset, weights, params, shift, scale, spin, &
                                 features, feature_params, local_species, mp, multiplicity, polynomial, &
                                 species, centers, offsets, indices, dr, &
@@ -63,6 +87,8 @@ contains
                     rj = sqrt(sum(dr(:,j)**2)); geom(4,j) = rj
                     geom(1:3,j) = 0
                     if (rj > eps) geom(1:3,j) = dr(:,j)/rj
+                    if (meta(12,s) == 1) call kernel_cutoff_pair(rj,feature_params(1,1,s),features(4,1,s), &
+                        feature_params(7,1,s),geom(5,j),geom(6,j))
                     if (meta(11,s) > 0) then
                         powers(j,1,:) = 1
                         do q = 2,meta(2,s)
@@ -77,9 +103,20 @@ contains
                     if (features(8,b,s) /= b) cycle
                     o = features(7,b,s)
                     do j = offsets(row),offsets(row+1)-1
+                        if (features(1,b,s) == 2 .and. features(3,b,s) > 0) then
+                            if (local_species(species(indices(j)),s) /= features(3,b,s)) then
+                                radial_cache(j,o,1)=0; radial_cache(j,o,2)=0
+                                cycle
+                            end if
+                        end if
                         if (features(1,b,s) >= 12) then
                             call extended_radial(features(1,b,s),features(4,b,s),feature_params(:,b,s),geom(4,j), &
                                 radial_cache(j,o,1),radial_cache(j,o,2))
+                        else if (meta(12,s) == 1) then
+                            radial_cache(j,o,:)=0
+                            if (geom(4,j) > eps .and. geom(4,j) <= feature_params(1,b,s)) &
+                                call gaussian_radial(geom(4,j),feature_params(2,b,s),feature_params(3,b,s), &
+                                    geom(5,j),geom(6,j),radial_cache(j,o,1),radial_cache(j,o,2))
                         else
                             call generic_radial(2,geom(4,j),features(4,b,s),feature_params(:,b,s), &
                                 radial_cache(j,o,1),radial_cache(j,o,2))
@@ -234,10 +271,15 @@ contains
         end if
         if (any(meta(11,:) > 0)) call g5_moment_values(device,nrw,meta,nodes,features,feature_params, &
             local_species,species,centers,offsets,indices,mp,multiplicity,powers,radial_cache,moments,delta,g5_active,g)
-        if (any(features(1,:,:) >= 12)) call extended_values_derivatives(device,nrw,meta,nodes,features,feature_params, &
-            local_species,spin,species,centers,offsets,indices,geom,radial_cache,g,jacobian)
+        if (any(features(1,:,:) == 12 .or. features(1,:,:) == 20 .or. features(1,:,:) == 23)) &
+            call extended_radial_values_derivatives(device,nrw,meta,nodes,features,feature_params, &
+                local_species,spin,species,centers,offsets,indices,geom,radial_cache,g,jacobian)
+        if (any(features(31,1,:) > 0)) call extended_angular_values_derivatives(device,nrw,meta,nodes,features,feature_params, &
+            local_species,spin,species,centers,offsets,indices,geom,radial_cache,g,jacobian,g4_first, &
+            size(jacobian,2),size(jacobian,3))
         if (any(features(1,:,:) == 4)) call g4_values_derivatives(device,nrw,meta,nodes,features,feature_params, &
-            local_species,species,centers,offsets,indices,dr,geom,radial_cache,g,jacobian,g4_first)
+            local_species,species,centers,offsets,indices,dr,geom,radial_cache,g,jacobian,g4_first, &
+            size(jacobian,2),size(jacobian,3))
         if (any(features(1,:,:) > 0 .and. features(1,:,:) < 12 .and. features(1,:,:) /= 4 .and. features(1,:,:) /= 7)) then
             if (any(features(12,:,:) > 0 .and. features(1,:,:) == 5)) then
                 call generic_values_grouped(device,nrw,meta,nodes,features,feature_params, &
@@ -473,16 +515,18 @@ contains
     ! G4 evaluator: values and both derivatives are accumulated together. Each
     ! center owns its CSR edges, so neither CPU nor GPU needs Jacobian atomics.
     subroutine g4_values_derivatives(device,nrw,meta,nodes,features,fp,local_species,species,centers,offsets, &
-            indices,dr,geom,radial_cache,g,jacobian,g4_first)
-        integer, intent(in) :: device,nrw
+            indices,dr,geom,radial_cache,g,jacobian,g4_first,njf,nje)
+        integer, intent(in) :: device,nrw,njf,nje
         integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),features(:,:,:),local_species(:,:)
         integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:)
         real(real64), contiguous, intent(in) :: fp(:,:,:),dr(:,:),geom(:,:),radial_cache(:,:,:)
-        real(real64), contiguous, intent(inout) :: g(:,:),jacobian(:,:,:)
+        real(real64), contiguous, intent(inout) :: g(:,:)
+        real(real64), intent(inout) :: jacobian(3,njf,nje)
         integer, contiguous, intent(inout) :: g4_first(:,:,:)
         integer :: row,s,dim,b,j,k,tj,tk,t1,t2,head,group,cr,er,ar,c,last_group,last_cr,last_er,last_ar,q,lane,nlanes,task_index
-        real(real64) :: rcmax,rj,rk,rjk,rjk2,cosine,uj(3),uk(3),ujk(3),dcj(3),dck(3)
-        real(real64) :: qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj(3),dk(3),fc,dfc,ex,radial,rgradj(3),rgradk(3)
+        real(real64) :: rcmax,rj,rk,rjk,rjk2,cosine,uj(3),uk(3),ujk(3)
+        real(real64) :: invj,invk,invjk,cj,ck,rgj,rgk,cross,pj,pk,pc
+        real(real64) :: qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj(3),dk(3),fc,dfc,ex,radial
         ! Immutable species-pair heads are shared by the descriptor owners.
         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& map(alloc:meta,nodes,features,species,centers,g4_first) private(s,b,t1,t2)
@@ -513,7 +557,8 @@ contains
         !$omp& dr,geom,radial_cache,g,jacobian,g4_first) &
         !$omp& firstprivate(nlanes) &
         !$omp& private(row,s,dim,b,j,k,tj,tk,t1,t2,head,group,cr,er,ar,c,last_group,last_cr,last_er,last_ar,q,lane,rcmax, &
-        !$omp& rj,rk,rjk,rjk2,cosine,uj,uk,ujk,dcj,dck,qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj,dk,fc,dfc,ex,radial,rgradj,rgradk)
+        !$omp& rj,rk,rjk,rjk2,cosine,uj,uk,ujk,qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj,dk,fc,dfc,ex,radial, &
+        !$omp& invj,invk,invjk,cj,ck,rgj,rgk,cross,pj,pk,pc)
         do task_index = 1,nrw*nlanes
             row = (task_index-1)/nlanes+1; lane = mod(task_index-1,nlanes)
             s = species(centers(row))
@@ -536,7 +581,7 @@ contains
                 if (rj <= eps .or. rj > rcmax) cycle
                 tj = local_species(species(indices(j)),s)
                 if (tj < 1) cycle
-                uj = geom(1:3,j)
+                uj = geom(1:3,j); dj=dr(:,j); invj=1/rj
                 do k = j+1,offsets(row+1)-1
                     rk = geom(4,k)
                     if (rk <= eps .or. rk > rcmax) cycle
@@ -546,10 +591,10 @@ contains
                     if (head == 0) cycle
                     ujk = dr(:,k)-dr(:,j); rjk2 = sum(ujk**2)
                     if (rjk2 <= eps**2 .or. rjk2 >= rcmax**2) cycle
-                    rjk = sqrt(rjk2); ujk = ujk/rjk
-                    uk = geom(1:3,k)
+                    rjk = sqrt(rjk2)
+                    uk = geom(1:3,k); dk=dr(:,k); invk=1/rk
                     cosine = max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
-                    dcj = (uk-cosine*uj)/rj; dck = (uj-cosine*uk)/rk
+                    invjk=invj*invk; cj=cosine*invj**2; ck=cosine*invk**2
                     ! Only owned columns in the matching species-pair list are
                     ! visited. Scalar caches reuse consecutive groups within an
                     ! owner without per-pair global intermediate writes.
@@ -565,8 +610,7 @@ contains
                             if (group /= last_group) then
                                 cr = features(15,b,s); er = features(16,b,s)
                                 if (cr /= last_cr) then
-                                    fc = target_cutoff_value(rjk,fp(1,b,s),features(4,b,s),fp(7,b,s))
-                                    dfc = target_cutoff_derivative(rjk,fp(1,b,s),features(4,b,s),fp(7,b,s))
+                                    call kernel_cutoff_pair(rjk,fp(1,b,s),features(4,b,s),fp(7,b,s),fc,dfc)
                                     last_cr = cr
                                 end if
                                 if (er /= last_er) then
@@ -578,23 +622,24 @@ contains
                                 qjk = fc*ex
                                 dqjk = (dfc-2*fp(2,b,s)*(rjk-fp(3,b,s))*fc)*ex
                                 radial = qj*qk*qjk
-                                rgradj = dqj*uj*qk*qjk-qj*qk*dqjk*ujk
-                                rgradk = qj*dqk*uk*qjk+qj*qk*dqjk*ujk
+                                cross=qj*qk*dqjk/rjk
+                                rgj=dqj*qk*qjk*invj+cross
+                                rgk=qj*dqk*qjk*invk+cross
                                 last_group = group
                             end if
                             ar = features(17,b,s)
                             if (ar /= last_ar) then
-                                call angular_power(cosine,fp(4,b,s),fp(5,b,s),features(5,b,s), &
-                                    0.5_real64*fp(5,b,s)*fp(4,b,s),a,da)
+                                call kernel_angular_power(cosine,fp(4,b,s),fp(5,b,s),features(5,b,s), &
+                                    fp(8,b,s),a,da)
+                                a=2*a; da=2*da
                                 last_ar = ar
                             end if
-                            g(row,b) = g(row,b)+2*a*radial
-                            ca = 2*da*radial; cv = 2*a
-                            dj = ca*dcj+cv*rgradj
-                            dk = ca*dck+cv*rgradk
+                            g(row,b) = g(row,b)+a*radial
+                            ca = da*radial; cv = a
+                            pj=cv*rgj-ca*cj; pk=cv*rgk-ca*ck; pc=ca*invjk-cv*cross
                             do c = 1,3
-                                jacobian(c,b,j) = jacobian(c,b,j)+dj(c)
-                                jacobian(c,b,k) = jacobian(c,b,k)+dk(c)
+                                jacobian(c,b,j) = jacobian(c,b,j)+pj*dj(c)+pc*dk(c)
+                                jacobian(c,b,k) = jacobian(c,b,k)+pk*dk(c)+pc*dj(c)
                             end do
                         end if
                     end do
@@ -635,6 +680,8 @@ contains
                         if (kind == 6) then
                             call generic_lj(geom(4,j),features(4,b,s),fp(:,b,s),.false.,v,v12,dv,dv12)
                             total12 = total12+v12
+                        else if (kind == 2) then
+                            v = radial_cache(j,group,1)
                         else
                             v = generic_radial_value(kind,geom(4,j),features(4,b,s),fp(:,b,s))
                         end if
@@ -703,6 +750,8 @@ contains
                         if (kind == 6) then
                             call generic_lj(geom(4,j),features(4,b,s),fp(:,b,s),.false.,v,v12,dv,dv12)
                             total12 = total12+v12
+                        else if (kind == 2) then
+                            v = radial_cache(j,group,1)
                         else
                             v = generic_radial_value(kind,geom(4,j),features(4,b,s),fp(:,b,s))
                         end if
@@ -798,6 +847,8 @@ contains
                     if (kind == 6) then
                         call generic_lj(geom(4,j),features(4,b,s),fp(:,b,s),.true.,v,v12,dv,dv12)
                         radial_force = radial_force+g(row,b)*dv+g(row,b+1)*dv12
+                    else if (kind == 2) then
+                        radial_force = radial_force+g(row,b)*radial_cache(j,group,2)
                     else
                         call generic_radial(kind,geom(4,j),features(4,b,s),fp(:,b,s),v,dv)
                         radial_force = radial_force+g(row,b)*dv
@@ -1049,56 +1100,234 @@ contains
         !$omp end target teams distribute parallel do
     end subroutine
 
-    subroutine extended_values_derivatives(device,nrw,meta,nodes,fi,fp,local_species,weights, &
+    subroutine extended_radial_values_derivatives(device,nrw,meta,nodes,fi,fp,local_species,weights, &
             species,centers,offsets,indices,geom,radial,g,jacobian)
         integer, intent(in) :: device,nrw
         integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),fi(:,:,:),local_species(:,:), &
             species(:),centers(:),offsets(:),indices(:)
         real(real64), contiguous, intent(in) :: fp(:,:,:),weights(:,:),geom(:,:),radial(:,:,:)
         real(real64), contiguous, intent(inout) :: g(:,:),jacobian(:,:,:)
-        integer :: row,b,s,kind,j,k,tj,tk,t1,t2,group
-        real(real64) :: total,v,factor,gj(3),gk(3),qj,qk,dqj,dqk
+        integer :: row,b,s,kind,j,tj,t1,group
+        real(real64) :: total,factor,qj,dqj
         !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,nodes,fi,fp,local_species,weights,species,centers,offsets,indices,geom,radial,g,jacobian) &
-        !$omp& private(s,kind,j,k,tj,tk,t1,t2,group,total,v,factor,gj,gk,qj,qk,dqj,dqk)
+        !$omp& private(s,kind,j,tj,t1,group,total,factor,qj,dqj)
         do row=1,nrw
             do b=1,size(fi,2)
                 s=species(centers(row))
                 if (b > nodes(1,s) .or. meta(10,s) /= 1) cycle
                 kind=fi(1,b,s)
-                if (kind < 12) cycle
-                t1=fi(2,b,s); t2=fi(3,b,s); group=fi(7,b,s); total=0
+                if (kind /= 12 .and. kind /= 20 .and. kind /= 23) cycle
+                t1=fi(2,b,s); group=fi(7,b,s); total=0
                 jacobian(:,b,offsets(row):offsets(row+1)-1)=0
                 do j=offsets(row),offsets(row+1)-1
                     tj=local_species(species(indices(j)),s)
                     if (tj == 0) cycle
-                    if (t1 > 0 .and. t2 == 0 .and. tj /= t1) cycle
+                    if (t1 > 0 .and. tj /= t1) cycle
                     qj=radial(j,group,1); dqj=radial(j,group,2)
-                    if (qj == 0 .and. dqj == 0) cycle
-                    if (kind == 12 .or. kind == 20 .or. kind == 23) then
-                        factor=1
-                        if (t1 == 0) factor=weights(species(indices(j)),s)
-                        total=total+factor*qj
-                        jacobian(:,b,j)=factor*dqj*geom(1:3,j)
-                    else
-                        do k=j+1,offsets(row+1)-1
-                            tk=local_species(species(indices(k)),s)
-                            if (tk == 0) cycle
-                            if (t1 > 0) then
-                                if (.not. ((tj == t1 .and. tk == t2) .or. (tj == t2 .and. tk == t1))) cycle
-                            end if
-                            qk=radial(k,group,1); dqk=radial(k,group,2)
-                            call extended_pair(kind,fi(4,b,s),fp(:,b,s),geom(1:3,j),geom(1:3,k), &
-                                geom(4,j),geom(4,k),qj,qk,dqj,dqk,v,gj,gk)
-                            factor=1
-                            if (t1 == 0) factor=weights(species(indices(j)),s)*weights(species(indices(k)),s)
-                            total=total+factor*v
-                            jacobian(:,b,j)=jacobian(:,b,j)+factor*gj
-                            jacobian(:,b,k)=jacobian(:,b,k)+factor*gk
-                        end do
-                    end if
+                    factor=1
+                    if (t1 == 0) factor=weights(species(indices(j)),s)
+                    total=total+factor*qj
+                    jacobian(:,b,j)=factor*dqj*geom(1:3,j)
                 end do
                 g(row,b)=total
+            end do
+        end do
+        !$omp end target teams distribute parallel do
+    end subroutine
+
+    ! Reuse the G4 ownership scheme: a single CPU owner, disjoint descriptor
+    ! owners on GPU, and identical pair -> member arithmetic on both backends.
+    ! Scalar caches avoid an O(neighbors**2) pair-geometry allocation.
+    subroutine extended_angular_values_derivatives(device,nrw,meta,nodes,fi,fp,local_species,weights, &
+            species,centers,offsets,indices,geom,radial,g,jacobian,first,njf,nje)
+        integer, intent(in) :: device,nrw,njf,nje
+        integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),fi(:,:,:),local_species(:,:), &
+            species(:),centers(:),offsets(:),indices(:)
+        real(real64), contiguous, intent(in) :: fp(:,:,:),weights(:,:),geom(:,:),radial(:,:,:)
+        real(real64), contiguous, intent(inout) :: g(:,:)
+        real(real64), intent(inout) :: jacobian(3,njf,nje)
+        integer, contiguous, intent(inout) :: first(:,:,:)
+        integer :: row,s,b,j,k,tj,tk,t1,t2,head,pass,q,qq,run_end,list_end,lane,nlanes,task_index,kind,group,ar,component
+        integer :: last_qgroup,last_group,last_narrow,last_ar,narrow,last_cr,cr,pair_bit
+        integer(int64) :: pair_mask
+        real(real64) :: rcmin,rcmax,rj,rk,rjk,cost,theta,inv_sin,uj(3),uk(3),ujk(3),dj(3),dk(3)
+        real(real64) :: aj,ak,ajj,akk,ajk
+        real(real64) :: qj,qk,qjk,dqj,dqk,dqjk,a,da,factor,prod,ca,cv,rgj,rgk,rgcross,invj,invk,invjk,cj,ck,pj,pk,pc,fc,dfc,ex
+        logical :: need_theta,need_narrow,need_wide,weighted_owner
+        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+        !$omp& map(alloc:meta,nodes,fi,species,centers,first) private(s,b,t1,t2)
+        do row=1,nrw
+            s=species(centers(row)); first(:,:,row)=0
+            if (meta(10,s) /= 1) cycle
+            do b=1,nodes(1,s)
+                if (fi(27,b,s) == 0 .or. fi(2,b,s) == 0) cycle
+                t1=fi(2,b,s); t2=fi(3,b,s)
+                first(t1,t2,row)=b; first(t2,t1,row)=b
+            end do
+        end do
+        !$omp end target teams distribute parallel do
+        nlanes=1
+        !$ if (device /= omp_get_initial_device()) then
+        !$     nlanes=min(256,maxval(fi(31,1,:)),max(1,65536/max(1,nrw)))
+        !$ end if
+        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+        !$omp& map(alloc:meta,nodes,fi,fp,local_species,weights,species,centers,offsets,indices,geom,radial,g,jacobian,first) &
+        !$omp& firstprivate(nlanes) &
+        !$omp& private(row,s,b,j,k,tj,tk,t1,t2,head,pass,q,qq,run_end,list_end,lane,kind,group,ar,component,last_qgroup,last_group, &
+        !$omp& last_narrow,last_ar,narrow,last_cr,cr,pair_bit,pair_mask,rcmin,rcmax,rj,rk,rjk,cost,theta,inv_sin,uj,uk,ujk,dj,dk, &
+        !$omp& qj,qk,qjk,dqj,dqk,dqjk,a,da,factor,prod,ca,cv,rgj,rgk,rgcross,invj,invk,invjk,cj,ck,pj,pk,pc, &
+        !$omp& fc,dfc,ex,aj,ak,ajj,akk,ajk,need_theta,need_narrow,need_wide,weighted_owner)
+        do task_index=1,nrw*nlanes
+            row=(task_index-1)/nlanes+1; lane=mod(task_index-1,nlanes)
+            s=species(centers(row))
+            if (meta(10,s) /= 1 .or. lane >= fi(31,1,s)) cycle
+            pair_mask=0_int64; weighted_owner=.false.
+            rcmin=huge(1.0_real64); rcmax=0; need_theta=.false.; need_narrow=.false.; need_wide=.false.
+            do q=lane+1,fi(31,1,s),nlanes
+                b=fi(26,q,s); kind=fi(1,b,s)
+                rcmax=max(rcmax,fp(1,b,s))
+                rcmin=min(rcmin,merge(0.0_real64,fp(2,b,s),kind == 13))
+                t1=minval(fi(2:3,b,s)); t2=maxval(fi(2:3,b,s))
+                if (t1 == 0) then
+                    weighted_owner=.true.
+                else if (t2 <= 10) then
+                    pair_mask=ibset(pair_mask,t2*(t2-1)/2+t1-1)
+                end if
+                need_theta=need_theta .or. kind /= 13
+                need_narrow=need_narrow .or. kind == 13 .or. kind == 21 .or. kind == 24
+                need_wide=need_wide .or. kind == 22 .or. kind == 25
+                g(row,b)=0
+                do j=offsets(row),offsets(row+1)-1
+                    jacobian(:,b,j)=0
+                end do
+            end do
+            rcmin=max(eps,rcmin)
+            do j=offsets(row),offsets(row+1)-1
+                rj=geom(4,j)
+                if (rj <= rcmin .or. rj >= rcmax) cycle
+                tj=local_species(species(indices(j)),s)
+                if (tj == 0) cycle
+                uj=geom(1:3,j); dj=rj*uj; invj=1/rj
+                do k=j+1,offsets(row+1)-1
+                    rk=geom(4,k)
+                    if (rk <= rcmin .or. rk >= rcmax) cycle
+                    tk=local_species(species(indices(k)),s)
+                    if (tk == 0) cycle
+                    if (first(tj,tk,row) == 0 .and. fi(30,1,s) == 0) cycle
+                    if (.not. weighted_owner .and. max(tj,tk) <= 10) then
+                        pair_bit=max(tj,tk)*(max(tj,tk)-1)/2+min(tj,tk)-1
+                        if (.not. btest(pair_mask,pair_bit)) cycle
+                    end if
+                    uk=geom(1:3,k); dk=rk*uk; invk=1/rk
+                    rjk=0
+                    if (need_narrow) then
+                        ujk=dk-dj; rjk=sum(ujk**2)
+                        if (.not. need_wide .and. (rjk <= rcmin**2 .or. rjk >= rcmax**2)) cycle
+                        rjk=sqrt(rjk)
+                    end if
+                    cost=max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
+                    invjk=invj*invk; cj=cost*invj**2; ck=cost*invk**2
+                    theta=0; inv_sin=0
+                    if (need_theta .and. cost > -1 .and. cost < 1) then
+                        theta=acos(cost); inv_sin=1/sqrt(1-cost*cost)
+                    end if
+                    last_qgroup=0; last_group=0; last_narrow=-1; last_ar=0; last_cr=0
+                    do pass=1,2
+                        head=fi(30,1,s); factor=1
+                        if (pass == 1) then
+                            factor=weights(species(indices(j)),s)*weights(species(indices(k)),s)
+                        else
+                            head=first(tj,tk,row)
+                        end if
+                        if (head == 0) cycle
+                        q=fi(27,head,s)+modulo(lane-fi(27,head,s)+1,nlanes)
+                        list_end=fi(27,head,s)+fi(28,head,s)-1
+                        do while(q <= list_end)
+                            b=fi(26,q,s); kind=fi(1,b,s); ar=fi(29,b,s)
+                            run_end=fi(16,b,s)
+                            narrow=merge(1,0,kind == 13 .or. kind == 21 .or. kind == 24)
+                            if (ar /= last_ar) then
+                                call extended_angular(kind,fp(:,b,s),cost,theta,inv_sin,a,da,fp(8:9,b,s))
+                                last_ar=ar
+                            end if
+                            if (a == 0 .and. da == 0) then
+                                q=run_end+1+modulo(lane-run_end,nlanes)
+                                cycle
+                            end if
+                            if (narrow == 0) then
+                                ! Contract angular factors before Cartesian work,
+                                ! as in G4/Chebyshev. No r_jk factor is present.
+                                cv=factor*a; ca=factor*da
+                                aj=cv*invj; ak=cv*invk; ajj=ca*cj; akk=ca*ck; ajk=ca*invjk
+                                do qq=q,run_end,nlanes
+                                    b=fi(26,qq,s); group=fi(7,b,s)
+                                    qj=radial(j,group,1); qk=radial(k,group,1)
+                                    if (qj == 0 .or. qk == 0) cycle
+                                    dqj=radial(j,group,2); dqk=radial(k,group,2)
+                                    prod=qj*qk
+                                    g(row,b)=g(row,b)+cv*prod
+                                    pj=aj*dqj*qk-ajj*prod
+                                    pk=ak*qj*dqk-akk*prod
+                                    pc=ajk*prod
+                                    do component=1,3
+                                        jacobian(component,b,j)=jacobian(component,b,j)+pj*dj(component)+pc*dk(component)
+                                        jacobian(component,b,k)=jacobian(component,b,k)+pk*dk(component)+pc*dj(component)
+                                    end do
+                                end do
+                                last_qgroup=0; last_group=0; last_narrow=-1
+                            else
+                                do qq=q,run_end,nlanes
+                                    b=fi(26,qq,s); group=fi(7,b,s)
+                                    if (narrow == 1) then
+                                        if (rjk <= eps .or. rjk >= fp(1,b,s)) cycle
+                                        if (kind /= 13) then
+                                            if (rjk <= fp(2,b,s)) cycle
+                                        end if
+                                    end if
+                                    if (group /= last_qgroup) then
+                                        qj=radial(j,group,1); qk=radial(k,group,1)
+                                        dqj=radial(j,group,2); dqk=radial(k,group,2)
+                                        last_qgroup=group
+                                    end if
+                                    if (qj == 0 .or. qk == 0) cycle
+                                    if (group /= last_group .or. narrow /= last_narrow) then
+                                        qjk=1; dqjk=0
+                                        if (narrow == 1) then
+                                            if (kind == 13) then
+                                                cr=fi(15,b,s)
+                                                if (cr /= last_cr) then
+                                                    call kernel_cutoff_pair(rjk,fp(1,b,s),fi(4,b,s),fp(7,b,s),fc,dfc)
+                                                    last_cr=cr
+                                                end if
+                                                ex=exp(-fp(2,b,s)*(rjk-fp(3,b,s))**2)
+                                                qjk=fc*ex
+                                                dqjk=(dfc-2*fp(2,b,s)*(rjk-fp(3,b,s))*fc)*ex
+                                            else
+                                                call compact_window(rjk,fp(2,b,s),fp(1,b,s),nint(fp(5,b,s)),qjk,dqjk)
+                                            end if
+                                            if (qjk == 0) cycle
+                                        end if
+                                        prod=qj*qk*qjk
+                                        rgcross=0
+                                        if (narrow == 1) rgcross=qj*qk*dqjk/rjk
+                                        rgj=dqj*qk*qjk*invj+rgcross
+                                        rgk=qj*dqk*qjk*invk+rgcross
+                                        last_group=group; last_narrow=narrow
+                                    end if
+                                    g(row,b)=g(row,b)+factor*a*prod
+                                    ca=factor*da*prod; cv=factor*a
+                                    pj=cv*rgj-ca*cj; pk=cv*rgk-ca*ck; pc=ca*invjk-cv*rgcross
+                                    do component=1,3
+                                        jacobian(component,b,j)=jacobian(component,b,j)+pj*dj(component)+pc*dk(component)
+                                        jacobian(component,b,k)=jacobian(component,b,k)+pk*dk(component)+pc*dj(component)
+                                    end do
+                                end do
+                            end if
+                            q=run_end+1+modulo(lane-run_end,nlanes)
+                        end do
+                    end do
+                end do
             end do
         end do
         !$omp end target teams distribute parallel do

@@ -1,6 +1,8 @@
 module accelnet
     use iso_c_binding, only: c_bool, c_char, c_double, c_f_pointer, c_int, c_null_char, c_ptr
     use iso_fortran_env, only: real64
+    use accelnet_batch, only: batch_workspace, evaluate_batch_reference
+    use accelnet_batch_target_serial, only: target_model, target_workspace, evaluate_batch_target
     use accelnet_descriptors, only: atomic_structure, neighbor_data, descriptor_config, &
         build_neighbor_list, initialize_config, evaluate_atom, chebyshev_values, &
         CHEBYSHEV_EVALUATION_AUTO, CHEBYSHEV_EVALUATION_DIRECT, CHEBYSHEV_EVALUATION_MOMENT
@@ -56,6 +58,11 @@ module accelnet
     type(atomic_network), allocatable :: pending_networks(:)
     logical, allocatable :: potential_loaded(:)
     type(predictor_model), allocatable :: global_model
+    type(batch_workspace) :: global_batch_work
+    type(target_model) :: global_batch_model
+    type(target_workspace) :: global_shared_work
+    logical :: batch_cache_valid = .false.
+    integer :: batch_packed_status = 1
 
     logical :: neighbor_list_initialized = .false.
     type(atomic_structure) :: neighbor_structure
@@ -72,6 +79,7 @@ module accelnet
     public :: accelnet_set_g5_evaluation
     public :: accelnet_atomic_energy, accelnet_atomic_energy_and_forces
     public :: accelnet_atomic_energy_and_forces_virial
+    public :: accelnet_batch_energy_and_forces
     public :: accelnet_convert_atom_types, accelnet_free_atom_energy
     public :: accelnet_nbl_init, accelnet_nbl_final, accelnet_nbl_neighbors
     public :: accelnet_sfb_init, accelnet_sfb_final, accelnet_sfb_nvalues
@@ -145,6 +153,7 @@ contains
         pending_networks = global_model%networks
         potential_loaded = .true.
         is_loaded = .true.
+        batch_cache_valid = .false.
         accelnet_Rc_min = global_model%minimum_distance
         accelnet_Rc_max = global_model%maximum_cutoff
         accelnet_nsf_max = maxval([(global_model%networks(species)%nodes(1), &
@@ -167,6 +176,10 @@ contains
         integer(c_int), intent(out) :: stat
         stat = ACCELNET_OK
         if (neighbor_list_initialized) call accelnet_nbl_final()
+        call global_batch_work%release()
+        call global_shared_work%release()
+        call global_batch_model%release()
+        batch_cache_valid = .false.
         if (allocated(global_model)) deallocate(global_model)
         if (allocated(pending_networks)) deallocate(pending_networks)
         if (allocated(potential_loaded)) deallocate(potential_loaded)
@@ -208,6 +221,7 @@ contains
             stat = ACCELNET_ERR_ARGUMENT
         else
             chebyshev_evaluation_mode = int(mode)
+            batch_cache_valid = .false.
             if (is_loaded .and. allocated(global_model)) &
                 call global_model%set_chebyshev_evaluation(chebyshev_evaluation_mode)
         end if
@@ -227,6 +241,7 @@ contains
             stat = ACCELNET_ERR_ARGUMENT
         else
             call global_model%set_g5_evaluation(int(mode))
+            batch_cache_valid = .false.
         end if
     end subroutine accelnet_set_g5_evaluation
 
@@ -277,6 +292,7 @@ contains
             call load_predictor_from_network_data(pending_networks, global_model, chebyshev_version)
             call global_model%set_chebyshev_evaluation(chebyshev_evaluation_mode)
             is_loaded = .true.
+            batch_cache_valid = .false.
             accelnet_Rc_min = global_model%minimum_distance
             accelnet_Rc_max = global_model%maximum_cutoff
             accelnet_nsf_max = maxval([(global_model%networks(species)%nodes(1), &
@@ -329,6 +345,7 @@ contains
         potential_loaded = .true.
         call global_model%set_chebyshev_evaluation(chebyshev_evaluation_mode)
         is_loaded = .true.
+        batch_cache_valid = .false.
         accelnet_Rc_min = global_model%minimum_distance
         accelnet_Rc_max = global_model%maximum_cutoff
         accelnet_nsf_max = maxval([(global_model%networks(species)%nodes(1), &
@@ -505,6 +522,43 @@ contains
         call atomic_energy_forces(coo_i, type_i, index_i, n_j, coo_j, type_j, &
                                   index_j, natoms, energy_i, forces, stat, virial)
     end subroutine accelnet_atomic_energy_and_forces_virial
+
+    ! CSR batch on the same loaded model as the atomic C API. Indices are
+    ! one-based; targets include ghosts/images. All forces are additive.
+    subroutine accelnet_batch_energy_and_forces(natoms,nrows,nedges,species,centers,offsets,indices, &
+            displacements,energies,forces,stat) bind(C)
+        integer(c_int), value, intent(in) :: natoms,nrows,nedges
+        integer(c_int), intent(in) :: species(natoms),centers(nrows),offsets(nrows+1),indices(nedges)
+        real(c_double), intent(in) :: displacements(3,nedges)
+        real(c_double), intent(out) :: energies(nrows)
+        real(c_double), intent(inout) :: forces(3,natoms)
+        integer(c_int), intent(out) :: stat
+        stat=ACCELNET_ERR_INIT
+        if (.not. is_loaded .or. .not. allocated(global_model)) return
+        stat=ACCELNET_ERR_ARGUMENT
+        if (natoms<0 .or. nrows<0 .or. nedges<0) return
+        if (any(species<1) .or. any(species>number_of_types)) return
+        if (any(centers<1) .or. any(centers>natoms)) return
+        if (any(indices<1) .or. any(indices>natoms)) return
+        if (offsets(1)/=1 .or. offsets(nrows+1)/=nedges+1) return
+        if (any(offsets<1) .or. any(offsets>nedges+1)) return
+        if (any(offsets(2:)<offsets(:nrows))) return
+        ! This model is private to the C API: only loading and mode setters
+        ! can change it. Reuse packed metadata across small LAMMPS chunks;
+        ! each such mutation invalidates the cache above.
+        if (.not. batch_cache_valid) then
+            call global_batch_model%initialize(global_model,use_host=.true.,status=batch_packed_status)
+            batch_cache_valid = .true.
+        end if
+        if (batch_packed_status == 0) then
+            call evaluate_batch_target(global_batch_model,species,centers,offsets,indices,displacements, &
+                energies,forces,global_shared_work)
+        else
+            call evaluate_batch_reference(global_model,species,centers,offsets,indices,displacements, &
+                energies,forces,global_batch_work)
+        end if
+        stat=ACCELNET_OK
+    end subroutine
 
     subroutine atomic_energy_forces(coo_i, type_i, index_i, n_j, coo_j, type_j, &
                                     index_j, natoms, energy_i, forces, stat, virial)

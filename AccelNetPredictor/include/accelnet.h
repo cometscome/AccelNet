@@ -35,6 +35,18 @@ void accelnet_atomic_energy_and_forces(
     const double coo_j[], const int type_j[], const int index_j[],
     int natoms, double *energy_i, double forces[], int *stat);
 
+/* Shared CPU/GPU numerical source, compiled serially for this CPU API.
+ * Uses the currently loaded global model. CSR offsets/indices are one-based;
+ * displacements are image-aware xyz triples. Energy is per row, forces are
+ * additive and include ghost targets. Scratch and packed metadata are reused;
+ * model loading and evaluation-mode setters invalidate the metadata cache.
+ * final() releases both.
+ * Like the other global-model APIs, this call is not thread-safe. */
+void accelnet_batch_energy_and_forces(
+    int natoms, int nrows, int nedges, const int species[], const int centers[],
+    const int offsets[], const int indices[], const double displacements[],
+    double energies[], double forces[], int *stat);
+
 /* Adds the atomic contribution to forces and to the full virial tensor.
  * virial[a + 3*b] += sum_j (coo_j[a] - coo_i[a]) * F_j[b].
  * Units are energy (no volume division); periodic images must be explicit

@@ -1,0 +1,3477 @@
+{
+  "affinity": 6,
+  "core_warmup_seconds": 20,
+  "g5_mode": "direct",
+  "cpu_info": "\t: INTEL(R) XEON(R) GOLD 6526Y",
+  "seconds_per_sample": 0.15,
+  "rounds": 2,
+  "binaries": {
+    "reference": {
+      "path": "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "sha256": "4c8f0cf716ccb11cf08e7953accda629d7c496aaf5ecffdc899ae9dbba5b0951",
+      "openmp_runtime_symbols": []
+    },
+    "candidate": {
+      "path": "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+      "sha256": "b5eabd2a5bb010eca2b849007863c3f84f55e523c4cd6d8a9be1b862aff9e430",
+      "openmp_runtime_symbols": []
+    }
+  },
+  "cases": [
+    {
+      "name": "Ethylbenzene_SCAN",
+      "model": "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/Ethylbenzene_SCAN",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/Ethylbenzene_SCAN",
+      "atoms": 288,
+      "elements": [
+        "C",
+        "H"
+      ],
+      "scopes": [
+        "fixed"
+      ],
+      "descriptors": {
+        "C:20": 22,
+        "C:22": 162,
+        "H:20": 22,
+        "H:22": 162
+      },
+      "model_sha256": {
+        "input.data": "034f8c701cbdd9c8867f7a93348501cc9cdd117a92d68842a6d6108157d620ea",
+        "input.nn": "721a3f2ef064745421526d7ac78cb72084a1e3a554fce607c88dcfca6a6106cd",
+        "scaling.data": "ed1aa72ea1db1ee73b65a5e5f830c0299466afc9fd2ed411d07bf490e54acf7d",
+        "weights.001.data": "353bb76411aeea53bd943c6a594b8224583c3257c4a7ce1813b8547a2c8f2473",
+        "weights.006.data": "0b3a0742fdebf05787ac794891d42ec291180ea667ff0e82445ecbcfdf464a78"
+      }
+    },
+    {
+      "name": "Anisole_SCAN",
+      "model": "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/Anisole_SCAN",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/Anisole_SCAN",
+      "atoms": 256,
+      "elements": [
+        "C",
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ],
+      "descriptors": {
+        "C:20": 33,
+        "C:22": 321,
+        "H:20": 33,
+        "H:22": 318,
+        "O:20": 32,
+        "O:22": 299
+      },
+      "model_sha256": {
+        "input.data": "0bd01de050e850e7b2b5d931180d15f9d834c4ce9aec9244942b192c50a733df",
+        "input.nn": "40f8360ceb9317218f42f4be08a18b9b83943425785d9ad22d5059bf1645a0f7",
+        "scaling.data": "3319a02b68fe2826e92666050cd89e2fd00a508b44dbb3f76c76719348168303",
+        "weights.001.data": "6ca254aea056fda4f0653c30821ac75a2115d7400e24ac9dbb078cddc1bd5bff",
+        "weights.006.data": "37de16fb2db48238572797d7d3108ed0cf60861ebdf698f54730cd3b4d93d0aa",
+        "weights.008.data": "1249aa5eaa7d7da6ec1ebf9a96c369941451452797d547ab9b3c3580ff43bcfb"
+      }
+    },
+    {
+      "name": "DMABN_SCAN",
+      "model": "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/DMABN_SCAN",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/DMABN_SCAN",
+      "atoms": 21,
+      "elements": [
+        "C",
+        "H",
+        "N"
+      ],
+      "scopes": [
+        "fixed"
+      ],
+      "descriptors": {
+        "C:20": 33,
+        "C:22": 300,
+        "H:20": 32,
+        "H:22": 302,
+        "N:20": 24,
+        "N:22": 195
+      },
+      "model_sha256": {
+        "input.data": "c058414710606f6b6e0f30cd5232e3f7db1150429e515e133521cd9b7fa1e6d7",
+        "input.nn": "3a183ec1a70c0b2109ecb6174befa6256402aa23a43092e6b6fad708365acc19",
+        "scaling.data": "504fb4bfa031b2e1da2a00b95260bb81d430f4d3571350eb04a4717f7aa073c4",
+        "weights.001.data": "7bc0faa8ed353c072ced0f53944da67d04490ccb796c3c934241d78ec5f795e1",
+        "weights.006.data": "25b81ea96777ad35d7530c46c5a41a77a37313e3feb82bd2eb9a945236b0c5ae",
+        "weights.007.data": "924c7eaccd376ef7c1741e059bccf20d22858e40095531e42813b523167710ab"
+      }
+    },
+    {
+      "name": "H2O_RPBE-D3",
+      "model": "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/H2O_RPBE-D3",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/H2O_RPBE-D3",
+      "atoms": 1080,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ],
+      "descriptors": {
+        "H:2": 16,
+        "H:3": 11,
+        "O:2": 16,
+        "O:3": 14
+      },
+      "model_sha256": {
+        "input.data": "32c38c1139a9c4afc2f38d536ce900956432b3689ecccd3f5a8a723c853c4405",
+        "input.nn": "726e941d994058a95c8dcc7c658837a2da0e7738aab164a7905b2c993b27224a",
+        "scaling.data": "468998f9b880d96f4b49f192fc8c3c8229e3ca53b9036c7ec6e66ae58a54c1e3",
+        "weights.001.data": "207728de9f248d4d8440620075086b60c6ab188a82ae8af91ac403e2aecf3379",
+        "weights.008.data": "f0337923e3cf2425741d408aa4ea6c457aea67c0d743808cd7e4addc45db3fd8"
+      }
+    },
+    {
+      "name": "type2",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type2",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type3",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type3",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type9",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type9",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type12",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type12",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type13",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type13",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type20",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type20",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type21",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type21",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type22",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type22",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type23",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type23",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type24",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type24",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    },
+    {
+      "name": "type25",
+      "model": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type25",
+      "stem": "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure",
+      "atoms": 512,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "scopes": [
+        "fixed"
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "name": "Ethylbenzene_SCAN",
+      "atoms": 288,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 1.2614656235,
+          "samples": [
+            [
+              [
+                1.253501933,
+                1.0
+              ],
+              [
+                1.261424431,
+                1.0
+              ],
+              [
+                1.265243991,
+                1.0
+              ],
+              [
+                1.257762321,
+                1.0
+              ],
+              [
+                1.261341694,
+                1.0
+              ]
+            ],
+            [
+              [
+                1.263870548,
+                1.0
+              ],
+              [
+                1.258701862,
+                1.0
+              ],
+              [
+                1.261506816,
+                1.0
+              ],
+              [
+                1.263111263,
+                1.0
+              ],
+              [
+                1.262913148,
+                1.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 1.2555461165000001,
+          "samples": [
+            [
+              [
+                1.257814245,
+                1.0
+              ],
+              [
+                1.255991048,
+                1.0
+              ],
+              [
+                1.25656481,
+                1.0
+              ],
+              [
+                1.255794536,
+                1.0
+              ],
+              [
+                1.255297697,
+                1.0
+              ]
+            ],
+            [
+              [
+                1.256172787,
+                1.0
+              ],
+              [
+                1.253067799,
+                1.0
+              ],
+              [
+                1.253615297,
+                1.0
+              ],
+              [
+                1.252474751,
+                1.0
+              ],
+              [
+                1.251620897,
+                1.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 1.25089767,
+          "samples": [
+            [
+              [
+                1.257803887,
+                1.0
+              ],
+              [
+                1.260661172,
+                1.0
+              ],
+              [
+                1.254428352,
+                1.0
+              ],
+              [
+                1.250958308,
+                1.0
+              ],
+              [
+                1.253388203,
+                1.0
+              ]
+            ],
+            [
+              [
+                1.250837032,
+                1.0
+              ],
+              [
+                1.24867973,
+                1.0
+              ],
+              [
+                1.248239045,
+                1.0
+              ],
+              [
+                1.25033461,
+                1.0
+              ],
+              [
+                1.247870269,
+                1.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.0047146870371446,
+        "accelnet_prepared": 1.0084482957746654
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.547473508864641e-13,
+            "FORCE": 1.214154644879617e-13
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.547473508864641e-13,
+            "FORCE": 1.214154644879617e-13
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.547473508864641e-13,
+            "FORCE": 1.214154644879617e-13
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.547473508864641e-13,
+            "FORCE": 1.214154644879617e-13
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/Ethylbenzene_SCAN",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/Ethylbenzene_SCAN.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/Ethylbenzene_SCAN",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/Ethylbenzene_SCAN.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/Ethylbenzene_SCAN",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/Ethylbenzene_SCAN.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.2572736533961977,
+        "accelnet_prepared": 0.2551994178153746
+      }
+    },
+    {
+      "name": "Anisole_SCAN",
+      "atoms": 256,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 1.1596582405,
+          "samples": [
+            [
+              [
+                1.161259197,
+                1.0
+              ],
+              [
+                1.159296087,
+                1.0
+              ],
+              [
+                1.161384214,
+                1.0
+              ],
+              [
+                1.158142094,
+                1.0
+              ],
+              [
+                1.160020394,
+                1.0
+              ]
+            ],
+            [
+              [
+                1.159281117,
+                1.0
+              ],
+              [
+                1.164802365,
+                1.0
+              ],
+              [
+                1.164490545,
+                1.0
+              ],
+              [
+                1.158526221,
+                1.0
+              ],
+              [
+                1.157597521,
+                1.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 1.21356539,
+          "samples": [
+            [
+              [
+                1.215360401,
+                1.0
+              ],
+              [
+                1.214406884,
+                1.0
+              ],
+              [
+                1.213688161,
+                1.0
+              ],
+              [
+                1.213491225,
+                1.0
+              ],
+              [
+                1.216151362,
+                1.0
+              ]
+            ],
+            [
+              [
+                1.211809802,
+                1.0
+              ],
+              [
+                1.213381043,
+                1.0
+              ],
+              [
+                1.211709979,
+                1.0
+              ],
+              [
+                1.213639555,
+                1.0
+              ],
+              [
+                1.213084884,
+                1.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 1.2084640000000002,
+          "samples": [
+            [
+              [
+                1.207993023,
+                1.0
+              ],
+              [
+                1.212392712,
+                1.0
+              ],
+              [
+                1.208158472,
+                1.0
+              ],
+              [
+                1.208752084,
+                1.0
+              ],
+              [
+                1.208937661,
+                1.0
+              ]
+            ],
+            [
+              [
+                1.208389032,
+                1.0
+              ],
+              [
+                1.208505764,
+                1.0
+              ],
+              [
+                1.208422236,
+                1.0
+              ],
+              [
+                1.209035166,
+                1.0
+              ],
+              [
+                1.207350332,
+                1.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 0.9555795262915333,
+        "accelnet_prepared": 0.9596133939447098
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 1.1368683772161603e-13,
+            "FORCE": 1.9964932485017073e-14
+          },
+          "accelnet_prepared": {
+            "ENERGY": 1.1368683772161603e-13,
+            "FORCE": 1.9964932485017073e-14
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 1.1368683772161603e-13,
+            "FORCE": 1.9964932485017073e-14
+          },
+          "accelnet_prepared": {
+            "ENERGY": 1.1368683772161603e-13,
+            "FORCE": 1.9964932485017073e-14
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/Anisole_SCAN",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/Anisole_SCAN.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/Anisole_SCAN",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/Anisole_SCAN.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/Anisole_SCAN",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/Anisole_SCAN.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.24834176270210973,
+        "accelnet_prepared": 0.2460645645009335
+      }
+    },
+    {
+      "name": "DMABN_SCAN",
+      "atoms": 21,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.00396882297368421,
+          "samples": [
+            [
+              [
+                0.004065383783783784,
+                37.0
+              ],
+              [
+                0.003972774105263158,
+                38.0
+              ],
+              [
+                0.004014116000000001,
+                38.0
+              ],
+              [
+                0.004008871631578947,
+                38.0
+              ],
+              [
+                0.003965469868421053,
+                38.0
+              ]
+            ],
+            [
+              [
+                0.003904306179487179,
+                39.0
+              ],
+              [
+                0.00394662158974359,
+                39.0
+              ],
+              [
+                0.003909219923076923,
+                39.0
+              ],
+              [
+                0.003922667384615384,
+                39.0
+              ],
+              [
+                0.003972176078947368,
+                38.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.0023348480384615383,
+          "samples": [
+            [
+              [
+                0.0023475969375,
+                64.0
+              ],
+              [
+                0.0023348522307692307,
+                65.0
+              ],
+              [
+                0.0023348438461538463,
+                65.0
+              ],
+              [
+                0.0023370851692307696,
+                65.0
+              ],
+              [
+                0.002333870015384615,
+                65.0
+              ]
+            ],
+            [
+              [
+                0.0023397501384615385,
+                65.0
+              ],
+              [
+                0.002330609523076923,
+                65.0
+              ],
+              [
+                0.0023303154461538464,
+                65.0
+              ],
+              [
+                0.002335179492307692,
+                65.0
+              ],
+              [
+                0.0023327213538461536,
+                65.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.0019303369871794874,
+          "samples": [
+            [
+              [
+                0.0019256629487179485,
+                78.0
+              ],
+              [
+                0.0019271462564102565,
+                78.0
+              ],
+              [
+                0.0019312021282051283,
+                78.0
+              ],
+              [
+                0.0019316003846153846,
+                78.0
+              ],
+              [
+                0.0019275923589743588,
+                78.0
+              ]
+            ],
+            [
+              [
+                0.0019350297564102565,
+                78.0
+              ],
+              [
+                0.001934438858974359,
+                78.0
+              ],
+              [
+                0.0019312595,
+                78.0
+              ],
+              [
+                0.0019278123974358974,
+                78.0
+              ],
+              [
+                0.0019294718461538463,
+                78.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.6998206771089561,
+        "accelnet_prepared": 2.0560259685451383
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 2.842170943040401e-14,
+            "FORCE": 2.96637714392034e-15
+          },
+          "accelnet_prepared": {
+            "ENERGY": 2.842170943040401e-14,
+            "FORCE": 2.96637714392034e-15
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 2.842170943040401e-14,
+            "FORCE": 2.96637714392034e-15
+          },
+          "accelnet_prepared": {
+            "ENERGY": 2.842170943040401e-14,
+            "FORCE": 2.96637714392034e-15
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/DMABN_SCAN",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/DMABN_SCAN.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/DMABN_SCAN",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/DMABN_SCAN.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/DMABN_SCAN",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/DMABN_SCAN.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.29368143975996236,
+        "accelnet_prepared": 0.2534336845472244
+      }
+    },
+    {
+      "name": "H2O_RPBE-D3",
+      "atoms": 1080,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.243156406,
+          "samples": [
+            [
+              [
+                0.252224383,
+                1.0
+              ],
+              [
+                0.244623424,
+                1.0
+              ],
+              [
+                0.242038189,
+                1.0
+              ],
+              [
+                0.243139412,
+                1.0
+              ],
+              [
+                0.243173372,
+                1.0
+              ]
+            ],
+            [
+              [
+                0.253386466,
+                1.0
+              ],
+              [
+                0.24313944,
+                1.0
+              ],
+              [
+                0.243056588,
+                1.0
+              ],
+              [
+                0.243896946,
+                1.0
+              ],
+              [
+                0.242312609,
+                1.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.23674193999999998,
+          "samples": [
+            [
+              [
+                0.237295288,
+                1.0
+              ],
+              [
+                0.236834347,
+                1.0
+              ],
+              [
+                0.236572285,
+                1.0
+              ],
+              [
+                0.237825049,
+                1.0
+              ],
+              [
+                0.236136431,
+                1.0
+              ]
+            ],
+            [
+              [
+                0.236747497,
+                1.0
+              ],
+              [
+                0.236736383,
+                1.0
+              ],
+              [
+                0.236055371,
+                1.0
+              ],
+              [
+                0.237289162,
+                1.0
+              ],
+              [
+                0.236428844,
+                1.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.23705100499999998,
+          "samples": [
+            [
+              [
+                0.237353435,
+                1.0
+              ],
+              [
+                0.23718466,
+                1.0
+              ],
+              [
+                0.236644215,
+                1.0
+              ],
+              [
+                0.236833317,
+                1.0
+              ],
+              [
+                0.23603834,
+                1.0
+              ]
+            ],
+            [
+              [
+                0.237565675,
+                1.0
+              ],
+              [
+                0.237456397,
+                1.0
+              ],
+              [
+                0.23691735,
+                1.0
+              ],
+              [
+                0.237234884,
+                1.0
+              ],
+              [
+                0.236442979,
+                1.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.0270947598047055,
+        "accelnet_prepared": 1.0257556427571357
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 1.8189894035458565e-11,
+            "FORCE": 7.771561172376096e-15
+          },
+          "accelnet_prepared": {
+            "ENERGY": 1.8189894035458565e-11,
+            "FORCE": 7.771561172376096e-15
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 1.8189894035458565e-11,
+            "FORCE": 7.771561172376096e-15
+          },
+          "accelnet_prepared": {
+            "ENERGY": 1.8189894035458565e-11,
+            "FORCE": 7.771561172376096e-15
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/H2O_RPBE-D3",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/H2O_RPBE-D3.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/H2O_RPBE-D3",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/H2O_RPBE-D3.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/H2O_RPBE-D3",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/H2O_RPBE-D3.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.7300072187143911,
+        "accelnet_prepared": 0.7302215229341561
+      }
+    },
+    {
+      "name": "type2",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.005937956076923077,
+          "samples": [
+            [
+              [
+                0.005931264269230769,
+                26.0
+              ],
+              [
+                0.005944829846153846,
+                26.0
+              ],
+              [
+                0.005947667961538462,
+                26.0
+              ],
+              [
+                0.005937886423076923,
+                26.0
+              ],
+              [
+                0.0059449518076923075,
+                26.0
+              ]
+            ],
+            [
+              [
+                0.005924684423076924,
+                26.0
+              ],
+              [
+                0.005933915999999999,
+                26.0
+              ],
+              [
+                0.005937864576923076,
+                26.0
+              ],
+              [
+                0.005944259153846153,
+                26.0
+              ],
+              [
+                0.005938025730769231,
+                26.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.00450216044117647,
+          "samples": [
+            [
+              [
+                0.004507869588235294,
+                34.0
+              ],
+              [
+                0.004499972088235294,
+                34.0
+              ],
+              [
+                0.004504348794117647,
+                34.0
+              ],
+              [
+                0.0044998185294117645,
+                34.0
+              ],
+              [
+                0.004496870911764706,
+                34.0
+              ]
+            ],
+            [
+              [
+                0.0045159555588235294,
+                34.0
+              ],
+              [
+                0.004521368882352941,
+                34.0
+              ],
+              [
+                0.0044988879999999995,
+                34.0
+              ],
+              [
+                0.004499559176470588,
+                34.0
+              ],
+              [
+                0.004507492588235294,
+                34.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.004322348742857142,
+          "samples": [
+            [
+              [
+                0.004340410485714286,
+                35.0
+              ],
+              [
+                0.004337268142857143,
+                35.0
+              ],
+              [
+                0.004344481228571428,
+                35.0
+              ],
+              [
+                0.004359476085714286,
+                35.0
+              ],
+              [
+                0.004342492371428572,
+                35.0
+              ]
+            ],
+            [
+              [
+                0.0043062732,
+                35.0
+              ],
+              [
+                0.004293168371428572,
+                35.0
+              ],
+              [
+                0.0043014910571428575,
+                35.0
+              ],
+              [
+                0.0042994548,
+                35.0
+              ],
+              [
+                0.004307429342857143,
+                35.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.3189125875246275,
+        "accelnet_prepared": 1.3737799585782595
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.263256414560601e-14,
+            "FORCE": 4.298692207315574e-19
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.263256414560601e-14,
+            "FORCE": 4.298692207315574e-19
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.263256414560601e-14,
+            "FORCE": 4.298692207315574e-19
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.263256414560601e-14,
+            "FORCE": 4.298692207315574e-19
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type2",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type2",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type2",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.893404458577573,
+        "accelnet_prepared": 0.8648493121496319
+      }
+    },
+    {
+      "name": "type3",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.044790631750000004,
+          "samples": [
+            [
+              [
+                0.04470012925,
+                4.0
+              ],
+              [
+                0.04479972975,
+                4.0
+              ],
+              [
+                0.0447858255,
+                4.0
+              ],
+              [
+                0.04482523525,
+                4.0
+              ],
+              [
+                0.04480117925,
+                4.0
+              ]
+            ],
+            [
+              [
+                0.044692606,
+                4.0
+              ],
+              [
+                0.0447843005,
+                4.0
+              ],
+              [
+                0.04477462575,
+                4.0
+              ],
+              [
+                0.0448361505,
+                4.0
+              ],
+              [
+                0.044795438,
+                4.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.041386514624999995,
+          "samples": [
+            [
+              [
+                0.041386025,
+                4.0
+              ],
+              [
+                0.041444569,
+                4.0
+              ],
+              [
+                0.04138700425,
+                4.0
+              ],
+              [
+                0.0413783615,
+                4.0
+              ],
+              [
+                0.04136230175,
+                4.0
+              ]
+            ],
+            [
+              [
+                0.0414281055,
+                4.0
+              ],
+              [
+                0.041363128,
+                4.0
+              ],
+              [
+                0.041287665,
+                4.0
+              ],
+              [
+                0.0414226195,
+                4.0
+              ],
+              [
+                0.04143493175,
+                4.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.041017821875,
+          "samples": [
+            [
+              [
+                0.040999951,
+                4.0
+              ],
+              [
+                0.04096188625,
+                4.0
+              ],
+              [
+                0.04107417625,
+                4.0
+              ],
+              [
+                0.041059262,
+                4.0
+              ],
+              [
+                0.0409972735,
+                4.0
+              ]
+            ],
+            [
+              [
+                0.0410466165,
+                4.0
+              ],
+              [
+                0.0409413385,
+                4.0
+              ],
+              [
+                0.041053292,
+                4.0
+              ],
+              [
+                0.04101203425,
+                4.0
+              ],
+              [
+                0.0410236095,
+                4.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.0822518435254684,
+        "accelnet_prepared": 1.091979771293012
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 2.1316282072803006e-14,
+            "FORCE": 1.2959604092990795e-18
+          },
+          "accelnet_prepared": {
+            "ENERGY": 2.1316282072803006e-14,
+            "FORCE": 1.2959604092990795e-18
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 2.1316282072803006e-14,
+            "FORCE": 1.2959604092990795e-18
+          },
+          "accelnet_prepared": {
+            "ENERGY": 2.1316282072803006e-14,
+            "FORCE": 1.2959604092990795e-18
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type3",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type3",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type3",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.892494102504663,
+        "accelnet_prepared": 0.8840672142725079
+      }
+    },
+    {
+      "name": "type9",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.028830760750000003,
+          "samples": [
+            [
+              [
+                0.028776032333333337,
+                6.0
+              ],
+              [
+                0.0288179715,
+                6.0
+              ],
+              [
+                0.0288188705,
+                6.0
+              ],
+              [
+                0.028816132666666664,
+                6.0
+              ],
+              [
+                0.028833012166666668,
+                6.0
+              ]
+            ],
+            [
+              [
+                0.028849333666666668,
+                6.0
+              ],
+              [
+                0.028828509333333335,
+                6.0
+              ],
+              [
+                0.028861068166666667,
+                6.0
+              ],
+              [
+                0.028863287166666668,
+                6.0
+              ],
+              [
+                0.0288770315,
+                6.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.026866383333333334,
+          "samples": [
+            [
+              [
+                0.026877158666666665,
+                6.0
+              ],
+              [
+                0.026847547833333332,
+                6.0
+              ],
+              [
+                0.026845630333333332,
+                6.0
+              ],
+              [
+                0.0268724405,
+                6.0
+              ],
+              [
+                0.026869176666666664,
+                6.0
+              ]
+            ],
+            [
+              [
+                0.02688725583333333,
+                6.0
+              ],
+              [
+                0.026911363999999997,
+                6.0
+              ],
+              [
+                0.026863590000000003,
+                6.0
+              ],
+              [
+                0.026834572833333334,
+                6.0
+              ],
+              [
+                0.026861644166666667,
+                6.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.026423057166666666,
+          "samples": [
+            [
+              [
+                0.0264143495,
+                6.0
+              ],
+              [
+                0.0264298915,
+                6.0
+              ],
+              [
+                0.026433989666666668,
+                6.0
+              ],
+              [
+                0.026452490166666665,
+                6.0
+              ],
+              [
+                0.02641460816666667,
+                6.0
+              ]
+            ],
+            [
+              [
+                0.026429415166666668,
+                6.0
+              ],
+              [
+                0.0263689785,
+                6.0
+              ],
+              [
+                0.026451310833333335,
+                6.0
+              ],
+              [
+                0.02641669916666667,
+                6.0
+              ],
+              [
+                0.026404598,
+                6.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.0731165558197575,
+        "accelnet_prepared": 1.091121310003852
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.440892098500626e-15,
+            "FORCE": 1.5227534809264184e-18
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.440892098500626e-15,
+            "FORCE": 1.5227534809264184e-18
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.440892098500626e-15,
+            "FORCE": 1.5227534809264184e-18
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.440892098500626e-15,
+            "FORCE": 1.5227534809264184e-18
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type9",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type9",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type9",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_note": "Different G5 mode; compare n2p2 directly, not the old auto timing."
+    },
+    {
+      "name": "type12",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.008887199970588235,
+          "samples": [
+            [
+              [
+                0.008874150764705883,
+                17.0
+              ],
+              [
+                0.008842772,
+                17.0
+              ],
+              [
+                0.008917282529411765,
+                17.0
+              ],
+              [
+                0.00890731388235294,
+                17.0
+              ],
+              [
+                0.008928874647058823,
+                17.0
+              ]
+            ],
+            [
+              [
+                0.008811010055555556,
+                18.0
+              ],
+              [
+                0.008783531277777777,
+                18.0
+              ],
+              [
+                0.008883300411764706,
+                17.0
+              ],
+              [
+                0.008891099529411764,
+                17.0
+              ],
+              [
+                0.008905860823529413,
+                17.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.006273351416666666,
+          "samples": [
+            [
+              [
+                0.006280720458333333,
+                24.0
+              ],
+              [
+                0.006273310083333333,
+                24.0
+              ],
+              [
+                0.0062753308749999995,
+                24.0
+              ],
+              [
+                0.0062799677500000005,
+                24.0
+              ],
+              [
+                0.006273809291666667,
+                24.0
+              ]
+            ],
+            [
+              [
+                0.006261061500000001,
+                24.0
+              ],
+              [
+                0.006260531125,
+                24.0
+              ],
+              [
+                0.00627339275,
+                24.0
+              ],
+              [
+                0.006262449541666666,
+                24.0
+              ],
+              [
+                0.006264854291666667,
+                24.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.006531581391304348,
+          "samples": [
+            [
+              [
+                0.006532096173913044,
+                23.0
+              ],
+              [
+                0.006531066608695652,
+                23.0
+              ],
+              [
+                0.006650991391304348,
+                23.0
+              ],
+              [
+                0.006608232391304348,
+                23.0
+              ],
+              [
+                0.006542579304347826,
+                23.0
+              ]
+            ],
+            [
+              [
+                0.006525966043478261,
+                23.0
+              ],
+              [
+                0.0065260536086956525,
+                23.0
+              ],
+              [
+                0.0065345229999999995,
+                23.0
+              ],
+              [
+                0.00652769643478261,
+                23.0
+              ],
+              [
+                0.006524420652173913,
+                23.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.4166590360261424,
+        "accelnet_prepared": 1.3606505742116264
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 1.2079226507921703e-13,
+            "FORCE": 1.971892701208011e-18
+          },
+          "accelnet_prepared": {
+            "ENERGY": 1.2079226507921703e-13,
+            "FORCE": 1.971892701208011e-18
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 1.2079226507921703e-13,
+            "FORCE": 1.971892701208011e-18
+          },
+          "accelnet_prepared": {
+            "ENERGY": 1.2079226507921703e-13,
+            "FORCE": 1.971892701208011e-18
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type12",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type12",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type12",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.8883282139555464,
+        "accelnet_prepared": 0.9383180633751416
+      }
+    },
+    {
+      "name": "type13",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.08302174400000001,
+          "samples": [
+            [
+              [
+                0.0832714,
+                2.0
+              ],
+              [
+                0.0833381515,
+                2.0
+              ],
+              [
+                0.0831700725,
+                2.0
+              ],
+              [
+                0.0832799755,
+                2.0
+              ],
+              [
+                0.0832705555,
+                2.0
+              ]
+            ],
+            [
+              [
+                0.0828734155,
+                2.0
+              ],
+              [
+                0.0828269985,
+                2.0
+              ],
+              [
+                0.0828263825,
+                2.0
+              ],
+              [
+                0.082867775,
+                2.0
+              ],
+              [
+                0.0828591405,
+                2.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.076985756,
+          "samples": [
+            [
+              [
+                0.0770862965,
+                2.0
+              ],
+              [
+                0.0770049285,
+                2.0
+              ],
+              [
+                0.0770359485,
+                2.0
+              ],
+              [
+                0.076955187,
+                2.0
+              ],
+              [
+                0.0769607585,
+                2.0
+              ]
+            ],
+            [
+              [
+                0.0769020615,
+                2.0
+              ],
+              [
+                0.0770742395,
+                2.0
+              ],
+              [
+                0.077032897,
+                2.0
+              ],
+              [
+                0.0769524735,
+                2.0
+              ],
+              [
+                0.0769665835,
+                2.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.077198193,
+          "samples": [
+            [
+              [
+                0.077218317,
+                2.0
+              ],
+              [
+                0.0771827175,
+                2.0
+              ],
+              [
+                0.077176471,
+                2.0
+              ],
+              [
+                0.0771241255,
+                2.0
+              ],
+              [
+                0.0772216985,
+                2.0
+              ]
+            ],
+            [
+              [
+                0.077275209,
+                2.0
+              ],
+              [
+                0.0771233805,
+                2.0
+              ],
+              [
+                0.0772136685,
+                2.0
+              ],
+              [
+                0.0771694925,
+                2.0
+              ],
+              [
+                0.0773179135,
+                2.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.0784039582594993,
+        "accelnet_prepared": 1.075436364164638
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 0.0,
+            "FORCE": 4.8581574689770396e-17
+          },
+          "accelnet_prepared": {
+            "ENERGY": 0.0,
+            "FORCE": 4.8581574689770396e-17
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 0.0,
+            "FORCE": 4.8581574689770396e-17
+          },
+          "accelnet_prepared": {
+            "ENERGY": 0.0,
+            "FORCE": 4.8581574689770396e-17
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type13",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type13",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type13",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.388316664270091,
+        "accelnet_prepared": 0.39223016533714083
+      }
+    },
+    {
+      "name": "type20",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.003919109025641025,
+          "samples": [
+            [
+              [
+                0.003916142846153847,
+                39.0
+              ],
+              [
+                0.0039188513076923075,
+                39.0
+              ],
+              [
+                0.0039143423333333335,
+                39.0
+              ],
+              [
+                0.003919366743589743,
+                39.0
+              ],
+              [
+                0.00392319641025641,
+                39.0
+              ]
+            ],
+            [
+              [
+                0.003931319102564103,
+                39.0
+              ],
+              [
+                0.003921625615384615,
+                39.0
+              ],
+              [
+                0.003919784333333333,
+                39.0
+              ],
+              [
+                0.003916125307692308,
+                39.0
+              ],
+              [
+                0.003917912333333333,
+                39.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.0031250250656887756,
+          "samples": [
+            [
+              [
+                0.003117193591836735,
+                49.0
+              ],
+              [
+                0.0031238476938775512,
+                49.0
+              ],
+              [
+                0.0031154089591836735,
+                49.0
+              ],
+              [
+                0.0031151540816326526,
+                49.0
+              ],
+              [
+                0.0031210176734693877,
+                49.0
+              ]
+            ],
+            [
+              [
+                0.0031262024375,
+                48.0
+              ],
+              [
+                0.0031348439791666666,
+                48.0
+              ],
+              [
+                0.003131793041666667,
+                48.0
+              ],
+              [
+                0.0031273214375,
+                48.0
+              ],
+              [
+                0.0031418187083333336,
+                48.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.002994627519607843,
+          "samples": [
+            [
+              [
+                0.002987198843137255,
+                51.0
+              ],
+              [
+                0.002990831196078431,
+                51.0
+              ],
+              [
+                0.002983407882352941,
+                51.0
+              ],
+              [
+                0.0029794039215686272,
+                51.0
+              ],
+              [
+                0.0029782728627450977,
+                51.0
+              ]
+            ],
+            [
+              [
+                0.00300428266,
+                50.0
+              ],
+              [
+                0.0030011200399999998,
+                50.0
+              ],
+              [
+                0.002998423843137255,
+                51.0
+              ],
+              [
+                0.0029995859215686278,
+                51.0
+              ],
+              [
+                0.0030040442,
+                50.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.2541048290047005,
+        "accelnet_prepared": 1.3087133541583984
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 2.842170943040401e-14,
+            "FORCE": 7.674118502123961e-19
+          },
+          "accelnet_prepared": {
+            "ENERGY": 2.842170943040401e-14,
+            "FORCE": 7.674118502123961e-19
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 2.842170943040401e-14,
+            "FORCE": 7.674118502123961e-19
+          },
+          "accelnet_prepared": {
+            "ENERGY": 2.842170943040401e-14,
+            "FORCE": 7.674118502123961e-19
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type20",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type20",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type20",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.907585221859564,
+        "accelnet_prepared": 0.875294009370206
+      }
+    },
+    {
+      "name": "type21",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.027749996916666665,
+          "samples": [
+            [
+              [
+                0.027646057833333335,
+                6.0
+              ],
+              [
+                0.027758071,
+                6.0
+              ],
+              [
+                0.027765640666666664,
+                6.0
+              ],
+              [
+                0.0277044055,
+                6.0
+              ],
+              [
+                0.027642025833333334,
+                6.0
+              ]
+            ],
+            [
+              [
+                0.0276280885,
+                6.0
+              ],
+              [
+                0.027741922833333335,
+                6.0
+              ],
+              [
+                0.027809916833333333,
+                6.0
+              ],
+              [
+                0.027765568833333334,
+                6.0
+              ],
+              [
+                0.027777874999999997,
+                6.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.030235824600000002,
+          "samples": [
+            [
+              [
+                0.0303214046,
+                5.0
+              ],
+              [
+                0.0302396222,
+                5.0
+              ],
+              [
+                0.0302410008,
+                5.0
+              ],
+              [
+                0.030267053,
+                5.0
+              ],
+              [
+                0.030232027,
+                5.0
+              ]
+            ],
+            [
+              [
+                0.030205508199999998,
+                5.0
+              ],
+              [
+                0.030215193600000002,
+                5.0
+              ],
+              [
+                0.0302245784,
+                5.0
+              ],
+              [
+                0.030261361799999997,
+                5.0
+              ],
+              [
+                0.030214317400000003,
+                5.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.0303114935,
+          "samples": [
+            [
+              [
+                0.0303187648,
+                5.0
+              ],
+              [
+                0.030309726599999996,
+                5.0
+              ],
+              [
+                0.030316679200000002,
+                5.0
+              ],
+              [
+                0.030313260400000003,
+                5.0
+              ],
+              [
+                0.0303666124,
+                5.0
+              ]
+            ],
+            [
+              [
+                0.0303010572,
+                5.0
+              ],
+              [
+                0.030314940000000002,
+                5.0
+              ],
+              [
+                0.030303063,
+                5.0
+              ],
+              [
+                0.0303003012,
+                5.0
+              ],
+              [
+                0.030266529599999998,
+                5.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 0.9177853517732956,
+        "accelnet_prepared": 0.9154942139906984
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.263256414560601e-14,
+            "FORCE": 1.0211829212097845e-17
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.263256414560601e-14,
+            "FORCE": 1.0211829212097845e-17
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.263256414560601e-14,
+            "FORCE": 1.0211829212097845e-17
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.263256414560601e-14,
+            "FORCE": 1.0211829212097845e-17
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type21",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type21",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type21",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.4828479320654974,
+        "accelnet_prepared": 0.484263069774956
+      }
+    },
+    {
+      "name": "type22",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.042257144125,
+          "samples": [
+            [
+              [
+                0.0421924665,
+                4.0
+              ],
+              [
+                0.04225879925,
+                4.0
+              ],
+              [
+                0.0423280385,
+                4.0
+              ],
+              [
+                0.0422432285,
+                4.0
+              ],
+              [
+                0.042255489,
+                4.0
+              ]
+            ],
+            [
+              [
+                0.04221569,
+                4.0
+              ],
+              [
+                0.04222222625,
+                4.0
+              ],
+              [
+                0.04242507025,
+                4.0
+              ],
+              [
+                0.04232051625,
+                4.0
+              ],
+              [
+                0.0423397105,
+                4.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.046165002875,
+          "samples": [
+            [
+              [
+                0.04631761625,
+                4.0
+              ],
+              [
+                0.04614344325,
+                4.0
+              ],
+              [
+                0.0461966265,
+                4.0
+              ],
+              [
+                0.04624389075,
+                4.0
+              ],
+              [
+                0.04611774425,
+                4.0
+              ]
+            ],
+            [
+              [
+                0.04603795275,
+                4.0
+              ],
+              [
+                0.0461865625,
+                4.0
+              ],
+              [
+                0.04607784675,
+                4.0
+              ],
+              [
+                0.046198618,
+                4.0
+              ],
+              [
+                0.04610756025,
+                4.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.046267898749999994,
+          "samples": [
+            [
+              [
+                0.04632569675,
+                4.0
+              ],
+              [
+                0.0462657455,
+                4.0
+              ],
+              [
+                0.04637181325,
+                4.0
+              ],
+              [
+                0.04625772375,
+                4.0
+              ],
+              [
+                0.04627584575,
+                4.0
+              ]
+            ],
+            [
+              [
+                0.046270052,
+                4.0
+              ],
+              [
+                0.04623693075,
+                4.0
+              ],
+              [
+                0.04623443275,
+                4.0
+              ],
+              [
+                0.0462226475,
+                4.0
+              ],
+              [
+                0.046291438,
+                4.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 0.9153501893938742,
+        "accelnet_prepared": 0.9133145283586064
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.973799150320701e-14,
+            "FORCE": 2.596664203102783e-17
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.973799150320701e-14,
+            "FORCE": 2.596664203102783e-17
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 4.973799150320701e-14,
+            "FORCE": 2.596664203102783e-17
+          },
+          "accelnet_prepared": {
+            "ENERGY": 4.973799150320701e-14,
+            "FORCE": 2.596664203102783e-17
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type22",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type22",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type22",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.6229245892495807,
+        "accelnet_prepared": 0.6268127227410634
+      }
+    },
+    {
+      "name": "type23",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.0191004461875,
+          "samples": [
+            [
+              [
+                0.019078939125,
+                8.0
+              ],
+              [
+                0.0191173125,
+                8.0
+              ],
+              [
+                0.01915378025,
+                8.0
+              ],
+              [
+                0.019142106875,
+                8.0
+              ],
+              [
+                0.019146501,
+                8.0
+              ]
+            ],
+            [
+              [
+                0.01902145,
+                8.0
+              ],
+              [
+                0.019096780625,
+                8.0
+              ],
+              [
+                0.019080734125,
+                8.0
+              ],
+              [
+                0.01910411175,
+                8.0
+              ],
+              [
+                0.019058052875,
+                8.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.003118715693877551,
+          "samples": [
+            [
+              [
+                0.0031238213673469386,
+                49.0
+              ],
+              [
+                0.003117034530612245,
+                49.0
+              ],
+              [
+                0.0031257939791666666,
+                48.0
+              ],
+              [
+                0.0031216457959183674,
+                49.0
+              ],
+              [
+                0.0031184252448979593,
+                49.0
+              ]
+            ],
+            [
+              [
+                0.003119006142857143,
+                49.0
+              ],
+              [
+                0.0031180269999999998,
+                49.0
+              ],
+              [
+                0.0031202501836734694,
+                49.0
+              ],
+              [
+                0.003116786081632653,
+                49.0
+              ],
+              [
+                0.003115159102040816,
+                49.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.002983115960784314,
+          "samples": [
+            [
+              [
+                0.0029769575294117646,
+                51.0
+              ],
+              [
+                0.0029745286666666665,
+                51.0
+              ],
+              [
+                0.0029790686470588233,
+                51.0
+              ],
+              [
+                0.002975094098039216,
+                51.0
+              ],
+              [
+                0.002981087568627451,
+                51.0
+              ]
+            ],
+            [
+              [
+                0.0029898346078431376,
+                51.0
+              ],
+              [
+                0.002985144352941176,
+                51.0
+              ],
+              [
+                0.0029892973333333333,
+                51.0
+              ],
+              [
+                0.002989033392156863,
+                51.0
+              ],
+              [
+                0.0029891416666666666,
+                51.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 6.124458931924025,
+        "accelnet_prepared": 6.402850723402035
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 7.105427357601002e-14,
+            "FORCE": 9.676504389433127e-18
+          },
+          "accelnet_prepared": {
+            "ENERGY": 7.105427357601002e-14,
+            "FORCE": 9.676504389433127e-18
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 7.105427357601002e-14,
+            "FORCE": 9.676504389433127e-18
+          },
+          "accelnet_prepared": {
+            "ENERGY": 7.105427357601002e-14,
+            "FORCE": 9.676504389433127e-18
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type23",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type23",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type23",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.8793274951087243,
+        "accelnet_prepared": 0.8594119072446738
+      }
+    },
+    {
+      "name": "type24",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.09702566575,
+          "samples": [
+            [
+              [
+                0.096930427,
+                2.0
+              ],
+              [
+                0.09692075,
+                2.0
+              ],
+              [
+                0.097014864,
+                2.0
+              ],
+              [
+                0.0969804755,
+                2.0
+              ],
+              [
+                0.0970364675,
+                2.0
+              ]
+            ],
+            [
+              [
+                0.0969403985,
+                2.0
+              ],
+              [
+                0.0970861,
+                2.0
+              ],
+              [
+                0.097064472,
+                2.0
+              ],
+              [
+                0.097193359,
+                2.0
+              ],
+              [
+                0.097216521,
+                2.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.049726657375,
+          "samples": [
+            [
+              [
+                0.04975265625,
+                4.0
+              ],
+              [
+                0.0496794045,
+                4.0
+              ],
+              [
+                0.0496777605,
+                4.0
+              ],
+              [
+                0.04972878525,
+                4.0
+              ],
+              [
+                0.0497245295,
+                4.0
+              ]
+            ],
+            [
+              [
+                0.04969671375,
+                4.0
+              ],
+              [
+                0.04966302825,
+                4.0
+              ],
+              [
+                0.04980093825,
+                4.0
+              ],
+              [
+                0.0497435815,
+                4.0
+              ],
+              [
+                0.0497888955,
+                4.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.049633862,
+          "samples": [
+            [
+              [
+                0.04959485275,
+                4.0
+              ],
+              [
+                0.04960650625,
+                4.0
+              ],
+              [
+                0.04962836375,
+                4.0
+              ],
+              [
+                0.0496327985,
+                4.0
+              ],
+              [
+                0.0496876645,
+                4.0
+              ]
+            ],
+            [
+              [
+                0.0496833755,
+                4.0
+              ],
+              [
+                0.0496742205,
+                4.0
+              ],
+              [
+                0.0496102175,
+                4.0
+              ],
+              [
+                0.0496349255,
+                4.0
+              ],
+              [
+                0.04970507075,
+                4.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 1.9511801289659882,
+        "accelnet_prepared": 1.9548280516636
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 6.394884621840902e-14,
+            "FORCE": 9.118140270603092e-17
+          },
+          "accelnet_prepared": {
+            "ENERGY": 6.394884621840902e-14,
+            "FORCE": 9.118140270603092e-17
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 6.394884621840902e-14,
+            "FORCE": 9.118140270603092e-17
+          },
+          "accelnet_prepared": {
+            "ENERGY": 6.394884621840902e-14,
+            "FORCE": 9.118140270603092e-17
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type24",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type24",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type24",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.3398604030879319,
+        "accelnet_prepared": 0.343523416086245
+      }
+    },
+    {
+      "name": "type25",
+      "atoms": 512,
+      "scope": "fixed",
+      "timings": {
+        "n2p2": {
+          "median": 0.1726773655,
+          "samples": [
+            [
+              [
+                0.172852591,
+                1.0
+              ],
+              [
+                0.172661115,
+                1.0
+              ],
+              [
+                0.172749312,
+                1.0
+              ],
+              [
+                0.172675207,
+                1.0
+              ],
+              [
+                0.17270772,
+                1.0
+              ]
+            ],
+            [
+              [
+                0.172802112,
+                1.0
+              ],
+              [
+                0.172463546,
+                1.0
+              ],
+              [
+                0.172257253,
+                1.0
+              ],
+              [
+                0.172403105,
+                1.0
+              ],
+              [
+                0.172679524,
+                1.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_cpu": {
+          "median": 0.0692313205,
+          "samples": [
+            [
+              [
+                0.069277313,
+                3.0
+              ],
+              [
+                0.06915979900000001,
+                3.0
+              ],
+              [
+                0.06914109766666666,
+                3.0
+              ],
+              [
+                0.06917365133333334,
+                3.0
+              ],
+              [
+                0.06920297766666667,
+                3.0
+              ]
+            ],
+            [
+              [
+                0.06929628366666667,
+                3.0
+              ],
+              [
+                0.06923863633333334,
+                3.0
+              ],
+              [
+                0.06922400466666666,
+                3.0
+              ],
+              [
+                0.069339728,
+                3.0
+              ],
+              [
+                0.06931067833333333,
+                3.0
+              ]
+            ]
+          ]
+        },
+        "accelnet_prepared": {
+          "median": 0.06926225483333333,
+          "samples": [
+            [
+              [
+                0.06904250266666666,
+                3.0
+              ],
+              [
+                0.06925606133333333,
+                3.0
+              ],
+              [
+                0.06920292433333333,
+                3.0
+              ],
+              [
+                0.06911613,
+                3.0
+              ],
+              [
+                0.06927070766666667,
+                3.0
+              ]
+            ],
+            [
+              [
+                0.06926844833333333,
+                3.0
+              ],
+              [
+                0.06930352833333334,
+                3.0
+              ],
+              [
+                0.06939171100000001,
+                3.0
+              ],
+              [
+                0.069273868,
+                3.0
+              ],
+              [
+                0.06925263133333333,
+                3.0
+              ]
+            ]
+          ]
+        }
+      },
+      "speedup": {
+        "accelnet_cpu": 2.4942087519477547,
+        "accelnet_prepared": 2.4930947731273814
+      },
+      "errors": [
+        {
+          "accelnet_cpu": {
+            "ENERGY": 1.4210854715202004e-14,
+            "FORCE": 1.4051260155412137e-16
+          },
+          "accelnet_prepared": {
+            "ENERGY": 1.4210854715202004e-14,
+            "FORCE": 1.4051260155412137e-16
+          }
+        },
+        {
+          "accelnet_cpu": {
+            "ENERGY": 1.4210854715202004e-14,
+            "FORCE": 1.4051260155412137e-16
+          },
+          "accelnet_prepared": {
+            "ENERGY": 1.4210854715202004e-14,
+            "FORCE": 1.4051260155412137e-16
+          }
+        }
+      ],
+      "commands": {
+        "n2p2": [
+          "/tmp/accelnet-n2p2-types/n2p2-reference",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type25",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.data",
+          "0.15",
+          "fixed"
+        ],
+        "accelnet_cpu": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type25",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "cpu",
+          "fixed",
+          "n2p2",
+          "1"
+        ],
+        "accelnet_prepared": [
+          "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-n2p2-benchmark",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/type25",
+          "/tmp/accelnet-n2p2-cpu-opt/cpu-final24/synthetic-structure.xsf",
+          "0.15",
+          "host",
+          "fixed",
+          "n2p2",
+          "1"
+        ]
+      },
+      "baseline_ratio": {
+        "accelnet_cpu": 0.3981074729652704,
+        "accelnet_prepared": 0.39834808502295316
+      }
+    }
+  ],
+  "extra_accelnet_work": "Virial is computed by the common kernel even when only energy/forces are requested.",
+  "baseline": "/tmp/accelnet-n2p2-cpu/report.json",
+  "regressions": [],
+  "max_n2p2_slowdown": 1.1,
+  "n2p2_regressions": [],
+  "passed": true
+}

@@ -11,7 +11,7 @@ module accelnet_target_descriptors
     implicit none
     private
     public :: pack_generic_descriptors, PACKED_FEATURE_FIELDS, PACKED_PARAMETER_FIELDS
-    integer, parameter :: PACKED_FEATURE_FIELDS = 25
+    integer, parameter :: PACKED_FEATURE_FIELDS = 31
     integer, parameter :: PACKED_PARAMETER_FIELDS = 19
 contains
     subroutine pack_generic_descriptors(model, fi, fr, status, message, g5_mode)
@@ -21,7 +21,8 @@ contains
         integer, intent(out) :: status
         character(len=*), intent(out) :: message
         integer, optional, intent(in) :: g5_mode
-        integer :: c,j,b,o,t,n,ct,ns,groups,k,r,last,q,zeta
+        integer :: c,j,b,o,t,n,ct,ns,groups,k,r,last,q,zeta,ne,first,last_ext,nangle
+        integer, allocatable :: ext_order(:)
         real(real64) :: binomial
         real(real64) :: alpha
         status = 1
@@ -149,11 +150,11 @@ contains
                 if (abs(fr(4,b)) > 1 .or. fr(5,b) < 1) return
             end if
         end do
-        ! Only angular features need an edge cache. Share radial parameters
-        ! across species pairs, lambda/zeta, and G4/G5; their q(r) is identical.
+        ! G2, G4 and G5 have the same q(r). Cache its value/derivative once
+        ! across species pairs and angular powers, including radial-only G2.
         groups = 0
         do b = 1,n
-            if (fi(1,b) /= 4 .and. fi(1,b) /= 5) cycle
+            if (fi(1,b) /= 2 .and. fi(1,b) /= 4 .and. fi(1,b) /= 5) cycle
             do k = 1,b-1
                 if (fi(7,k) == 0) cycle
                 if (fi(4,b) /= fi(4,k)) cycle
@@ -164,6 +165,19 @@ contains
             if (fi(7,b) /= 0) cycle
             groups = groups+1
             fi(7:8,b) = [groups,b]
+        end do
+        ! A G2-only radial group may need just one neighbor species. Field 3
+        ! of its representative records that filter (zero means unrestricted).
+        do b=1,n
+            if (fi(1,b) /= 2 .or. fi(8,b) /= b) cycle
+            fi(3,b)=fi(2,b)
+            do k=1,n
+                if (fi(7,k) /= fi(7,b)) cycle
+                if (fi(1,k) /= 2 .or. fi(2,k) /= fi(2,b)) then
+                    fi(3,b)=0
+                    exit
+                end if
+            end do
         end do
         ! Extended descriptors share radial values across angular windows/species.
         do b=1,n
@@ -213,7 +227,7 @@ contains
         ! Fractional/high zeta retains its exact power and only identical powers combine.
         groups = 0
         do b = 1,n
-            if (fi(7,b) == 0 .or. fi(1,b) >= 12) cycle
+            if (fi(1,b) /= 4 .and. fi(1,b) /= 5) cycle
             r = 0
             do k = 1,b-1
                 if (fi(10,k) /= k) cycle
@@ -279,6 +293,7 @@ contains
         do b = 1,n
             if (fi(1,b) /= 4) cycle
             fi(15:17,b) = b
+            fr(8,b) = 0.5_real64*fr(5,b)*fr(4,b) ! invariant angular derivative prefactor
             do k = 1,b-1
                 if (fi(1,k) /= 4) cycle
                 if (fi(4,k) == fi(4,b) .and. fr(1,k) == fr(1,b) .and. fr(7,k) == fr(7,b)) &
@@ -308,6 +323,100 @@ contains
             end do
             fi(21,b) = groups-fi(20,b)+1
         end do
+        ! Extended angular ownership and scalar-cache ordering. Fields 26..31:
+        ! sorted feature index, pair-list start/count, angular representative,
+        ! weighted-list head (column 1), total angular count (column 1).
+        ! Feature output indices and NN/scaling order are never permuted.
+        if (any(fi(1,:) == 13 .or. fi(1,:) == 21 .or. fi(1,:) == 22 .or. fi(1,:) == 24 .or. fi(1,:) == 25)) then
+            allocate(ext_order(n)); ne=0; nangle=0
+            do b=1,n
+                if (.not. extended_angular_kind(fi(1,b))) cycle
+                if (fi(1,b) /= 13) then
+                    fr(8,b)=2.0_real64/(fr(4,b)-fr(3,b))
+                    fr(9,b)=0.5_real64*(fr(3,b)+fr(4,b))
+                end if
+                ne=ne+1; ext_order(ne)=b; fi(29,b)=0
+                do k=1,b-1
+                    if (.not. extended_angular_kind(fi(1,k))) cycle
+                    if ((fi(1,b) == 13) .neqv. (fi(1,k) == 13)) cycle
+                    if (fi(1,b) == 13) then
+                        if (any(fr(4:5,b) /= fr(4:5,k))) cycle
+                    else
+                        if (any(fr(3:4,b) /= fr(3:4,k))) cycle
+                        if (mod(nint(fr(5,b)),10) /= mod(nint(fr(5,k)),10)) cycle
+                    end if
+                    fi(29,b)=fi(29,k); exit
+                end do
+                if (fi(29,b) == 0) then
+                    nangle=nangle+1; fi(29,b)=nangle
+                end if
+            end do
+            ! Reuse the G4 cutoff-cache field for weighted angular members.
+            do b=1,n
+                if (fi(1,b) /= 13) cycle
+                fi(15,b)=b
+                do k=1,b-1
+                    if (fi(1,k) /= 13 .or. fi(4,b) /= fi(4,k)) cycle
+                    if (fr(1,b) /= fr(1,k) .or. fr(7,b) /= fr(7,k)) cycle
+                    fi(15,b)=fi(15,k); exit
+                end do
+            end do
+            do j=2,ne
+                b=ext_order(j); k=j-1
+                do while(k >= 1)
+                    if (.not. extended_less(b,ext_order(k),fi)) exit
+                    ext_order(k+1)=ext_order(k); k=k-1
+                end do
+                ext_order(k+1)=b
+            end do
+            fi(26,1:ne)=ext_order(1:ne); fi(31,1)=ne
+            first=1
+            do while(first <= ne)
+                b=ext_order(first); last_ext=first
+                do while(last_ext < ne)
+                    k=ext_order(last_ext+1)
+                    if (minval(fi(2:3,b)) /= minval(fi(2:3,k)) .or. &
+                        maxval(fi(2:3,b)) /= maxval(fi(2:3,k))) exit
+                    last_ext=last_ext+1
+                end do
+                fi(27:28,b)=[first,last_ext-first+1]
+                if (fi(2,b) == 0) fi(30,1)=b
+                ! Field 16 is the packed end of a constant-angular/narrow run.
+                ! G4 uses that field for its separate exponential cache key.
+                j=first
+                do while(j <= last_ext)
+                    b=ext_order(j); q=j
+                    do while(q < last_ext)
+                        k=ext_order(q+1)
+                        if (fi(29,b) /= fi(29,k)) exit
+                        if ((fi(1,b) == 13 .or. fi(1,b) == 21 .or. fi(1,b) == 24) .neqv. &
+                            (fi(1,k) == 13 .or. fi(1,k) == 21 .or. fi(1,k) == 24)) exit
+                        q=q+1
+                    end do
+                    fi(16,ext_order(j:q))=q
+                    j=q+1
+                end do
+                first=last_ext+1
+            end do
+        end if
         status = 0; message = ''
     end subroutine
+    pure logical function extended_angular_kind(kind) result(angular)
+        integer, intent(in) :: kind
+        angular=kind == 13 .or. kind == 21 .or. kind == 22 .or. kind == 24 .or. kind == 25
+    end function
+
+    pure logical function extended_less(b,k,fi) result(less)
+        integer, intent(in) :: b,k,fi(:,:)
+        integer :: left(5),right(5),i
+        left=[minval(fi(2:3,b)),maxval(fi(2:3,b)),fi(29,b), &
+            merge(1,0,fi(1,b) == 13 .or. fi(1,b) == 21 .or. fi(1,b) == 24),fi(7,b)]
+        right=[minval(fi(2:3,k)),maxval(fi(2:3,k)),fi(29,k), &
+            merge(1,0,fi(1,k) == 13 .or. fi(1,k) == 21 .or. fi(1,k) == 24),fi(7,k)]
+        less=.false.
+        do i=1,5
+            if (left(i) == right(i)) cycle
+            less=left(i)<right(i); return
+        end do
+    end function
 end module

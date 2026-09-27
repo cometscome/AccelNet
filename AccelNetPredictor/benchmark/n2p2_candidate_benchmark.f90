@@ -50,7 +50,7 @@ program n2p2_candidate_benchmark
     g5_mode=0
     if (command_argument_count() == 7) then
         call get_command_argument(7,arg);read(arg,*) g5_mode
-        if (backend == 'cpu' .and. g5_mode /= 0) error stop 'use host backend for forced G5 modes'
+        call model%set_g5_evaluation(g5_mode)
     end if
     call read_xsf(trim(path),model%species_names,s)
     call packed%initialize(model,use_host=backend /= 'gpu',g5_mode=g5_mode)

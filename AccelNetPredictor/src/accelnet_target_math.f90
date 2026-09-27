@@ -10,11 +10,12 @@ module accelnet_target_math
     implicit none
     private
     real(real64), parameter :: PI_ACCELNET = 3.14159265358979_real64
-    public :: extended_radial, extended_pair
+    public :: extended_radial, extended_pair, extended_angular
     public :: generic_pair_geometry, generic_pair_contracted, generic_pair_value
-    public :: generic_radial, generic_radial_value, generic_lj
+    public :: generic_radial, generic_radial_value, generic_lj, gaussian_radial
     public :: angular_power, angular_value, g5_moment_active
     public :: target_cutoff_value, target_cutoff_derivative, target_activate, target_activation_derivative
+    public :: target_cutoff_pair
 contains
     pure logical function g5_moment_active(mode,group,neighbors) result(active)
         !$omp declare target
@@ -32,6 +33,11 @@ contains
         !$omp declare target
         include 'cutoff_derivative.inc'
     end function target_cutoff_derivative
+
+    pure subroutine target_cutoff_pair(distance,rc,kind,alpha,value,derivative)
+        !$omp declare target
+        include 'cutoff_pair.inc'
+    end subroutine
 
     pure real(real64) function target_activate(x, code) result(y)
         !$omp declare target
@@ -68,6 +74,16 @@ contains
         include 'angular_value.inc'
     end function angular_value
     ! Radial feature and derivative with respect to distance.
+    pure subroutine gaussian_radial(r,eta,rs,fc,dfc,value,derivative)
+        !$omp declare target
+        real(real64), intent(in) :: r,eta,rs,fc,dfc
+        real(real64), intent(out) :: value,derivative
+        real(real64) :: h,dh
+        h=exp(-eta*(r-rs)**2)
+        dh=-2*eta*(r-rs)*h
+        value=fc*h; derivative=dfc*h+fc*dh
+    end subroutine
+
     pure subroutine generic_radial(kind, r, ct, p, value, derivative)
         !$omp declare target
         integer, intent(in) :: kind,ct
@@ -76,13 +92,12 @@ contains
         real(real64) :: fc,dfc,h,dh
         value = 0; derivative = 0
         if (r <= 1e-12_real64 .or. r > p(1)) return
-        fc = target_cutoff_value(r,p(1),ct,p(7))
-        dfc = target_cutoff_derivative(r,p(1),ct,p(7))
+        call target_cutoff_pair(r,p(1),ct,p(7),fc,dfc)
         h = 1; dh = 0
         select case(kind)
         case(2,4,5)
-            h = exp(-p(2)*(r-p(3))**2)
-            dh = -2*p(2)*(r-p(3))*h
+            call gaussian_radial(r,p(2),p(3),fc,dfc,value,derivative)
+            return
         case(3)
             h = cos(p(6)*r); dh = -p(6)*sin(p(6)*r)
         case(6)
