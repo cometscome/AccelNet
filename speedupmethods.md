@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.9 — 2026-09-27 (JST).**
+**Document version 1.10 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -1921,3 +1921,117 @@ components must agree before timings are accepted. GPU timings include the
 LAMMPS GPU neighbor path and host/device transfers. They use the same model
 converted to native format without retraining or descriptor changes. Detailed
 timing samples and build versions are retained in the validation archive.
+
+
+## 21. Exact high-order G5 moments (revision 1.10)
+
+Baseline: `gpu` commit **2a96dcc**, AccelNet library **1.0.1**. This revision
+extends the shared G5/type-9 moment evaluator from exact integer orders 1--10
+to **1--16 in explicit moment modes**. It does not approximate any descriptor.
+[Validation and CPU/H100 timings](docs/validation/high-g5-moments-2026-09-27/README.md)
+record the supported range, fallbacks, and workloads where moments are slower.
+
+### 21.1 Which existing descriptors admit this reduction?
+
+| Descriptor | Exact fixed-order moment reduction |
+|---|---|
+| Chebyshev angular | Already implemented: finite polynomial in the cosine, separable radial weights |
+| G5 / n2p2 type 9, integer zeta | Implemented; this revision adds explicit orders 11--16 |
+| G1/G2/G3, LJ, n2p2 types 2/12/20/23 | Already single-neighbor sums, O(Nn); no pair sum to eliminate |
+| G4 / n2p2 type 3, types 13/21/24 | General neighbor-neighbor radial dependence prevents the separable G5 reduction |
+| n2p2 types 22/25 | Compact window in the angle, not a finite polynomial in its cosine |
+| Fractional G5 zeta | Not a finite polynomial; direct is retained |
+
+Here "fixed-order" means that the number of moments is independent of the
+number of neighbors. For types 22/25, the angular factor is
+$A(c)=W(\arccos c)$. A nonzero finite polynomial in $c$ cannot vanish on an
+open interval of compact angular support. Even a window covering the full
+physical angular range generally retains nonpolynomial $\arccos c$ dependence.
+A truncated Chebyshev/Legendre expansion would change the potential and its
+forces; it is deliberately excluded from this exact-equivalence revision.
+
+### 21.2 Extend the finite polynomial, not the descriptor definition
+
+For integer $p=\zeta$, the same identity used in Section 18 holds:
+
+$$A_p(c)=2^{1-p}(1+\lambda c)^p
+ =\sum_{q=0}^{p} a_q c^q,\qquad
+ a_q=2^{1-p}\binom pq\lambda^q.$$
+
+With $M_{\boldsymbol\alpha}^{s}=\sum_{j\in s}q(r_j)
+\mathbf u_j^{\boldsymbol\alpha}$, the degree contraction is
+
+$$S_q^{st}=\sum_{|\boldsymbol\alpha|=q}
+ \frac{q!}{\alpha_x!\alpha_y!\alpha_z!}
+ M_{\boldsymbol\alpha}^{s}M_{\boldsymbol\alpha}^{t}.$$
+
+For equal species, replace this with
+$\tfrac12(S_q^{ss}-\sum_{j\in s}q(r_j)^2)$ to remove self pairs and double
+counting. Sum $a_q S_q^{st}$ for the descriptor. The existing NN-adjoint
+contraction and differentiated three-variable Horner evaluation give forces
+without a second neighbor-pair loop. Integer eligibility uses **exact equality**;
+a near-integer parameter is not rounded into this polynomial path.
+
+The packed coefficient region now has room for $a_0,\ldots,a_{16}$. The
+component cutoff, previously immediately after $a_{10}$, moves after $a_{16}$.
+A named field constant is used by both packing and runtime selection. Both
+local degree-accumulator arrays use the same maximum-order constant, avoiding
+an order-dependent out-of-bounds write. Packed data are internal, so this does
+not change native model files or the public C ABI.
+
+### 21.3 Shared execution and conservative automatic selection
+
+CPU batch evaluation, the LAMMPS CPU batch adapter, and OpenMP target GPU
+execution compile the same moment construction, coefficient contraction and
+force routines. CPU builds remove the OpenMP directives. The retained atomic
+CPU evaluator is still an independent reference and keeps its old order-10
+moment limit; it evaluates higher orders directly. Its existing diagnostic now
+explicitly identifies that legacy limit, rather than implying that the shared
+batch path cannot evaluate higher-order moments.
+
+* Auto (0) retains exact integer orders 1--10 and its existing 16-neighbor rule.
+* Direct (1) always keeps the direct evaluator.
+* Thresholded moment (2) supports orders 1--16 above the existing neighbor rule.
+* Forced moment (3), including LAMMPS `g5 moment`, supports orders 1--16 without
+  the neighbor threshold.
+* Fractional, near-integer, and orders above 16 use direct evaluation.
+
+High-order eligibility is excluded during auto-mode packing, so an order-16
+function cannot enlarge the automatic moment basis for unrelated low-order
+functions. This preserves the existing selection policy rather than assuming
+that every exact moment transform is faster.
+
+The number of Cartesian monomials through degree $p$ is
+
+$$K(p)=\binom{p+3}{3},\qquad K(10)=286,\quad K(16)=969.$$
+
+Moment arithmetic and storage therefore increase by about **3.39 times**
+between those limits. Reuse across angular powers and species pairs matters:
+a single high-order channel can lose to direct pairs, while a group sharing
+moments across many powers can amortize this work. GPU transfer and launch
+costs also matter for small center counts. The benchmark reports both isolated
+high-order functions and a shared degree-1--16 family, and does not assert an
+unconditional moment speedup.
+
+
+### 21.4 Measure actual CPU parallel execution
+
+On a combined `target teams distribute parallel do`, an unqualified `if(...)`
+applies to both the target and parallel constituents. Thus the original
+`if(device /= omp_get_initial_device())` also serialized the parallel region
+on the host. Use `if(target:...)` to select the target alone, leaving host
+parallelism controlled by the OpenMP runtime. This follows the
+[OpenMP specification for the if clause](https://www.openmp.org/spec-html/5.2/openmpse17.html).
+The data mapping conditions and scalar numerical routines are unchanged.
+
+The thread benchmark compares prepared common kernels compiled with OpenMP
+OFF against ON at 1, 2, 4 and 8 physical cores on one socket. It verifies actual
+worker affinities, fixes dynamic teams off, reverses process order, and checks
+energies, every force component and virial against the independent retained
+reference. Report both $T_{\mathrm{OFF},1}/T_{\mathrm{ON},p}$ and the ON/1 cost;
+using ON/1 alone as the baseline would hide directive/runtime overhead.
+
+This is an explicit host-target path. The normal CPU batch and LAMMPS CPU
+adapter still use the serial compilation. GPU target execution keeps the same
+math, while the retained atomic CPU evaluator remains the compatibility and
+independent reference implementation.

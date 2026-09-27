@@ -299,8 +299,8 @@ contains
             call initialize_g5_moment_basis(config, parameter%integer_zeta)
         if (parameter%integer_zeta > MAX_G5_MOMENT_ORDER .and. .not. config%g5_high_order_warning_emitted) then
             write(error_unit, "(A,I0,A,I0,A)") "WARNING: G5 zeta=", parameter%integer_zeta, &
-                " exceeds the moment maximum order ", MAX_G5_MOMENT_ORDER, &
-                "; high-order descriptors will use direct evaluation."
+                " exceeds the legacy atomic moment maximum order ", MAX_G5_MOMENT_ORDER, &
+                "; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate)."
             config%g5_high_order_warning_emitted = .true.
         end if
         config%maximum_cutoff = max(config%maximum_cutoff, rc)

@@ -24,10 +24,10 @@ program target_benchmark
     integer(int64) :: start, finish, rate, repeats
     integer :: n, i, sample, order, method, j, mode, allocations, uploads, methods, fixed_neighbors
     character(len=128) :: arg, family, backend
-    logical :: host
-    if (command_argument_count() < 3 .or. command_argument_count() > 9) &
+    logical :: host, candidate_only
+    if (command_argument_count() < 3 .or. command_argument_count() > 10) &
         error stop 'usage: accelnet-target-benchmark N ORDER SECONDS [MODE] [SPACING] '// &
-            '[gpu|host|cpu-shared] [FAMILY] [no-neighbors] [ENV_NEIGHBORS]'
+            '[gpu|host|cpu-shared] [FAMILY] [no-neighbors] [ENV_NEIGHBORS] [candidate-only]'
     call get_command_argument(1,arg); read(arg,*) n
     call get_command_argument(2,arg); read(arg,*) order
     call get_command_argument(3,arg); read(arg,*) seconds
@@ -38,9 +38,15 @@ program target_benchmark
         methods = 2
     end if
     fixed_neighbors = 0
-    if (command_argument_count() == 9) then
+    if (command_argument_count() >= 9) then
         call get_command_argument(9,arg); read(arg,*) fixed_neighbors
         if (fixed_neighbors < 1) error stop 'positive environment neighbor count required'
+    end if
+    candidate_only = .false.
+    if (command_argument_count() == 10) then
+        call get_command_argument(10,arg)
+        if (arg /= 'candidate-only') error stop 'expected candidate-only'
+        candidate_only = .true.
     end if
     mode = 0; spacing = 1.7_real64
     if (command_argument_count() >= 4) then
@@ -76,6 +82,9 @@ program target_benchmark
     centers = [(i,i=1,n)]
     if (fixed_neighbors > 0) then
         call make_g5_scaling_neighbors(n,fixed_neighbors,nb)
+        ! New high-order fixtures keep every supplied edge inside Rc=3.4.
+        if (family == 'g5-high' .or. family == 'g5-high-series') &
+            nb%displacements=0.65_real64*nb%displacements
     else
         call build_neighbor_list(s,model%maximum_cutoff,nb,model%minimum_distance)
     end if
@@ -90,6 +99,9 @@ program target_benchmark
         do j = 1, methods
             method = j
             if (mod(sample,2) == 0) method = methods+1-j
+            ! Fixed geometry permits one independent reference evaluation above;
+            ! repeated candidate results are still checked against all E/F/W.
+            if (candidate_only .and. mod(method,2) == 1) cycle
             call evaluate(method) ! warmup also excludes one-time allocations
             call system_clock(start,rate)
             if (rate <= 0) error stop 'wall clock unavailable'

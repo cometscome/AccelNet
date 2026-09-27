@@ -67,6 +67,14 @@ if(BUILD_TESTING AND TARGET accelnet-n2p2-benchmark)
                 --converter $<TARGET_FILE:accelnet-model-converter-fortran>
                 --output "${CMAKE_CURRENT_BINARY_DIR}/extended-check")
         set_tests_properties(n2p2_extended_multi_element PROPERTIES TIMEOUT 300 LABELS "integration")
+        if(N2P2_REFERENCE_BENCHMARK)
+            add_test(NAME n2p2_high_g5_moments
+                COMMAND "${Python3_EXECUTABLE}" "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/check_n2p2_high_moments.py"
+                    ${_n2p2_oracle} --candidate $<TARGET_FILE:accelnet-n2p2-benchmark>
+                    --converter $<TARGET_FILE:accelnet-model-converter-fortran>
+                    --output "${CMAKE_CURRENT_BINARY_DIR}/high-moment-check")
+            set_tests_properties(n2p2_high_g5_moments PROPERTIES TIMEOUT 300 LABELS "integration;n2p2-reference")
+        endif()
         if(N2P2_REFERENCE_BENCHMARK AND N2P2_PREDICT_EXAMPLES)
             add_test(NAME n2p2_official_multi_element
                 COMMAND "${Python3_EXECUTABLE}" "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/check_n2p2_official.py"
@@ -81,6 +89,15 @@ endif()
 option(ACCELNET_TEST_N2P2_GPU "Run extended n2p2 checks on an actual GPU" OFF)
 if(ACCELNET_TEST_N2P2_GPU AND BUILD_TESTING AND TARGET accelnet-n2p2-benchmark
    AND Python3_Interpreter_FOUND AND NOT ACCELNET_TARGET_SERIAL)
+    if(N2P2_REFERENCE_BENCHMARK)
+        add_test(NAME n2p2_high_g5_moments_gpu
+            COMMAND "${Python3_EXECUTABLE}" "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/check_n2p2_high_moments.py"
+                ${_n2p2_oracle} --candidate $<TARGET_FILE:accelnet-n2p2-benchmark>
+                --converter $<TARGET_FILE:accelnet-model-converter-fortran> --backend gpu
+                --output "${CMAKE_CURRENT_BINARY_DIR}/high-moment-gpu-check")
+        set_tests_properties(n2p2_high_g5_moments_gpu PROPERTIES TIMEOUT 600
+            LABELS "gpu;integration;n2p2-reference" ENVIRONMENT "OMP_TARGET_OFFLOAD=MANDATORY;OMP_NUM_THREADS=1")
+    endif()
     add_test(NAME n2p2_extended_multi_element_gpu
         COMMAND "${Python3_EXECUTABLE}" "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/check_n2p2_extended.py"
             ${_n2p2_oracle} --candidate $<TARGET_FILE:accelnet-n2p2-benchmark>

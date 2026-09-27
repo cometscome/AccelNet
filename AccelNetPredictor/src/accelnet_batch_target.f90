@@ -686,7 +686,7 @@ contains
         total = offsets(nrows+1)-1
         !$omp end target
         ne = total
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) is_device_ptr(x,nb) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) is_device_ptr(x,nb) &
         !$omp& map(alloc:species,centers,offsets,indices,dr) private(i,j,k,e)
         do row = 1,max(natoms,nrows)
             if (row <= natoms) species(row) = int(x(4,row))

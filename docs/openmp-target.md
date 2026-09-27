@@ -1,7 +1,7 @@
 # OpenMP target GPU batch evaluation
 
 The optional `AccelNet::Target` library evaluates **Chebyshev, LJ, and Behler
-G1–G5 descriptors, the neural network and its input gradient, force contraction,
+G1–G5 and n2p2 weighted/compact descriptors, the neural network and its input gradient, force contraction,
 and force/virial scatter in FP64**. Existing CPU entry points retain their
 compiler options and do not acquire an OpenMP/GPU runtime dependency.
 
@@ -11,7 +11,9 @@ for different elements. All ten cutoff types, element-specific network shapes,
 and all twelve activation codes are supported. G4 uses direct pairs. G5 supports
 common direct/moment kernels on CPU and GPU. Auto retains the original 16-neighbor
 threshold inside each component's maximum angular cutoff. Exact integer powers
-1–10 use moments; fractional/near-integer/higher powers remain direct.
+1–10 are eligible in auto mode. Explicit moment modes also support exact integer
+powers 11–16; auto keeps those powers direct because measured high-order
+moments can regress. Fractional/near-integer and powers above 16 remain direct.
 Mixed/multiple Chebyshev components within a single element remain unsupported.
 Angular parameters require finite values, |lambda| <= 1 and zeta >= 1.
 
@@ -21,13 +23,15 @@ validation nor numerical checks: initialization verifies the actual execution
 location, and every target/data/update directive selects the requested backend.
 The default still requires a GPU and rejects accidental fallback. In NVHPC 25.3,
 `device(omp_get_initial_device())` alone did not select the CPU in our probe;
-conditional `target if(...)` is therefore used as well.
+conditional `target if(...)` is therefore used as well. Combined target/parallel
+directives use `if(target:...)` so CPU selection does not also disable threads.
 
 Cutoffs, angular powers, and activation formulas have one source in
 `AccelNetDescriptors/src/shared/*.inc`, included by the CPU and device modules.
 The default CPU CSR batch API now uses a serial compilation of the same kernels
-for single-component Chebyshev models, in both direct and moment modes. Other
-CPU descriptor families keep their measured existing implementation.
+for all supported Chebyshev, LJ, Behler and n2p2 extension models. CPU and GPU
+use the same high-order G5 moment construction, contraction, and force code.
+The LAMMPS CPU adapter also uses this shared serial batch path.
 `evaluate_batch_reference` retains the old batch path for independent comparisons;
 the object/atomic APIs remain available as additional independent references.
 
@@ -212,7 +216,8 @@ with rows × network size, rows × number of moments, and edges × angular order
 (for cached coordinate powers). Generic angular rows also use a persistent
 edge × radial-group × 2 cache for values and derivatives. G5 angular force coefficients
 in the direct path reuse NN-gradient slots. Direct polynomial grouping is bounded
-at degree 16. G5 moments use a separate order-10 bound and compact radial groups.
+at degree 16. G5 moments support degree 16 when explicitly selected (auto
+retains the order-10 eligibility bound) and use compact radial groups.
 Their raw moments and adjoints have layout `(row, monomial, group/species channel)`,
 with an extra self-correction entry. Degree contractions reuse the NN delta buffer,
 expanded for the required group/species pairs. Higher/noninteger powers stay direct.
@@ -380,3 +385,38 @@ python3 AccelNetPredictor/benchmark/compare_target_backends.py \
 and powers. These are **serial diagnostic implementations**, not device kernels
 or changes to the default CPU path. The output contains the exact modified
 sources, library, numerical test and timing executable.
+
+## CPU OpenMP thread comparison
+
+The ordinary CPU batch API and LAMMPS CPU adapter deliberately compile a
+serial instance of the common source. Setting `OMP_NUM_THREADS` alone does not
+parallelize those entry points. To exercise the threaded common kernels, build
+`AccelNet::Target` with GNU OpenMP and explicitly initialize with `use_host=.true.`:
+
+```sh
+cmake -S . -B build-host-omp -DCMAKE_BUILD_TYPE=Release \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=OFF \
+  '-DACCELNET_OPENMP_TARGET_FLAGS=-fopenmp -foffload=disable -ffree-line-length-none'
+cmake --build build-host-omp --target accelnet-target-benchmark test_batch_target
+
+cmake -S . -B build-host-serial -DCMAKE_BUILD_TYPE=Release \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=ON
+cmake --build build-host-serial --target accelnet-target-benchmark
+
+python3 AccelNetPredictor/benchmark/compare_openmp_host.py \
+  --serial build-host-serial/bin/accelnet-target-benchmark \
+  --openmp build-host-omp/bin/accelnet-target-benchmark \
+  --cores 6 7 8 9 10 11 12 13 --output /tmp/accelnet-host-threads
+```
+
+Select eight available physical cores on the same socket/NUMA node for the last
+command. It compares **OFF/1 and ON/1/2/4/8**, checks actual GNU worker affinities,
+and compares every timed E/F/virial result with the retained serial reference.
+Both builds use the prepared `host` API, excluding model packing from both sides;
+this is different from the public CPU batch timing that includes metadata packing.
+The optional `candidate-only` driver argument skips repeated reference timing,
+but retains the initial independent reference and every numerical check.
+
+The [revision 1.10 report](validation/high-g5-moments-2026-09-27/README.md)
+records raw timings, overhead and scaling. This measures host execution of the
+shared target kernels, not a new LAMMPS CPU threading integration.

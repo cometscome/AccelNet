@@ -52,12 +52,12 @@ contains
                     end do
                 end do
                 call add_behler(model%setups(s)%model,behler)
-            case ('g4-series', 'g5-series')
+            case ('g4-series', 'g5-series', 'g5-high', 'g5-high-series')
                 call initialize_behler_config(behler,2)
                 do pair = 1,3
                     t1 = merge(2,1,pair == 3); t2 = merge(1,2,pair == 1)
                     do sign = 1,2
-                        do j = 1,max(2,degree)
+                        do j = merge(max(1,degree),1,family == 'g5-high'),max(2,degree)
                             if (family == 'g4-series') then
                                 call add_g4(behler,t1,t2,3.4_real64,real(2*sign-3,real64), &
                                     real(j,real64),0.2_real64,0.4_real64)

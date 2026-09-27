@@ -1,0 +1,2520 @@
+{
+  "affinity": 6,
+  "rounds": 2,
+  "seconds": 0.05,
+  "core_warmup_seconds": 20,
+  "device": "GPU-2644154d-7268-af42-6631-59e1f3c6e7f3",
+  "binaries": {
+    "cpu": {
+      "path": "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+      "sha256": "ae2b13c6adc1b78bef4e5ffa7613e7557a3fad57d06d413640f5a069dc802f9d"
+    },
+    "gpu": {
+      "path": "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+      "sha256": "2ea295d95f149285d123112800be67f0107ffd62b5a7e5ef08e9633ab3e34134"
+    }
+  },
+  "rows": [
+    {
+      "family": "g5-high",
+      "atoms": 256,
+      "order": 11,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.034277301,
+            0.0341280065,
+            0.0341063395,
+            0.033783189,
+            0.033901055,
+            0.034151642,
+            0.0340730755,
+            0.0341109915,
+            0.034096399,
+            0.034158999
+          ],
+          "errors": [
+            3.174543961037557e-16,
+            3.174543961037557e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "11",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "11",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.034108665499999996
+        },
+        "cpu_moment": {
+          "samples": [
+            0.0280550025,
+            0.028031853,
+            0.0280365565,
+            0.0280756165,
+            0.0280436175,
+            0.0287405965,
+            0.028836061,
+            0.028766531,
+            0.028780324,
+            0.0287292945
+          ],
+          "errors": [
+            2.7929047963226594e-16,
+            2.7929047963226594e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "11",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "11",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0284024555
+        },
+        "gpu_direct": {
+          "samples": [
+            0.002445290476190476,
+            0.0024453809523809523,
+            0.002440142857142857,
+            0.0024371857142857145,
+            0.0024464809523809523,
+            0.0024024333333333334,
+            0.0024080523809523807,
+            0.0024024285714285714,
+            0.002397195238095238,
+            0.0023945761904761906
+          ],
+          "errors": [
+            3.7470027081099033e-16,
+            3.7470027081099033e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "11",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "11",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0024226190476190476
+        },
+        "gpu_moment": {
+          "samples": [
+            0.0013535918918918918,
+            0.0013447368421052631,
+            0.0013459473684210525,
+            0.0013474710526315788,
+            0.0013503157894736843,
+            0.0013563756756756757,
+            0.0013467868421052631,
+            0.0013449526315789473,
+            0.0013458973684210525,
+            0.0013469210526315788
+          ],
+          "errors": [
+            3.7816971776294395e-16,
+            3.7816971776294395e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "11",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "11",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.001346853947368421
+        }
+      },
+      "cpu_direct_over_moment": 1.2009055167782938,
+      "gpu_direct_over_moment": 1.7987243920192928,
+      "cpu_direct_over_gpu_moment": 25.32469505445927
+    },
+    {
+      "family": "g5-high",
+      "atoms": 256,
+      "order": 12,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.033749437,
+            0.0337129725,
+            0.033867293,
+            0.0337106775,
+            0.0338013805,
+            0.033376806,
+            0.0333079685,
+            0.033463955,
+            0.033423874,
+            0.033270331
+          ],
+          "errors": [
+            2.0990154059319366e-16,
+            2.0990154059319366e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "12",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "12",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.03358731625
+        },
+        "cpu_moment": {
+          "samples": [
+            0.037421227,
+            0.037459883,
+            0.0374334385,
+            0.0373933745,
+            0.037432303,
+            0.0374315395,
+            0.03741756,
+            0.0374144795,
+            0.0376102265,
+            0.037468493
+          ],
+          "errors": [
+            2.0816681711721685e-16,
+            2.0816681711721685e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "12",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "12",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.03743192125
+        },
+        "gpu_direct": {
+          "samples": [
+            0.002472047619047619,
+            0.0024736761904761905,
+            0.0024685285714285713,
+            0.0024665190476190475,
+            0.0024754190476190476,
+            0.0024970523809523812,
+            0.002495661904761905,
+            0.0024907714285714285,
+            0.0024875238095238097,
+            0.002502455
+          ],
+          "errors": [
+            3.0878077872387166e-16,
+            3.0878077872387166e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "12",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "12",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0024814714285714286
+        },
+        "gpu_moment": {
+          "samples": [
+            0.0014341428571428571,
+            0.001424525,
+            0.0014215833333333333,
+            0.001422338888888889,
+            0.0014248305555555557,
+            0.0014273583333333333,
+            0.00142175,
+            0.001421,
+            0.001418713888888889,
+            0.0014173583333333332
+          ],
+          "errors": [
+            3.3306690738754696e-16,
+            3.3306690738754696e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "12",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "12",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0014220444444444445
+        }
+      },
+      "cpu_direct_over_moment": 0.8972907381824543,
+      "gpu_direct_over_moment": 1.74500272355473,
+      "cpu_direct_over_gpu_moment": 23.61903411754594
+    },
+    {
+      "family": "g5-high",
+      "atoms": 256,
+      "order": 13,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.0340759085,
+            0.0339531945,
+            0.033996776,
+            0.034012879,
+            0.033844926,
+            0.033816018,
+            0.03377902,
+            0.033749413,
+            0.03376747,
+            0.033843722
+          ],
+          "errors": [
+            3.2959746043559335e-16,
+            3.2959746043559335e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "13",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "13",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.033844323999999995
+        },
+        "cpu_moment": {
+          "samples": [
+            0.050377165,
+            0.050401067,
+            0.050346791,
+            0.050384117,
+            0.050402425,
+            0.050923311,
+            0.050910057,
+            0.050899403,
+            0.051057731,
+            0.050896629
+          ],
+          "errors": [
+            2.949029909160572e-16,
+            2.949029909160572e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "13",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "13",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.050649527
+        },
+        "gpu_direct": {
+          "samples": [
+            0.0024036714285714284,
+            0.0024003428571428573,
+            0.002397095238095238,
+            0.002399333333333333,
+            0.002399657142857143,
+            0.0024663285714285714,
+            0.0024666714285714285,
+            0.002461719047619048,
+            0.0024589619047619047,
+            0.0024572285714285717
+          ],
+          "errors": [
+            4.475586568020162e-16,
+            4.475586568020162e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "13",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "13",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.00243045
+        },
+        "gpu_moment": {
+          "samples": [
+            0.0015320909090909092,
+            0.0015256969696969696,
+            0.001520669696969697,
+            0.0015175757575757575,
+            0.0015178757575757575,
+            0.0015310969696969697,
+            0.001524030303030303,
+            0.0015231181818181818,
+            0.0015242151515151515,
+            0.0015235181818181818
+          ],
+          "errors": [
+            5.48172618408671e-16,
+            5.48172618408671e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "13",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "13",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0015237742424242424
+        }
+      },
+      "cpu_direct_over_moment": 0.6682061216484805,
+      "gpu_direct_over_moment": 1.5950197426446093,
+      "cpu_direct_over_gpu_moment": 22.210851881939877
+    },
+    {
+      "family": "g5-high",
+      "atoms": 256,
+      "order": 14,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.0334150445,
+            0.03357025,
+            0.033189672,
+            0.033442727,
+            0.033455184,
+            0.033433153,
+            0.033400678,
+            0.033387904,
+            0.033272844,
+            0.0334554175
+          ],
+          "errors": [
+            3.8250652645288596e-16,
+            3.8250652645288596e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "14",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "14",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.03342409875
+        },
+        "cpu_moment": {
+          "samples": [
+            0.069032965,
+            0.069052277,
+            0.068991108,
+            0.069005114,
+            0.068971728,
+            0.068356135,
+            0.068215464,
+            0.068250349,
+            0.068219837,
+            0.068370239
+          ],
+          "errors": [
+            3.7730235602495554e-16,
+            3.7730235602495554e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "14",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "14",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0686709835
+        },
+        "gpu_direct": {
+          "samples": [
+            0.002508745,
+            0.002506495,
+            0.00250225,
+            0.002500155,
+            0.002511645,
+            0.002441804761904762,
+            0.0024313809523809522,
+            0.0024235809523809526,
+            0.0024302809523809527,
+            0.0024305190476190475
+          ],
+          "errors": [
+            3.0184188481996443e-16,
+            3.0184188481996443e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "14",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "14",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0024709798809523812
+        },
+        "gpu_moment": {
+          "samples": [
+            0.0016755966666666666,
+            0.0016653516129032258,
+            0.0016603225806451614,
+            0.0016608677419354839,
+            0.0016807299999999999,
+            0.00166684,
+            0.0016617064516129033,
+            0.0016598709677419356,
+            0.0016583548387096776,
+            0.0016557806451612902
+          ],
+          "errors": [
+            3.3219954564955856e-16,
+            3.3219954564955856e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "14",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "14",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0016612870967741937
+        }
+      },
+      "cpu_direct_over_moment": 0.48672812076442734,
+      "gpu_direct_over_moment": 1.4873888358914058,
+      "cpu_direct_over_gpu_moment": 20.11939947941646
+    },
+    {
+      "family": "g5-high",
+      "atoms": 256,
+      "order": 15,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.0337196245,
+            0.0337127675,
+            0.0337830175,
+            0.0336672345,
+            0.033733278,
+            0.0336999975,
+            0.033573847,
+            0.033570251,
+            0.033669271,
+            0.033670596
+          ],
+          "errors": [
+            5.828670879282072e-16,
+            5.828670879282072e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "15",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "15",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.033685296749999996
+        },
+        "cpu_moment": {
+          "samples": [
+            0.088378525,
+            0.088431012,
+            0.088311071,
+            0.088447332,
+            0.088433277,
+            0.087673982,
+            0.087793297,
+            0.087634825,
+            0.087845965,
+            0.08768749
+          ],
+          "errors": [
+            6.38378239159465e-16,
+            6.38378239159465e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "15",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "15",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.088078518
+        },
+        "gpu_direct": {
+          "samples": [
+            0.002457752380952381,
+            0.0024581857142857142,
+            0.0024542380952380953,
+            0.0024531,
+            0.0024727666666666667,
+            0.0024210952380952382,
+            0.002415195238095238,
+            0.0024124333333333334,
+            0.0024150523809523807,
+            0.002414809523809524
+          ],
+          "errors": [
+            4.85722573273506e-16,
+            4.85722573273506e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "15",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "15",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.002437097619047619
+        },
+        "gpu_moment": {
+          "samples": [
+            0.0018048535714285715,
+            0.0017967821428571428,
+            0.0017908535714285714,
+            0.0017922178571428572,
+            0.0017952071428571428,
+            0.0018001428571428571,
+            0.0017972821428571429,
+            0.0017941071428571429,
+            0.0017909571428571427,
+            0.0017898928571428573
+          ],
+          "errors": [
+            5.204170427930421e-16,
+            5.204170427930421e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "15",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "15",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0017946571428571428
+        }
+      },
+      "cpu_direct_over_moment": 0.3824462254235476,
+      "gpu_direct_over_moment": 1.3579739332091554,
+      "cpu_direct_over_gpu_moment": 18.769767185932846
+    },
+    {
+      "family": "g5-high",
+      "atoms": 256,
+      "order": 16,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.033715017,
+            0.033600717,
+            0.0337201245,
+            0.033538056,
+            0.0335314305,
+            0.0337108255,
+            0.0337473735,
+            0.033697537,
+            0.0338563915,
+            0.0337060325
+          ],
+          "errors": [
+            8.638922910364499e-16,
+            8.638922910364499e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.033708429
+        },
+        "cpu_moment": {
+          "samples": [
+            0.108400302,
+            0.108314742,
+            0.108305059,
+            0.10833866,
+            0.108235239,
+            0.107791301,
+            0.107803829,
+            0.108109824,
+            0.108086984,
+            0.107789008
+          ],
+          "errors": [
+            8.98586760555986e-16,
+            8.98586760555986e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.1081725315
+        },
+        "gpu_direct": {
+          "samples": [
+            0.002466147619047619,
+            0.0024696190476190477,
+            0.0024707666666666664,
+            0.002463904761904762,
+            0.002458719047619048,
+            0.00250366,
+            0.002505195,
+            0.00250045,
+            0.002496390476190476,
+            0.00250685
+          ],
+          "errors": [
+            3.9898639947466563e-16,
+            3.9898639947466563e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0024835785714285713
+        },
+        "gpu_moment": {
+          "samples": [
+            0.001956646153846154,
+            0.0019494923076923075,
+            0.0019469615384615385,
+            0.0019481192307692307,
+            0.0019560769230769232,
+            0.0019568846153846155,
+            0.0019502730769230768,
+            0.0019450346153846154,
+            0.0019458423076923078,
+            0.0019603115384615385
+          ],
+          "errors": [
+            3.8510861166685117e-16,
+            3.8510861166685117e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.001949882692307692
+        }
+      },
+      "cpu_direct_over_moment": 0.3116172704158264,
+      "gpu_direct_over_moment": 1.273706660008992,
+      "cpu_direct_over_gpu_moment": 17.287413818780028
+    },
+    {
+      "family": "g5-high",
+      "atoms": 2048,
+      "order": 11,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.272980267,
+            0.272199764,
+            0.271162555,
+            0.270179481,
+            0.272762895,
+            0.27141582,
+            0.273275832,
+            0.27275722,
+            0.271710103,
+            0.272353921
+          ],
+          "errors": [
+            3.2307490016592055e-14,
+            3.2307490016592055e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "11",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "11",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.2722768425
+        },
+        "cpu_moment": {
+          "samples": [
+            0.333606093,
+            0.333450209,
+            0.333964039,
+            0.332312414,
+            0.332986678,
+            0.332929994,
+            0.33390291,
+            0.332494153,
+            0.333669228,
+            0.33300472
+          ],
+          "errors": [
+            3.266831249959523e-14,
+            3.266831249959523e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "11",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "11",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.33322746449999996
+        },
+        "gpu_direct": {
+          "samples": [
+            0.004423841666666667,
+            0.004357341666666666,
+            0.004324491666666667,
+            0.004299241666666667,
+            0.004311758333333333,
+            0.004472175,
+            0.004380266666666666,
+            0.004376066666666667,
+            0.004396,
+            0.0043895666666666664
+          ],
+          "errors": [
+            3.2807090377673376e-14,
+            3.2807090377673376e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "11",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "11",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0043781666666666665
+        },
+        "gpu_moment": {
+          "samples": [
+            0.002976,
+            0.0028933777777777774,
+            0.0028922722222222224,
+            0.002886333333333333,
+            0.002893061111111111,
+            0.0029540470588235294,
+            0.0028757277777777777,
+            0.0028797111111111113,
+            0.0028781055555555557,
+            0.002880444444444444
+          ],
+          "errors": [
+            3.2807090377673376e-14,
+            3.2807090377673376e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "11",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "11",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.002889302777777778
+        }
+      },
+      "cpu_direct_over_moment": 0.8170900406079825,
+      "gpu_direct_over_moment": 1.5153021345980238,
+      "cpu_direct_over_gpu_moment": 94.23617510568198
+    },
+    {
+      "family": "g5-high",
+      "atoms": 2048,
+      "order": 12,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.267107264,
+            0.266074191,
+            0.2662614,
+            0.266603396,
+            0.266958738,
+            0.266030693,
+            0.266321009,
+            0.266493362,
+            0.265604481,
+            0.266076298
+          ],
+          "errors": [
+            8.770761894538737e-15,
+            8.770761894538737e-15
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "12",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "12",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.2662912045
+        },
+        "cpu_moment": {
+          "samples": [
+            0.443373825,
+            0.440960953,
+            0.444268579,
+            0.442106799,
+            0.448062707,
+            0.448744396,
+            0.44078774,
+            0.442775245,
+            0.442531407,
+            0.444474444
+          ],
+          "errors": [
+            8.770761894538737e-15,
+            8.770761894538737e-15
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "12",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "12",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.443074535
+        },
+        "gpu_direct": {
+          "samples": [
+            0.004462241666666667,
+            0.004386166666666667,
+            0.0044259,
+            0.004418333333333333,
+            0.00444035,
+            0.004413566666666666,
+            0.0043495750000000005,
+            0.004316675,
+            0.004313666666666666,
+            0.0043187500000000005
+          ],
+          "errors": [
+            8.798517470154366e-15,
+            8.798517470154366e-15
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "12",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "12",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.004399866666666667
+        },
+        "gpu_moment": {
+          "samples": [
+            0.00312931875,
+            0.00313255,
+            0.00312886875,
+            0.003132,
+            0.003119005882352941,
+            0.00318424375,
+            0.0031108823529411764,
+            0.0031281125,
+            0.00312986875,
+            0.0031176999999999997
+          ],
+          "errors": [
+            8.798517470154366e-15,
+            8.798517470154366e-15
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "12",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "12",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.00312909375
+        }
+      },
+      "cpu_direct_over_moment": 0.6010076938860862,
+      "gpu_direct_over_moment": 1.4061153222611713,
+      "cpu_direct_over_gpu_moment": 85.10170221010476
+    },
+    {
+      "family": "g5-high",
+      "atoms": 2048,
+      "order": 13,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.271424972,
+            0.269568359,
+            0.270753224,
+            0.273466961,
+            0.271526865,
+            0.275546583,
+            0.27541612,
+            0.276031319,
+            0.275269462,
+            0.272505627
+          ],
+          "errors": [
+            2.0775048348298242e-14,
+            2.0775048348298242e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "13",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "13",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.27298629399999996
+        },
+        "cpu_moment": {
+          "samples": [
+            0.566992564,
+            0.563128745,
+            0.560743477,
+            0.562508282,
+            0.566824204,
+            0.564546967,
+            0.560030867,
+            0.563666778,
+            0.571248837,
+            0.567723128
+          ],
+          "errors": [
+            2.0768109454394335e-14,
+            2.0768109454394335e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "13",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "13",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.5641068725
+        },
+        "gpu_direct": {
+          "samples": [
+            0.004444083333333334,
+            0.004317066666666667,
+            0.00435575,
+            0.004315491666666667,
+            0.004316508333333333,
+            0.004518841666666666,
+            0.004450008333333333,
+            0.004345675,
+            0.004430333333333334,
+            0.004427916666666667
+          ],
+          "errors": [
+            2.142730437526552e-14,
+            2.142730437526552e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "13",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "13",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0043918333333333335
+        },
+        "gpu_moment": {
+          "samples": [
+            0.0034493266666666667,
+            0.0033491933333333335,
+            0.0033491866666666664,
+            0.0033432799999999997,
+            0.003337333333333333,
+            0.0034405399999999997,
+            0.003354073333333333,
+            0.003359333333333333,
+            0.0033496733333333332,
+            0.003338606666666667
+          ],
+          "errors": [
+            2.1538326677728037e-14,
+            2.1538326677728037e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "13",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "13",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0033494333333333333
+        }
+      },
+      "cpu_direct_over_moment": 0.4839265524105097,
+      "gpu_direct_over_moment": 1.3112168227461363,
+      "cpu_direct_over_gpu_moment": 81.50223241742383
+    },
+    {
+      "family": "g5-high",
+      "atoms": 2048,
+      "order": 14,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.266951542,
+            0.266638361,
+            0.268770869,
+            0.267231715,
+            0.266706692,
+            0.266985592,
+            0.267129755,
+            0.267519877,
+            0.267469321,
+            0.267571854
+          ],
+          "errors": [
+            2.4730217873525362e-14,
+            2.4730217873525362e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "14",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "14",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.267180735
+        },
+        "cpu_moment": {
+          "samples": [
+            0.711894396,
+            0.719103842,
+            0.704266284,
+            0.72560456,
+            0.711684414,
+            0.704108464,
+            0.712305509,
+            0.704090805,
+            0.708873439,
+            0.714989982
+          ],
+          "errors": [
+            2.4730217873525362e-14,
+            2.4730217873525362e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "14",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "14",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.711789405
+        },
+        "gpu_direct": {
+          "samples": [
+            0.004465083333333333,
+            0.004462916666666666,
+            0.004486158333333333,
+            0.004440925,
+            0.004440433333333333,
+            0.004485333333333333,
+            0.0045165000000000005,
+            0.0045536454545454545,
+            0.0045385,
+            0.004549009090909092
+          ],
+          "errors": [
+            2.4341639814906557e-14,
+            2.4341639814906557e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "14",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "14",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.004485745833333333
+        },
+        "gpu_moment": {
+          "samples": [
+            0.0037807928571428574,
+            0.0037019285714285713,
+            0.003693935714285714,
+            0.0036931571428571426,
+            0.0036940714285714285,
+            0.003710707142857143,
+            0.0036973571428571433,
+            0.0036767,
+            0.00369285,
+            0.003669142857142857
+          ],
+          "errors": [
+            2.4341639814906557e-14,
+            2.4341639814906557e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "14",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "14",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0036940035714285715
+        }
+      },
+      "cpu_direct_over_moment": 0.3753648665225637,
+      "gpu_direct_over_moment": 1.2143317532307023,
+      "cpu_direct_over_gpu_moment": 72.32822866402209
+    },
+    {
+      "family": "g5-high",
+      "atoms": 2048,
+      "order": 15,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.269139929,
+            0.269301493,
+            0.268697152,
+            0.268673527,
+            0.268796104,
+            0.269261511,
+            0.270050312,
+            0.268532244,
+            0.269708427,
+            0.269430809
+          ],
+          "errors": [
+            1.5987211554602254e-14,
+            1.5987211554602254e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "15",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "15",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.26920072
+        },
+        "cpu_moment": {
+          "samples": [
+            0.869844604,
+            0.873140551,
+            0.877487473,
+            0.872302281,
+            0.885833403,
+            0.877325401,
+            0.900388293,
+            0.92672748,
+            0.882627954,
+            0.901940387
+          ],
+          "errors": [
+            1.5931700403370996e-14,
+            1.5931700403370996e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "15",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "15",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.8800577135000001
+        },
+        "gpu_direct": {
+          "samples": [
+            0.004443425,
+            0.0043520749999999995,
+            0.004358766666666667,
+            0.004333833333333333,
+            0.004337666666666667,
+            0.0045655363636363635,
+            0.0043935,
+            0.0044270916666666665,
+            0.004396008333333334,
+            0.004388749999999999
+          ],
+          "errors": [
+            1.5432100042289676e-14,
+            1.5432100042289676e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "15",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "15",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.004391124999999999
+        },
+        "gpu_moment": {
+          "samples": [
+            0.004180491666666667,
+            0.004108830769230769,
+            0.0040702307692307696,
+            0.0040703,
+            0.004074923076923077,
+            0.0041936583333333334,
+            0.004091376923076923,
+            0.004088223076923077,
+            0.0040913,
+            0.004099
+          ],
+          "errors": [
+            1.427330476033717e-14,
+            1.427330476033717e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "15",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "15",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.004091338461538462
+        }
+      },
+      "cpu_direct_over_moment": 0.30588984775712663,
+      "gpu_direct_over_moment": 1.0732734632638554,
+      "cpu_direct_over_gpu_moment": 65.79771449629047
+    },
+    {
+      "family": "g5-high",
+      "atoms": 2048,
+      "order": 16,
+      "neighbors": 64,
+      "descriptors": 6,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.268242943,
+            0.26883981,
+            0.270968828,
+            0.268055339,
+            0.268311864,
+            0.267326645,
+            0.269986682,
+            0.268164396,
+            0.270830454,
+            0.270866852
+          ],
+          "errors": [
+            2.3647750424515834e-14,
+            2.3647750424515834e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.268575837
+        },
+        "cpu_moment": {
+          "samples": [
+            1.071602593,
+            1.076164088,
+            1.053473716,
+            1.05698098,
+            1.058809883,
+            1.056329916,
+            1.059023019,
+            1.068681632,
+            1.069518929,
+            1.065346046
+          ],
+          "errors": [
+            2.3592239273284576e-14,
+            2.3592239273284576e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "2048",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 1.0621845325
+        },
+        "gpu_direct": {
+          "samples": [
+            0.0043414,
+            0.0043511,
+            0.004384333333333333,
+            0.0043405833333333334,
+            0.004348675,
+            0.004417083333333333,
+            0.004364908333333333,
+            0.0043335,
+            0.004352175,
+            0.004417325
+          ],
+          "errors": [
+            2.3314683517128287e-14,
+            2.3314683517128287e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.0043516375
+        },
+        "gpu_moment": {
+          "samples": [
+            0.004550909090909091,
+            0.004551545454545455,
+            0.0045551818181818185,
+            0.004553190909090909,
+            0.004540666666666667,
+            0.004544083333333333,
+            0.004552081818181818,
+            0.0045464727272727275,
+            0.004550736363636364,
+            0.0045445749999999995
+          ],
+          "errors": [
+            2.373101715136272e-14,
+            2.373101715136272e-14
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "2048",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high",
+              "no-neighbors",
+              "64"
+            ]
+          ],
+          "seconds": 0.004550822727272728
+        }
+      },
+      "cpu_direct_over_moment": 0.2528523328878356,
+      "gpu_direct_over_moment": 0.9562309412583738,
+      "cpu_direct_over_gpu_moment": 59.01698508061978
+    },
+    {
+      "family": "g5-high-series",
+      "atoms": 256,
+      "order": 16,
+      "neighbors": 256,
+      "descriptors": 96,
+      "records": {
+        "cpu_direct": {
+          "samples": [
+            0.770598388,
+            0.77110672,
+            0.770612195,
+            0.770686749,
+            0.770916833,
+            0.771062693,
+            0.770335176,
+            0.770875926,
+            0.771199832,
+            0.771147784
+          ],
+          "errors": [
+            1.1102230246251565e-16,
+            1.1102230246251565e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high-series",
+              "no-neighbors",
+              "256"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "cpu-shared",
+              "g5-high-series",
+              "no-neighbors",
+              "256"
+            ]
+          ],
+          "seconds": 0.7708963795
+        },
+        "cpu_moment": {
+          "samples": [
+            0.400594455,
+            0.400071339,
+            0.400009642,
+            0.399091657,
+            0.399815147,
+            0.40006552,
+            0.400752425,
+            0.399497804,
+            0.400159018,
+            0.400430449
+          ],
+          "errors": [
+            1.1102230246251565e-16,
+            1.1102230246251565e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high-series",
+              "no-neighbors",
+              "256"
+            ],
+            [
+              "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "cpu-shared",
+              "g5-high-series",
+              "no-neighbors",
+              "256"
+            ]
+          ],
+          "seconds": 0.4000684295
+        },
+        "gpu_direct": {
+          "samples": [
+            0.008267571428571428,
+            0.008301428571428572,
+            0.008285457142857142,
+            0.008114399999999999,
+            0.008244857142857142,
+            0.008194442857142856,
+            0.0082313,
+            0.008243157142857142,
+            0.008233142857142857,
+            0.008241142857142858
+          ],
+          "errors": [
+            1.1102230246251565e-16,
+            1.1102230246251565e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high-series",
+              "no-neighbors",
+              "256"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "1",
+              "1.7",
+              "gpu",
+              "g5-high-series",
+              "no-neighbors",
+              "256"
+            ]
+          ],
+          "seconds": 0.00824215
+        },
+        "gpu_moment": {
+          "samples": [
+            0.0063593625,
+            0.006343125,
+            0.0063515,
+            0.0063447625,
+            0.006349775,
+            0.006354125,
+            0.0063493875,
+            0.0063621125,
+            0.006353725,
+            0.006363
+          ],
+          "errors": [
+            1.1102230246251565e-16,
+            1.1102230246251565e-16
+          ],
+          "commands": [
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high-series",
+              "no-neighbors",
+              "256"
+            ],
+            [
+              "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+              "256",
+              "16",
+              "0.05",
+              "3",
+              "1.7",
+              "gpu",
+              "g5-high-series",
+              "no-neighbors",
+              "256"
+            ]
+          ],
+          "seconds": 0.0063526125
+        }
+      },
+      "cpu_direct_over_moment": 1.9269113048071693,
+      "gpu_direct_over_moment": 1.2974425875968352,
+      "cpu_direct_over_gpu_moment": 121.35107870974343
+    }
+  ],
+  "passed": true,
+  "series_atoms": [
+    256
+  ],
+  "scope_note": "Completed all 12 isolated-order cases and the 256-center shared-order case. The optional 2048-center shared-order case was cancelled before recording results to bound redundant reference timing cost."
+}

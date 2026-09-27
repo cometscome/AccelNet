@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-c++"
+	tests="49"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="s218"
+	time="11"
+	timestamp="2026-09-27T15:00:26"
+	>
+	<testcase name="descriptor_unit" classname="descriptor_unit" time="0.00344511" status="run">
+		<system-out>descriptor unit tests passed
+</system-out>
+	</testcase>
+	<testcase name="descriptor_neighbor_images" classname="descriptor_neighbor_images" time="0.0151372" status="run">
+		<system-out> PASS: orthogonal periodic image coverage, uniqueness and unwrapped displacements
+</system-out>
+	</testcase>
+	<testcase name="descriptor_tio2" classname="descriptor_tio2" time="0.00428132" status="run">
+		<system-out>TiO2 regression fixture passed: 24 atoms, 2406
+</system-out>
+	</testcase>
+	<testcase name="descriptor_lj_model" classname="descriptor_lj_model" time="0.00131788" status="run">
+		<system-out>LJ and descriptor model tests passed
+</system-out>
+	</testcase>
+	<testcase name="descriptor_behler" classname="descriptor_behler" time="0.0137618" status="run">
+		<system-out>WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy ...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+	<testcase name="descriptor_combined_model" classname="descriptor_combined_model" time="0.00141763" status="run">
+		<system-out>combined Chebyshev + Behler + LJ model test passed
+</system-out>
+	</testcase>
+	<testcase name="descriptor_setup_parser" classname="descriptor_setup_parser" time="0.00511122" status="run">
+		<system-out>AccelNet setup parser tests passed
+</system-out>
+	</testcase>
+	<testcase name="descriptor_setup_cli_match" classname="descriptor_setup_cli_match" time="0.0218938" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="descriptor_n2p2_cutoff_reference_match" classname="descriptor_n2p2_cutoff_reference_match" time="0.00177892" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="predictor_target_host_g5_moments" classname="predictor_target_host_g5_moments" time="1.42066" status="run">
+		<system-out>WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=16 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=16 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy ...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_host_equivalence" classname="predictor_target_host_equivalence" time="0.624526" status="run">
+		<system-out> GPU checks:          78  maximum absolute E/F/W error:   1.2212453270876722E-015
+ GPU batch FP64 equivalence and finite differences passed
+</system-out>
+	</testcase>
+	<testcase name="predictor_target_host_other_descriptors" classname="predictor_target_host_other_descriptors" time="0.759213" status="run">
+		<system-out> DESCRIPTOR CASE lj           0
+ DESCRIPTOR CASE lj           1
+ DESCRIPTOR CASE lj           2
+ DESCRIPTOR CASE lj           3
+ DESCRIPTOR CASE lj           4
+ DESCRIPTOR CASE lj           5
+ DESCRIPTOR CASE lj           6
+ DESCRIPTOR CASE lj           7
+ DESCRIPTOR CASE lj           8
+ DESCRIPTOR CASE lj           9
+ DESCRIPTOR CASE behler           0
+ DESCRIPTOR CASE behler           1
+ DESCRIPTOR CASE behler           2
+ DESCRIPTOR CASE behler           3
+ DESCRIPTOR CASE behler           4
+ DESCRIPTOR CASE behler           5
+ DESCRIPTOR CASE behler           6
+ DESCRIPTOR CASE behler           7
+ DESCRIPTOR CASE behler           8
+ DESCRIPTOR CASE behler           9
+ DESCRIPTOR CASE g4           0
+ DESCRIPTOR CASE g4           1
+ DESCRIPTOR CASE g4           2
+ DESCRIPTOR CASE g4           3
+ DESCRIPTOR CASE g4           4
+ DESCRIPTOR CASE g4           5
+ DESCRIPTOR CASE g4           6
+ DESCRIPTOR CASE g4           7
+ DESCRIPTOR CASE g4           8
+ DESCRIPTOR CASE g4           9
+ DESCRIPTOR CASE g5     ...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+	<testcase name="predictor_batch_equivalence" classname="predictor_batch_equivalence" time="0.408231" status="run">
+		<system-out> Batch energies, forces, virials, partitions and workspace reuse passed
+</system-out>
+	</testcase>
+	<testcase name="predictor_batch_reject_offset" classname="predictor_batch_reject_offset" time="0.104176" status="run">
+		<system-out> OpenMP target: CSR offset out of range
+ERROR STOP 1
+
+Error termination. Backtrace:
+#0  0x7f931bf70960 in ???
+#1  0x7f931bf714d9 in ???
+#2  0x7f931bf72bb2 in ???
+#3  0x55fd0307232d in ???
+#4  0x55fd0307b463 in ???
+#5  0x55fd0306b3bc in ???
+#6  0x55fd0304c3e0 in ???
+#7  0x55fd0304868e in ???
+#8  0x7f931bb47d8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#9  0x7f931bb47e3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#10  0x55fd030486c4 in ???
+#11  0xffffffffffffffff in ???
+</system-out>
+	</testcase>
+	<testcase name="predictor_batch_reject_monotonic" classname="predictor_batch_reject_monotonic" time="0.103403" status="run">
+		<system-out> OpenMP target: CSR offsets must be nondecreasing
+ERROR STOP 1
+
+Error termination. Backtrace:
+#0  0x7f5dc205a960 in ???
+#1  0x7f5dc205b4d9 in ???
+#2  0x7f5dc205cbb2 in ???
+#3  0x55bec08db32d in ???
+#4  0x55bec08e44d5 in ???
+#5  0x55bec08d43bc in ???
+#6  0x55bec08b53e0 in ???
+#7  0x55bec08b168e in ???
+#8  0x7f5dc1c31d8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#9  0x7f5dc1c31e3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#10  0x55bec08b16c4 in ???
+#11  0xffffffffffffffff in ???
+</system-out>
+	</testcase>
+	<testcase name="predictor_batch_reject_target" classname="predictor_batch_reject_target" time="0.103" status="run">
+		<system-out> OpenMP target: neighbor index out of range
+ERROR STOP 1
+
+Error termination. Backtrace:
+#0  0x7fdd0e8d6960 in ???
+#1  0x7fdd0e8d74d9 in ???
+#2  0x7fdd0e8d8bb2 in ???
+#3  0x560aaed9a32d in ???
+#4  0x560aaeda41a3 in ???
+#5  0x560aaed933bc in ???
+#6  0x560aaed743e0 in ???
+#7  0x560aaed7068e in ???
+#8  0x7fdd0e4add8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#9  0x7fdd0e4ade3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#10  0x560aaed706c4 in ???
+#11  0xffffffffffffffff in ???
+</system-out>
+	</testcase>
+	<testcase name="predictor_batch_reject_center" classname="predictor_batch_reject_center" time="0.102783" status="run">
+		<system-out> OpenMP target: center index out of range
+ERROR STOP 1
+
+Error termination. Backtrace:
+#0  0x7f8d2e6b0960 in ???
+#1  0x7f8d2e6b14d9 in ???
+#2  0x7f8d2e6b2bb2 in ???
+#3  0x555ae6a0c32d in ???
+#4  0x555ae6a160bf in ???
+#5  0x555ae6a053bc in ???
+#6  0x555ae69e63e0 in ???
+#7  0x555ae69e268e in ???
+#8  0x7f8d2e287d8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#9  0x7f8d2e287e3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#10  0x555ae69e26c4 in ???
+#11  0xffffffffffffffff in ???
+</system-out>
+	</testcase>
+	<testcase name="predictor_batch_reject_species" classname="predictor_batch_reject_species" time="0.102947" status="run">
+		<system-out> OpenMP target: species out of range
+ERROR STOP 1
+
+Error termination. Backtrace:
+#0  0x7fe486d87960 in ???
+#1  0x7fe486d884d9 in ???
+#2  0x7fe486d89bb2 in ???
+#3  0x55b32c96732d in ???
+#4  0x55b32c9673ba in ???
+#5  0x55b32c9603bc in ???
+#6  0x55b32c9413e0 in ???
+#7  0x55b32c93d68e in ???
+#8  0x7fe48695ed8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#9  0x7fe48695ee3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#10  0x55b32c93d6c4 in ???
+#11  0xffffffffffffffff in ???
+</system-out>
+	</testcase>
+	<testcase name="predictor_batch_reject_shape" classname="predictor_batch_reject_shape" time="0.102792" status="run">
+		<system-out> OpenMP target: wrong CSR offset count
+ERROR STOP 1
+
+Error termination. Backtrace:
+#0  0x7fece8573960 in ???
+#1  0x7fece85744d9 in ???
+#2  0x7fece8575bb2 in ???
+#3  0x558bc58e832d in ???
+#4  0x558bc58f0a23 in ???
+#5  0x558bc58e13bc in ???
+#6  0x558bc58c23e0 in ???
+#7  0x558bc58be68e in ???
+#8  0x7fece814ad8f in __libc_start_call_main
+	at ../sysdeps/nptl/libc_start_call_main.h:58
+#9  0x7fece814ae3f in __libc_start_main_impl
+	at ../csu/libc-start.c:392
+#10  0x558bc58be6c4 in ???
+#11  0xffffffffffffffff in ???
+</system-out>
+	</testcase>
+	<testcase name="predictor_atomic_and_structure_virial" classname="predictor_atomic_and_structure_virial" time="0.14064" status="run">
+		<system-out> Atomic and structure virial finite differences passed
+</system-out>
+	</testcase>
+	<testcase name="predictor_c_virial" classname="predictor_c_virial" time="0.00211751" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="predictor_virial_convergence_n2p2" classname="predictor_virial_convergence_n2p2" time="0.0314151" status="run">
+		<system-out>VIRIAL molecule 0 best_h= 1.000E-05 max_error= 8.552E-11 atomic_error= 0.000E+00
+VIRIAL orthogonal 0 best_h= 1.000E-05 max_error= 1.306E-10 atomic_error= 0.000E+00
+VIRIAL triclinic 0 best_h= 1.000E-05 max_error= 9.359E-11 atomic_error= 0.000E+00
+VIRIAL self_images 0 best_h= 1.000E-05 max_error= 1.996E-11 atomic_error= 0.000E+00
+</system-out>
+	</testcase>
+	<testcase name="predictor_virial_convergence_n2p2-per-element" classname="predictor_virial_convergence_n2p2-per-element" time="0.033028" status="run">
+		<system-out>VIRIAL molecule 0 best_h= 1.000E-05 max_error= 1.142E-12 atomic_error= 0.000E+00
+VIRIAL orthogonal 0 best_h= 1.000E-05 max_error= 2.831E-12 atomic_error= 0.000E+00
+VIRIAL triclinic 0 best_h= 1.000E-05 max_error= 2.630E-12 atomic_error= 0.000E+00
+VIRIAL self_images 0 best_h= 1.000E-05 max_error= 5.467E-13 atomic_error= 0.000E+00
+</system-out>
+	</testcase>
+	<testcase name="predictor_virial_invariants_n2p2-per-element" classname="predictor_virial_invariants_n2p2-per-element" time="0.0201139" status="run">
+		<system-out> Multispecies virial permutations, rotations and periodic images passed
+</system-out>
+	</testcase>
+	<testcase name="predictor_virial_convergence_n2p2-virial-angular" classname="predictor_virial_convergence_n2p2-virial-angular" time="0.0459737" status="run">
+		<system-out>VIRIAL molecule 0 best_h= 1.000E-05 max_error= 8.072E-12 atomic_error= 6.939E-18
+VIRIAL orthogonal 0 best_h= 3.000E-06 max_error= 2.315E-11 atomic_error= 1.388E-17
+VIRIAL triclinic 0 best_h= 3.000E-06 max_error= 2.045E-11 atomic_error= 5.551E-17
+VIRIAL self_images 0 best_h= 3.000E-06 max_error= 4.779E-12 atomic_error= 2.711E-20
+</system-out>
+	</testcase>
+	<testcase name="predictor_virial_invariants_n2p2-virial-angular" classname="predictor_virial_invariants_n2p2-virial-angular" time="0.0188081" status="run">
+		<system-out> Multispecies virial permutations, rotations and periodic images passed
+</system-out>
+	</testcase>
+	<testcase name="n2p2_model_loader" classname="n2p2_model_loader" time="0.00170152" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="n2p2_per_element_topology_and_normalize_nodes" classname="n2p2_per_element_topology_and_normalize_nodes" time="0.00304581" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="n2p2_atomic_api_and_input_data" classname="n2p2_atomic_api_and_input_data" time="0.00326622" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="n2p2_input_data_cli" classname="n2p2_input_data_cli" time="0.00182422" status="run">
+		<system-out>STRUCTURE /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2/input.data:1
+TOTAL_ENERGY_EV   3.5059102397135806E+00
+FORCE_EV_PER_ANGSTROM 1  -3.8982024316274809E-02   0.0000000000000000E+00   0.0000000000000000E+00
+FORCE_EV_PER_ANGSTROM 2   3.8982024316274809E-02   0.0000000000000000E+00   0.0000000000000000E+00
+STRUCTURE /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/data/n2p2/input.data:2
+TOTAL_ENERGY_EV   1.7500000000000000E+00
+FORCE_EV_PER_ANGSTROM 1   0.0000000000000000E+00   0.0000000000000000E+00   0.0000000000000000E+00
+</system-out>
+	</testcase>
+	<testcase name="network_activation_compatibility" classname="network_activation_compatibility" time="0.00186156" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="network_aenet_activation_reference_match" classname="network_aenet_activation_reference_match" time="0.00111711" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="network_n2p2_activation_reference_match" classname="network_n2p2_activation_reference_match" time="0.00163494" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="predictor_batch_aenet_golden" classname="predictor_batch_aenet_golden" time="0.120537" status="run">
+		<system-out> Batch real aenet model equivalence passed
+</system-out>
+	</testcase>
+	<testcase name="predictor_virial_convergence_structure0001" classname="predictor_virial_convergence_structure0001" time="2.16615" status="run">
+		<system-out>VIRIAL original 0 best_h= 1.000E-05 max_error= 1.853E-07 atomic_error= 0.000E+00
+VIRIAL sheared 0 best_h= 1.000E-05 max_error= 1.170E-07 atomic_error= 0.000E+00
+VIRIAL original 1 best_h= 1.000E-05 max_error= 1.853E-07 atomic_error= 0.000E+00
+VIRIAL sheared 1 best_h= 1.000E-05 max_error= 1.170E-07 atomic_error= 0.000E+00
+VIRIAL original 2 best_h= 1.000E-05 max_error= 1.853E-07 atomic_error= 0.000E+00
+VIRIAL sheared 2 best_h= 1.000E-05 max_error= 1.170E-07 atomic_error= 0.000E+00
+</system-out>
+	</testcase>
+	<testcase name="predictor_virial_convergence_structure2935" classname="predictor_virial_convergence_structure2935" time="1.92579" status="run">
+		<system-out>VIRIAL original 0 best_h= 1.000E-05 max_error= 1.579E-07 atomic_error= 0.000E+00
+VIRIAL sheared 0 best_h= 1.000E-05 max_error= 3.901E-07 atomic_error= 0.000E+00
+VIRIAL original 1 best_h= 1.000E-05 max_error= 1.579E-07 atomic_error= 0.000E+00
+VIRIAL sheared 1 best_h= 1.000E-05 max_error= 3.901E-07 atomic_error= 0.000E+00
+VIRIAL original 2 best_h= 1.000E-05 max_error= 1.579E-07 atomic_error= 0.000E+00
+VIRIAL sheared 2 best_h= 1.000E-05 max_error= 3.901E-07 atomic_error= 0.000E+00
+</system-out>
+	</testcase>
+	<testcase name="network_ascii_roundtrip" classname="network_ascii_roundtrip" time="0.00142098" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="network_binary_compatibility" classname="network_binary_compatibility" time="0.00617465" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="predictor_tio2_energy" classname="predictor_tio2_energy" time="0.00456429" status="run">
+		<system-out>TOTAL_ENERGY_EV  -1.9960761441252627E+04
+</system-out>
+	</testcase>
+	<testcase name="predictor_fortran_golden" classname="predictor_fortran_golden" time="0.015097" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="accelnet_fortran_api" classname="accelnet_fortran_api" time="0.0108256" status="run">
+		<system-out>API energy error=  3.637979E-12 force max error=  0.000000E+00
+</system-out>
+	</testcase>
+	<testcase name="accelnet_c_api" classname="accelnet_c_api" time="0.0026693" status="run">
+		<system-out></system-out>
+	</testcase>
+	<testcase name="predictor_original_input" classname="predictor_original_input" time="0.00422386" status="run">
+		<system-out>STRUCTURE /home/nagai/AccelNetGPU/AccelNet-clone/../AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf
+TOTAL_ENERGY_EV  -1.9960761441252627E+04
+FORCE_EV_PER_ANGSTROM 1   3.3829452377067099E-01  -4.7439348444173407E-01   2.2819166068195729E-01
+FORCE_EV_PER_ANGSTROM 2  -1.1399150266751801E-01   3.8167862994687296E-01   5.4780032011312563E-01
+FORCE_EV_PER_ANGSTROM 3   1.1126820931811301E-01  -6.2733820962050313E-01   1.7020555078170976E-01
+FORCE_EV_PER_ANGSTROM 4  -2.9823167381935334E-01  -2.6810762480194250E-01  -3.8892996431642318E-02
+FORCE_EV_PER_ANGSTROM 5   6.5775233812651834E-01   3.5131935026137229E-01  -9.3993092526301378E-02
+FORCE_EV_PER_ANGSTROM 6   6.4582640970465588E-01  -3.3875544249667461E-02  -4.1583620561887646E-01
+FORCE_EV_PER_ANGSTROM 7  -1.1513966939128146E+00   4.5786964488835730E-01   1.9852302552739887E-01
+FORCE_EV_PER_ANGSTROM 8  -4.3662152886860789E-01  -1.5467165329562238E-01  -5.8842252138414031E-01
+FORCE_EV_PER_ANGSTROM 9   7.4585888366989250E-01   3.3113076503727371E-02   ...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+	<testcase name="predictor_default_aenet204_version" classname="predictor_default_aenet204_version" time="0.00422126" status="run">
+		<system-out>STRUCTURE /home/nagai/AccelNetGPU/AccelNet-clone/../AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf
+TOTAL_ENERGY_EV  -1.9960761441252627E+04
+FORCE_EV_PER_ANGSTROM 1   3.3829452377067099E-01  -4.7439348444173407E-01   2.2819166068195729E-01
+FORCE_EV_PER_ANGSTROM 2  -1.1399150266751801E-01   3.8167862994687296E-01   5.4780032011312563E-01
+FORCE_EV_PER_ANGSTROM 3   1.1126820931811301E-01  -6.2733820962050313E-01   1.7020555078170976E-01
+FORCE_EV_PER_ANGSTROM 4  -2.9823167381935334E-01  -2.6810762480194250E-01  -3.8892996431642318E-02
+FORCE_EV_PER_ANGSTROM 5   6.5775233812651834E-01   3.5131935026137229E-01  -9.3993092526301378E-02
+FORCE_EV_PER_ANGSTROM 6   6.4582640970465588E-01  -3.3875544249667461E-02  -4.1583620561887646E-01
+FORCE_EV_PER_ANGSTROM 7  -1.1513966939128146E+00   4.5786964488835730E-01   1.9852302552739887E-01
+FORCE_EV_PER_ANGSTROM 8  -4.3662152886860789E-01  -1.5467165329562238E-01  -5.8842252138414031E-01
+FORCE_EV_PER_ANGSTROM 9   7.4585888366989250E-01   3.3113076503727371E-02   ...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+	<testcase name="predictor_chebyshev_version1" classname="predictor_chebyshev_version1" time="0.00427313" status="run">
+		<system-out>STRUCTURE /home/nagai/AccelNetGPU/AccelNet-clone/../AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf
+TOTAL_ENERGY_EV  -1.9944989953816577E+04
+FORCE_EV_PER_ANGSTROM 1  -7.6405963087745610E-01  -2.6553951850811255E+00   2.5582908138271878E+00
+FORCE_EV_PER_ANGSTROM 2   1.7034351104683945E+00   4.0037959176143030E+00   3.1631149532983982E+00
+FORCE_EV_PER_ANGSTROM 3   2.1390344984582423E+00   9.6010577625412685E-01  -9.6965224707888265E-01
+FORCE_EV_PER_ANGSTROM 4  -2.8330893641541919E+00   1.0399485162381210E+00   1.0177281302702763E+00
+FORCE_EV_PER_ANGSTROM 5   6.2296144282053945E-01   1.2686613953759545E+00   1.4642933795000463E+00
+FORCE_EV_PER_ANGSTROM 6   1.6878641292149725E+00  -6.5594876821032899E-01  -2.4926327419002612E+00
+FORCE_EV_PER_ANGSTROM 7  -7.4160321639226112E-01   6.9067774729980425E-01  -1.1462360806905332E+00
+FORCE_EV_PER_ANGSTROM 8  -8.5873227914479744E-01   1.2109644739881828E-01   1.0670985952221592E+00
+FORCE_EV_PER_ANGSTROM 9   4.5222925080057841E-01   4.5248031477837536E-01  -...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+	<testcase name="predictor_chebyshev_version10" classname="predictor_chebyshev_version10" time="0.00411814" status="run">
+		<system-out>STRUCTURE /home/nagai/AccelNetGPU/AccelNet-clone/../AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf
+TOTAL_ENERGY_EV  -1.9956751564102688E+04
+FORCE_EV_PER_ANGSTROM 1   1.5418170477054888E-01  -5.3138701123360051E-03  -4.0486024261039050E-01
+FORCE_EV_PER_ANGSTROM 2   2.9706179649872950E-02  -2.8306270217976037E-01  -4.4568932270785067E-01
+FORCE_EV_PER_ANGSTROM 3   9.6409462392355576E-03  -4.4395607468361631E-01   3.1932364656816181E-01
+FORCE_EV_PER_ANGSTROM 4  -3.0921001343836302E-01   8.4384136404791546E-02   1.1567682818967102E-01
+FORCE_EV_PER_ANGSTROM 5   3.7979326755335108E-01   3.7045146472619117E-01  -2.0531576276837735E-01
+FORCE_EV_PER_ANGSTROM 6   3.2445046175938835E-01   8.6578129626341635E-02   3.3225414429127120E-01
+FORCE_EV_PER_ANGSTROM 7  -4.1741484039752091E-01   6.5587834312932830E-02   5.4401011799544785E-01
+FORCE_EV_PER_ANGSTROM 8  -3.5003354215905802E-01   7.3874161472926886E-02  -4.9816027617432390E-01
+FORCE_EV_PER_ANGSTROM 9   6.6245613570586648E-01   5.4929670731639768E-01   ...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+	<testcase name="fortran_converter_roundtrip" classname="fortran_converter_roundtrip" time="0.0367551" status="run">
+		<system-out>WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-roundtrip/accelnet-1/O.nn.ascii
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-roundtrip/accelnet-1/Ti.nn.ascii
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-roundtrip/accelnet-1/networks.list
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-roundtrip/n2p2/input.nn
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-roundtrip/n2p2/scaling.data
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-roundtrip/n2p2/weights.008.data
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-roundtrip/n2p2/weights.022.data
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-roundtrip/accelnet-2/O.nn.ascii
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-roundtrip/accelnet-2/Ti.nn.ascii
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-rou...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+	<testcase name="fortran_converter_per_element_roundtrip" classname="fortran_converter_per_element_roundtrip" time="0.0357753" status="run">
+		<system-out>WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-1/H.nn.ascii
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-1/O.nn.ascii
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-1/networks.list
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-per-element-roundtrip/n2p2/input.nn
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-per-element-roundtrip/n2p2/scaling.data
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-per-element-roundtrip/n2p2/weights.001.data
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-per-element-roundtrip/n2p2/weights.008.data
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-per-element-roundtrip/accelnet-2/H.nn.ascii
+WROTE /tmp/accelnet-n2p2-cpu-opt/build-gnu/AccelNetModelConverter/fortran-per-element-rou...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+	<testcase name="n2p2_extended_multi_element" classname="n2p2_extended_multi_element" time="2.49606" status="run">
+		<system-out>type12-p2 PASS {'ENERGY': 1.1102230246251565e-16, 'FORCE': 9.75781955236954e-19, 'converted': {'ENERGY': 1.1102230246251565e-16, 'FORCE': 9.75781955236954e-19}, 'roundtrip': {'ENERGY': 0.0, 'FORCE': 0.0}}
+type13-p2 PASS {'ENERGY': 0.0, 'FORCE': 9.540979117872439e-18, 'converted': {'ENERGY': 0.0, 'FORCE': 9.540979117872439e-18}, 'roundtrip': {'ENERGY': 0.0, 'FORCE': 8.673617379884035e-19}}
+type20-e PASS {'ENERGY': 1.1102230246251565e-16, 'FORCE': 1.0249098661777034e-19, 'converted': {'ENERGY': 1.1102230246251565e-16, 'FORCE': 1.0249098661777034e-19}, 'roundtrip': {'ENERGY': 0.0, 'FORCE': 6.776263578034403e-21}}
+type20-p1 PASS {'ENERGY': 0.0, 'FORCE': 8.809142651444724e-20, 'converted': {'ENERGY': 0.0, 'FORCE': 8.809142651444724e-20}, 'roundtrip': {'ENERGY': 0.0, 'FORCE': 1.3552527156068805e-20}}
+type20-p1a PASS {'ENERGY': 2.220446049250313e-16, 'FORCE': 7.792703114739563e-20, 'converted': {'ENERGY': 2.220446049250313e-16, 'FORCE': 7.792703114739563e-20}, 'roundtrip': {'ENERGY': 0.0, 'FORCE': 6.776263578034403e...
+The rest of the test output was removed since it exceeds the threshold of 1024 bytes.
+</system-out>
+	</testcase>
+</testsuite>

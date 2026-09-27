@@ -1,0 +1,28 @@
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=16 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=16 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=12 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=12 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=13 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=13 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=14 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=14 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=15 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=15 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=16 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=16 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=17 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=17 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+WARNING: G5 zeta=11 exceeds the legacy atomic moment maximum order 10; the legacy atomic evaluator uses direct evaluation (shared batch policy is separate).
+ GPU checks:         209  maximum absolute E/F/W error:   2.2204460492503131E-016
+ GPU batch FP64 equivalence and finite differences passed

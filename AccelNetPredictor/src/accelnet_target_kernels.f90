@@ -4,6 +4,7 @@ module accelnet_target_kernels
     use iso_fortran_env, only: real64,int64
     use accelnet_target_runtime, only: omp_get_wtime, omp_get_initial_device
     use accelnet_target_math, unused_extended_angular => extended_angular
+    use accelnet_target_descriptors, only: MAX_SHARED_G5_MOMENT_ORDER, G5_COMPONENT_CUTOFF
     implicit none
     private
     public :: run_target_batch
@@ -70,7 +71,7 @@ contains
         !$omp& g, values, deriv, delta, moments, powers, radial_cache, jacobian, g4_first, g5_active, &
         !$omp& use_moment, geom, edge_row, edge_force)
         started = omp_get_wtime()
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& private(s,nr,na,dim,multi,version,ct,j,k,b,l,i,o,nin,nout,rj,rk,fcj,fck,sj,sk,cosine,x, &
         !$omp& t0,t1,t2,v,z,rc,ac,alpha,xscale,entry,q,ax,ay,az,nm,angular_neighbors,self0,self1,mono,u)
         do row = 1, max(nrw,natoms)
@@ -128,8 +129,8 @@ contains
                     fcj = -1; angular_neighbors = 0
                     do b = 1,dim
                         if (features(23,b,s) == 0) cycle
-                        if (feature_params(19,b,s) /= fcj) then
-                            fcj = feature_params(19,b,s); angular_neighbors = 0
+                        if (feature_params(G5_COMPONENT_CUTOFF,b,s) /= fcj) then
+                            fcj = feature_params(G5_COMPONENT_CUTOFF,b,s); angular_neighbors = 0
                             do j = offsets(row),offsets(row+1)-1
                                 if (geom(4,j) > eps .and. geom(4,j) <= fcj) angular_neighbors = angular_neighbors+1
                             end do
@@ -218,7 +219,7 @@ contains
         if (any(meta(8,:) /= 1)) then
             ! Keep one atom's monomials adjacent in the GPU work order so their
             ! neighbor geometry and powers can be reused before cache eviction.
-            !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
+            !$omp target teams distribute parallel do collapse(2) device(device) if(target:device /= omp_get_initial_device()) &
             !$omp& private(s,j,ax,ay,az,mono,fcj,sj,self0,self1)
             do row = 1, nrw
                 do entry = 1, size(mp,2)
@@ -237,7 +238,7 @@ contains
                 end do
             end do
             !$omp end target teams distribute parallel do
-            !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+            !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
             !$omp& private(s,nr,na,multi,nm,entry,q,b,j,self0,self1,fcj,sj)
             do row = 1, nrw
                 if (use_moment(row) /= 1) cycle
@@ -291,7 +292,7 @@ contains
         end if
         stages(1) = omp_get_wtime()-started
         started = omp_get_wtime()
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& private(s,dim,l,nin,nout,o,j,i,z,v,b,q,nr,na,multi,entry,self0,self1,bb)
         do row = 1, nrw
             s = species(centers(row)); dim = nodes(1,s)
@@ -383,7 +384,7 @@ contains
         stages(2) = omp_get_wtime()-started
         started = omp_get_wtime()
 
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& private(row,s,nr,na,multi,version,ct,k,b,rj,rk,fcj,fck,dfcj,sj,sk,cosine,x, &
         !$omp& t0,t1,t2,dt0,dt1,dt2,rc,ac,alpha,xscale,vc,dc,coeff,radial,fj, &
         !$omp& entry,q,ax,ay,az,nm,mono,u,grad,dm,correction,v,hy,hz,dhy,dhz,hyz)
@@ -481,7 +482,7 @@ contains
             local_species,species,centers,offsets,indices,geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force)
         if (any(meta(11,:) > 0)) call g5_moment_forces(device,nedges,meta,features,local_species, &
             species,centers,indices,geom,edge_row,radial_cache,moments,g5_active,edge_force)
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& private(j,target,c,a,fj,center_f,w)
         do row = 1, nrw
             center_f = 0; w = 0
@@ -528,7 +529,7 @@ contains
         real(real64) :: invj,invk,invjk,cj,ck,rgj,rgk,cross,pj,pk,pc
         real(real64) :: qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj(3),dk(3),fc,dfc,ex,radial
         ! Immutable species-pair heads are shared by the descriptor owners.
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& map(alloc:meta,nodes,features,species,centers,g4_first) private(s,b,t1,t2)
         do row = 1,nrw
             s = species(centers(row)); g4_first(:,:,row) = 0
@@ -552,7 +553,7 @@ contains
         !$         nlanes = 2*nlanes
         !$     end do
         !$ end if
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
         !$omp& dr,geom,radial_cache,g,jacobian,g4_first) &
         !$omp& firstprivate(nlanes) &
@@ -658,7 +659,7 @@ contains
         real(real64), contiguous, intent(inout) :: g(:,:)
         integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group,bb
         real(real64) :: total,v,dv,gradient(3),total12,v12,dv12
-        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do collapse(2) device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g5_active,g) &
         !$omp& private(s,j,k,tj,tk,kind,t1,t2,group,bb,total,v,dv,gradient,total12,v12,dv12)
         do row = 1,nrw
@@ -723,7 +724,7 @@ contains
         real(real64), contiguous, intent(inout) :: g(:,:)
         integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group,bb,degree,d
         real(real64) :: total,v,dv,gradient(3),qjk,dqjk,ujk(3),cosine,total12,v12,dv12,t,power,hvalues(0:16)
-        !$omp target teams distribute collapse(2) thread_limit(32) device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute collapse(2) thread_limit(32) device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g5_active,g) &
         !$omp& private(s,j,k,tj,tk,kind,t1,t2,group,bb,degree,d,total,v,dv,gradient,qjk,dqjk,ujk,cosine, &
         !$omp& total12,v12,dv12,t,power,hvalues)
@@ -816,7 +817,7 @@ contains
                 if (meta(10,s) == 1) edge_force(:,j)=0
             end do
         end if
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& firstprivate(pair_once) map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
         !$omp& geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force) &
         !$omp& private(row,b,s,k,tj,tk,kind,t1,t2,group,degree,d,c,bb,f,v,dv,gradient,gradient_k,v12,dv12,radial_force,hcoeff)
@@ -906,9 +907,9 @@ contains
         real(real64), contiguous, intent(in) :: fp(:,:,:),multiplicity(:,:),powers(:,:,:),radial(:,:,:)
         real(real64), contiguous, intent(inout) :: moments(:,:,:),contractions(:,:,:),g(:,:)
         integer :: row,ch,entry,s,ns,group,t,b,j,rgroup,nm,ax,ay,az,q,t1,t2,c1,c2
-        real(real64) :: total,h,mono,correction,sums(0:10)
+        real(real64) :: total,h,mono,correction,sums(0:MAX_SHARED_G5_MOMENT_ORDER)
         ns = size(meta,2)
-        !$omp target teams distribute parallel do collapse(3) device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do collapse(3) device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,fi,local_species,mp,species,centers,offsets,indices,powers,radial,moments,g5_active) &
         !$omp& private(s,group,t,b,j,rgroup,nm,ax,ay,az,total,h,mono)
         do row = 1,nrw
@@ -941,7 +942,7 @@ contains
         !$omp end target teams distribute parallel do
         ! Bilinear moments depend on radial group/species/degree, not on the
         ! descriptor's lambda/zeta. Reduce them once, then evaluate all inputs.
-        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do collapse(2) device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,mp,multiplicity,species,centers,moments,contractions) &
         !$omp& private(s,nm,group,t1,t2,c1,c2,entry,q,sums)
         do row = 1,nrw
@@ -961,7 +962,7 @@ contains
             end do
         end do
         !$omp end target teams distribute parallel do
-        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do collapse(2) device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,nodes,fi,fp,species,centers,offsets,contractions,g5_active,g) &
         !$omp& private(s,nm,group,t1,t2,c1,c2,entry,q,total,correction,ch)
         do row = 1,nrw
@@ -990,11 +991,11 @@ contains
         real(real64), contiguous, intent(in) :: fp(:,:,:),multiplicity(:,:),g(:,:)
         real(real64), contiguous, intent(inout) :: moments(:,:,:),contractions(:,:,:)
         integer :: row,ch,entry,s,ns,group,t,b,nm,q,other,t1,t2,pair
-        real(real64) :: total,coefficients(0:10)
+        real(real64) :: total,coefficients(0:MAX_SHARED_G5_MOMENT_ORDER)
         ns = size(meta,2)
         ! Contract the NN gradient with angular polynomials once per degree,
         ! before multiplying by moments. No descriptor scan per monomial/edge.
-        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do collapse(2) device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,nodes,fi,fp,species,centers,offsets,contractions,g5_active,g) &
         !$omp& private(s,group,t1,t2,b,q,coefficients)
         do row = 1,nrw
@@ -1017,7 +1018,7 @@ contains
             end do
         end do
         !$omp end target teams distribute parallel do
-        !$omp target teams distribute parallel do collapse(3) device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do collapse(3) device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,mp,multiplicity,species,centers,moments,contractions) &
         !$omp& private(s,group,t,nm,q,other,pair,total)
         do row = 1,nrw
@@ -1055,7 +1056,7 @@ contains
         integer :: j,row,s,ns,t,group,b,ch,rgroup,nm,p,ax,ay,az,entry
         real(real64) :: u(3),dm(3),f(3),v,hy,hz,dhy,dhz,hyz,h,dh,r,correction
         ns = size(meta,2)
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,fi,local_species,species,centers,indices,geom,edge_row,radial,moments,g5_active,edge_force) &
         !$omp& private(row,s,t,group,b,ch,rgroup,nm,p,ax,ay,az,entry,u,dm,f,v,hy,hz,dhy,dhz,hyz,h,dh,r,correction)
         do j = 1,nedges
@@ -1109,7 +1110,7 @@ contains
         real(real64), contiguous, intent(inout) :: g(:,:),jacobian(:,:,:)
         integer :: row,b,s,kind,j,tj,t1,group
         real(real64) :: total,factor,qj,dqj
-        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
+        !$omp target teams distribute parallel do collapse(2) device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& map(alloc:meta,nodes,fi,fp,local_species,weights,species,centers,offsets,indices,geom,radial,g,jacobian) &
         !$omp& private(s,kind,j,tj,t1,group,total,factor,qj,dqj)
         do row=1,nrw
@@ -1155,7 +1156,7 @@ contains
         real(real64) :: aj,ak,ajj,akk,ajk
         real(real64) :: qj,qk,qjk,dqj,dqk,dqjk,a,da,factor,prod,ca,cv,rgj,rgk,rgcross,invj,invk,invjk,cj,ck,pj,pk,pc,fc,dfc,ex
         logical :: need_theta,need_narrow,need_wide,weighted_owner
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& map(alloc:meta,nodes,fi,species,centers,first) private(s,b,t1,t2)
         do row=1,nrw
             s=species(centers(row)); first(:,:,row)=0
@@ -1171,7 +1172,7 @@ contains
         !$ if (device /= omp_get_initial_device()) then
         !$     nlanes=min(256,maxval(fi(31,1,:)),max(1,65536/max(1,nrw)))
         !$ end if
-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+        !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& map(alloc:meta,nodes,fi,fp,local_species,weights,species,centers,offsets,indices,geom,radial,g,jacobian,first) &
         !$omp& firstprivate(nlanes) &
         !$omp& private(row,s,b,j,k,tj,tk,t1,t2,head,pass,q,qq,run_end,list_end,lane,kind,group,ar,component,last_qgroup,last_group, &

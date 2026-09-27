@@ -9,6 +9,7 @@ program test_batch_target
         descriptor_config, initialize_config
     use accelnet_descriptor_models, only: descriptor_model, add_chebyshev, add_behler
     use accelnet_behler, only: behler_config, initialize_behler_config, add_g1, add_g2, add_g3, add_g4, add_g5
+    use accelnet_target_descriptors, only: pack_generic_descriptors
     use batch_test_support
     implicit none
     type(predictor_model) :: model, source_model
@@ -20,6 +21,10 @@ program test_batch_target
     type(behler_config) :: grouped_config
     character(len=1024) :: argument, directory, filenames(2)
     integer :: v, version, mode, geometry, cutoff, activation, i, n, l, nw, checks, gpu_mode
+    integer, allocatable :: packed_features(:,:)
+    real(real64), allocatable :: packed_parameters(:,:)
+    integer :: pack_status
+    character(len=256) :: pack_message
     logical :: host
     character(len=16), parameter :: families(5) = [character(len=16) :: 'lj','behler','g4','g5','lj-behler']
     real(real64) :: max_error, degree_test, lambda_test
@@ -114,6 +119,44 @@ program test_batch_target
             s%positions(1,:) = [0.0_real64,0.9_real64,-1.2_real64,1.8_real64]
             call check(s) ! zero direction components and both angular endpoints
             call finite_differences(s)
+        end do
+        ! Every new exact degree, with a layout/capability assertion: numerical
+        ! agreement alone could accidentally test the old direct fallback.
+        do n=11,16
+            call make_model('g5-high',model,order=n)
+            do mode=0,3
+                call model%set_g5_evaluation(mode)
+                call packed%initialize(model,use_host=host)
+                call pack_generic_descriptors(model%setups(1)%model,packed_features,packed_parameters,pack_status,pack_message)
+                call require(pack_status == 0,'high G5 packing')
+                if (mode >= 2) then
+                    call require(all(packed_features(23,:) > 0),'high G5 moment eligibility')
+                    call require(all(packed_features(5,:) == n),'high G5 moment degree')
+                else
+                    call require(all(packed_features(23,:) == 0),'preserve high G5 auto/direct policy')
+                end if
+                call make_structure(8,2,s)
+                call check(s)
+                if (mode == 3) call finite_differences(s)
+            end do
+        end do
+        ! Fractional, near-integer, and above-cap powers must stay direct even
+        ! with forced moments; preserve the exact descriptor definition.
+        do v=1,3
+            degree_test=17
+            if (v == 2) degree_test=11.5_real64
+            if (v == 3) degree_test=11+4e-13_real64
+            call make_model('g5',model)
+            do i=1,2
+                model%setups(i)%model=descriptor_model()
+                call initialize_behler_config(grouped_config,2)
+                call add_g5(grouped_config,1,2,3.4_real64,-1.0_real64,degree_test,0.2_real64,0.4_real64)
+                call add_behler(model%setups(i)%model,grouped_config)
+            end do
+            call model%set_g5_evaluation(3)
+            call pack_generic_descriptors(model%setups(1)%model,packed_features,packed_parameters,pack_status,pack_message)
+            call require(pack_status == 0,'fallback G5 packing')
+            call require(all(packed_features(23,:) == 0),'ineligible high G5 fallback')
         end do
         ! Mixed cutoffs/components: auto counts neighbors inside each component's
         ! angular cutoff, not the full CSR list or a different component's Rc.

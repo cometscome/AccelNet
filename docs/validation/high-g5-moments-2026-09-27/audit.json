@@ -1,0 +1,30 @@
+{
+  "baseline": "2a96dcced732991c73728486ff6b197f4718fac2",
+  "date": "2026-09-27 JST",
+  "library_version": "1.0.1",
+  "document_version": "1.10",
+  "sources": {
+    "AccelNetModelConverter/CMakeLists.txt": "11cd515018c043fce8142d472ffc14fc992a41cad548a019ba152168d98d964b",
+    "AccelNetPredictor/CMakeLists.txt": "56fecb020d2a77cd0e7026ddbf3e7702f6d3de5f4a2ade3fe3868351db86ff88",
+    "AccelNetPredictor/benchmark/compare_high_moments.py": "14802fa489cb389c2c2ffff5a4d1cd41e0ea98c3e746ecf29b529cd81b75b05a",
+    "AccelNetPredictor/benchmark/compare_openmp_host.py": "c509f2401c0cf04d8509ca12f139468372f39f9684f7ac4dd4eb52f9a31e2bf7",
+    "AccelNetPredictor/benchmark/target_benchmark.f90": "8a726cc027ddbdbf8b2b4b6ad3d4693092cab586b7dca6cd871871b776f9ac69",
+    "AccelNetPredictor/src/accelnet.f90": "99e8b4b6ddd9355ee94d719706e114cd57e38941f5bad9325b28d000c55f92fc",
+    "AccelNetPredictor/src/accelnet_batch.f90": "fcb6dac271cc59acc90bdc4afb5c05e6dc267329fddd7cde52fc8f4984c7d7f8",
+    "AccelNetPredictor/src/accelnet_batch_target.f90": "b3a5ac116ff6caa7d3e41ff7642a6e974f1ab0308299df4c360f62c393cd7f65",
+    "AccelNetPredictor/src/accelnet_predictor.f90": "04cd76a94ae7fdc91aba73166cfd66b1df8d16574456157594c669b7e7db4235",
+    "AccelNetPredictor/src/accelnet_target_c.f90": "07ce63aea53dd9e489efde7939c2657c44df6a50019f49a39d8478002f725296",
+    "AccelNetPredictor/src/accelnet_target_descriptors.f90": "684e75e4ce58af5b657e1725cbd844e0021da2855380502cd9f437f5953bde82",
+    "AccelNetPredictor/src/accelnet_target_kernels.f90": "14254e0fe1bc430cc139d5d798571d5d9bd05d685178aa780d61a766af078112",
+    "AccelNetPredictor/src/accelnet_target_math.f90": "d2064184ccfbea94bc378684e92fc170cecf273d866568a4750b53d495e8b360",
+    "AccelNetPredictor/src/accelnet_target_runtime.F90": "814d58725828e3cd5beea4843f92e15a766426688ee2993e93396ee263235567",
+    "AccelNetPredictor/test/batch_test_support.f90": "b364435cf845bd0053077cd9210b92cc29231bf8bc160cf3547154581ceb8ca9",
+    "AccelNetPredictor/test/check_n2p2_high_moments.py": "48387bffc1fbcccc701cba9347dfaad561cbcc1ec09da9f88f816c8c37d8bfea",
+    "AccelNetPredictor/test/test_batch_target.f90": "f7debfe75fbb0e1d43ff81ad8dacb66d51502dc66a4576ffa43bb06e84359c07"
+  },
+  "notes": [
+    "High-order CPU/GPU timings and Blackwell/LAMMPS/memcheck validation precede the if(target:) host-thread correction. The correction changes host parallelism, not device=true math. Final H100 and threaded CPU correctness were retested.",
+    "High-order timings include repeated independent reference timing; OpenMP scaling uses candidate-only, retaining the initial reference and every E/F/W check.",
+    "No changes to the automatic high-order selection policy; high-order moments are opt-in."
+  ]
+}

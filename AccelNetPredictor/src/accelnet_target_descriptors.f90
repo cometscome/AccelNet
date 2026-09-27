@@ -11,8 +11,11 @@ module accelnet_target_descriptors
     implicit none
     private
     public :: pack_generic_descriptors, PACKED_FEATURE_FIELDS, PACKED_PARAMETER_FIELDS
+    public :: MAX_SHARED_G5_MOMENT_ORDER, G5_COMPONENT_CUTOFF
     integer, parameter :: PACKED_FEATURE_FIELDS = 31
-    integer, parameter :: PACKED_PARAMETER_FIELDS = 19
+    integer, parameter :: MAX_SHARED_G5_MOMENT_ORDER = 16
+    integer, parameter :: G5_COMPONENT_CUTOFF = 9+MAX_SHARED_G5_MOMENT_ORDER
+    integer, parameter :: PACKED_PARAMETER_FIELDS = G5_COMPONENT_CUTOFF
 contains
     subroutine pack_generic_descriptors(model, fi, fr, status, message, g5_mode)
         type(descriptor_model), intent(in) :: model
@@ -109,7 +112,7 @@ contains
                         fi(:6,b) = [5,p%species1,p%species2,ct,p%integer_zeta,ns]
                         fi(22,b) = cfg%g5_evaluation_mode
                         if (present(g5_mode)) fi(22,b) = g5_mode
-                        fr(19,b) = cfg%maximum_angular_cutoff
+                        fr(G5_COMPONENT_CUTOFF,b) = cfg%maximum_angular_cutoff
                         if (fi(22,b) < 0 .or. fi(22,b) > 3) return
                         fr(1,b) = p%rc; fr(7,b) = alpha
                         fr(2,b) = p%eta; fr(3,b) = p%rs
@@ -197,14 +200,17 @@ contains
             groups=groups+1; fi(7:8,b)=[groups,b]
         end do
         ! G5 integer moments: compact only radial groups actually requested.
-        ! Exact integer powers 1..10 use a polynomial; fractional/near-integer
-        ! and higher powers keep the direct formula. Auto retains the original
+        ! Exact integer powers 1..16 use a polynomial when explicitly requested.
+        ! Auto retains the established 1..10 eligibility: high-order moments
+        ! have more scratch/arithmetic and are not always faster. Fractional,
+        ! near-integer and unsupported powers keep direct evaluation. Retain the
         ! per-component angular-neighbor threshold. Fields 22/23/24: mode/group/rep.
         groups = 0
         do b = 1,n
             if (fi(1,b) /= 5 .or. fi(22,b) == 1) cycle
             zeta = fi(5,b)
-            if (zeta < 1 .or. zeta > 10) cycle
+            if (zeta < 1 .or. zeta > MAX_SHARED_G5_MOMENT_ORDER) cycle
+            if (fi(22,b) == 0 .and. zeta > 10) cycle
             if (fr(5,b) /= real(zeta,real64)) cycle
             do k = 1,b-1
                 if (fi(23,k) == 0 .or. fi(7,k) /= fi(7,b)) cycle
@@ -232,7 +238,7 @@ contains
             do k = 1,b-1
                 if (fi(10,k) /= k) cycle
                 if (fi(1,b) /= fi(1,k) .or. fi(7,b) /= fi(7,k)) cycle
-                if (fi(22,b) /= fi(22,k) .or. fr(19,b) /= fr(19,k)) cycle
+                if (fi(22,b) /= fi(22,k) .or. fr(G5_COMPONENT_CUTOFF,b) /= fr(G5_COMPONENT_CUTOFF,k)) cycle
                 if ((fi(23,b) > 0) .neqv. (fi(23,k) > 0)) cycle
                 if (minval(fi(2:3,b)) /= minval(fi(2:3,k))) cycle
                 if (maxval(fi(2:3,b)) /= maxval(fi(2:3,k))) cycle
