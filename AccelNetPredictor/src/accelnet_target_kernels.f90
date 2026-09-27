@@ -39,7 +39,7 @@ contains
                                 species, centers, offsets, indices, dr, &
                                 energies, forces, virial, g, values, deriv, delta, moments, powers, &
             radial_cache, jacobian, g4_first, g5_active, use_moment, &
-                                geom, edge_row, edge_force, nrw, natoms, nedges, stages)
+                                geom, edge_row, edge_force, nrw, natoms, nedges, stages, energy_only, phase)
         integer, contiguous, intent(in) :: features(:,:,:),local_species(:,:)
         real(real64), contiguous, intent(in) :: feature_params(:,:,:)
         integer, intent(in) :: device, nrw, natoms, nedges
@@ -57,12 +57,22 @@ contains
         real(real64), contiguous, intent(inout) :: geom(:,:), edge_force(:,:)
         real(real64), intent(out) :: stages(3)
         integer :: row, s, nr, na, dim, multi, version, ct, j, k, b, l, i, o, nin, nout, a, c, target
-        integer :: entry, q, ax, ay, az, angular_neighbors, nm, bb
+        integer :: entry, q, ax, ay, az, angular_neighbors, nm, bb, tile, lane, active_lanes
+        integer :: mx(4),my(4),mz(4)
+        real(real64) :: sums0(4),sums1(4)
         real(real64) :: rj, rk, fcj, fck, dfcj, sj, sk, cosine, x, t0, t1, t2, dt0, dt1, dt2
         real(real64) :: v, dv, z, rc, ac, alpha, xscale, vc, dc, coeff, radial, fj(3), center_f(3), w(3,3)
         real(real64) :: self0, self1, mono, u(3), grad(3), dm(3), correction, started
         real(real64) :: hy, hz, dhy, dhz, hyz
-        logical :: parallel_scatter
+        integer, optional, intent(in) :: phase
+        integer :: selected_phase
+        logical, optional, intent(in) :: energy_only
+        logical :: parallel_scatter, only_energy
+        selected_phase=0
+        if (present(phase)) selected_phase=phase
+        stages=0
+        only_energy=.false.
+        if (present(energy_only)) only_energy=energy_only
         ! All arrays have persistent mappings owned by target_workspace.
         ! Structured references here neither copy data nor allocate device memory.
         !$omp target data device(device) if(device /= omp_get_initial_device()) &
@@ -72,6 +82,7 @@ contains
         !$omp& g, values, deriv, delta, moments, powers, radial_cache, jacobian, g4_first, g5_active, &
         !$omp& use_moment, geom, edge_row, edge_force)
         started = omp_get_wtime()
+        if (selected_phase==0 .or. selected_phase==1) then
         !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& private(s,nr,na,dim,multi,version,ct,j,k,b,l,i,o,nin,nout,rj,rk,fcj,fck,sj,sk,cosine,x, &
         !$omp& t0,t1,t2,v,z,rc,ac,alpha,xscale,entry,q,ax,ay,az,nm,angular_neighbors,self0,self1,mono,u)
@@ -154,7 +165,7 @@ contains
                 if (rj >= eps) geom(1:3,j) = dr(:,j)/rj
                 geom(4,j) = rj
                 geom(5,j) = target_cutoff_value(rj,ac,ct,alpha)
-                geom(6,j) = target_cutoff_derivative(rj,ac,ct,alpha)
+                if (.not.only_energy) geom(6,j) = target_cutoff_derivative(rj,ac,ct,alpha)
                 geom(7,j) = spin(species(indices(j)),s)
             end do
             use_moment(row) = 0
@@ -218,24 +229,38 @@ contains
         end do
         !$omp end target teams distribute parallel do
         if (any(meta(8,:) /= 1)) then
-            ! Keep one atom's monomials adjacent in the GPU work order so their
-            ! neighbor geometry and powers can be reused before cache eviction.
-            !$omp target teams distribute parallel do collapse(2) device(device) if(target:device /= omp_get_initial_device()) &
-            !$omp& private(s,j,ax,ay,az,mono,fcj,sj,self0,self1)
+            ! Four independent moments per work item: reuse neighbor geometry
+            ! and expose independent accumulators to CPU SIMD without changing
+            ! each moment's summation order. The CPU and GPU use this same loop.
+            !$omp target teams distribute parallel do collapse(2) device(device) &
+            !$omp& if(target:device /= omp_get_initial_device()) &
+            !$omp& private(s,j,entry,lane,active_lanes,mx,my,mz,sums0,sums1,mono,fcj,sj)
             do row = 1, nrw
-                do entry = 1, size(mp,2)
+                do tile = 1, (size(mp,2)+3)/4
                     if (use_moment(row) /= 1) cycle
                     s = species(centers(row))
-                    if (entry > meta(9,s)) cycle
-                    ax = mp(1,entry,s); ay = mp(2,entry,s); az = mp(3,entry,s)
-                    self0 = 0; self1 = 0
+                    entry=4*(tile-1)+1
+                    active_lanes=min(4,meta(9,s)-entry+1)
+                    if (active_lanes<=0) cycle
+                    mx=1; my=1; mz=1; sums0=0; sums1=0
+                    do lane=1,active_lanes
+                        mx(lane)=mp(1,entry+lane-1,s)+1
+                        my(lane)=mp(2,entry+lane-1,s)+1
+                        mz(lane)=mp(3,entry+lane-1,s)+1
+                    end do
                     do j = offsets(row), offsets(row+1)-1
                         if (geom(4,j) > params(2,s) .or. geom(4,j) < eps) cycle
                         fcj = geom(5,j); sj = geom(7,j)
-                        mono = powers(j,ax+1,1)*powers(j,ay+1,2)*powers(j,az+1,3)
-                        self0 = self0+fcj*mono; self1 = self1+sj*fcj*mono
+                        do lane=1,4
+                            mono=powers(j,mx(lane),1)*powers(j,my(lane),2)*powers(j,mz(lane),3)
+                            sums0(lane)=sums0(lane)+fcj*mono
+                            sums1(lane)=sums1(lane)+sj*fcj*mono
+                        end do
                     end do
-                    moments(row,entry,1) = self0; moments(row,entry,2) = self1
+                    do lane=1,active_lanes
+                        moments(row,entry+lane-1,1)=sums0(lane)
+                        moments(row,entry+lane-1,2)=sums1(lane)
+                    end do
                 end do
             end do
             !$omp end target teams distribute parallel do
@@ -292,11 +317,14 @@ contains
             end if
         end if
         stages(1) = omp_get_wtime()-started
+        end if
         started = omp_get_wtime()
+        if (selected_phase/=1) then
         !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) thread_limit(32) &
         !$omp& private(s,dim,l,nin,nout,o,j,i,z,v,b,q,nr,na,multi,entry,self0,self1,bb)
         do row = 1, nrw
             s = species(centers(row)); dim = nodes(1,s)
+            if (selected_phase/=3) then
             ! NN work is laid out with batch rows contiguous, including networks
             ! with different depths and widths for different elements.
             do i = 1, dim
@@ -311,10 +339,11 @@ contains
                     end do
                     v = target_activate(z,acts(l,s))
                     values(row,j,l+1) = v
-                    deriv(row,j,l+1) = target_activation_derivative(z,v,acts(l,s))
+                    if (.not.only_energy) deriv(row,j,l+1) = target_activation_derivative(z,v,acts(l,s))
                 end do
             end do
             energies(row) = values(row,1,meta(6,s))/params(4,s)+params(5,s)
+            if (only_energy) cycle
             delta(row,1,1) = 1.0_real64
             do l = meta(6,s)-1, 1, -1
                 nin = nodes(l,s); nout = nodes(l+1,s); o = woffset(l,s)+1
@@ -335,6 +364,8 @@ contains
             do b = 1, dim
                 g(row,b) = -delta(row,b,1)*scale(b,s)/params(4,s)
             end do
+            end if
+            if (selected_phase==2) cycle
             ! Reuse NN gradients for equal-power coefficient sums. Distinct
             ! powers already have the desired coefficient, so leave them in place.
             ! No additional array, allocation, transfer, or kernel launch.
@@ -380,10 +411,13 @@ contains
             end if
         end do
         !$omp end target teams distribute parallel do
-        if (any(meta(11,:) > 0)) call g5_moment_adjoints(device,nrw,meta,nodes,features,feature_params, &
+        if (.not.only_energy .and. selected_phase/=2 .and. any(meta(11,:) > 0)) &
+            call g5_moment_adjoints(device,nrw,meta,nodes,features,feature_params, &
             species,centers,offsets,mp,multiplicity,moments,delta,g5_active,g)
         stages(2) = omp_get_wtime()-started
+        end if
         started = omp_get_wtime()
+        if (.not.only_energy .and. (selected_phase==0 .or. selected_phase==3)) then
 
         !$omp target teams distribute parallel do device(device) if(target:device /= omp_get_initial_device()) &
         !$omp& private(row,s,nr,na,multi,version,ct,k,b,rj,rk,fcj,fck,dfcj,sj,sk,cosine,x, &
@@ -525,6 +559,7 @@ contains
             end do
         end do
         !$omp end target teams distribute parallel do
+        end if
         stages(3) = omp_get_wtime()-started
         !$omp end target data
     end subroutine

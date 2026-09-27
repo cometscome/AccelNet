@@ -7,6 +7,7 @@ program cpu_regression_benchmark
     use batch_test_support
 #ifdef ACCELNET_HAVE_BATCH
     use accelnet_batch, only: batch_workspace, evaluate_batch
+    use accelnet_cpu_reference, only: reference_predict_energy_forces
 #endif
     implicit none
     type(predictor_model) :: model
@@ -29,7 +30,7 @@ program cpu_regression_benchmark
     call get_command_argument(4, directory)
     call get_command_argument(5, mode)
     if (natoms < 1 .or. duration <= 0) error stop 'positive atom count and duration required'
-    if (mode /= 'structure' .and. mode /= 'batch') error stop 'invalid evaluation mode'
+    if (mode /= 'structure' .and. mode /= 'batch' .and. mode /= 'reference') error stop 'invalid evaluation mode'
     select case(trim(family))
     case('chebyshev', 'lj')
         call make_model(trim(family), model)
@@ -66,6 +67,10 @@ contains
     subroutine evaluate()
         if (mode == 'structure') then
             call model%predict_energy_forces(s, e, f, w)
+#ifdef ACCELNET_HAVE_BATCH
+        else if (mode == 'reference') then
+            call reference_predict_energy_forces(model,s,e,f,w)
+#endif
         else
 #ifdef ACCELNET_HAVE_BATCH
             ! Include neighbor construction in both modes for a fair end-to-end

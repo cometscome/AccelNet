@@ -9,6 +9,8 @@ module accelnet_batch_target
     use accelnet_predictor, only: predictor_model
     use n2p2_network, only: atomic_number
     use accelnet_descriptors, only: descriptor_config, validate_cutoff_parameters
+    use accelnet_descriptor_models, only: descriptor_model, add_chebyshev, add_lj, add_behler
+    use accelnet_behler, only: behler_config,initialize_behler_config,add_g1
     use aenet_network, only: atomic_network
     use accelnet_target_descriptors, only: pack_generic_descriptors, PACKED_FEATURE_FIELDS, PACKED_PARAMETER_FIELDS
     use accelnet_target_kernels, only: run_target_batch
@@ -20,7 +22,7 @@ module accelnet_batch_target
         real(real64) :: prepare = 0, upload = 0, descriptors = 0, network = 0, forces = 0, download = 0, total = 0
     end type
 
-    type :: target_model
+    type :: packed_component
         private
         integer :: device = -1, maxnodes = 0, maxlayers = 0
         integer, allocatable :: meta(:,:), nodes(:,:), acts(:,:), woffset(:,:), local_species(:,:), mp(:,:,:)
@@ -29,13 +31,21 @@ module accelnet_batch_target
         real(real64), allocatable :: multiplicity(:,:), polynomial(:,:,:)
         real(real64), allocatable :: weights(:,:), params(:,:), shift(:,:), scale(:,:), spin(:,:)
     contains
+        procedure :: initialize => initialize_component
+        procedure :: release => release_component
+    end type
+    type, extends(packed_component) :: target_model
+        private
+        type(packed_component), allocatable :: parts(:)
+        integer, allocatable :: part_offsets(:,:),part_widths(:,:)
+    contains
         procedure :: initialize => initialize_target_model
         procedure :: release => release_target_model
     end type
 
-    type :: target_workspace
+    type :: component_workspace
         private
-        type(target_model) :: cached
+        type(packed_component) :: cached
         real(real64), allocatable :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:), moments(:,:,:), &
             powers(:,:,:), radial(:,:,:), jacobian(:,:,:)
         integer, allocatable :: species(:), centers(:), offsets(:), indices(:), use_moment(:), edge_row(:), &
@@ -43,25 +53,67 @@ module accelnet_batch_target
         real(real64), allocatable :: dr(:,:), energies(:), forces(:,:), virial(:,:), geom(:,:), edge_force(:,:)
         integer :: growth_count = 0, upload_count = 0
     contains
-        procedure :: release => release_target_workspace
+        procedure :: release => release_component_workspace
         procedure :: allocations => target_allocations
         procedure :: uploads => target_uploads
+        final :: finalize_component,finalize_component_array
+    end type
+    type, extends(component_workspace) :: target_workspace
+        private
+        type(component_workspace), allocatable :: parts(:)
+    contains
+        procedure :: release => release_target_workspace
         procedure, private :: copy_workspace
         generic :: assignment(=) => copy_workspace
-        final :: finalize_workspace, finalize_workspace_array
+        final :: finalize_workspace,finalize_workspace_array
     end type
+
 contains
-    subroutine release_target_model(self)
-        class(target_model), intent(inout) :: self
+    include 'composite_batch.inc'
+
+    subroutine release_component(self)
+        class(packed_component), intent(inout) :: self
         if (allocated(self%meta)) deallocate(self%meta, self%nodes, self%acts, self%woffset, self%local_species, &
             self%features, self%feature_params, self%weights, self%params, self%shift, self%scale, &
             self%spin, self%mp, self%multiplicity, self%polynomial)
         self%device = -1; self%maxnodes = 0; self%maxlayers = 0
     end subroutine
 
-    subroutine initialize_target_model(self, model, device, mode, status, message, use_host, g5_mode)
+    subroutine release_target_model(self)
         class(target_model), intent(inout) :: self
-        type(predictor_model), intent(in) :: model
+        if (allocated(self%parts)) deallocate(self%parts,self%part_offsets,self%part_widths)
+        call release_component(self)
+    end subroutine
+
+    recursive subroutine initialize_target_model(self,model,device,mode,status,message,use_host,g5_mode)
+        class(target_model), intent(inout) :: self
+        class(predictor_model), intent(in) :: model
+        integer, optional, intent(in) :: device,mode,g5_mode
+        integer, optional, intent(out) :: status
+        character(len=*), optional, intent(out) :: message
+        logical, optional, intent(in) :: use_host
+        integer :: s,ns
+        call self%release()
+        if (allocated(model%setups).and.allocated(model%networks)) then
+            ns=size(model%setups)
+            if (size(model%networks)/=ns) then
+                call target_failure('OpenMP target: invalid species count',status,message)
+                return
+            end if
+        do s=1,ns
+            if (.not.allocated(model%setups(s)%model%chebyshev)) cycle
+            if (size(model%setups(s)%model%chebyshev)==1 .and. &
+                .not.allocated(model%setups(s)%model%lj) .and. .not.allocated(model%setups(s)%model%behler)) cycle
+            call initialize_composite(self,model,device,mode,status,message,use_host,g5_mode)
+            return
+        end do
+        end if
+        call initialize_component(self,model,device,mode,status,message,use_host,g5_mode)
+    end subroutine
+
+    subroutine initialize_component(self, model, device, mode, status, message, use_host, g5_mode)
+        class(packed_component), intent(inout) :: self
+        class(predictor_model), intent(in) :: model
         integer, intent(in), optional :: device, mode, g5_mode
         integer, optional, intent(out) :: status
         character(len=*), optional, intent(out) :: message
@@ -384,6 +436,19 @@ contains
 
     subroutine finalize_workspace_array(self)
         type(target_workspace), intent(inout) :: self(:)
+        integer :: p
+        do p=1,size(self)
+            call self(p)%release()
+        end do
+    end subroutine
+
+    subroutine finalize_component(self)
+        type(component_workspace), intent(inout) :: self
+        call self%release()
+    end subroutine
+
+    subroutine finalize_component_array(self)
+        type(component_workspace), intent(inout) :: self(:)
         integer :: i
         do i = 1,size(self)
             call self(i)%release()
@@ -391,7 +456,7 @@ contains
     end subroutine
 
     subroutine release_buffers(self)
-        class(target_workspace), intent(inout) :: self
+        class(component_workspace), intent(inout) :: self
         if (.not. allocated(self%g)) return
         call map_buffers(self%cached%device,.false.,self%g,self%values,self%deriv,self%delta,self%moments, &
             self%powers,self%radial,self%jacobian,self%g4_first,self%g5_active, &
@@ -403,27 +468,51 @@ contains
             self%geom,self%edge_row,self%edge_force)
     end subroutine
 
-    subroutine release_target_workspace(self)
-        class(target_workspace), intent(inout) :: self
+    subroutine release_component_workspace(self)
+        class(component_workspace), intent(inout) :: self
         call release_buffers(self)
         if (allocated(self%cached%meta)) call map_model(self%cached,.false.)
         call self%cached%release()
-        self%growth_count = 0; self%upload_count = 0
+        self%growth_count=0; self%upload_count=0
     end subroutine
 
-    integer function target_uploads(self) result(n)
-        class(target_workspace), intent(in) :: self
+    subroutine release_target_workspace(self)
+        class(target_workspace), intent(inout) :: self
+        integer :: p
+        if (allocated(self%parts)) then
+            do p=1,size(self%parts)
+                call self%parts(p)%release()
+            end do
+            deallocate(self%parts)
+        end if
+        call release_component_workspace(self)
+    end subroutine
+
+    recursive integer function target_uploads(self) result(n)
+        class(component_workspace), intent(in) :: self
+        integer :: p
         n = self%upload_count
+        select type(self)
+        type is(target_workspace)
+            if (allocated(self%parts)) then
+                do p=1,size(self%parts)
+                    n=n+target_uploads(self%parts(p))
+                end do
+            end if
+        end select
     end function
 
     logical function same_model(a,b) result(same)
-        type(target_model), intent(in) :: a,b
+        class(packed_component), intent(in) :: a,b
         same = .false.
         if (.not. allocated(b%meta)) return
         if (a%device /= b%device .or. a%maxnodes /= b%maxnodes .or. a%maxlayers /= b%maxlayers) return
         if (size(a%meta,2) /= size(b%meta,2)) return
         if (any(shape(a%mp) /= shape(b%mp))) return
         if (any(shape(a%polynomial) /= shape(b%polynomial))) return
+        if (any(shape(a%features)/=shape(b%features))) return
+        if (any(shape(a%nodes)/=shape(b%nodes))) return
+        if (any(shape(a%weights)/=shape(b%weights))) return
         if (any(a%meta /= b%meta)) return
         if (any(a%features /= b%features) .or. any(a%feature_params /= b%feature_params)) return
         if (any(a%local_species /= b%local_species)) return
@@ -436,13 +525,22 @@ contains
         same = .true.
     end function
 
-    integer function target_allocations(self) result(n)
-        class(target_workspace), intent(in) :: self
+    recursive integer function target_allocations(self) result(n)
+        class(component_workspace), intent(in) :: self
+        integer :: p
         n = self%growth_count
+        select type(self)
+        type is(target_workspace)
+            if (allocated(self%parts)) then
+                do p=1,size(self%parts)
+                    n=n+target_allocations(self%parts(p))
+                end do
+            end if
+        end select
     end function
 
     subroutine evaluate_batch_target(model, species, centers, offsets, indices, displacements, energies, forces, work, &
-                                     virial, profile, status, message)
+                                     virial, profile, status, message, energy_only, descriptor_values, reuse_model)
         type(target_model), intent(in) :: model
         integer, intent(in) :: species(:), centers(:), offsets(:), indices(:)
         real(real64), intent(in) :: displacements(:,:)
@@ -453,9 +551,13 @@ contains
         type(target_profile), intent(out), optional :: profile
         integer, optional, intent(out) :: status
         character(len=*), optional, intent(out) :: message
+        real(real64), optional, intent(out) :: descriptor_values(:,:)
+        ! reuse_model promises the model is unchanged since this workspace was
+        ! populated. Release the workspace before any mutation when opting in.
+        logical, optional, intent(in) :: energy_only,reuse_model
         type(target_profile) :: timing
         real(real64) :: started, mark
-        integer :: first, last, row, s, na, nrw, nedges
+        integer :: first, last, row, s, na, nrw, nedges, part
         if (present(status)) status = 0
         if (present(message)) message = ""
         started = omp_get_wtime()
@@ -515,11 +617,26 @@ contains
                 call target_failure('OpenMP target: too few neighbors for version 10 center lookup',status,message)
                 return
             end if
+            if (allocated(model%parts)) then
+                do part=1,size(model%parts)
+                    if (model%parts(part)%meta(4,s)/=10 .or. model%parts(part)%meta(3,s)/=1) cycle
+                    if (last-first+1>=model%parts(part)%meta(7,s)) cycle
+                    call target_failure('common: too few neighbors for component version 10 lookup',status,message)
+                    return
+                end do
+            end if
         end do
+        if (present(descriptor_values)) then
+            if (size(descriptor_values,1)/=size(centers) .or. &
+                size(descriptor_values,2)/=maxval(model%nodes(1,:))) then
+                call target_failure('common: wrong descriptor output shape',status,message)
+                return
+            end if
+        end if
         if (size(centers) == 0) return
         nrw = size(centers); na = size(species)
         first = offsets(1); last = offsets(nrw+1)-1; nedges = last-first+1
-        call prepare_workspace(model,work,nrw,na,nedges)
+        call prepare_workspace(model,work,nrw,na,nedges,reuse_model)
         timing%prepare = omp_get_wtime()-started
         mark = omp_get_wtime()
         work%species(:size(species)) = species; work%centers(:nrw) = centers
@@ -527,7 +644,7 @@ contains
         work%indices(:nedges) = indices(first:last); work%dr(:,:nedges) = displacements(:,first:last)
         call upload_inputs(model%device,size(species),nrw,nedges,work%species,work%centers,work%offsets,work%indices,work%dr)
         timing%upload = omp_get_wtime()-mark
-        call execute_workspace(model,work,nrw,size(species),nedges,energies,forces,virial,timing)
+        call execute_workspace(model,work,nrw,size(species),nedges,energies,forces,virial,timing,energy_only,descriptor_values)
         timing%total = omp_get_wtime()-started
         if (present(profile)) profile = timing
     end subroutine
@@ -544,19 +661,23 @@ contains
         if (present(message)) message = text
     end subroutine
 
-    subroutine prepare_workspace(model,work,nrw,natoms,nedges)
-        type(target_model), intent(in) :: model
-        type(target_workspace), intent(inout) :: work
+    subroutine prepare_workspace(model,work,nrw,natoms,nedges,reuse_model)
+        class(packed_component), intent(in) :: model
+        class(component_workspace), intent(inout) :: work
         integer, intent(in) :: nrw,natoms,nedges
         integer :: n,mn,ml,ne,na,mm,mpower,ngroups,njf,nje,njr,nlocal,nchannels,ndelta,mdelta,ng5,nfg5
-        logical :: grow
+        logical, optional, intent(in) :: reuse_model
+        logical :: grow,unchanged
         na = natoms
         ! Each workspace owns its model cache; compare values, not addresses, so
         ! reloads and independently copied target_model objects cannot go stale.
         if (allocated(work%cached%meta)) then
             if (work%cached%device /= model%device) call work%release()
         end if
-        if (.not. same_model(model,work%cached)) then
+        unchanged=.false.
+        if (present(reuse_model)) unchanged=reuse_model.and.allocated(work%cached%meta)
+        if (.not.unchanged) unchanged=same_model(model,work%cached)
+        if (.not.unchanged) then
             if (allocated(work%cached%meta)) call map_model(work%cached,.false.)
             work%cached = model
             call map_model(work%cached,.true.)
@@ -622,7 +743,7 @@ contains
         end if
     end subroutine
 
-    subroutine execute_workspace(model,work,nrw,natoms,nedges,energies,forces,virial,timing)
+    subroutine execute_workspace(model,work,nrw,natoms,nedges,energies,forces,virial,timing,energy_only,descriptor_values)
         type(target_model), intent(in) :: model
         type(target_workspace), intent(inout) :: work
         integer, intent(in) :: nrw,natoms,nedges
@@ -630,7 +751,37 @@ contains
         real(real64), intent(inout) :: forces(:,:)
         real(real64), optional, intent(inout) :: virial(3,3)
         type(target_profile), intent(inout) :: timing
+        real(real64), optional, intent(out) :: descriptor_values(:,:)
+        logical, optional, intent(in) :: energy_only
         real(real64) :: stages(3),mark
+        if (allocated(model%parts)) then
+            call execute_composite(model,work,nrw,natoms,nedges,stages,energy_only,present(descriptor_values))
+        else if (present(descriptor_values)) then
+            call execute_phase(model,work,nrw,natoms,nedges,stages,phase=1)
+        else
+            call execute_phase(model,work,nrw,natoms,nedges,stages,energy_only)
+        end if
+        timing%descriptors = stages(1); timing%network = stages(2); timing%forces = stages(3)
+        if (present(descriptor_values)) then
+            call download_descriptors(model%device,nrw,work%g,descriptor_values)
+            energies=0
+            return
+        end if
+        mark = omp_get_wtime()
+        call download_outputs(model%device,natoms,nrw,work%energies,work%forces,work%virial)
+        energies = work%energies(:nrw)
+        forces = forces+work%forces(:,:natoms)
+        if (present(virial)) virial = virial+work%virial
+        timing%download = omp_get_wtime()-mark
+    end subroutine
+
+    subroutine execute_phase(model,work,nrw,natoms,nedges,stages,energy_only,phase)
+        class(packed_component), intent(in) :: model
+        class(component_workspace), intent(inout) :: work
+        integer, intent(in) :: nrw,natoms,nedges
+        integer, optional, intent(in) :: phase
+        logical, optional, intent(in) :: energy_only
+        real(real64), intent(out) :: stages(3)
         call run_target_batch(model%device,work%cached%meta,work%cached%nodes,work%cached%acts,work%cached%woffset, &
             work%cached%weights,work%cached%params,work%cached%shift,work%cached%scale,work%cached%spin, &
             work%cached%features,work%cached%feature_params,work%cached%local_species, &
@@ -638,14 +789,7 @@ contains
             work%indices,work%dr,work%energies,work%forces,work%virial,work%g,work%values,work%deriv,work%delta, &
             work%moments,work%powers,work%radial,work%jacobian,work%g4_first,work%g5_active,work%use_moment, &
             work%geom,work%edge_row, &
-            work%edge_force,nrw,natoms,nedges,stages)
-        timing%descriptors = stages(1); timing%network = stages(2); timing%forces = stages(3)
-        mark = omp_get_wtime()
-        call download_outputs(model%device,natoms,nrw,work%energies,work%forces,work%virial)
-        energies = work%energies(:nrw)
-        forces = forces+work%forces(:,:natoms)
-        if (present(virial)) virial = virial+work%virial
-        timing%download = omp_get_wtime()-mark
+            work%edge_force,nrw,natoms,nedges,stages,energy_only,phase)
     end subroutine
 
     ! Borrow CUDA device arrays owned by lib/gpu. No host neighbor round trip.
@@ -704,7 +848,7 @@ contains
     end subroutine
 
     subroutine map_model(model,enter)
-        type(target_model), intent(inout) :: model
+        class(packed_component), intent(inout) :: model
         logical, intent(in) :: enter
         call map_model_arrays(model%device,enter,model%meta,model%nodes,model%acts,model%woffset,model%weights, &
             model%params,model%shift,model%scale,model%spin,model%mp,model%multiplicity,model%polynomial, &

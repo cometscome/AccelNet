@@ -29,7 +29,9 @@ The method and its validation are described in the
   Supported CPU batches use the same kernel source with OpenMP disabled:
   Chebyshev direct/moment, LJ, and Behler G1–G5. The former CPU implementation
   remains available as `evaluate_batch_reference` for independent comparisons
-  and as a fallback for unsupported configurations.
+  in `legacy/cpu-reference/`; production inference has no legacy fallback.
+  Structure/file, atomic Fortran/C, and ænet-compatible SFB calls also use
+  the common serial kernels. Multiple/mixed Chebyshev components are supported.
   Chebyshev and G5 support direct/moment in the common source; G4 uses direct
   pairs. G5 auto retains the original 16-angular-neighbor threshold and order-10
   bound; fractional/higher powers remain direct.

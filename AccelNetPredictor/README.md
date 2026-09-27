@@ -13,7 +13,9 @@ The default CPU batch path uses a serial compilation of those same kernels for
 all supported descriptor families, including Chebyshev/G5 direct and moment.
 See [implementation status](../docs/implementation-status.md) for restrictions
 and auto-selection rules. `evaluate_batch_reference` retains the former CPU
-batch evaluator. Object and atomic evaluation APIs remain unchanged.
+batch evaluator in `legacy/cpu-reference/`. Structure/file, atomic Fortran/C,
+and ænet-compatible SFB APIs now call the common serial backend too; public
+argument lists and additive-force semantics are preserved.
 
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -311,8 +313,8 @@ monotonically. See the [validation report](../docs/validation/virial-2026-09-25/
 
 Additional self-contained tests cover nonlinear, per-element n2p2 networks
 and a synthetic H/O model with G2/G4/G5 descriptors and nontrivial scaling.
-The latter mixes an atomic direct-contraction path with a full-Jacobian path
-in the same system. Rotation covariance (`W' = R W R^T`), atom/species
+The latter combines direct contraction and saved descriptor Jacobians
+in the common kernel. Rotation covariance (`W' = R W R^T`), atom/species
 permutations, independent lattice translations of individual atoms, and image
 metadata are checked in molecular, orthogonal, and triclinic geometries.
 G5 DIRECT/MOMENT/MOMENT_FORCE modes also undergo energy-only strain checks.

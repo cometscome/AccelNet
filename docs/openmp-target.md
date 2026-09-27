@@ -5,7 +5,7 @@ G1–G5 and n2p2 weighted/compact descriptors, the neural network and its input 
 and force/virial scatter in FP64**. Existing CPU entry points retain their
 compiler options and do not acquire an OpenMP/GPU runtime dependency.
 
-Supported configurations include one Chebyshev component per element (versions
+Supported configurations include Chebyshev components (versions
 0, 1 and 10), LJ/Behler components and their combinations, and different families
 for different elements. All ten cutoff types, element-specific network shapes,
 and all twelve activation codes are supported. G4 uses direct pairs. G5 supports
@@ -14,7 +14,9 @@ threshold inside each component's maximum angular cutoff. Exact integer powers
 1–10 are eligible in auto mode. Explicit moment modes also support exact integer
 powers 11–16; auto keeps those powers direct because measured high-order
 moments can regress. Fractional/near-integer and powers above 16 remain direct.
-Mixed/multiple Chebyshev components within a single element remain unsupported.
+Multiple/mixed Chebyshev components within one element use the common component
+pipeline: descriptor blocks are gathered into one NN, then its adjoints are
+distributed back to the same component kernels.
 Angular parameters require finite values, |lambda| <= 1 and zeta >= 1.
 
 The same target kernels can explicitly execute on the CPU:
@@ -33,7 +35,8 @@ for all supported Chebyshev, LJ, Behler and n2p2 extension models. CPU and GPU
 use the same high-order G5 moment construction, contraction, and force code.
 The LAMMPS CPU adapter also uses this shared serial batch path.
 `evaluate_batch_reference` retains the old batch path for independent comparisons;
-the object/atomic APIs remain available as additional independent references.
+the object/atomic/SFB APIs now also use the common serial kernels. Old CPU
+evaluators and API snapshots are collected in `legacy/cpu-reference/`.
 
 Direct force contraction uses saved unit directions and a differentiated
 Clenshaw recurrence for the Chebyshev series. This reduces normalization and
@@ -206,7 +209,8 @@ The evaluation stages are:
    and moments. In moment mode, nested x/y/z Horner recurrences evaluate the
    contracted polynomial and all three Cartesian derivatives together. Store
    three force components per edge. G4 reads saved Jacobians without another pair traversal.
-6. Aggregate edge contributions by center and scatter forces/virial with FP64 atomics.
+6. Aggregate edge contributions by center. GPU physical-atom force scatter uses
+   FP64 atomics and virial uses reduction; host scatter is serial without atomics.
 
 G4 adds a persistent `(3, descriptor, edge)` Jacobian and small species-pair head
 tables. Per-pair intermediate caches are scalar locals; the revision-1.4 global
@@ -429,3 +433,17 @@ Host final force scatter is a short serial pass without atomic updates; other
 compute stages remain threaded. GPU force scatter retains atomic additions to
 shared physical atoms, while virial assembly uses a nine-component reduction.
 No descriptor math is forked into a separate CPU implementation.
+
+### Optional evaluation phases and immutable model reuse
+
+`evaluate_batch_target(..., energy_only=.true.)` skips network backpropagation
+and force contraction. `descriptor_values` returns raw descriptor inputs and
+stops before network evaluation. Neither option selects a legacy evaluator.
+
+By default, workspace preparation compares packed model values, including
+weights, so same-shape mutations are detected. `reuse_model=.true.` is an
+explicit promise that the packed model has not changed since the workspace
+was populated. Call `work%release()` before changing the model when using this
+option. The private per-atom/C cache uses this shortcut and releases its
+workspace whenever a loader or mode setter invalidates the cache. Ordinary
+mutable-object APIs retain the value comparison.

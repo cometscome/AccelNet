@@ -433,6 +433,32 @@ program test_batch_target
                 if (v == 0) call finite_differences(s)
             end do
         end do
+    else if (argument == '--composite' .or. argument == '--composite-quick') then
+        do v=0,merge(0,2,argument=='--composite-quick')
+            version=merge(10,v,v==2)
+            do n=merge(3,1,argument=='--composite-quick'),3
+                do mode=0,2
+                    select case(n)
+                    case(1); call make_model('combined',model,order=4,version=version)
+                    case(2); call make_model('multi-chebyshev',model,order=4,version=version)
+                    case(3); call make_model('mixed-components',model,order=4,version=version)
+                    end select
+                    call model%set_chebyshev_evaluation(mode)
+                    call model%set_g5_evaluation(merge(3,mode,mode==2))
+                    call packed%initialize(model,use_host=host)
+                    snapshot=packed
+                    call packed%release()
+                    packed=snapshot
+                    do geometry=1,3
+                        call make_structure(8,2,s)
+                        s%pbc=geometry/=1
+                        if (geometry==3) s%lattice(1,2)=0.4_real64
+                        call check(s)
+                    end do
+                    if (v==0.and.argument/='--composite-quick') call finite_differences(s)
+                end do
+            end do
+        end do
     else if (len_trim(argument) > 0) then
         call reject(trim(argument))
         stop 0
@@ -708,7 +734,11 @@ contains
         integer :: species(2), centers(2), offsets(3), indices(2)
         real(real64) :: dr(3,2), e(2), f(3,2)
         call make_model('chebyshev',model)
-        if (which == 'unsupported') call make_model('combined',model)
+        if (which == 'unsupported') model%setups(1)%model%chebyshev(1)%config%version=99
+        if (which == 'composite10') then
+            call make_model('combined',model,version=10)
+            model%setups(1)%model%chebyshev(1)%config%central_type_index=3
+        end if
         if (which == 'activation') model%networks(1)%activation(1) = 12
         if (which == 'version10') then
             do i = 1, 2

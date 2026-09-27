@@ -1,7 +1,7 @@
 # CPU/GPU implementation status
 
-Assessment: 2026-09-27; AccelNet 1.0.1, methods revision 1.11, `gpu` code
-checkpoint `ea65290`. This describes evaluation of models **inside AccelNet**,
+Assessment: 2026-09-27; AccelNet 1.0.1, methods revision 1.12; migration baseline `gpu`
+checkpoint `543b180`. This describes evaluation of models **inside AccelNet**,
 not GPU support in the upstream ænet or n2p2 programs.
 
 ## Descriptor coverage
@@ -51,11 +51,10 @@ CPU/GPU timing or thread count.
   comparisons of the same model. This does not establish every ænet model or
   binary compiler format as tested.
 
-One Chebyshev component per element is supported by the shared batch/target
-path. Multiple Chebyshev components or Chebyshev mixed with another descriptor
-inside the same element are not supported there. LJ/Behler combinations and
-different descriptor families across elements are supported. Model loading
-capability alone therefore does not guarantee target compatibility.
+Multiple Chebyshev components and Chebyshev/LJ/Behler mixtures inside an element
+now use the common component pipeline, preserving original descriptor offsets
+and one NN per element. Different element-specific component lists are supported.
+No production inference path silently falls back to the former CPU evaluator.
 
 ## Execution paths and remaining separate code
 
@@ -65,10 +64,11 @@ capability alone therefore does not guarantee target compatibility.
 | LAMMPS `pair_style accelnet` | Common serial batch for supported models | Ordinary CPU path remains serial within each MPI rank |
 | Explicit target API with `use_host=.true.` | Common kernels | OpenMP host threads, measured at 1/2/4/8 |
 | Target API / LAMMPS `accelnet/gpu` | Common kernels | GPU offload; H100 and Blackwell validated |
-| Retained object/per-atom APIs and `evaluate_batch_reference` | Older independent CPU evaluator | Compatibility/reference path; not automatically GPU accelerated |
+| Structure/file, per-atom Fortran/C, and ænet-compatible SFB APIs | Common serial kernels; atomic environments become one CSR row | CPU, OpenMP compiled out |
+| Explicit `evaluate_batch_reference` and standalone low-level descriptor/NN utilities | Former CPU evaluator in `legacy/cpu-reference/` | Independent reference / lower-level compatibility |
 
-Thus the production supported batch kernels are shared, but the repository
-still contains an independent older reference implementation. That older G5
+The production potential-inference paths now share their kernels. The repository
+retains an explicit independent reference in [legacy/cpu-reference](../legacy/cpu-reference/README.md). That older G5
 moment implementation retains its order-10 limit. “Atomic API” means per-atom
 API and is unrelated to an OpenMP atomic instruction.
 
@@ -77,6 +77,9 @@ physical-atom force scatter still uses atomic additions; virial uses reduction.
 AMD/Intel GPU execution has not been validated by the archived measurements.
 
 ## Validation and performance scope
+
+The [revision 1.12 migration report](validation/unified-api-2026-09-27/README.md)
+records public API, composite descriptor, lifecycle and performance checks.
 
 * [Latest atomic-removal validation](validation/atomic-reduction-2026-09-27/README.md):
   CPU functional/reference tests, host 2/8-thread checks, H100/Blackwell

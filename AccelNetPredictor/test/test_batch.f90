@@ -1,13 +1,13 @@
 program test_batch
     use iso_fortran_env, only: real64
     use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
-    use accelnet_batch, only: batch_workspace, evaluate_batch
+    use accelnet_batch, only: batch_workspace, evaluate_batch, evaluate_batch_reference
     use accelnet_predictor, only: predictor_model, load_predictor_from_n2p2, load_predictor_from_networks
     use accelnet_descriptors, only: atomic_structure, neighbor_data, build_neighbor_list, read_xsf
     use batch_test_support
     implicit none
     type(predictor_model) :: model
-    type(batch_workspace) :: work
+    type(batch_workspace) :: work, reference_work
     type(atomic_structure) :: s
     character(len=1024) :: directory, argument, network_files(2)
     integer :: family, version, mode, geometry
@@ -131,6 +131,12 @@ contains
         centers = [(k,k=1,s%natoms)]
         call model%predict_energy_forces(s, e, f, w)
         call build_neighbor_list(s, model%maximum_cutoff, neighbors, model%minimum_distance)
+        fb=0; wb=0
+        call evaluate_batch_reference(model,s%species,centers,neighbors%offsets,neighbors%atom_indices, &
+            neighbors%displacements,energies,fb,reference_work,wb)
+        call close_array([sum(energies)],[e],'structure/reference energy')
+        call close_array(reshape(fb,[3*s%natoms]),reshape(f,[3*s%natoms]),'structure/reference force')
+        call close_array(reshape(wb,[9]),reshape(w,[9]),'structure/reference virial')
         fb = 0; wb = 0
         call evaluate_batch(model, s%species, centers, neighbors%offsets, neighbors%atom_indices, &
             neighbors%displacements, energies, fb, work, wb)

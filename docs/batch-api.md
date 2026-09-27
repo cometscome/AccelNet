@@ -3,15 +3,14 @@
 This batch API executes on the CPU. Supported Chebyshev, LJ and Behler G1–G5
 models use the same numerical source as the
 [OpenMP target backend](openmp-target.md), compiled without OpenMP directives.
-Chebyshev and G5 support direct/moment; G4 uses direct pairs. Unsupported
-configurations, such as mixed/multiple Chebyshev components within an element,
-fall back to the established CPU evaluator. Forced G5 moments now use the
-common implementation. G5 auto retains the original per-component threshold:
-16 neighbors inside its maximum angular cutoff, exact integer orders 1–10.
-Fractional, near-integer and higher orders retain direct evaluation.
-Existing object, Fortran/C atomic, CLI and ordinary LAMMPS CPU
-evaluation paths are unchanged. No OpenMP runtime or GPU compiler is required
-for a normal CPU build.
+Chebyshev and G5 support direct/moment; G4 uses direct pairs. Multiple/mixed
+Chebyshev components use the common component pipeline. Production inference
+has no legacy fallback. G5 auto retains its per-component 16-neighbor threshold
+and exact integer orders 1--10; explicit moment modes also permit orders 11--16.
+Fractional/near-integer and orders above 16 remain direct.
+Structure/file, Fortran/C atomic, CLI and ordinary LAMMPS CPU calls use the
+common serial kernels. No OpenMP runtime or GPU compiler is required for a
+normal CPU build. Old code is in [legacy/cpu-reference](../legacy/cpu-reference/README.md).
 
 ## API
 
@@ -66,8 +65,7 @@ model or neighbor list and is not safe for simultaneous use by multiple threads.
 On the common path, G4 computes values and derivatives in one pair traversal,
 then contracts the saved Jacobian after the NN evaluation. CPU and GPU use the
 same formulas with different descriptor-owner counts. Other common descriptors
-use cached geometry and direct derivative contraction. The fallback follows the
-existing structure evaluator. G5 moments share cached radial groups, reuse raw
+use cached geometry and direct derivative contraction. G5 moments share cached radial groups, reuse raw
 moments after the NN, and evaluate contracted force polynomials with differentiated
 Horner. Auto follows the established neighbor threshold; this policy is not a
 guarantee of the fastest choice for every model or neighbor density.

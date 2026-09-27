@@ -2,9 +2,7 @@ module accelnet_predictor
     use iso_fortran_env, only: real64
     use accelnet_descriptors, only: atomic_structure, neighbor_data, descriptor_config, &
         initialize_config, read_xsf, build_neighbor_list
-    use accelnet_descriptor_models, only: evaluate_model_values, evaluate_model_values_derivatives, &
-        contract_model_derivatives, model_supports_direct_contraction, &
-        add_chebyshev, add_lj, add_behler, set_model_g5_evaluation, set_model_chebyshev_evaluation
+    use accelnet_descriptor_models, only: add_chebyshev, add_lj, add_behler, set_model_g5_evaluation, set_model_chebyshev_evaluation
     use accelnet_lj, only: lj_config, initialize_lj_config
     use accelnet_behler, only: behler_config, initialize_behler_config, &
         add_g1, add_g2, add_g3, add_g4, add_g5, add_extended
@@ -37,6 +35,21 @@ module accelnet_predictor
     public :: load_predictor, load_predictor_from_networks, load_predictor_from_network_data, &
               load_predictor_from_n2p2
     public :: reload_predictor, reload_predictor_from_networks, reload_predictor_from_n2p2
+
+    interface
+        module subroutine predict_energy_structure(self, structure, total_energy)
+        class(predictor_model), intent(in) :: self
+        type(atomic_structure), intent(in) :: structure
+        real(real64), intent(out) :: total_energy
+        end subroutine predict_energy_structure
+        module subroutine predict_energy_forces_structure(self, structure, total_energy, forces, virial)
+        class(predictor_model), intent(in) :: self
+        type(atomic_structure), intent(in) :: structure
+        real(real64), intent(out) :: total_energy
+        real(real64), intent(out) :: forces(:, :)
+        real(real64), intent(out), optional :: virial(3,3)
+        end subroutine predict_energy_forces_structure
+    end interface
 
 contains
     subroutine predictor_set_chebyshev_evaluation(self, mode)
@@ -370,42 +383,7 @@ contains
         call self%predict_energy(structure, total_energy)
     end subroutine predict_energy_file
 
-    subroutine predict_energy_structure(self, structure, total_energy)
-        class(predictor_model), intent(in) :: self
-        type(atomic_structure), intent(in) :: structure
-        real(real64), intent(out) :: total_energy
-        type(neighbor_data) :: neighbors
-        real(real64), allocatable :: descriptor(:), normalized(:)
-        integer, allocatable :: global_neighbors(:), local_neighbors(:)
-        integer :: atom, species, first, last, n, maximum_dimension, maximum_neighbors
-        real(real64) :: atomic_energy, cohesive
-        call build_neighbor_list(structure, self%maximum_cutoff, neighbors, self%minimum_distance)
-        maximum_dimension = 0
-        do species = 1, size(self%networks)
-            maximum_dimension = max(maximum_dimension, self%networks(species)%nodes(1))
-        end do
-        maximum_neighbors = maxval(neighbors%offsets(2:) - neighbors%offsets(:structure%natoms))
-        allocate(descriptor(maximum_dimension), normalized(maximum_dimension), &
-                 global_neighbors(maximum_neighbors), local_neighbors(maximum_neighbors))
-        cohesive = 0.0_real64
-        do atom = 1, structure%natoms
-            species = structure%species(atom)
-            first = neighbors%offsets(atom); last = neighbors%offsets(atom + 1) - 1; n = max(0, last - first + 1)
-            if (n > 0) global_neighbors(1:n) = structure%species(neighbors%atom_indices(first:last))
-            call self%setups(species)%map_species(global_neighbors(1:n), local_neighbors(1:n))
-            call evaluate_model_values(self%setups(species)%model, neighbors%displacements(:, first:last), &
-                local_neighbors(1:n), descriptor)
-            normalized(1:self%networks(species)%nodes(1)) = &
-                (descriptor(1:self%networks(species)%nodes(1)) - self%networks(species)%descriptor_shift) * &
-                self%networks(species)%descriptor_scale
-            call self%networks(species)%evaluate(normalized(1:self%networks(species)%nodes(1)), atomic_energy)
-            cohesive = cohesive + atomic_energy
-        end do
-        total_energy = cohesive/self%networks(1)%energy_scale + structure%natoms*self%networks(1)%energy_shift
-        do atom = 1, structure%natoms
-            total_energy = total_energy + self%networks(1)%atomic_references(structure%species(atom))
-        end do
-    end subroutine predict_energy_structure
+
 
     subroutine predict_energy_forces_file(self, xsf_file, total_energy, forces, virial)
         class(predictor_model), intent(in) :: self
@@ -419,109 +397,5 @@ contains
         call self%predict_energy_forces(structure, total_energy, forces, virial)
     end subroutine predict_energy_forces_file
 
-    subroutine predict_energy_forces_structure(self, structure, total_energy, forces, virial)
-        class(predictor_model), intent(in) :: self
-        type(atomic_structure), intent(in) :: structure
-        real(real64), intent(out) :: total_energy
-        real(real64), intent(out) :: forces(:, :)
-        real(real64), intent(out), optional :: virial(3,3)
-        type(neighbor_data) :: neighbors
-        real(real64), allocatable :: descriptor(:), normalized(:), gradient(:), contributions(:)
-        real(real64), allocatable :: derivative_center(:, :), derivative_neighbors(:, :, :)
-        real(real64), allocatable :: contracted_neighbors(:, :)
-        real(real64) :: contracted_center(3), neighbor_force(3)
-        integer, allocatable :: global_neighbors(:), local_neighbors(:)
-        integer :: atom, species, first, last, n, maximum_dimension, maximum_neighbors
-        integer :: neighbor, target, coefficient, component
-        real(real64) :: atomic_energy, cohesive
-        logical :: use_direct_contraction
-        if (size(forces, 1) /= 3 .or. size(forces, 2) /= structure%natoms) &
-            error stop "forces must have shape (3, structure%natoms)"
-        call build_neighbor_list(structure, self%maximum_cutoff, neighbors, self%minimum_distance)
-        maximum_dimension = 0
-        do species = 1, size(self%networks)
-            maximum_dimension = max(maximum_dimension, self%networks(species)%nodes(1))
-        end do
-        use_direct_contraction = .true.
-        do species = 1, size(self%setups)
-            use_direct_contraction = use_direct_contraction .and. &
-                model_supports_direct_contraction(self%setups(species)%model)
-        end do
-        maximum_neighbors = maxval(neighbors%offsets(2:) - neighbors%offsets(:structure%natoms))
-        allocate(descriptor(maximum_dimension), normalized(maximum_dimension), gradient(maximum_dimension), &
-                 contributions(maximum_dimension))
-        if (use_direct_contraction) then
-            allocate(contracted_neighbors(3, maximum_neighbors))
-        else
-            allocate(derivative_center(3, maximum_dimension), &
-                     derivative_neighbors(3, maximum_dimension, maximum_neighbors))
-        end if
-        allocate(global_neighbors(maximum_neighbors), local_neighbors(maximum_neighbors))
-        forces = 0.0_real64; cohesive = 0.0_real64
-        if (present(virial)) virial = 0.0_real64
-        do atom = 1, structure%natoms
-            species = structure%species(atom)
-            first = neighbors%offsets(atom); last = neighbors%offsets(atom + 1) - 1; n = max(0, last - first + 1)
-            if (n > 0) global_neighbors(1:n) = structure%species(neighbors%atom_indices(first:last))
-            call self%setups(species)%map_species(global_neighbors(1:n), local_neighbors(1:n))
-            if (use_direct_contraction) then
-                call evaluate_model_values(self%setups(species)%model, &
-                    neighbors%displacements(:, first:last), local_neighbors(1:n), descriptor)
-            else
-                call evaluate_model_values_derivatives(self%setups(species)%model, &
-                    neighbors%displacements(:, first:last), local_neighbors(1:n), descriptor, &
-                    derivative_center, derivative_neighbors(:, :, 1:n))
-            end if
-            normalized(1:self%networks(species)%nodes(1)) = &
-                (descriptor(1:self%networks(species)%nodes(1)) - self%networks(species)%descriptor_shift) * &
-                self%networks(species)%descriptor_scale
-            call self%networks(species)%input_gradient(normalized(1:self%networks(species)%nodes(1)), &
-                atomic_energy, gradient(1:self%networks(species)%nodes(1)))
-            cohesive = cohesive + atomic_energy
-            contributions(1:self%networks(species)%nodes(1)) = &
-                -gradient(1:self%networks(species)%nodes(1))*self%networks(species)%descriptor_scale / &
-                self%networks(species)%energy_scale
-            if (use_direct_contraction) then
-                call contract_model_derivatives(self%setups(species)%model, &
-                    neighbors%displacements(:, first:last), local_neighbors(1:n), &
-                    contributions(1:self%networks(species)%nodes(1)), contracted_center, &
-                    contracted_neighbors(:, 1:n))
-                forces(:, atom) = forces(:, atom) + contracted_center
-                do neighbor = 1, n
-                    target = neighbors%atom_indices(first + neighbor - 1)
-                    forces(:, target) = forces(:, target) + contracted_neighbors(:, neighbor)
-                    if (present(virial)) then
-                        do component = 1, 3
-                            virial(:,component) = virial(:,component) + &
-                                neighbors%displacements(:,first + neighbor - 1)*contracted_neighbors(component,neighbor)
-                        end do
-                    end if
-                end do
-            else
-                do coefficient = 1, self%networks(species)%nodes(1)
-                    forces(:, atom) = forces(:, atom) + &
-                        contributions(coefficient)*derivative_center(:, coefficient)
-                end do
-                do neighbor = 1, n
-                    target = neighbors%atom_indices(first + neighbor - 1)
-                    do coefficient = 1, self%networks(species)%nodes(1)
-                        forces(:, target) = forces(:, target) + &
-                            contributions(coefficient)*derivative_neighbors(:, coefficient, neighbor)
-                    end do
-                    if (present(virial)) then
-                        neighbor_force = matmul(derivative_neighbors(:,1:self%networks(species)%nodes(1),neighbor), &
-                                                contributions(1:self%networks(species)%nodes(1)))
-                        do component = 1, 3
-                            virial(:,component) = virial(:,component) + &
-                                neighbors%displacements(:,first + neighbor - 1)*neighbor_force(component)
-                        end do
-                    end if
-                end do
-            end if
-        end do
-        total_energy = cohesive/self%networks(1)%energy_scale + structure%natoms*self%networks(1)%energy_shift
-        do atom = 1, structure%natoms
-            total_energy = total_energy + self%networks(1)%atomic_references(structure%species(atom))
-        end do
-    end subroutine predict_energy_forces_structure
+
 end module accelnet_predictor

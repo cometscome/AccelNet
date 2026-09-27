@@ -45,6 +45,7 @@ def main():
     parser.add_argument("--samples", type=int, default=7)
     parser.add_argument("--seconds", type=float, default=0.2)
     parser.add_argument("--max-slowdown", type=float, default=1.10)
+    parser.add_argument("--baseline-mode", choices=["structure", "reference"], default="structure")
     parser.add_argument("--candidate-mode", choices=["structure", "batch"], default="structure")
     parser.add_argument("--cpu", type=int, help="Linux CPU ID (default: first available CPU)")
     parser.add_argument("--output", type=Path, required=True)
@@ -65,7 +66,7 @@ def main():
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
     report = dict(host=platform.node(), platform=platform.platform(), cpu=affinity,
                   baseline=str(args.baseline), candidate=str(args.candidate),
-                  candidate_mode=args.candidate_mode, samples=args.samples,
+                  baseline_mode=args.baseline_mode, candidate_mode=args.candidate_mode, samples=args.samples,
                   seconds_per_sample=args.seconds, max_slowdown=args.max_slowdown,
                   ratio_method="median of paired candidate/baseline wall times",
                   absolute_tolerance=2e-10, relative_tolerance=2e-10, cases=[])
@@ -79,7 +80,7 @@ def main():
             for sample in range(args.samples):
                 names = ["baseline", "candidate"] if sample % 2 == 0 else ["candidate", "baseline"]
                 for name in names:
-                    mode = args.candidate_mode if name == "candidate" else "structure"
+                    mode = args.candidate_mode if name == "candidate" else args.baseline_mode
                     timing, values = measure(getattr(args, name), family, natoms, args, mode)
                     times[name].append(timing)
                     if reference is None:

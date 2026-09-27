@@ -55,6 +55,8 @@ add_library(AccelNetPredictor
     src/n2p2_network.f90
     src/predict_input.f90
     src/accelnet_predictor.f90
+    src/accelnet_predictor_evaluation.f90
+    ../legacy/cpu-reference/accelnet_cpu_reference.f90
     src/accelnet_batch.f90
     src/accelnet.f90)
 add_library(AccelNetPredictor::AccelNetPredictor ALIAS AccelNetPredictor)
@@ -65,7 +67,8 @@ set_target_properties(AccelNetPredictor PROPERTIES
     Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/modules")
 target_include_directories(AccelNetPredictor PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/../AccelNetDescriptors/src/shared"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/shared")
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/shared"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../legacy/cpu-reference")
 target_include_directories(AccelNetPredictor PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/modules>"
     "$<INSTALL_INTERFACE:include>")
@@ -78,13 +81,15 @@ target_compile_options(AccelNetPredictor PRIVATE
 # Compile the same numerical kernels for the ordinary CPU batch API. Separate
 # module names let this serial instance coexist with a GPU-enabled instance.
 # Strip directives even when the caller supplies global OpenMP compiler flags.
-set(_edge_body "${CMAKE_CURRENT_SOURCE_DIR}/src/shared/generic_force_edge_body.inc")
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_edge_body}")
-file(READ "${_edge_body}" _serial_source)
-string(REGEX REPLACE "[ \t]*!\\$omp[^\n]*" "" _serial_source "${_serial_source}")
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/shared")
-configure_file(cmake/serial-source.F90.in
-    "${CMAKE_CURRENT_BINARY_DIR}/shared/generic_force_edge_body_noatomics.inc" @ONLY)
+foreach(_body IN ITEMS generic_force_edge_body composite_batch)
+    set(_body_path "${CMAKE_CURRENT_SOURCE_DIR}/src/shared/${_body}.inc")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_body_path}")
+    file(READ "${_body_path}" _serial_source)
+    string(REGEX REPLACE "[ \t]*!\\$omp[^\n]*" "" _serial_source "${_serial_source}")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/shared")
+    configure_file(cmake/serial-source.F90.in
+        "${CMAKE_CURRENT_BINARY_DIR}/shared/${_body}_noatomics.inc" @ONLY)
+endforeach()
 target_include_directories(AccelNetPredictor PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/shared")
 set(_shared_modules accelnet_target_runtime accelnet_target_descriptors
     accelnet_target_math accelnet_target_kernels accelnet_batch_target)
@@ -97,6 +102,8 @@ foreach(_module IN LISTS _shared_modules)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_source}")
     file(READ "${_source}" _serial_source)
     string(REPLACE "'generic_force_edge_body.inc'" "'generic_force_edge_body_noatomics.inc'"
+        _serial_source "${_serial_source}")
+    string(REPLACE "'composite_batch.inc'" "'composite_batch_noatomics.inc'"
         _serial_source "${_serial_source}")
     foreach(_name IN LISTS _shared_modules)
         string(REPLACE "${_name}" "${_name}_serial" _serial_source "${_serial_source}")
@@ -249,6 +256,11 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
             set_tests_properties(predictor_target_embedded_${_family} predictor_target_c_${_family}
                 PROPERTIES FIXTURES_REQUIRED target-models LABELS "gpu" TIMEOUT 120)
         endforeach()
+        add_test(NAME predictor_target_composite COMMAND test_batch_target --composite)
+        set_tests_properties(predictor_target_composite PROPERTIES LABELS "gpu" TIMEOUT 300)
+        add_test(NAME predictor_target_host_composite COMMAND test_batch_target --host --composite)
+        set_tests_properties(predictor_target_host_composite PROPERTIES LABELS "target-host"
+            ENVIRONMENT "OMP_NUM_THREADS=1" TIMEOUT 300)
         add_test(NAME predictor_target_g5_moments COMMAND test_batch_target --g5-moments)
         set_tests_properties(predictor_target_g5_moments PROPERTIES LABELS "gpu" TIMEOUT 300)
         add_test(NAME predictor_target_host_g5_moments COMMAND test_batch_target --host --g5-moments)
@@ -265,7 +277,7 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
                 "${CMAKE_CURRENT_SOURCE_DIR}/test/data/${_n2p2_fixture}")
             set_tests_properties(predictor_target_${_n2p2_fixture} PROPERTIES LABELS "gpu" TIMEOUT 300)
         endforeach()
-        foreach(_bad_target IN ITEMS offset monotonic target center species shape unsupported activation version10 uninitialized)
+        foreach(_bad_target IN ITEMS offset monotonic target center species shape unsupported activation version10 composite10 uninitialized)
             add_test(NAME predictor_target_reject_${_bad_target} COMMAND test_batch_target ${_bad_target})
             set_tests_properties(predictor_target_reject_${_bad_target} PROPERTIES WILL_FAIL TRUE LABELS "gpu")
         endforeach()
@@ -273,6 +285,8 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
         set_tests_properties(predictor_target_reject_host_fallback PROPERTIES
             WILL_FAIL TRUE LABELS "gpu" ENVIRONMENT "OMP_TARGET_OFFLOAD=DISABLED")
     endif()
+    add_executable(accelnet-public-api-benchmark benchmark/public_api_benchmark.f90)
+    target_link_libraries(accelnet-public-api-benchmark PRIVATE batch_test_support)
     add_executable(accelnet-cpu-regression-benchmark benchmark/cpu_regression_benchmark.F90)
     target_compile_definitions(accelnet-cpu-regression-benchmark PRIVATE ACCELNET_HAVE_BATCH)
     target_link_libraries(accelnet-cpu-regression-benchmark PRIVATE batch_test_support)
@@ -286,7 +300,7 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
             COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/benchmark/compare_cpu_performance.py"
                 --baseline $<TARGET_FILE:accelnet-cpu-regression-benchmark>
                 --candidate $<TARGET_FILE:accelnet-cpu-regression-benchmark>
-                --candidate-mode batch
+                --baseline-mode reference --candidate-mode batch
                 --max-slowdown "${ACCELNET_CPU_MAX_SLOWDOWN}"
                 --output "${CMAKE_CURRENT_BINARY_DIR}/common-cpu-performance.json")
         set_tests_properties(predictor_common_cpu_performance PROPERTIES

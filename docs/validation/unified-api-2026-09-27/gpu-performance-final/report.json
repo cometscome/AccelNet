@@ -1,0 +1,671 @@
+{
+  "rows": [
+    {
+      "family": "chebyshev",
+      "atoms": 2048,
+      "order": 8,
+      "mode": 1,
+      "samples": {
+        "before": [
+          0.002711321052631579,
+          0.002620195,
+          0.002607145,
+          0.002637536842105263,
+          0.002665057894736842,
+          0.0026,
+          0.0026434736842105263,
+          0.002680205263157895,
+          0.002603055,
+          0.00256754
+        ],
+        "after": [
+          0.00261384,
+          0.002624455,
+          0.002510905,
+          0.0024814380952380955,
+          0.002496709523809524,
+          0.0024915190476190474,
+          0.0024885714285714285,
+          0.00254594,
+          0.0025506500000000002,
+          0.0024747190476190474
+        ]
+      },
+      "seconds": {
+        "before": 0.0026288659210526315,
+        "after": 0.002503807261904762
+      },
+      "ratio": 0.9524286658568747,
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "2048",
+            "8",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "chebyshev",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 8 131072   1.6631140908884845E-13"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "2048",
+            "8",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "chebyshev",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 8 131072   1.6631140908884845E-13"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "2048",
+            "8",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "chebyshev",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 8 131072   1.6631140908884845E-13"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "2048",
+            "8",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "chebyshev",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 8 131072   1.6631140908884845E-13"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "chebyshev",
+      "atoms": 2048,
+      "order": 8,
+      "mode": 2,
+      "samples": {
+        "before": [
+          0.0022696478260869567,
+          0.0022722521739130435,
+          0.002271913043478261,
+          0.0023221,
+          0.00236495,
+          0.0022974954545454543,
+          0.0022897727272727275,
+          0.002424852380952381,
+          0.002487,
+          0.002358859090909091
+        ],
+        "after": [
+          0.002274272727272727,
+          0.0022474782608695653,
+          0.0022445130434782606,
+          0.002297409090909091,
+          0.0022263,
+          0.002223208695652174,
+          0.0021912652173913046,
+          0.0021917782608695652,
+          0.0022336521739130437,
+          0.002233265217391304
+        ]
+      },
+      "seconds": {
+        "before": 0.002309797727272727,
+        "after": 0.0022334586956521737
+      },
+      "ratio": 0.9669499061674591,
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "2048",
+            "8",
+            ".05",
+            "2",
+            "1.7",
+            "gpu",
+            "chebyshev",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 8 131072   1.4588330543574557E-13"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "2048",
+            "8",
+            ".05",
+            "2",
+            "1.7",
+            "gpu",
+            "chebyshev",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 8 131072   1.4588330543574557E-13"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "2048",
+            "8",
+            ".05",
+            "2",
+            "1.7",
+            "gpu",
+            "chebyshev",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 8 131072   1.4588330543574557E-13"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "2048",
+            "8",
+            ".05",
+            "2",
+            "1.7",
+            "gpu",
+            "chebyshev",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 8 131072   1.4588330543574557E-13"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "g5-series",
+      "atoms": 2048,
+      "order": 4,
+      "mode": 1,
+      "samples": {
+        "before": [
+          0.004803172727272727,
+          0.004769627272727273,
+          0.004757636363636363,
+          0.004743272727272727,
+          0.004768090909090909,
+          0.004760627272727273,
+          0.004751927272727273,
+          0.004769563636363636,
+          0.004796545454545455,
+          0.004824263636363637
+        ],
+        "after": [
+          0.004681363636363636,
+          0.004713109090909091,
+          0.004789718181818182,
+          0.004956181818181818,
+          0.004836827272727272,
+          0.0048007272727272725,
+          0.004680436363636364,
+          0.004669645454545454,
+          0.0047059,
+          0.0060065
+        ]
+      },
+      "seconds": {
+        "before": 0.004768827272727273,
+        "after": 0.004751413636363637
+      },
+      "ratio": 0.9963484447291215,
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "2048",
+            "4",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "g5-series",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 4 131072   2.4924506902834764E-14"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "2048",
+            "4",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "g5-series",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 4 131072   2.4924506902834764E-14"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "2048",
+            "4",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "g5-series",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 4 131072   2.4924506902834764E-14"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "2048",
+            "4",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "g5-series",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 4 131072   2.4924506902834764E-14"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "g5-series",
+      "atoms": 2048,
+      "order": 4,
+      "mode": 3,
+      "samples": {
+        "before": [
+          0.0030110000000000002,
+          0.0029659941176470588,
+          0.0029802882352941177,
+          0.0030272823529411763,
+          0.0029768823529411764,
+          0.0029770470588235294,
+          0.0029293944444444445,
+          0.002971135294117647,
+          0.0029522941176470586,
+          0.0029924588235294117
+        ],
+        "after": [
+          0.002891394444444444,
+          0.002918338888888889,
+          0.003000641176470588,
+          0.0031141823529411763,
+          0.003036470588235294,
+          0.0029208888888888887,
+          0.002903661111111111,
+          0.0029236055555555557,
+          0.0028981055555555558,
+          0.002880283333333333
+        ]
+      },
+      "seconds": {
+        "before": 0.002976964705882353,
+        "after": 0.002919613888888889
+      },
+      "ratio": 0.9807351370743022,
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "2048",
+            "4",
+            ".05",
+            "3",
+            "1.7",
+            "gpu",
+            "g5-series",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 4 131072   2.5091040356528538E-14"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "2048",
+            "4",
+            ".05",
+            "3",
+            "1.7",
+            "gpu",
+            "g5-series",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 4 131072   2.5091040356528538E-14"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "2048",
+            "4",
+            ".05",
+            "3",
+            "1.7",
+            "gpu",
+            "g5-series",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 4 131072   2.5091040356528538E-14"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "2048",
+            "4",
+            ".05",
+            "3",
+            "1.7",
+            "gpu",
+            "g5-series",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 2048 4 131072   2.5091040356528538E-14"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "g5-high",
+      "atoms": 256,
+      "order": 16,
+      "mode": 1,
+      "samples": {
+        "before": [
+          0.0024875190476190473,
+          0.0024823333333333334,
+          0.0024826190476190477,
+          0.0024884761904761903,
+          0.0024786666666666668,
+          0.0024874761904761906,
+          0.0024877619047619045,
+          0.0024829047619047617,
+          0.0024881952380952383,
+          0.002483766666666667
+        ],
+        "after": [
+          0.0024765190476190475,
+          0.0024877619047619045,
+          0.002471333333333333,
+          0.0024659523809523807,
+          0.0024595714285714286,
+          0.00252695,
+          0.002531505,
+          0.002526555,
+          0.00252575,
+          0.00252975
+        ]
+      },
+      "seconds": {
+        "before": 0.0024856214285714287,
+        "after": 0.002506755952380952
+      },
+      "ratio": 1.008502712266071,
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "256",
+            "16",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "g5-high",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 256 16 16384   4.0939474033052647E-16"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "256",
+            "16",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "g5-high",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 256 16 16384   4.0939474033052647E-16"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "256",
+            "16",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "g5-high",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 256 16 16384   4.0939474033052647E-16"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "256",
+            "16",
+            ".05",
+            "1",
+            "1.7",
+            "gpu",
+            "g5-high",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 256 16 16384   4.0939474033052647E-16"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "g5-high",
+      "atoms": 256,
+      "order": 16,
+      "mode": 3,
+      "samples": {
+        "before": [
+          0.001974003846153846,
+          0.0019740692307692307,
+          0.0019705384615384615,
+          0.001965346153846154,
+          0.0019804615384615386,
+          0.0019759923076923076,
+          0.001971,
+          0.0019580307692307693,
+          0.0019641576923076923,
+          0.0019703461538461537
+        ],
+        "after": [
+          0.0019755346153846154,
+          0.0019613038461538464,
+          0.001959892307692308,
+          0.001962723076923077,
+          0.0019722346153846155,
+          0.001972223076923077,
+          0.0019630384615384614,
+          0.0019646615384615383,
+          0.0019608461538461537,
+          0.001959
+        ]
+      },
+      "seconds": {
+        "before": 0.001970769230769231,
+        "after": 0.001962880769230769
+      },
+      "ratio": 0.9959972677595628,
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "256",
+            "16",
+            ".05",
+            "3",
+            "1.7",
+            "gpu",
+            "g5-high",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 256 16 16384   4.1980308118638732E-16"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "256",
+            "16",
+            ".05",
+            "3",
+            "1.7",
+            "gpu",
+            "g5-high",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 256 16 16384   4.1980308118638732E-16"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+            "256",
+            "16",
+            ".05",
+            "3",
+            "1.7",
+            "gpu",
+            "g5-high",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 256 16 16384   4.1980308118638732E-16"
+          ]
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/baseline-gpu/bin/accelnet-target-benchmark",
+            "256",
+            "16",
+            ".05",
+            "3",
+            "1.7",
+            "gpu",
+            "g5-high",
+            "no-neighbors",
+            "64",
+            "candidate-only"
+          ],
+          "errors": [
+            "CASE 256 16 16384   4.1980308118638732E-16"
+          ]
+        }
+      ]
+    }
+  ],
+  "passed": true
+}

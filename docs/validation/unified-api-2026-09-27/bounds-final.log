@@ -1,0 +1,37 @@
+Internal ctest changing into directory: /tmp/accelnet-n2p2-cpu-opt/build-check
+Test project /tmp/accelnet-n2p2-cpu-opt/build-check
+      Start 19: predictor_target_host_composite
+ 1/14 Test #19: predictor_target_host_composite ....................   Passed    0.17 sec
+      Start 21: predictor_target_host_g5_moments
+ 2/14 Test #21: predictor_target_host_g5_moments ...................   Passed    1.58 sec
+      Start 23: predictor_target_host_equivalence
+ 3/14 Test #23: predictor_target_host_equivalence ..................   Passed    0.58 sec
+      Start 24: predictor_target_host_other_descriptors
+ 4/14 Test #24: predictor_target_host_other_descriptors ............   Passed    0.73 sec
+      Start 41: predictor_batch_equivalence
+ 5/14 Test #41: predictor_batch_equivalence ........................   Passed    0.41 sec
+      Start 48: predictor_atomic_and_structure_virial
+ 6/14 Test #48: predictor_atomic_and_structure_virial ..............   Passed    0.13 sec
+      Start 50: predictor_virial_convergence_n2p2
+ 7/14 Test #50: predictor_virial_convergence_n2p2 ..................   Passed    0.04 sec
+      Start 51: predictor_virial_convergence_n2p2-per-element
+ 8/14 Test #51: predictor_virial_convergence_n2p2-per-element ......   Passed    0.04 sec
+      Start 53: predictor_virial_convergence_n2p2-virial-angular
+ 9/14 Test #53: predictor_virial_convergence_n2p2-virial-angular ...   Passed    0.04 sec
+      Start 57: n2p2_atomic_api_and_input_data
+10/14 Test #57: n2p2_atomic_api_and_input_data .....................   Passed    0.00 sec
+      Start 65: predictor_virial_convergence_structure0001
+11/14 Test #65: predictor_virial_convergence_structure0001 .........   Passed    2.72 sec
+      Start 66: predictor_virial_convergence_structure2935
+12/14 Test #66: predictor_virial_convergence_structure2935 .........   Passed    2.41 sec
+      Start 72: accelnet_fortran_api
+13/14 Test #72: accelnet_fortran_api ...............................   Passed    0.01 sec
+      Start 73: accelnet_c_api
+14/14 Test #73: accelnet_c_api .....................................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 14
+
+Label Time Summary:
+target-host    =   3.06 sec*proc (4 tests)
+
+Total Test time (real) =   8.89 sec

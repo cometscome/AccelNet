@@ -32,7 +32,7 @@ contains
             model%setups(s)%global_to_local = [1,2]
             if (s == 2) model%setups(s)%global_to_local = [2,1]
             select case (family)
-            case ('chebyshev', 'combined')
+            case ('chebyshev', 'combined', 'multi-chebyshev', 'mixed-components')
                 call initialize_config(chebyshev, 2, 3.4_real64, degree, 3.4_real64, degree, &
                     version=v, central_type_index=s)
                 call add_chebyshev(model%setups(s)%model, chebyshev)
@@ -72,7 +72,7 @@ contains
             case ('behler', 'g4', 'g4-distinct', 'g5', 'lj-behler')
                 call initialize_behler_config(behler,2)
                 do j = 1,2
-                    if (family == 'behler' .or. family == 'lj-behler') then
+                    if (family == 'behler' .or. family == 'lj-behler' .or. family == 'mixed-components') then
                         call add_g1(behler,j,3.2_real64)
                         call add_g2(behler,j,3.4_real64,0.3_real64,0.6_real64)
                         call add_g3(behler,j,3.1_real64,1.3_real64)
@@ -96,6 +96,16 @@ contains
                 ! Smooth cutoff: finite differences must not cross a hard jump.
                 call initialize_lj_config(lj, 2, 3.4_real64, cutoff_type=1)
                 call add_lj(model%setups(s)%model, lj)
+            end if
+            if (family=='multi-chebyshev' .or. (family=='mixed-components'.and.s==1)) then
+                call initialize_config(chebyshev,2,2.8_real64,2,3.1_real64,2,version=v,central_type_index=s)
+                call add_chebyshev(model%setups(s)%model,chebyshev)
+            end if
+            if (family=='mixed-components') then
+                call initialize_behler_config(behler,2)
+                call add_g2(behler,1,3.2_real64,0.1_real64,0.3_real64)
+                call add_g5(behler,1,2,3.2_real64,1.0_real64,2.0_real64,0.2_real64)
+                call add_behler(model%setups(s)%model,behler)
             end if
             d = model%setups(s)%model%num_descriptors()
             model%networks(s)%atomtype = model%species_names(s)

@@ -2,7 +2,8 @@ program test_accelnet_api
     use iso_c_binding, only: c_bool, c_double, c_int
     use iso_fortran_env, only: real64
     use accelnet
-    use accelnet_descriptors, only: atomic_structure, read_xsf
+    use accelnet_descriptors, only: atomic_structure, read_xsf, descriptor_config, initialize_config, evaluate_atom
+    use accelnet_cpu_reference, only: reference_predict_energy_forces
     use accelnet_predictor, only: predictor_model, load_predictor_from_networks
     implicit none
 
@@ -10,6 +11,8 @@ program test_accelnet_api
     character(len=16) :: species(2), input_species(2)
     type(atomic_structure) :: structure
     type(predictor_model) :: reference_model
+    type(descriptor_config) :: reference_config
+    real(real64), allocatable :: reference_values(:)
     real(real64), allocatable :: reference_forces(:,:), api_forces(:,:)
     real(c_double), allocatable :: nbcoo(:,:), nbdist(:), values(:), x(:), y(:)
     integer(c_int), allocatable :: nblist(:), nbtype(:)
@@ -26,7 +29,7 @@ program test_accelnet_api
     call load_predictor_from_networks(network_files, reference_model, chebyshev_version=0)
     call read_xsf(trim(structure_file), species, structure)
     allocate(reference_forces(3,structure%natoms))
-    call reference_model%predict_energy_forces(structure, reference_energy, reference_forces)
+    call reference_predict_energy_forces(reference_model,structure,reference_energy,reference_forces)
 
     call accelnet_init(species, stat)
     call require(stat == ACCELNET_OK, "init")
@@ -123,6 +126,14 @@ program test_accelnet_api
     call require(stat == ACCELNET_OK .and. all(values == values), "SFB eval")
     call accelnet_sfb_reconstruct_radial(nvalues, values, 17_c_int, x, y, stat)
     call require(stat == ACCELNET_OK .and. all(y == y), "SFB reconstruction")
+    allocate(reference_values(nvalues))
+    call initialize_config(reference_config,2,5.0_real64,3,4.0_real64,2,version=0)
+    call accelnet_sfb_eval(int(structure%species(structure%natoms),c_int), &
+        structure%positions(:,structure%natoms),nnb,nbtype(:nnb),nbcoo(:,:nnb),nvalues,values,stat)
+    call require(stat==ACCELNET_OK,'SFB full environment')
+    call evaluate_atom(reference_config,nbcoo(:,:nnb)-spread(structure%positions(:,structure%natoms),2,nnb), &
+        nbtype(:nnb),reference_values)
+    call require(maxval(abs(values-reference_values))<2e-10_real64,'SFB independent reference')
     call accelnet_sfb_final(stat)
     call require(stat == ACCELNET_OK .and. accelnet_sfb_nvalues() == 0, "SFB final")
 

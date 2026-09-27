@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.11 — 2026-09-27 (JST).**
+**Document version 1.12 — 2026-09-27 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -18,7 +18,7 @@ not bitwise equality.
 | AccelNet / AccelNetPredictor | **1.0.1**, as declared by CMake |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20, exact high-order moments/threading in Section 21, and atomic removal in Section 22; each validation archive identifies its measured sources |
+| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20, exact high-order moments/threading in Section 21, atomic removal in Section 22, and unified inference APIs in Section 23; each validation archive identifies its measured sources |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -2143,3 +2143,91 @@ full OFF/1, ON/1/2/4/8 and H100 table, raw samples, and limitations. Numerical
 checks passed; a separate strict n2p2 type-21 direct parity gate narrowly missed
 its unchanged limit (CPU/n2p2 1.101346 versus 1.10). This is recorded as a failure,
 not hidden by the successful correctness and other performance tests.
+
+## 23. Unify potential-inference entry points (revision 1.12)
+
+Baseline: `gpu` **543b180**, AccelNet **1.0.1**. Structure/file evaluation,
+Fortran/C atomic energy and force/virial calls, ordinary CSR batches, the
+ænet-compatible structural-fingerprint API, and LAMMPS inference now reach the
+common numerical backend. The ordinary CPU instance still strips OpenMP at
+build time. The public atomic ABI and additive force/virial semantics remain.
+Former evaluators and exact old API snapshots live in `legacy/cpu-reference/`;
+`evaluate_batch_reference` is an explicit reference call, never a fallback.
+Standalone low-level descriptor/NN compatibility utilities retain those
+reference routines. Model types, loading and shared scalar formulas are not
+forked into a second data model.
+
+### 23.1 Compose descriptor blocks before the neural network
+
+For element $s$, let $D_{sc}$ denote component $c$ and $I_{sc}$ its original
+input-coordinate range. Preserve the original network $N_s$ and assemble
+
+$$G_{I_{sc}}=D_{sc}(R),\qquad E_i=N_s(S_s(G-b_s))/a_s+e_s.$$
+
+Evaluate the NN once, then scatter its input adjoint back into each block:
+
+$$q_{I_{sc}}=-\frac{\partial E_i}{\partial G_{I_{sc}}},\qquad
+ F=\sum_c J_{sc}^{T}q_{I_{sc}}.$$
+
+Each component uses the existing common descriptor and contraction kernels.
+GPU descriptor values, adjoints and component forces stay on device between
+phases. Component offsets preserve input ordering even when descriptor families
+are interleaved or differ by element. Missing components receive zero adjoints.
+The same staging supports several Chebyshev components and Chebyshev/LJ/Behler
+mixtures. It adds no approximation and no per-component independent NN.
+Existing single-component/grouped models keep their normal fused execution.
+
+Energy-only calls skip the NN reverse pass and force stage. SFB calls stop after
+descriptor assembly. Descriptor implementations which fuse values and saved
+Jacobians may still perform derivative preparation in their value stage; this
+revision does not claim every energy-only instruction is eliminated.
+
+### 23.2 Adapt per-atom calls with one CSR row
+
+Represent a central environment by local slots $0,1,\ldots,n$, with one distinct
+slot for each periodic image. Evaluate the common kernel once and fold its
+forces onto the caller's indices only after forming the image-displacement
+virial. Duplicate physical target indices therefore preserve both additive
+forces and $W_{ab}=\sum_j r_{j,a}f_{j,b}$. The private atomic API caches packed
+model metadata and scratch, invalidated by loading and mode setters. Public
+mutable object models are repacked so direct edits cannot leave stale weights.
+
+### 23.3 Workspace lifetime and independent validation
+
+A flat component array avoids a GNU 11 recursive-finalization compiler failure.
+Each component owns its own model mapping and scratch. Release component device
+mappings explicitly before deallocating/resizing component arrays: relying only
+on inherited/array finalization left stale NVHPC 25.3 present-table entries in
+the first GPU trial. Scalar/rank finalizers also cover scope exit and C handles.
+
+Tests compare the new entry points against the retained reference, upstream
+ænet/n2p2, and coordinate/strain finite differences. Separate before/after
+executables use the identical public-API benchmark source, with OpenMP compiled
+out, so moving the old structure API does not turn the baseline into another
+call to the new kernel. See [the migration report](docs/validation/unified-api-2026-09-27/README.md)
+for the measured public-API and GPU timings and their limits.
+
+
+### 23.4 Tile independent moment accumulators without splitting CPU/GPU source
+
+For monomial index $a=(a_x,a_y,a_z)$ and species weight $s_j$, construct
+
+$$M_a=\sum_j f_j u_{jx}^{a_x}u_{jy}^{a_y}u_{jz}^{a_z},\qquad
+  \widetilde M_a=\sum_j s_jf_j u_{jx}^{a_x}u_{jy}^{a_y}u_{jz}^{a_z}.$$
+
+One work item now accumulates four consecutive indices $a$ while traversing
+neighbors. Each lane preserves its original neighbor summation order; lanes
+are independent. Geometry/cutoff loads are shared, and fixed-size accumulator
+arrays expose independent instructions to the CPU compiler. The identical
+loop runs on GPU. The last tile uses padded lanes, discarding their outputs.
+Eight lanes did not improve the paired CPU or GPU probe and were rejected.
+
+The initial unified per-atom energy-only path took about 8.05 ms per 192-atom
+Ti/O structure against 4.24 ms for the former evaluator. Profiling attributed
+most time to moment construction, not the network. Four-lane tiling, skipping
+unused Chebyshev/activation derivatives, and avoiding redundant packed-model
+comparisons in the explicitly invalidated private C cache reduced this to
+about 5.19 ms. This diagnostic still leaves a roughly 22% energy-only regression;
+force-inclusive and bulk API timings must be reported separately. Final paired
+measurements and raw samples are in the migration report. This is not a claim
+that all migrated entry points are faster.
