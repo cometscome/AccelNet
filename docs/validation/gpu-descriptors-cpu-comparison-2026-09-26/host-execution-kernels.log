@@ -1,0 +1,4 @@
+Generating SQLite file /tmp/accelnet-other-descriptors/host-execution.sqlite from /tmp/accelnet-other-descriptors/host-execution.nsys-rep
+Processing [/tmp/accelnet-other-descriptors/host-execution.sqlite] with [/opt/nvidia/nsight-systems/2025.5.2/host-linux-x64/reports/cuda_gpu_kern_sum.py]... 
+SKIPPED: /tmp/accelnet-other-descriptors/host-execution.sqlite does not contain CUDA kernel data.
+

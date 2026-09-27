@@ -1,0 +1,40 @@
+RUN 0 before_off1
+RESULT 0 before_off1 173.331336 peak_threads 1
+RUN 0 off1
+RESULT 0 off1 173.713125 peak_threads 1
+RUN 0 before_on8
+RESULT 0 before_on8 163.33308699999998 peak_threads 8
+RUN 0 on8
+RESULT 0 on8 90.852799 peak_threads 8
+RUN 0 persistent_on8
+RESULT 0 persistent_on8 186.83557100000002 peak_threads 15
+RUN 1 persistent_on8
+RESULT 1 persistent_on8 181.137125 peak_threads 15
+RUN 1 on8
+RESULT 1 on8 136.004573 peak_threads 8
+RUN 1 before_on8
+RESULT 1 before_on8 159.86008299999997 peak_threads 8
+RUN 1 off1
+RESULT 1 off1 242.238486 peak_threads 1
+RUN 1 before_off1
+RESULT 1 before_off1 241.141952 peak_threads 1
+RUN 2 before_off1
+RESULT 2 before_off1 241.071777 peak_threads 1
+RUN 2 off1
+RESULT 2 off1 242.92129 peak_threads 1
+RUN 2 before_on8
+RESULT 2 before_on8 167.616588 peak_threads 8
+RUN 2 on8
+RESULT 2 on8 135.17913000000001 peak_threads 8
+RUN 2 persistent_on8
+RESULT 2 persistent_on8 180.63466 peak_threads 15
+RUN 3 persistent_on8
+RESULT 3 persistent_on8 174.904728 peak_threads 15
+RUN 3 on8
+RESULT 3 on8 143.950315 peak_threads 8
+RUN 3 before_on8
+RESULT 3 before_on8 167.1857 peak_threads 9
+RUN 3 off1
+RESULT 3 off1 242.313994 peak_threads 1
+RUN 3 before_off1
+RESULT 3 before_off1 241.93735 peak_threads 1

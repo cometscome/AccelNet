@@ -1,0 +1,1483 @@
+{
+  "scope": "fixed",
+  "affinity": 6,
+  "rows": [
+    {
+      "atoms": 64,
+      "type": 9,
+      "n2p2": {
+        "seconds": 0.003571222043478261,
+        "samples": [
+          0.0035679192173913047,
+          0.0035709471304347824,
+          0.003571222043478261,
+          0.0035716674782608694,
+          0.0035718146086956525
+        ]
+      },
+      "cpu": {
+        "seconds": 0.0021240195789473683,
+        "samples": [
+          0.0021274565,
+          0.002124547552631579,
+          0.0021240195789473683,
+          0.0021231081578947366,
+          0.002123884210526316
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0007826310679611651,
+        "samples": [
+          0.0007837951456310679,
+          0.0007817660194174757,
+          0.0007826310679611651,
+          0.0007827495145631069,
+          0.0007809019417475728
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 3.3306690738754696e-16,
+          "FORCE": 1.5994523143002953e-17
+        },
+        "gpu": {
+          "ENERGY": 2.220446049250313e-16,
+          "FORCE": 1.6012310834895294e-17
+        }
+      },
+      "cpu_vs_n2p2": 1.681350811864034,
+      "gpu_vs_n2p2": 4.563097722125527,
+      "gpu_vs_cpu": 2.7139474343647754,
+      "g5_modes": {
+        "host-1": {
+          "seconds": 0.0036839883636363637,
+          "samples": [
+            0.0037913058181818183,
+            0.0036742862272727272,
+            0.0036839883636363637,
+            0.0036896726363636364,
+            0.0036812921818181817
+          ]
+        },
+        "host-3": {
+          "seconds": 0.0021613044210526317,
+          "samples": [
+            0.0021635651351351354,
+            0.002169908702702703,
+            0.0021561623684210524,
+            0.0021585116315789472,
+            0.0021613044210526317
+          ]
+        },
+        "gpu-1": {
+          "seconds": 0.001987951219512195,
+          "samples": [
+            0.00198819512195122,
+            0.001993882926829268,
+            0.0019861731707317073,
+            0.001987173170731707,
+            0.001987951219512195
+          ]
+        },
+        "gpu-3": {
+          "seconds": 0.000784764705882353,
+          "samples": [
+            0.0007863254901960784,
+            0.000784764705882353,
+            0.0007829805825242718,
+            0.0007844411764705882,
+            0.0007852941176470588
+          ]
+        }
+      }
+    },
+    {
+      "atoms": 64,
+      "type": 12,
+      "n2p2": {
+        "seconds": 0.0009603654285714286,
+        "samples": [
+          0.0011145411527777778,
+          0.0009603654285714286,
+          0.0009603616190476191,
+          0.0009602241190476191,
+          0.0009604830357142857
+        ]
+      },
+      "cpu": {
+        "seconds": 0.0008561703617021277,
+        "samples": [
+          0.0008574383191489361,
+          0.0008561703617021277,
+          0.0008540936170212766,
+          0.0008564393404255319,
+          0.0008561335851063831
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0008726097826086956,
+        "samples": [
+          0.0008766934782608696,
+          0.0008715652173913044,
+          0.0008726097826086956,
+          0.0008726641304347825,
+          0.0008715
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 2.6645352591003757e-15,
+          "FORCE": 5.5089328823525185e-17
+        },
+        "gpu": {
+          "ENERGY": 2.6645352591003757e-15,
+          "FORCE": 5.5065611901002065e-17
+        }
+      },
+      "cpu_vs_n2p2": 1.1216989883440414,
+      "gpu_vs_n2p2": 1.1005668830578366,
+      "gpu_vs_cpu": 0.981160627311074
+    },
+    {
+      "atoms": 64,
+      "type": 13,
+      "n2p2": {
+        "seconds": 0.010455414875,
+        "samples": [
+          0.011264710875,
+          0.010455414875,
+          0.010447515625,
+          0.010451469,
+          0.01045554275
+        ]
+      },
+      "cpu": {
+        "seconds": 0.0250945065,
+        "samples": [
+          0.025095821,
+          0.02510121175,
+          0.0250945065,
+          0.02507987625,
+          0.02507564975
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0080159,
+        "samples": [
+          0.0080163,
+          0.00801549,
+          0.0080123,
+          0.0080159,
+          0.0080163
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 2.6645352591003757e-15,
+          "FORCE": 1.6414820891430537e-16
+        },
+        "gpu": {
+          "ENERGY": 1.7763568394002505e-15,
+          "FORCE": 1.6328084717631697e-16
+        }
+      },
+      "cpu_vs_n2p2": 0.4166415814951372,
+      "gpu_vs_n2p2": 1.304334494567048,
+      "gpu_vs_cpu": 3.1305912623660475
+    },
+    {
+      "atoms": 64,
+      "type": 20,
+      "n2p2": {
+        "seconds": 0.00039302761274509805,
+        "samples": [
+          0.00048267435542168676,
+          0.00039302761274509805,
+          0.00039291875980392157,
+          0.0003925757352941177,
+          0.0003931848529411765
+        ]
+      },
+      "cpu": {
+        "seconds": 0.00039475143842364536,
+        "samples": [
+          0.00039549998522167486,
+          0.00039475143842364536,
+          0.00039496490147783247,
+          0.00039433225123152707,
+          0.0003938029656862745
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0006937672413793104,
+        "samples": [
+          0.0006976165217391305,
+          0.0006931732758620689,
+          0.0006941370689655173,
+          0.0006937672413793104,
+          0.0006929818965517241
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 0.0,
+          "FORCE": 7.250602028496811e-19
+        },
+        "gpu": {
+          "ENERGY": 8.881784197001252e-16,
+          "FORCE": 7.098136097991037e-19
+        }
+      },
+      "cpu_vs_n2p2": 0.9956331364226789,
+      "gpu_vs_n2p2": 0.5665122094316559,
+      "gpu_vs_cpu": 0.5689969414508849
+    },
+    {
+      "atoms": 64,
+      "type": 21,
+      "n2p2": {
+        "seconds": 0.003694252318181818,
+        "samples": [
+          0.0037040275,
+          0.003689831,
+          0.003688632818181818,
+          0.0036943232272727273,
+          0.003694252318181818
+        ]
+      },
+      "cpu": {
+        "seconds": 0.0081151229,
+        "samples": [
+          0.008115999,
+          0.0081151229,
+          0.008106841100000001,
+          0.0081136656,
+          0.008120969799999999
+        ]
+      },
+      "gpu": {
+        "seconds": 0.007111483333333334,
+        "samples": [
+          0.007106575,
+          0.0071156583333333336,
+          0.007111483333333334,
+          0.007107916666666666,
+          0.007122183333333334
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 0.0,
+          "FORCE": 2.6020852139652106e-18
+        },
+        "gpu": {
+          "ENERGY": 8.881784197001252e-16,
+          "FORCE": 2.6156377411212794e-18
+        }
+      },
+      "cpu_vs_n2p2": 0.45523060632659273,
+      "gpu_vs_n2p2": 0.5194770408679602,
+      "gpu_vs_cpu": 1.1411294268190648
+    },
+    {
+      "atoms": 64,
+      "type": 22,
+      "n2p2": {
+        "seconds": 0.0054325492,
+        "samples": [
+          0.006241336076923077,
+          0.005430989,
+          0.0054248808,
+          0.0054325492,
+          0.005434184933333333
+        ]
+      },
+      "cpu": {
+        "seconds": 0.009258172,
+        "samples": [
+          0.00926258711111111,
+          0.009258172,
+          0.009257425666666666,
+          0.009256113333333333,
+          0.009261406333333333
+        ]
+      },
+      "gpu": {
+        "seconds": 0.007482636363636363,
+        "samples": [
+          0.007488809090909091,
+          0.0074720818181818185,
+          0.007493172727272727,
+          0.007472899999999999,
+          0.007482636363636363
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 0.0,
+          "FORCE": 7.643625316022806e-18
+        },
+        "gpu": {
+          "ENERGY": 0.0,
+          "FORCE": 7.318364664277155e-18
+        }
+      },
+      "cpu_vs_n2p2": 0.5867842161497971,
+      "gpu_vs_n2p2": 0.7260207413527076,
+      "gpu_vs_cpu": 1.2372874412275694
+    },
+    {
+      "atoms": 64,
+      "type": 23,
+      "n2p2": {
+        "seconds": 0.0022853560555555555,
+        "samples": [
+          0.002284273388888889,
+          0.002293070514285714,
+          0.0022835240833333336,
+          0.0022874388285714286,
+          0.0022853560555555555
+        ]
+      },
+      "cpu": {
+        "seconds": 0.0004067050862944162,
+        "samples": [
+          0.0004067050862944162,
+          0.00040566176262626263,
+          0.00040617692385786804,
+          0.0004073765989847716,
+          0.00040807134517766496
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0006947327586206896,
+        "samples": [
+          0.0006965382608695652,
+          0.0006947327586206896,
+          0.0006946637931034482,
+          0.0006934758620689656,
+          0.0006949741379310344
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 8.881784197001252e-16,
+          "FORCE": 5.5260429478870554e-18
+        },
+        "gpu": {
+          "ENERGY": 0.0,
+          "FORCE": 5.631075033346589e-18
+        }
+      },
+      "cpu_vs_n2p2": 5.619197134655879,
+      "gpu_vs_n2p2": 3.2895469908355293,
+      "gpu_vs_cpu": 0.5854122772357553
+    },
+    {
+      "atoms": 64,
+      "type": 24,
+      "n2p2": {
+        "seconds": 0.01211392557142857,
+        "samples": [
+          0.012848315428571429,
+          0.012127153285714285,
+          0.01208912542857143,
+          0.012109462714285714,
+          0.01211392557142857
+        ]
+      },
+      "cpu": {
+        "seconds": 0.018313667999999998,
+        "samples": [
+          0.0183070606,
+          0.018341306600000003,
+          0.0183078318,
+          0.0183144798,
+          0.018313667999999998
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0081826,
+        "samples": [
+          0.008190010000000001,
+          0.0081826,
+          0.008164910000000001,
+          0.008190890000000001,
+          0.0081778
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 1.7763568394002505e-15,
+          "FORCE": 8.68445940160889e-17
+        },
+        "gpu": {
+          "ENERGY": 8.881784197001252e-16,
+          "FORCE": 7.979727989493313e-17
+        }
+      },
+      "cpu_vs_n2p2": 0.6614691044649588,
+      "gpu_vs_n2p2": 1.4804494380060824,
+      "gpu_vs_cpu": 2.238123334881333
+    },
+    {
+      "atoms": 64,
+      "type": 25,
+      "n2p2": {
+        "seconds": 0.021521404,
+        "samples": [
+          0.02236276975,
+          0.021521165,
+          0.02150614875,
+          0.021521404,
+          0.02152693525
+        ]
+      },
+      "cpu": {
+        "seconds": 0.02099231025,
+        "samples": [
+          0.02097217075,
+          0.02099231025,
+          0.0210068185,
+          0.02103336625,
+          0.020990728
+        ]
+      },
+      "gpu": {
+        "seconds": 0.00814538,
+        "samples": [
+          0.00814969,
+          0.008115609999999999,
+          0.00814538,
+          0.00814679,
+          0.008131320000000001
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 2.6645352591003757e-15,
+          "FORCE": 1.1188966420050406e-16
+        },
+        "gpu": {
+          "ENERGY": 8.881784197001252e-16,
+          "FORCE": 1.1066993675645787e-16
+        }
+      },
+      "cpu_vs_n2p2": 1.0252041697030465,
+      "gpu_vs_n2p2": 2.642160832275474,
+      "gpu_vs_cpu": 2.577204531894153
+    },
+    {
+      "atoms": 512,
+      "type": 9,
+      "n2p2": {
+        "seconds": 0.028822745,
+        "samples": [
+          0.028803248666666666,
+          0.028812752666666667,
+          0.028822745,
+          0.028860219000000003,
+          0.028856810333333333
+        ]
+      },
+      "cpu": {
+        "seconds": 0.0183665376,
+        "samples": [
+          0.0184073732,
+          0.018351231000000003,
+          0.0183684618,
+          0.0183665376,
+          0.0183616188
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0009729180722891566,
+        "samples": [
+          0.0009787073170731708,
+          0.0009729180722891566,
+          0.0009751807228915662,
+          0.0009728457831325301,
+          0.0009718433734939759
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 4.440892098500626e-15,
+          "FORCE": 1.5196829864926216e-18
+        },
+        "gpu": {
+          "ENERGY": 8.881784197001252e-15,
+          "FORCE": 1.5355648542536397e-18
+        }
+      },
+      "cpu_vs_n2p2": 1.569307488854078,
+      "gpu_vs_n2p2": 29.62504841973346,
+      "gpu_vs_cpu": 18.877784392251854,
+      "g5_modes": {
+        "host-1": {
+          "seconds": 0.0261771915,
+          "samples": [
+            0.02619200175,
+            0.02607979225,
+            0.02620322575,
+            0.0261771915,
+            0.02612605725
+          ]
+        },
+        "host-3": {
+          "seconds": 0.0183377038,
+          "samples": [
+            0.0183925656,
+            0.0183928122,
+            0.0183377038,
+            0.0183339646,
+            0.0183334346
+          ]
+        },
+        "gpu-1": {
+          "seconds": 0.00230692,
+          "samples": [
+            0.0023137428571428573,
+            0.0023063371428571427,
+            0.00230692,
+            0.0023069971428571426,
+            0.002302797142857143
+          ]
+        },
+        "gpu-3": {
+          "seconds": 0.0009678566265060242,
+          "samples": [
+            0.0009700963855421688,
+            0.0009659024096385542,
+            0.0009678566265060242,
+            0.000969255421686747,
+            0.0009658192771084337
+          ]
+        }
+      }
+    },
+    {
+      "atoms": 512,
+      "type": 12,
+      "n2p2": {
+        "seconds": 0.0088284243,
+        "samples": [
+          0.0088137321,
+          0.0088284243,
+          0.0087782768,
+          0.0088570802,
+          0.008907026
+        ]
+      },
+      "cpu": {
+        "seconds": 0.006761859166666666,
+        "samples": [
+          0.0067644365833333326,
+          0.006761859166666666,
+          0.00675765875,
+          0.00675436625,
+          0.006775864666666667
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0010784120000000002,
+        "samples": [
+          0.0010824324324324325,
+          0.0010774386666666668,
+          0.0010785746666666666,
+          0.0010784120000000002,
+          0.0010766253333333333
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 1.2079226507921703e-13,
+          "FORCE": 1.971892701208011e-18
+        },
+        "gpu": {
+          "ENERGY": 0.0,
+          "FORCE": 2.019326546254252e-18
+        }
+      },
+      "cpu_vs_n2p2": 1.3056208481124092,
+      "gpu_vs_n2p2": 8.186504137565233,
+      "gpu_vs_cpu": 6.270200226505885
+    },
+    {
+      "atoms": 512,
+      "type": 13,
+      "n2p2": {
+        "seconds": 0.083051091,
+        "samples": [
+          0.083360636,
+          0.082997705,
+          0.083069939,
+          0.082936647,
+          0.083051091
+        ]
+      },
+      "cpu": {
+        "seconds": 0.19252103,
+        "samples": [
+          0.192544672,
+          0.19273618,
+          0.192469124,
+          0.19252103,
+          0.192142716
+        ]
+      },
+      "gpu": {
+        "seconds": 0.00820632,
+        "samples": [
+          0.008210489999999999,
+          0.00820458,
+          0.00820632,
+          0.00820329,
+          0.00821142
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 0.0,
+          "FORCE": 4.9131299072538437e-17
+        },
+        "gpu": {
+          "ENERGY": 7.105427357601002e-15,
+          "FORCE": 4.846383711010205e-17
+        }
+      },
+      "cpu_vs_n2p2": 0.43138711131973473,
+      "gpu_vs_n2p2": 10.120381730178691,
+      "gpu_vs_cpu": 23.460092952748617
+    },
+    {
+      "atoms": 512,
+      "type": 20,
+      "n2p2": {
+        "seconds": 0.003921781095238095,
+        "samples": [
+          0.003923037666666666,
+          0.003912925476190476,
+          0.003930925142857143,
+          0.003917893904761905,
+          0.003921781095238095
+        ]
+      },
+      "cpu": {
+        "seconds": 0.0031890499999999997,
+        "samples": [
+          0.0031977747692307694,
+          0.003185685615384615,
+          0.0031962712307692306,
+          0.0031890499999999997,
+          0.003183954961538462
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0008971766666666666,
+        "samples": [
+          0.0008987766666666666,
+          0.0008963222222222222,
+          0.0008973222222222222,
+          0.0008964088888888889,
+          0.0008971766666666666
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 2.842170943040401e-14,
+          "FORCE": 7.674118502123961e-19
+        },
+        "gpu": {
+          "ENERGY": 2.1316282072803006e-14,
+          "FORCE": 8.072223987333482e-19
+        }
+      },
+      "cpu_vs_n2p2": 1.2297646933218656,
+      "gpu_vs_n2p2": 4.371247314989722,
+      "gpu_vs_cpu": 3.5545396112991496
+    },
+    {
+      "atoms": 512,
+      "type": 21,
+      "n2p2": {
+        "seconds": 0.027714908666666666,
+        "samples": [
+          0.027700062,
+          0.027714275333333333,
+          0.027791165333333336,
+          0.027714908666666666,
+          0.027801576666666664
+        ]
+      },
+      "cpu": {
+        "seconds": 0.0600354375,
+        "samples": [
+          0.060061274,
+          0.0600354375,
+          0.060057148,
+          0.060013432,
+          0.060030544
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0076450909090909095,
+        "samples": [
+          0.0076489,
+          0.007650354545454546,
+          0.007643009090909091,
+          0.007638909090909091,
+          0.0076450909090909095
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 4.263256414560601e-14,
+          "FORCE": 1.0238934266409982e-17
+        },
+        "gpu": {
+          "ENERGY": 2.842170943040401e-14,
+          "FORCE": 1.0150842839895535e-17
+        }
+      },
+      "cpu_vs_n2p2": 0.4616424868506483,
+      "gpu_vs_n2p2": 3.6251902032597663,
+      "gpu_vs_cpu": 7.852808843464611
+    },
+    {
+      "atoms": 512,
+      "type": 22,
+      "n2p2": {
+        "seconds": 0.042275519,
+        "samples": [
+          0.042195173,
+          0.042170874,
+          0.0423458695,
+          0.042346583,
+          0.042275519
+        ]
+      },
+      "cpu": {
+        "seconds": 0.070384287,
+        "samples": [
+          0.0705811705,
+          0.070384287,
+          0.0703613955,
+          0.070435414,
+          0.070295571
+        ]
+      },
+      "gpu": {
+        "seconds": 0.007867445454545456,
+        "samples": [
+          0.00788599090909091,
+          0.007867445454545456,
+          0.007858990909090908,
+          0.007874527272727272,
+          0.007846545454545455
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 4.973799150320701e-14,
+          "FORCE": 2.5939536976715694e-17
+        },
+        "gpu": {
+          "ENERGY": 7.105427357601002e-15,
+          "FORCE": 2.5831116759467143e-17
+        }
+      },
+      "cpu_vs_n2p2": 0.6006385913946958,
+      "gpu_vs_n2p2": 5.373474686827998,
+      "gpu_vs_cpu": 8.94626946022678
+    },
+    {
+      "atoms": 512,
+      "type": 23,
+      "n2p2": {
+        "seconds": 0.0191557872,
+        "samples": [
+          0.0190401272,
+          0.019160724,
+          0.019198207000000002,
+          0.0191557872,
+          0.0191459986
+        ]
+      },
+      "cpu": {
+        "seconds": 0.0033089113599999997,
+        "samples": [
+          0.0033113969199999997,
+          0.00331015716,
+          0.00330549356,
+          0.0033035653999999998,
+          0.0033089113599999997
+        ]
+      },
+      "gpu": {
+        "seconds": 0.0008940011111111112,
+        "samples": [
+          0.0008957222222222223,
+          0.0008934100000000001,
+          0.0008936877777777778,
+          0.0008940011111111112,
+          0.0008960011111111112
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 7.105427357601002e-14,
+          "FORCE": 9.676504389433127e-18
+        },
+        "gpu": {
+          "ENERGY": 1.4210854715202004e-14,
+          "FORCE": 9.906897351086297e-18
+        }
+      },
+      "cpu_vs_n2p2": 5.789150906719968,
+      "gpu_vs_n2p2": 21.427028402897832,
+      "gpu_vs_cpu": 3.7012385318934475
+    },
+    {
+      "atoms": 512,
+      "type": 24,
+      "n2p2": {
+        "seconds": 0.09669535,
+        "samples": [
+          0.096421084,
+          0.096621184,
+          0.096725624,
+          0.096961353,
+          0.09669535
+        ]
+      },
+      "cpu": {
+        "seconds": 0.14104149,
+        "samples": [
+          0.141064866,
+          0.14104149,
+          0.140958594,
+          0.14106963,
+          0.140956815
+        ]
+      },
+      "gpu": {
+        "seconds": 0.008506389999999999,
+        "samples": [
+          0.00851678,
+          0.00850799,
+          0.00849941,
+          0.008506389999999999,
+          0.00850148
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 6.394884621840902e-14,
+          "FORCE": 9.172350379227368e-17
+        },
+        "gpu": {
+          "ENERGY": 7.105427357601002e-15,
+          "FORCE": 9.6710833785707e-17
+        }
+      },
+      "cpu_vs_n2p2": 0.6855808882903889,
+      "gpu_vs_n2p2": 11.367377935881144,
+      "gpu_vs_cpu": 16.58065172182324
+    },
+    {
+      "atoms": 512,
+      "type": 25,
+      "n2p2": {
+        "seconds": 0.172508655,
+        "samples": [
+          0.172508655,
+          0.172631018,
+          0.172647203,
+          0.172362544,
+          0.172216293
+        ]
+      },
+      "cpu": {
+        "seconds": 0.164795524,
+        "samples": [
+          0.164784383,
+          0.164916602,
+          0.1651824,
+          0.164688319,
+          0.164795524
+        ]
+      },
+      "gpu": {
+        "seconds": 0.00850589,
+        "samples": [
+          0.008521579999999999,
+          0.00850589,
+          0.00850441,
+          0.008511399999999999,
+          0.00849541
+        ]
+      },
+      "errors": {
+        "cpu": {
+          "ENERGY": 1.4210854715202004e-14,
+          "FORCE": 1.2370746788059606e-16
+        },
+        "gpu": {
+          "ENERGY": 7.105427357601002e-15,
+          "FORCE": 1.0804074648818052e-16
+        }
+      },
+      "cpu_vs_n2p2": 1.046804250581466,
+      "gpu_vs_n2p2": 20.281082285334044,
+      "gpu_vs_cpu": 19.374283467103382
+    }
+  ],
+  "commands": [
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "host",
+      "fixed",
+      "n2p2",
+      "1"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "host",
+      "fixed",
+      "n2p2",
+      "3"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2",
+      "1"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2",
+      "3"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type12",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type12",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type12",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type13",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type13",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type13",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type20",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type20",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type20",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type21",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type21",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type21",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type22",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type22",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type22",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type23",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type23",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type23",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type24",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type24",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type24",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type25",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type25",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type25",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-64.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "host",
+      "fixed",
+      "n2p2",
+      "1"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "host",
+      "fixed",
+      "n2p2",
+      "3"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2",
+      "1"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type9",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2",
+      "3"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type12",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type12",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type12",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type13",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type13",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type13",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type20",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type20",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type20",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type21",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type21",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type21",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type22",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type22",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type22",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type23",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type23",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type23",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type24",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type24",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type24",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type25",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.data",
+      "0.08",
+      "fixed"
+    ],
+    [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type25",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "cpu",
+      "fixed",
+      "n2p2"
+    ],
+    [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/type25",
+      "/tmp/accelnet-n2p2-types/bench-final-h100/structure-512.xsf",
+      "0.08",
+      "gpu",
+      "fixed",
+      "n2p2"
+    ]
+  ],
+  "gpu_uuid": "GPU-2644154d-7268-af42-6631-59e1f3c6e7f3",
+  "binaries": {
+    "reference": {
+      "path": "/tmp/accelnet-n2p2-types/n2p2-reference",
+      "sha256": "4c8f0cf716ccb11cf08e7953accda629d7c496aaf5ecffdc899ae9dbba5b0951"
+    },
+    "cpu": {
+      "path": "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-n2p2-benchmark",
+      "sha256": "028abe2825e6eb53fee9a356a95112e98736f5f860e7ccb4da7e997cf65d4491"
+    },
+    "gpu": {
+      "path": "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-n2p2-benchmark",
+      "sha256": "60a025546448325dcf4e885c6e587f03adeab82cf3ea2f2c6c5393a20d44a5cb"
+    }
+  }
+}

@@ -1,0 +1,195 @@
+[
+  {
+    "name": "verified-tests-gnu",
+    "command": [
+      "ctest",
+      "--test-dir",
+      "/tmp/accelnet-other-descriptors/build-gnu-serial",
+      "-R",
+      "predictor_batch|predictor_target_host",
+      "--output-on-failure",
+      "-V"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-tests-nvhpc",
+    "command": [
+      "ctest",
+      "--test-dir",
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial",
+      "-R",
+      "predictor_batch|predictor_target_host",
+      "--output-on-failure",
+      "-V"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-tests-checked",
+    "command": [
+      "ctest",
+      "--test-dir",
+      "/tmp/accelnet-gpu-stage23/build-gnu-target",
+      "-R",
+      "predictor_batch|predictor_target_host",
+      "--output-on-failure",
+      "-V"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-tests-h100",
+    "command": [
+      "ctest",
+      "--test-dir",
+      "/tmp/accelnet-gpu-research/build-nvhpc",
+      "-L",
+      "gpu|target-host",
+      "--output-on-failure",
+      "-V"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-tests-blackwell",
+    "command": [
+      "ctest",
+      "--test-dir",
+      "/tmp/accelnet-gpu-research/build-nvhpc",
+      "-R",
+      "predictor_target_(g5_moments|equivalence|other_descriptors|c_api)$",
+      "--output-on-failure",
+      "-V"
+    ],
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-c8a7b723-d4eb-a67d-5ebd-139cedd981c9"
+    }
+  },
+  {
+    "name": "verified-build-lammps",
+    "command": [
+      "cmake",
+      "--build",
+      "/tmp/accelnet-lammps-gpu/build",
+      "-j",
+      "6"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-lammps-moment",
+    "command": [
+      "python3",
+      "interfaces/lammps/29Aug2024/tests/check_gpu_descriptors.py",
+      "--lammps",
+      "/tmp/accelnet-lammps-gpu/build/lmp",
+      "--fixtures",
+      "/tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor/target-fixtures",
+      "--converter",
+      "/tmp/accelnet-gpu-research/build-current/bin/accelnet-model-converter-fortran",
+      "--g5-mode",
+      "moment",
+      "--output",
+      "/tmp/accelnet-g5-moment/lammps-moment"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-memcheck",
+    "command": [
+      "/usr/local/cuda-13.1/bin/compute-sanitizer",
+      "--tool",
+      "memcheck",
+      "--leak-check",
+      "no",
+      "--error-exitcode",
+      "99",
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+      "8",
+      "4",
+      "0.001",
+      "3",
+      "1.7",
+      "gpu",
+      "g5-scaling",
+      "no-neighbors",
+      "64"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-build-ordinary",
+    "command": [
+      "cmake",
+      "--build",
+      "/tmp/accelnet-gpu-research/build-current",
+      "-j",
+      "6",
+      "--target",
+      "accelnet-descriptor",
+      "accelnet-model-converter-fortran",
+      "accelnet-predict",
+      "accelnet-setup-descriptor",
+      "dump_descriptor_reference",
+      "test_accelnet_api",
+      "test_accelnet_c_api",
+      "test_aenet_activation_reference",
+      "test_batch",
+      "test_behler",
+      "test_binary_network",
+      "test_combined_model",
+      "test_descriptor",
+      "test_lj_model",
+      "test_n2p2_atomic_api",
+      "test_n2p2_network",
+      "test_n2p2_topology",
+      "test_network",
+      "test_network_activations",
+      "test_predictor",
+      "test_setup_parser",
+      "test_tio2",
+      "test_virial",
+      "test_virial_c",
+      "test_virial_convergence",
+      "test_virial_invariants"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-tests-ordinary",
+    "command": [
+      "ctest",
+      "--test-dir",
+      "/tmp/accelnet-gpu-research/build-current",
+      "-LE",
+      "performance",
+      "--output-on-failure"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-gate-gnu",
+    "command": [
+      "ctest",
+      "--test-dir",
+      "/tmp/accelnet-other-descriptors/build-gnu-serial",
+      "-R",
+      "^predictor_common_cpu_performance$",
+      "--output-on-failure"
+    ],
+    "environment": {}
+  },
+  {
+    "name": "verified-gate-nvhpc",
+    "command": [
+      "ctest",
+      "--test-dir",
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial",
+      "-R",
+      "^predictor_common_cpu_performance$",
+      "--output-on-failure"
+    ],
+    "environment": {}
+  }
+]

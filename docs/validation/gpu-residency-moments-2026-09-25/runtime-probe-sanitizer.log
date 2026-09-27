@@ -1,0 +1,54 @@
+========= COMPUTE-SANITIZER
+========= Leaked 1024000 bytes at 0x7fcdd3e00000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_stream in cuda_enter.c:313 [0xf128] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_cuda_init_device in cuda_init.c:1667 [0x1f4e3] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_cuda_select_valid in cuda_init.c:2708 [0x22813] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_select_devid in select.c:82 [0x3cfa8] in libacchost.so
+=========         Host Frame: __pgi_uacc_cuda_get_devid_for_devnum in cuda_init.c:2523 [0x222ff] in libaccdevice.so
+=========         Host Frame: __nvomp_targetenventerstart in nvomp_target.c:2132 [0x23207] in libnvomp.so
+=========         Host Frame: MAIN_ in runtime_probe.f90:7 [0x2443] in runtime_probe
+=========         Host Frame: main [0x2370] in runtime_probe
+========= 
+========= Leaked 76800 bytes at 0x7fcdd3efa200
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAlloc_v2 [0x3103bf] in libcuda.so.1
+=========         Host Frame: allocMem in hxMemPool.c:50 [0x45fa3] in libnvomp.so
+=========         Host Frame: hxiMemPoolCreate in hxMemPool.c:118 [0x461ab] in libnvomp.so
+=========         Host Frame: enableDevice in hxCuda.c:1405 [0x4907f] in libnvomp.so
+=========         Host Frame: launchInternal in hxCuda.c:2991 [0x4cffd] in libnvomp.so
+=========         Host Frame: hxLaunch in hxInterface.c:155 [0x45abb] in libnvomp.so
+=========         Host Frame: launchHXTarget.constprop.0 in nvomp_target.c:462 [0x21109] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:1190 [0x21ecb] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: MAIN_ in runtime_probe.f90:9 [0x25fe] in runtime_probe
+=========         Host Frame: main [0x2370] in runtime_probe
+========= 
+========= Leaked 56 bytes at 0x7fcdf4000000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAllocManaged [0x310a7f] in libcuda.so.1
+=========         Host Frame: enableDevice in hxCuda.c:1328 [0x48f11] in libnvomp.so
+=========         Host Frame: launchInternal in hxCuda.c:2991 [0x4cffd] in libnvomp.so
+=========         Host Frame: hxLaunch in hxInterface.c:155 [0x45abb] in libnvomp.so
+=========         Host Frame: launchHXTarget.constprop.0 in nvomp_target.c:462 [0x21109] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:1190 [0x21ecb] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: MAIN_ in runtime_probe.f90:9 [0x25fe] in runtime_probe
+=========         Host Frame: main [0x2370] in runtime_probe
+========= 
+========= Leaked 1024000 bytes at 0x7fcdfac00000
+=========     Saved host backtrace up to driver entry point at allocation time
+=========         Host Frame: cuMemAllocHost_v2 [0x3106bf] in libcuda.so.1
+=========         Host Frame: __pgi_uacc_cuda_stream in cuda_enter.c:334 [0xf158] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_cuda_init_device in cuda_init.c:1667 [0x1f4e3] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_cuda_select_valid in cuda_init.c:2708 [0x22813] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_select_devid in select.c:82 [0x3cfa8] in libacchost.so
+=========         Host Frame: __pgi_uacc_cuda_get_devid_for_devnum in cuda_init.c:2523 [0x222ff] in libaccdevice.so
+=========         Host Frame: __nvomp_targetenventerstart in nvomp_target.c:2132 [0x23207] in libnvomp.so
+=========         Host Frame: MAIN_ in runtime_probe.f90:7 [0x2443] in runtime_probe
+=========         Host Frame: main [0x2370] in runtime_probe
+========= 
+ runtime probe passed
+========= LEAK SUMMARY: 2124856 bytes leaked in 4 allocations
+========= ERROR SUMMARY: 4 errors

@@ -1,0 +1,29 @@
+Internal ctest changing into directory: /tmp/accelnet-n2p2-cpu-opt/build-gnu
+Test project /tmp/accelnet-n2p2-cpu-opt/build-gnu
+    Start 46: predictor_common_cpu_performance
+1/4 Test #46: predictor_common_cpu_performance .........   Passed   43.36 sec
+    Start 47: predictor_g5_moment_performance
+2/4 Test #47: predictor_g5_moment_performance ..........   Passed    5.40 sec
+    Start 69: predictor_aenet_energy_performance
+3/4 Test #69: predictor_aenet_energy_performance .......***Failed   12.43 sec
+aenet 64 energy {'before': 0.005911569653846154, 'after': 0.0062834129791666665} 1.0629009462958092
+aenet 64 atomic-energy {'before': 0.0020617274794520546, 'after': 0.0022145281911764704} 1.0741129529713722
+aenet 192 energy {'before': 0.021926085999999997, 'after': 0.022506086142857144} 1.026452516096906
+aenet 192 atomic-energy {'before': 0.0037900605375, 'after': 0.004087891527027028} 1.0785821193567222
+aenet 512 energy {'before': 0.13009619025000002, 'after': 0.13292175150000002} 1.021719016095477
+aenet 512 atomic-energy {'before': 0.011937670038461537, 'after': 0.013267936125} 1.1114343152602248
+energy performance regression; see report.json
+
+    Start 80: accelnet_order_scaling_benchmark_smoke
+4/4 Test #80: accelnet_order_scaling_benchmark_smoke ...   Passed    0.02 sec
+
+75% tests passed, 1 tests failed out of 4
+
+Label Time Summary:
+performance    =  61.21 sec*proc (4 tests)
+
+Total Test time (real) =  61.22 sec
+
+The following tests FAILED:
+	 69 - predictor_aenet_energy_performance (Failed)
+Errors while running CTest

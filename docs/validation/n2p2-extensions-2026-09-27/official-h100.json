@@ -1,0 +1,158 @@
+{
+  "passed": true,
+  "backend": "gpu",
+  "cases": [
+    {
+      "model": "Ethylbenzene_SCAN",
+      "frame": 0,
+      "atoms": 288,
+      "elements": [
+        "C",
+        "H"
+      ],
+      "descriptors": {
+        "C:20": 22,
+        "C:22": 162,
+        "H:20": 22,
+        "H:22": 162
+      },
+      "errors": {
+        "import": {
+          "ENERGY": 1.1368683772161603e-13,
+          "FORCE": 1.0842455405724039e-14
+        },
+        "native": {
+          "ENERGY": 1.1368683772161603e-13,
+          "FORCE": 1.1002049965513905e-14
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.0874894734724805e-13
+        }
+      },
+      "sha256": {
+        "input.data": "034f8c701cbdd9c8867f7a93348501cc9cdd117a92d68842a6d6108157d620ea",
+        "input.nn": "721a3f2ef064745421526d7ac78cb72084a1e3a554fce607c88dcfca6a6106cd",
+        "scaling.data": "ed1aa72ea1db1ee73b65a5e5f830c0299466afc9fd2ed411d07bf490e54acf7d",
+        "weights.001.data": "353bb76411aeea53bd943c6a594b8224583c3257c4a7ce1813b8547a2c8f2473",
+        "weights.006.data": "0b3a0742fdebf05787ac794891d42ec291180ea667ff0e82445ecbcfdf464a78"
+      }
+    },
+    {
+      "model": "Anisole_SCAN",
+      "frame": 0,
+      "atoms": 256,
+      "elements": [
+        "C",
+        "H",
+        "O"
+      ],
+      "descriptors": {
+        "C:20": 33,
+        "C:22": 321,
+        "H:20": 33,
+        "H:22": 318,
+        "O:20": 32,
+        "O:22": 299
+      },
+      "errors": {
+        "import": {
+          "ENERGY": 0.0,
+          "FORCE": 1.5459855617905305e-14
+        },
+        "native": {
+          "ENERGY": 0.0,
+          "FORCE": 1.542516114838577e-14
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 1.9848706012126627e-14
+        }
+      },
+      "sha256": {
+        "input.data": "0bd01de050e850e7b2b5d931180d15f9d834c4ce9aec9244942b192c50a733df",
+        "input.nn": "40f8360ceb9317218f42f4be08a18b9b83943425785d9ad22d5059bf1645a0f7",
+        "scaling.data": "3319a02b68fe2826e92666050cd89e2fd00a508b44dbb3f76c76719348168303",
+        "weights.001.data": "6ca254aea056fda4f0653c30821ac75a2115d7400e24ac9dbb078cddc1bd5bff",
+        "weights.006.data": "37de16fb2db48238572797d7d3108ed0cf60861ebdf698f54730cd3b4d93d0aa",
+        "weights.008.data": "1249aa5eaa7d7da6ec1ebf9a96c369941451452797d547ab9b3c3580ff43bcfb"
+      }
+    },
+    {
+      "model": "DMABN_SCAN",
+      "frame": 0,
+      "atoms": 21,
+      "elements": [
+        "C",
+        "H",
+        "N"
+      ],
+      "descriptors": {
+        "C:20": 33,
+        "C:22": 300,
+        "H:20": 32,
+        "H:22": 302,
+        "N:20": 24,
+        "N:22": 195
+      },
+      "errors": {
+        "import": {
+          "ENERGY": 1.4210854715202004e-14,
+          "FORCE": 3.0184188481996443e-15
+        },
+        "native": {
+          "ENERGY": 1.4210854715202004e-14,
+          "FORCE": 2.9733160378242474e-15
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 3.120767533282276e-15
+        }
+      },
+      "sha256": {
+        "input.data": "c058414710606f6b6e0f30cd5232e3f7db1150429e515e133521cd9b7fa1e6d7",
+        "input.nn": "3a183ec1a70c0b2109ecb6174befa6256402aa23a43092e6b6fad708365acc19",
+        "scaling.data": "504fb4bfa031b2e1da2a00b95260bb81d430f4d3571350eb04a4717f7aa073c4",
+        "weights.001.data": "7bc0faa8ed353c072ced0f53944da67d04490ccb796c3c934241d78ec5f795e1",
+        "weights.006.data": "25b81ea96777ad35d7530c46c5a41a77a37313e3feb82bd2eb9a945236b0c5ae",
+        "weights.007.data": "924c7eaccd376ef7c1741e059bccf20d22858e40095531e42813b523167710ab"
+      }
+    },
+    {
+      "model": "H2O_RPBE-D3",
+      "frame": 0,
+      "atoms": 1080,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "descriptors": {
+        "H:2": 16,
+        "H:3": 11,
+        "O:2": 16,
+        "O:3": 14
+      },
+      "errors": {
+        "import": {
+          "ENERGY": 0.0,
+          "FORCE": 7.816663982751493e-15
+        },
+        "native": {
+          "ENERGY": 0.0,
+          "FORCE": 7.844419558367122e-15
+        },
+        "roundtrip": {
+          "ENERGY": 0.0,
+          "FORCE": 2.6922908347160046e-15
+        }
+      },
+      "sha256": {
+        "input.data": "32c38c1139a9c4afc2f38d536ce900956432b3689ecccd3f5a8a723c853c4405",
+        "input.nn": "726e941d994058a95c8dcc7c658837a2da0e7738aab164a7905b2c993b27224a",
+        "scaling.data": "468998f9b880d96f4b49f192fc8c3c8229e3ca53b9036c7ec6e66ae58a54c1e3",
+        "weights.001.data": "207728de9f248d4d8440620075086b60c6ab188a82ae8af91ac403e2aecf3379",
+        "weights.008.data": "f0337923e3cf2425741d408aa4ea6c457aea67c0d743808cd7e4addc45db3fd8"
+      }
+    }
+  ]
+}

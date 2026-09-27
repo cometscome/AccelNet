@@ -1,0 +1,15 @@
+Internal ctest changing into directory: /tmp/accelnet-n2p2-cpu-opt/build-gnu
+Test project /tmp/accelnet-n2p2-cpu-opt/build-gnu
+    Start 39: predictor_common_cpu_performance
+1/3 Test #39: predictor_common_cpu_performance .........   Passed   42.96 sec
+    Start 40: predictor_g5_moment_performance
+2/3 Test #40: predictor_g5_moment_performance ..........   Passed    4.86 sec
+    Start 72: accelnet_order_scaling_benchmark_smoke
+3/3 Test #72: accelnet_order_scaling_benchmark_smoke ...   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Label Time Summary:
+performance    =  47.84 sec*proc (3 tests)
+
+Total Test time (real) =  47.84 sec

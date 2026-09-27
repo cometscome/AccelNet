@@ -1,0 +1,22 @@
+{
+  "gnu": {
+    "path": "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+    "sha256": "f28584173c8378af60737dc44a3841a6d221fc33b12b1553a3ea7f0d8a8b8a78"
+  },
+  "nvhpc": {
+    "path": "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+    "sha256": "45dcef2f757d16c058a5a8c78308e0d6f324f99803622f66b49f61ba55f53b96"
+  },
+  "gpu": {
+    "path": "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+    "sha256": "fd3faca1515b6c473066150fd731b084d8ce65409f404dcdd16690fce8b7b8c6"
+  },
+  "lammps": {
+    "path": "/tmp/accelnet-lammps-gpu/build/lmp",
+    "sha256": "2c2ad2b5dabe28fb4a371576dc0e1c01eed624e7a55f68c316e0540fbdf39e55"
+  },
+  "lammps_candidate": {
+    "path": "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp-g4-fused",
+    "sha256": "2c2ad2b5dabe28fb4a371576dc0e1c01eed624e7a55f68c316e0540fbdf39e55"
+  }
+}

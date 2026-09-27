@@ -1,0 +1,7 @@
+{
+  "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii": "e1c79e4ab02d713a267cd4f3bfaeb0e6d35513d36b9e58e51cd2d541d6c9f123",
+  "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii": "022cc2f3f86a29873ea5350fb485d8ace172b442d67f84fce1594ae5081c59c0",
+  "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/structure0001.xsf": "573a08c59e3b5714f621135de3c775e7d7dfa9145371443a9c60a8272c3ddc08",
+  "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_target_kernels.f90": "3e77c1f50b3300e5c502e1f9cdbe7530846c38534bccf8ee52fd1f34746928cc",
+  "/home/nagai/AccelNetGPU/AccelNet-clone/interfaces/lammps/29Aug2024/tests/benchmark_gpu_modes.py": "316ffb5214f8fc926731bbf9fb60ee58d3fc34d7d769cca60548d38b81abd41c"
+}

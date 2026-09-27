@@ -1,299 +1,285 @@
 # AccelNet
 
 AccelNet is a Fortran library and command-line toolkit for evaluating
-machine-learning interatomic potentials. It provides a common descriptor and
-inference implementation for supported ænet and n2p2 models, an aenet-style
-Fortran/C atomic API, model-conversion tools, and a LAMMPS `pair_style`.
+machine-learning interatomic potentials from **ænet and n2p2**. It computes
+energies, analytic forces and configurational virials, provides Fortran/C APIs,
+and integrates with LAMMPS on CPU and GPU. It is an inference package; training
+remains in the upstream tools.
 
-AccelNet is an inference package. It does not train potentials or replace the
-training and data-preparation tools provided by ænet, ænet-PyTorch, or n2p2.
-The method and its validation are described in the
-[AccelNet paper](https://arxiv.org/abs/2608.03280).
+**Library version: 1.1.0.** The CPU/GPU methods and validation are documented in
+[speedupmethods.md](speedupmethods.md), revision 1.13. The method is described
+in the [AccelNet paper](https://arxiv.org/abs/2608.03280).
 
-## Features
+## Start here
 
-- Read ænet/AccelNet ASCII and compatible native-binary neural networks.
-- Read supported n2p2 2G-HDNNP model directories without conversion.
-- Evaluate energies and analytic Cartesian forces from XSF structures.
-- Evaluate analytic configurational virials through the Fortran/C atomic API
-  and the Fortran structure API, including periodic-image contributions.
-- Read molecular and periodic structures from n2p2 `input.data` files.
-- Provide object-based Fortran interfaces and an aenet-style Fortran/C atomic
-  API.
-- Convert supported models between n2p2 and AccelNet ASCII representations.
-- Run supported ænet and n2p2 models from LAMMPS with
-  `pair_style accelnet`.
+| Task | Guide |
+|---|---|
+| Build and run on CPU | [Quick start](#cpu-quick-start) |
+| Use an NVIDIA GPU | [GPU build](#gpu-build-and-execution), [target API](docs/openmp-target.md) |
+| Run molecular dynamics | [LAMMPS interfaces](interfaces/lammps/README.md), [GPU package guide](docs/lammps-gpu.md) |
+| Check supported models and direct/moment methods | [Coverage below](#supported-models-and-methods), [implementation status](docs/implementation-status.md) |
+| Embed AccelNet | [Predictor APIs](AccelNetPredictor/README.md), [CSR batch API](docs/batch-api.md) |
+| Convert model formats | [Fortran and Julia converters](AccelNetModelConverter/README.md) |
+| Inspect equations and measured performance | [Optimization methods](speedupmethods.md), [validation](#validation-and-performance) |
 
-The descriptor definitions implemented in AccelNet are also used by
-`AccelNet.jl`, a training package that has not yet been publicly released.
-`AccelNet.jl` and its training functionality are not included in this
-repository.
+## Supported models and methods
 
-## Compatibility overview
+All supported production potential-inference entry points use the **same
+maintained Fortran numerical kernels**. The ordinary CPU library compiles them
+with OpenMP directives removed. The optional target library compiles them for
+OpenMP host threads or GPU offload. Descriptor evaluation, the neural network,
+force contraction and virial evaluation run on the selected backend in FP64.
 
-The following table summarizes compatibility with ænet 2.0.4 and n2p2 2.3.0.
-"Conditional" means that only the model families and settings listed in the
-Notes column are accepted; unsupported settings are rejected with an error.
+| Descriptor family | Common CPU/GPU evaluation | Exact moment support |
+|---|---|---|
+| ænet Chebyshev, versions 0/1/10 | Direct and moment | Yes |
+| ænet Behler G1/G2/G3; n2p2 type 2 | Single-neighbor sums | No separate moment method needed |
+| ænet Behler G4; n2p2 type 3 | Direct angular pairs | No general finite factorization |
+| ænet Behler G5; n2p2 type 9 | Direct and moment | Integer angular powers 1--16; eligibility depends on mode |
+| n2p2 types 12/20/23 | Weighted/compact radial sums | No separate moment method needed |
+| n2p2 types 13/21/24 | Exact direct angular pairs | No general finite single-neighbor factorization |
+| n2p2 types 22/25 | Exact direct angular pairs | No approximate moment expansion is used |
+| AccelNet LJ extension | Radial sums | No separate moment method needed |
 
-| Feature | ænet / AccelNet | n2p2 | Notes |
-|---|---|---|---|
-| Model input | Supported | Conditional | ænet/AccelNet ASCII and compatible native binary; n2p2 short-range 2G model directories |
-| Descriptors | Supported | Conditional | ænet Chebyshev and Behler G1--G5, plus AccelNet LJ; n2p2 SF types 2, 3, and 9 |
-| Activation functions | Supported | Supported | ænet native codes 0--4; all n2p2 2.3.0 activation characters |
-| Cutoff functions | Supported | Supported | Standard ænet metadata; n2p2 cutoff types 0--8 and the [Mori *et al.* fractional cutoff](https://doi.org/10.1103/PhysRevMaterials.7.063605) as extension type 9 |
-| Descriptor scaling | Supported | Supported | Affine ænet scaling; n2p2 scale, center, scale+center, and sigma modes |
-| Energy normalization and atomic reference energies | Supported | Supported | Applied consistently to energies and analytic forces |
-| Energy and force inference | Supported | Supported | XSF files and in-memory structures |
-| Structure input | XSF, `predict.in` | XSF, `input.data` | n2p2 `input.data` supports multiple molecular or periodic structures |
-| Fortran and C atomic API | Supported | Supported | n2p2 directories can be loaded directly without conversion |
-| LAMMPS `pair_style accelnet` | Supported | Supported | n2p2 directories can be loaded directly with an explicit atom-type mapping |
-| Model conversion | Conditional | Conditional | Only features representable by both formats are converted |
-| Potential training | Not supported | Not supported | Use ænet, ænet-PyTorch, or n2p2 for training |
-| 4G/Q, charge, weighted, or compact models | Not applicable | Not supported | n2p2 4G/Q and SF types 12, 13, and 20--25 are rejected |
-| Per-element topology and `normalize_nodes` | Not applicable | Supported | n2p2 global defaults and per-element overrides are accepted; node normalization is folded into weights and biases |
+**Types 13/21/24 are implemented**, including forces and virial. Lack of a
+finite moment representation does not mean lack of model support. Third-distance
+and angular window terms prevent the general finite polynomial factorization
+used for G5. See [the exactness boundary](docs/implementation-status.md#descriptor-coverage).
 
-The exact accepted syntax, formulas, ordering conversions, and tested cases are
-documented in
-[`docs/model-compatibility.md`](docs/model-compatibility.md).
+Multi-element models, multiple Chebyshev basis blocks per element, and mixed
+Chebyshev/LJ/Behler blocks are supported. Each basis block may have its own
+orders and cutoffs; there is no one-Chebyshev-block-per-element restriction.
 
-## Requirements
+Method selection is explicit and reproducible:
 
-The standard build requires:
+- **Chebyshev:** `auto`, `direct`, or `moment`. Auto uses angular neighbor count,
+  angular order and moment count to estimate work.
+- **G5:** auto uses exact integer powers 1--10 with at least 16 angular neighbors.
+  Explicit moment modes also allow powers 11--16. Fractional, near-integer and
+  powers above 16 use direct evaluation. LAMMPS `g5 moment` bypasses the
+  neighbor-count threshold for eligible powers.
+- Auto is an operation-count/eligibility rule, not a device-specific timing
+  tuner. Moment is not always faster than direct.
 
-- CMake 3.20 or newer;
-- a Fortran 2008-compatible compiler;
-- a C compiler.
+### Model compatibility
 
-GNU Fortran and Intel Fortran/IntelLLVM compiler flags are configured by the
-build system. GNU Fortran 15 or newer is recommended for performance. Use the
-same Fortran compiler family for AccelNet and Fortran applications that consume
-its module files. The C API still requires the corresponding Fortran runtime
-when statically linked.
+The compatibility targets are ænet 2.0.4 and n2p2 2.3.0:
 
-The core library does not require BLAS, LAPACK, MPI, ænet, or n2p2. Those
-packages are needed only for selected reference comparisons or external
-integration builds. The optional Julia model converter requires Julia 1.10.
+- ænet/AccelNet ASCII networks and compatible native binary networks;
+- n2p2 short-range **2G-HDNNP** directories with SF types **2/3/9/12/13/20--25**;
+- per-element network topology, activation functions, descriptor scaling,
+  energy normalization/reference energies and n2p2 `normalize_nodes`;
+- n2p2 cutoff types 0--8 and the AccelNet fractional-cutoff extension type 9;
+- XSF structures, AccelNet `predict.in`, and n2p2 `input.data` structures.
 
-## Build and test
+Native binary files depend on the Fortran record representation; ASCII is the
+more portable interchange format. Standard ænet network metadata does not
+encode the Chebyshev version: AccelNet defaults to version 0; select 1 or 10
+explicitly when required. AccelNet extended ASCII metadata is not guaranteed
+to be readable by upstream ænet.
+
+Training, n2p2 4G/Q charge/electrostatic models, and general ASE input formats
+are not implemented. Unsupported settings are rejected. Accepted syntax,
+unit conventions, conversion restrictions and endpoint behavior are specified
+in [model compatibility](docs/model-compatibility.md).
+
+## CPU quick start
+
+Requirements: CMake 3.20+, a Fortran 2008 compiler, and a C compiler. GNU Fortran
+11/13 are covered by CI; the recent CPU measurements use GNU Fortran 11.4.
+The core libraries require no BLAS, LAPACK, MPI, ænet or n2p2 installation.
+Python is used by some tests; external reference tools and models are optional.
 
 From the repository root:
 
 ```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+  -DN2P2_SCALING_EXECUTABLE=
 cmake --build build --parallel
-ctest --test-dir build --output-on-failure
+ctest --test-dir build -LE performance --output-on-failure
 ```
 
-Executables are written to `build/bin` and libraries to `build/lib`. The
-default static build produces:
+Executables are in `build/bin`; libraries are in `build/lib`. The default build
+is static and CPU-only. GPU support is opt-in. Use a separate build directory
+when changing compiler families. The command disables auto-discovery of the
+optional external `nnp-scaling` executable; set `N2P2_SCALING_EXECUTABLE` to a
+working local executable to enable that upstream comparison.
 
-- `libAccelNetDescriptors.a`;
-- `libaccelnet.a`;
-- `accelnet-descriptor`;
-- `accelnet-setup-descriptor`;
-- `accelnet-predict`;
-- `accelnet-model-converter-fortran`.
+### Run a prediction
 
-Useful CMake options are:
-
-| Option | Default | Purpose |
-|---|---:|---|
-| `BUILD_SHARED_LIBS` | `OFF` | Build shared instead of static libraries |
-| `BUILD_TESTING` | `ON` | Build the standard test suite |
-| `ACCELNET_BUILD_REFERENCE_TESTS` | `OFF` | Compare against an external historical AccelNet tree |
-
-For a shared-library build:
-
-```sh
-cmake -S . -B build-shared -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_SHARED_LIBS=ON
-cmake --build build-shared --parallel
-```
-
-Reference tests against separate ænet and n2p2 source trees are documented in
-[`AccelNetDescriptors/README.md`](AccelNetDescriptors/README.md) and
-[`AccelNetPredictor/README.md`](AccelNetPredictor/README.md). They are not
-required for normal use.
-
-### Continuous integration
-
-[Library tests](.github/workflows/tests.yml) runs on pushes, pull requests,
-and manual dispatch. It checks GNU Fortran 11 on Ubuntu 22.04 and GNU Fortran
-13 on Ubuntu 24.04 in Release/static builds, plus GNU 13 Debug/shared with
-Fortran runtime checks. CTest failures fail the job. Test logs, JUnit results,
-and virial-convergence CSV files are retained as workflow artifacts for 14 days.
-
-The workflow builds the libraries, correctness-test executables, and CLI tools
-used by the tests. Standalone performance benchmarks are excluded; in particular,
-GNU 11 has an internal compiler error on `benchmark-g4-derivative`. Tests use
-bundled fixtures and synthetic models, with no external ænet/n2p2 installation
-or private model corpus. The optional Ti/O corpus tests can be enabled locally
-with `ACCELNET_PREDICTOR_GOLDEN_DIR`; see the
-[virial validation report](docs/validation/virial-2026-09-25/README.md).
-
-## Run predictions
-
-### ænet/AccelNet networks
-
-An energy calculation from descriptor setup files, neural networks, and an
-XSF structure can be run with:
+With ænet/AccelNet setup files, networks and an XSF structure:
 
 ```sh
 build/bin/accelnet-predict 2 \
   Ti.fingerprint.stp O.fingerprint.stp \
-  Ti.nn.ascii O.nn.ascii structure.xsf
-```
+  Ti.nn.ascii O.nn.ascii structure.xsf --forces
 
-Original AccelNet `predict.in` files are also accepted:
-
-```sh
+# Or use an existing prediction input file:
 build/bin/accelnet-predict predict.in
 ```
 
-Append `--forces` to an applicable prediction command to print analytic
-Cartesian forces. Native binary networks use Fortran sequential-unformatted
-records and are therefore less portable than ASCII networks.
-
-### n2p2 model directories
-
-A supported n2p2 directory contains `input.nn`, `weights.%03d.data`, and,
-when required by the model, `scaling.data`. It can be evaluated directly:
+A bundled n2p2 fixture provides a runnable smoke example from the repository:
 
 ```sh
-build/bin/accelnet-predict --n2p2 /path/to/model structure.xsf
+build/bin/accelnet-predict --n2p2-data \
+  AccelNetPredictor/test/data/n2p2 \
+  AccelNetPredictor/test/data/n2p2/input.data
 ```
 
-One or more structures in n2p2 `input.data` format can be read with:
+For your own model, replace the directory and structure paths. An n2p2 directory
+contains `input.nn`, `weights.%03d.data`, and `scaling.data` when required by
+its scaling mode. Multiple n2p2 `input.data` structures can also be evaluated:
 
 ```sh
 build/bin/accelnet-predict --n2p2-data /path/to/model input.data
 ```
 
-AccelNet reads coordinates, element names, and zero or three lattice vectors.
-Reference energies, stored forces, charges, and comments in `input.data` are
-not used for inference.
+Input coordinates and returned energies/forces use the model's physical units.
+`predict.in`, `--n2p2` and `--n2p2-data` already output forces; do not append
+`--forces` to those forms. These commands use the ordinary CPU path, including
+in a GPU-enabled build.
 
-The n2p2 loader accepts global network defaults together with
-`element_hidden_layers_short`, `element_nodes_short`, and
-`element_activation_short` overrides. It also supports `normalize_nodes`.
-Normalization is folded into each layer's weights and biases during model
-loading. The same support is available through the Fortran/C atomic APIs and
-LAMMPS direct directory loading.
+## GPU build and execution
+
+The tested offload stack is **NVHPC 25.3 with NVIDIA H100 and RTX PRO 6000
+Blackwell GPUs**. AMD/Intel GPU execution has not been validated. Building with
+GNU `-fopenmp` alone enables host threading, not NVIDIA offload.
+
+With `nvfortran` on `PATH`, build the optional target library and its smoke test:
+
+```sh
+cmake -S . -B build-gpu -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_Fortran_COMPILER=nvfortran \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON \
+  -DACCELNET_OPENMP_TARGET_FLAGS="-mp=gpu -gpu=cc90,cc120"
+cmake --build build-gpu --parallel --target test_batch_target
+
+# Inspect UUIDs and select an available device from this output:
+nvidia-smi --query-gpu=name,uuid --format=csv
+export CUDA_VISIBLE_DEVICES=GPU-REPLACE-WITH-YOUR-DEVICE-UUID
+export OMP_TARGET_OFFLOAD=MANDATORY
+export OMP_NUM_THREADS=1
+build-gpu/bin/test_batch_target --quick
+```
+
+Use `-gpu=cc90` for H100 alone. To run the configured GPU suite, first build all
+its executables with `cmake --build build-gpu --parallel`, then run
+`ctest --test-dir build-gpu -L gpu --output-on-failure` with the same environment.
+The target API rejects unintended CPU fallback.
+
+| Entry point | Execution |
+|---|---|
+| CLI, structure/file and atomic Fortran/C APIs, ænet-compatible SFB, ordinary batch API | Common serial CPU kernels; OpenMP compiled out |
+| Target API initialized with `use_host=.true.` | Common kernels with OpenMP host threads |
+| Target API initialized for a GPU | Common kernels with OpenMP target offload |
+| LAMMPS `accelnet` / `accelnet/gpu` | Common serial CPU / GPU kernels, respectively |
+
+The [target API guide](docs/openmp-target.md) covers model snapshots, persistent
+workspaces, CSR data, C handles and energy-only calls. A packed model must be
+reinitialized after its source model changes. The independent former evaluator
+is retained in [legacy/cpu-reference](legacy/cpu-reference/README.md) for explicit
+reference/low-level compatibility calls; production inference has no legacy
+fallback. Host force accumulation avoids fine-grained atomics; GPU force
+scatter still uses atomic additions.
+
+## LAMMPS
+
+| Release | CPU | GPU |
+|---|---|---|
+| 4 Feb 2020 | `pair_style accelnet`, traditional make | Not provided |
+| 29 Aug 2024 Update 4 | `pair_style accelnet`, CMake | `pair_style accelnet/gpu`, CUDA GPU package + Fortran OpenMP target |
+
+CPU inputs can load an n2p2 directory directly, with elements in LAMMPS type order:
+
+```lammps
+pair_style accelnet n2p2 /path/to/model Ti O
+pair_coeff * *
+```
+
+GPU inputs use embedded network files, including converted n2p2 models:
+
+```lammps
+# Before read_data/create_box:
+package gpu 1 neigh yes newton on split 1
+# After creating the box, with types matching the network species order:
+pair_style accelnet/gpu auto Ti.nn.ascii O.nn.ascii
+pair_coeff * *
+```
+
+The GPU adapter supports `neigh no/yes/hybrid`, global virial and per-atom energy.
+It currently requires CUDA, NVHPC, double precision, `newton on` and `split 1`.
+Direct n2p2-directory loading is available in the CPU pair style; for GPU use
+[the Fortran converter](AccelNetModelConverter/README.md) first. Per-atom stress,
+charge models and the other adapter restrictions are listed in the
+[GPU integration guide](docs/lammps-gpu.md). See the
+[LAMMPS README](interfaces/lammps/README.md) for installation and mode selection.
 
 ## Install and link
-
-Install the libraries, module files, C header, executables, and CMake package
-files with:
 
 ```sh
 cmake --install build --prefix /path/to/install
 ```
 
-An installed CMake project can link the predictor with:
+The install contains libraries, Fortran module files, C headers, CLI programs
+and CMake package files. Consumer projects can use:
 
 ```cmake
 find_package(AccelNetPredictor CONFIG REQUIRED)
 target_link_libraries(my_program PRIVATE AccelNet::AccelNet)
+# For an installation built with the optional target library:
+# target_link_libraries(my_program PRIVATE AccelNet::Target)
 ```
 
-`AccelNetPredictor::AccelNetPredictor` is also available. The C interface is
-declared in
-[`AccelNetPredictor/include/accelnet.h`](AccelNetPredictor/include/accelnet.h),
-and Fortran/C examples are provided in
-[`AccelNetPredictor/README.md`](AccelNetPredictor/README.md).
+Use the same Fortran compiler family for library and application module files.
+Static C consumers also need the matching Fortran runtime. Headers and examples
+are in [AccelNetPredictor](AccelNetPredictor/README.md).
 
-## LAMMPS
+| CMake option | Default | Purpose |
+|---|---|---|
+| `BUILD_SHARED_LIBS` | `OFF` | Build shared libraries |
+| `BUILD_TESTING` | `ON` | Build correctness tests and benchmark drivers |
+| `ACCELNET_BUILD_OPENMP_TARGET` | `OFF` | Build the optional target library |
+| `ACCELNET_OPENMP_TARGET_FLAGS` | Empty | Compiler/link flags for that library |
+| `ACCELNET_TARGET_SERIAL` | `OFF` | Compile the target API without OpenMP for serial comparisons |
+| `ACCELNET_BUILD_REFERENCE_TESTS` | `OFF` | Compare with an external historical AccelNet tree |
+| `ACCELNET_PREDICTOR_GOLDEN_DIR` | Optional sibling data directory | Enable real Ti/O-model tests if the files exist |
+| `N2P2_SCALING_EXECUTABLE` | Optional sibling executable | External n2p2 descriptor comparison; set empty to disable |
+| `ACCELNET_PUBLIC_API_BASELINE_EXECUTABLE` | Empty | Enable the archived-baseline CPU energy performance test |
 
-Interfaces are provided for these LAMMPS releases:
+## Validation and performance
 
-| LAMMPS release | Integration |
-|---|---|
-| 4Feb2020 | traditional make package |
-| 29Aug2024 Update 4 | CMake package |
+[CI](.github/workflows/tests.yml) checks GNU 11/13 Release builds and GNU 13
+Debug/shared builds with runtime checks. It uses bundled/synthetic fixtures;
+it does not run on a GPU. Optional reference comparisons and real-model tests
+are described in the component READMEs.
 
-First build static AccelNet libraries:
+The [revision 1.13 report](docs/validation/energy-common-2026-09-27/README.md)
+records the `f655fb0` implementation (2026-09-27): 52 CPU tests, 22 bounds/runtime-check tests, 35 GPU tests, 21 LAMMPS
+comparisons, H100 memcheck with zero errors, and host 2/8-thread checks. These
+counts describe that configuration and available external fixtures, not every
+fresh checkout.
+
+CPU comparisons use **OpenMP compiled out on both sides**, identical drivers
+and a fixed physical core. The latest real Ti/O energy-only sweep at 64/192/512
+atoms is within about 0.7--3.1% of the former CPU evaluator. On Blackwell, the
+same model's GPU energy-only auto/moment time is 13--14% shorter than the prior
+common implementation; the synthetic Chebyshev moment force case is 4.5% slower.
+These are separate baselines and workloads, not a universal CPU/GPU speedup.
+
+Run performance gates separately from correctness tests and competing work:
 
 ```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
-cmake --build build --parallel
+ctest --test-dir build -L performance --output-on-failure
 ```
 
-For LAMMPS 29Aug2024 Update 4, copy the package and CMake module into a clean
-LAMMPS source tree and apply the supplied registration patch:
-
-```sh
-cp -R interfaces/lammps/29Aug2024/ACCELNET /path/to/lammps/src/
-cp interfaces/lammps/29Aug2024/cmake/ACCELNET.cmake \
-  /path/to/lammps/cmake/Modules/Packages/
-patch -d /path/to/lammps -p1 \
-  < interfaces/lammps/29Aug2024/lammps-cmake.patch
-
-cmake -S /path/to/lammps/cmake -B /path/to/lammps/build-accelnet \
-  -D CMAKE_BUILD_TYPE=Release \
-  -D BUILD_MPI=ON \
-  -D PKG_ACCELNET=ON \
-  -D ACCELNET_DIR="$PWD"
-cmake --build /path/to/lammps/build-accelnet --parallel
-```
-
-An ænet/AccelNet model is selected with:
-
-```lammps
-pair_style accelnet Ti.nn.ascii O.nn.ascii
-pair_coeff * *
-```
-
-An n2p2 directory can be loaded without conversion. Element names are given in
-LAMMPS atom-type order:
-
-```lammps
-# LAMMPS type 1 = Ti, type 2 = O
-pair_style accelnet n2p2 /path/to/model Ti O
-pair_coeff * *
-```
-
-Every MPI rank must be able to read the same model directory. Full instructions
-for both LAMMPS releases, compiler-runtime linking, and Chebyshev/G5 evaluation
-modes are in [`interfaces/lammps/README.md`](interfaces/lammps/README.md).
-
-## Supported models and limitations
-
-AccelNet supports ænet Chebyshev and Behler-style descriptors used by the
-documented network formats. Its n2p2 loader supports short-range 2G models
-with symmetry-function types 2, 3, and 9, supported cutoff functions, network
-activations, scaling, energy normalization, and atomic reference energies.
-
-The following are not currently supported:
-
-- training of neural-network potentials;
-- n2p2 4G/charge models;
-- weighted and compact n2p2 symmetry functions;
-- direct input of general ASE formats or ænet training-set files.
-
-Unsupported model settings are rejected rather than silently approximated.
-See [`docs/model-compatibility.md`](docs/model-compatibility.md) for the exact
-accepted syntax, descriptor formulas, activation and cutoff mappings,
-conversion restrictions, and reference-test coverage.
-
-## Model conversion
-
-The Fortran converter is built with the main project. For example:
-
-```sh
-# n2p2 to AccelNet ASCII
-build/bin/accelnet-model-converter-fortran n2p2-to-accelnet \
-  /path/to/n2p2-model /path/to/accelnet-output
-
-# AccelNet ASCII or compatible native binary to n2p2
-build/bin/accelnet-model-converter-fortran accelnet-to-n2p2 \
-  /path/to/n2p2-output Ti.nn O.nn
-```
-
-Conversion is limited to model features representable by both formats. See
-[`AccelNetModelConverter/README.md`](AccelNetModelConverter/README.md) for the
-Fortran and Julia interfaces and their current restrictions. The Fortran
-converter preserves per-element topology in both directions and absorbs
-`normalize_nodes` exactly when importing n2p2 models.
+To enable the energy regression gate, configure the same serial build with
+`ACCELNET_PUBLIC_API_BASELINE_EXECUTABLE` pointing to an archived
+`accelnet-public-api-benchmark`, and `ACCELNET_PREDICTOR_GOLDEN_DIR` pointing to
+the Ti/O models. The test rejects linked OpenMP runtimes and uses the default
+1.10 time-ratio limit. The [reproduction guide](docs/validation/energy-common-2026-09-27/README.md#reproduction)
+explains compiler matching, fixtures and paired measurements. Historical reports
+retain their original scope; the [implementation status](docs/implementation-status.md)
+is the current coverage reference.
 
 ## Citation
 

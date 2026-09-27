@@ -1,0 +1,24 @@
+number_of_elements 2
+elements O H
+nnp_type 2G-HDNNP
+cutoff_type 1 0.15
+scale_symmetry_functions
+scale_min_short -1
+scale_max_short 1
+global_hidden_layers_short 2
+global_nodes_short 8 4
+global_activation_short t t l
+atom_energy H 0.03
+atom_energy O 0.019999999999999997
+symfunction_short H 22 H O -0.2 3.9 20 160 e
+symfunction_short H 22 H O -0.2 3.8 0 180 e
+symfunction_short H 22 O O 0.0 3.9 20 160 e
+symfunction_short H 22 H H -0.4 3.8 0 180 e
+symfunction_short H 22 H H -0.4 3.9 120 240 e
+symfunction_short H 22 O O 0.0 3.8 -60 60 e
+symfunction_short O 22 H O -0.2 3.9 20 160 e
+symfunction_short O 22 H O -0.2 3.8 0 180 e
+symfunction_short O 22 O O 0.0 3.9 20 160 e
+symfunction_short O 22 H H -0.4 3.8 0 180 e
+symfunction_short O 22 H H -0.4 3.9 120 240 e
+symfunction_short O 22 O O 0.0 3.8 -60 60 e

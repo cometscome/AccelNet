@@ -1,0 +1,16 @@
+before-n512-order8-mode1-round0 seconds 0.0203500366 ratio 1.6525561351709976
+after-n512-order8-mode1-round0 seconds 0.0202103506 ratio 1.6480324327772573
+after-n512-order8-mode1-round1 seconds 0.0205925734 ratio 1.6754975262649787
+before-n512-order8-mode1-round1 seconds 0.0198931825 ratio 1.6299488038885426
+before-n4096-order8-mode1-round0 seconds 0.163576875 ratio 1.6739685533606783
+after-n4096-order8-mode1-round0 seconds 0.164506272 ratio 1.6870242170341927
+after-n4096-order8-mode1-round1 seconds 0.16452786 ratio 1.685311641923276
+before-n4096-order8-mode1-round1 seconds 0.164778848 ratio 1.6854468130854394
+before-n512-order8-mode1-round0 seconds 0.019015866666666666 ratio 1.485307451710438
+after-n512-order8-mode1-round0 seconds 0.018818816666666665 ratio 1.4686123231631518
+after-n512-order8-mode1-round1 seconds 0.01890818333333333 ratio 1.47292704672825
+before-n512-order8-mode1-round1 seconds 0.01884715 ratio 1.4720103309019394
+before-n4096-order8-mode1-round0 seconds 0.1539212 ratio 1.5045343481147377
+after-n4096-order8-mode1-round0 seconds 0.15487 ratio 1.5179025725017898
+after-n4096-order8-mode1-round1 seconds 0.154552 ratio 1.5130530774259463
+before-n4096-order8-mode1-round1 seconds 0.1554649 ratio 1.5242867325738612

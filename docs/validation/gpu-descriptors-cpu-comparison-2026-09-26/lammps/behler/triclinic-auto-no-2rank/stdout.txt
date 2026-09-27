@@ -1,0 +1,125 @@
+LAMMPS (29 Aug 2024 - Update 4)
+Reading data file ...
+  triclinic box = (0 0 0) to (5.6 5.8 6) with tilt (0.7 -0.4 0.3)
+  1 by 1 by 2 MPI processor grid
+  reading atoms ...
+  8 atoms
+  read_data CPU = 0.001 seconds
+Replication is creating a 1x1x1 = 1 times larger system...
+  triclinic box = (0 0 0) to (5.6 5.8 6) with tilt (0.7 -0.4 0.3)
+  1 by 1 by 2 MPI processor grid
+  8 atoms
+  replicate CPU = 0.000 seconds
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+- GPU package (short-range, long-range and three-body potentials): doi:10.1016/j.cpc.2010.12.021, doi:10.1016/j.cpc.2011.10.012, doi:10.1016/j.cpc.2013.08.002, doi:10.1016/j.commatsci.2014.10.068, doi:10.1016/j.cpc.2016.10.020, doi:10.3233/APC200086
+The log file lists these citations in BibTeX format.
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+AccelNet GPU: CUDA device 0, FP64 OpenMP target, CPU neighbors
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = no
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 4
+  ghost atom cutoff = 4
+  binsize = 2, bins = 4 4 3
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair accelnet/gpu, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.0001
+Per MPI rank memory allocation (min/avg/max) = 2.569 | 2.631 | 2.694 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  5.9884134070181272 -0.46767568050464353 -1.0688344824082996 0.98726510089445563 0.36535036408531407 -0.0012035757136615046 0.21501544739527587
+Loop time of 9.325e-07 on 2 procs for 0 steps with 8 atoms
+
+0.0% CPU use with 2 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 9.325e-07  |            |       |100.00
+
+Nlocal:              4 ave           8 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:             93 ave         100 max          86 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:              0 ave           0 max           0 min
+Histogram: 2 0 0 0 0 0 0 0 0 0
+FullNghs:           29 ave          58 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 58
+Ave neighs/atom = 7.25
+Neighbor list builds = 0
+Dangerous builds not checked
+AccelNet GPU: CUDA device 0, FP64 OpenMP target, CPU neighbors
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.0001
+Per MPI rank memory allocation (min/avg/max) = 2.694 | 2.756 | 2.819 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  5.9884134070181272 -0.46767568050464148 -1.0688344824083009 0.98726510089445518 0.36535036408531318 -0.0012035757136615603 0.21501544739527542
+         1  5.9884132521607851 -0.46849639667672538 -1.0695161037801806 0.98677998016196389 0.36472055547746762 -0.0014478777459146414 0.21491153522934267
+         2  5.9884130973131828 -0.46931676030929403 -1.0701976281443946 0.98629476833245311 0.36409132965225222 -0.0016921072495842896 0.21480715814163678
+         3  5.9884129424753727 -0.4701367705942191 -1.0708790549393479 0.98580946484138376 0.36346268778937491 -0.0019362641626855782 0.21470231683236757
+         4  5.9884127876473983 -0.47095642672120408 -1.0715603836061256 0.98532406912483939 0.36283463106656305 -0.0021803484233653336 0.21459701200240908
+         5  5.9884126328293066 -0.47177572787781014 -1.0722416135884834 0.98483858061953899 0.36220716065956066 -0.0024243599698994082 0.21449124435328804
+         6  5.9884124780211474 -0.47259467324944293 -1.0729227443328408 0.98435299876282478 0.36158027774211932 -0.0026682987406976364 0.2143850145871937
+         7  5.9884123232229651 -0.47341326201936312 -1.0736037752882881 0.98386732299267099 0.36095398348598406 -0.0029121646742961463 0.21427832340697181
+         8  5.9884121684348068 -0.47423149336869874 -1.0742847059065699 0.98338155274769323 0.3603282790609012 -0.0031559577093607048 0.21417117151612
+         9  5.9884120136567214 -0.47504936647644519 -1.0749655356420891 0.98289568746711875 0.35970316563458965 -0.0033996777846973542 0.21406355961879195
+        10  5.988411858888754 -0.47586688051944698 -1.0756462639518902 0.98240972659081982 0.35907864437275305 -0.0036433248392260115 0.21395548841978909
+        11  5.9884117041309537 -0.47668403467245396 -1.0763268902956753 0.98192366955929167 0.3584547164390538 -0.0038868988120116608 0.21384695862456443
+        12  5.9884115493833665 -0.47750082810808425 -1.0770074141357771 0.98143751581367855 0.35783138299512401 -0.0041303996422366101 0.21373797093922003
+        13  5.988411394646036 -0.47831725999683244 -1.0776878349371697 0.98095126479574868 0.35720864520053808 -0.0043738272692198836 0.21362852607050181
+        14  5.9884112399190164 -0.4791333295070887 -1.0783681521674606 0.98046491594790364 0.35658650421281968 -0.0046171816324066276 0.21351862472580105
+        15  5.9884110852023484 -0.47994903580514109 -1.0790483652968832 0.9799784687131825 0.35596496118742843 -0.0048604626713670074 0.21340826761315168
+        16  5.988410930496082 -0.48076437805517008 -1.0797284737982891 0.97949192253525941 0.35534401727775006 -0.0051036703258055009 0.21329745544122838
+        17  5.988410775800264 -0.48157935541926877 -1.0804084771471545 0.97900527685844829 0.35472367363509461 -0.0053468045355519371 0.2131861889193479
+        18  5.988410621114939 -0.4823939670574342 -1.0810883748215649 0.97851853112769915 0.3541039314086783 -0.0055898652405619899 0.2130744687574605
+        19  5.9884104664401558 -0.48320821212757575 -1.0817681663022154 0.97803168478859914 0.35348479174562608 -0.0058328523809213642 0.21296229566615513
+        20  5.9884103117759624 -0.48402208978553091 -1.0824478510724012 0.97754473728737479 0.35286625579096043 -0.0060757658968442849 0.21284967035665936
+Loop time of 0.014923 on 2 procs for 20 steps with 8 atoms
+
+Performance: 11.579 ns/day, 2.073 hours/ns, 1340.211 timesteps/s, 10.722 katom-step/s
+100.0% CPU use with 2 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.3694e-05 | 0.0058675  | 0.011721   |   7.6 | 39.32
+Neigh   | 3.9632e-05 | 6.0263e-05 | 8.0894e-05 |   0.0 |  0.40
+Comm    | 0.0015769  | 0.0074069  | 0.013237   |   6.8 | 49.63
+Output  | 0.0015205  | 0.0015699  | 0.0016193  |   0.1 | 10.52
+Modify  | 3.45e-06   | 4.5275e-06 | 5.605e-06  |   0.0 |  0.03
+Other   |            | 1.391e-05  |            |       |  0.09
+
+Nlocal:              4 ave           8 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:             93 ave         100 max          86 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:              0 ave           0 max           0 min
+Histogram: 2 0 0 0 0 0 0 0 0 0
+FullNghs:           29 ave          58 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 58
+Ave neighs/atom = 7.25
+Neighbor list builds = 20
+Dangerous builds not checked
+Total wall time: 0:00:00

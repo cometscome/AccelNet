@@ -1,0 +1,538 @@
+[
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 512,
+    "order": 8,
+    "mode": 1,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-common-default/before-gnu",
+      "512",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.498001805406602e-16,
+    "samples": [
+      [
+        0.012300705777777777,
+        0.020327606800000002,
+        0.0,
+        0.0
+      ],
+      [
+        0.012481451666666666,
+        0.020435067600000002,
+        0.0,
+        0.0
+      ],
+      [
+        0.012294178777777777,
+        0.0203500366,
+        0.0,
+        0.0
+      ],
+      [
+        0.012301968777777778,
+        0.020526911000000002,
+        0.0,
+        0.0
+      ],
+      [
+        0.012317648222222222,
+        0.020235382,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.0203500366,
+    "reference_seconds": 0.012301968777777778,
+    "ratio_to_reference": 1.6525561351709976,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "after",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 512,
+    "order": 8,
+    "mode": 1,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.498001805406602e-16,
+    "samples": [
+      [
+        0.012258463,
+        0.020202344599999998,
+        0.0,
+        0.0
+      ],
+      [
+        0.012309130222222221,
+        0.0202103506,
+        0.0,
+        0.0
+      ],
+      [
+        0.012373557222222222,
+        0.0203199022,
+        0.0,
+        0.0
+      ],
+      [
+        0.012289340333333334,
+        0.0205254362,
+        0.0,
+        0.0
+      ],
+      [
+        0.012219022333333334,
+        0.0201510924,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.0202103506,
+    "reference_seconds": 0.012289340333333334,
+    "ratio_to_reference": 1.6480324327772573,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "after",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 512,
+    "order": 8,
+    "mode": 1,
+    "repeat": 1,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.498001805406602e-16,
+    "samples": [
+      [
+        0.012277391444444445,
+        0.0205290768,
+        0.0,
+        0.0
+      ],
+      [
+        0.012216416444444444,
+        0.0206864158,
+        0.0,
+        0.0
+      ],
+      [
+        0.012324500333333334,
+        0.0205925734,
+        0.0,
+        0.0
+      ],
+      [
+        0.01229092888888889,
+        0.0207795372,
+        0.0,
+        0.0
+      ],
+      [
+        0.012234468555555555,
+        0.0204988218,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.0205925734,
+    "reference_seconds": 0.012277391444444445,
+    "ratio_to_reference": 1.6754975262649787,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 512,
+    "order": 8,
+    "mode": 1,
+    "repeat": 1,
+    "command": [
+      "/tmp/accelnet-common-default/before-gnu",
+      "512",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.498001805406602e-16,
+    "samples": [
+      [
+        0.012203245111111111,
+        0.0199079515,
+        0.0,
+        0.0
+      ],
+      [
+        0.012198246666666667,
+        0.019872361166666668,
+        0.0,
+        0.0
+      ],
+      [
+        0.012220725,
+        0.019876378666666666,
+        0.0,
+        0.0
+      ],
+      [
+        0.012204789777777777,
+        0.0198931825,
+        0.0,
+        0.0
+      ],
+      [
+        0.012202270333333333,
+        0.019903281,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.0198931825,
+    "reference_seconds": 0.012203245111111111,
+    "ratio_to_reference": 1.6299488038885426,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "order": 8,
+    "mode": 1,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-common-default/before-gnu",
+      "4096",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 2.7755575615628914e-15,
+    "samples": [
+      [
+        0.097637295,
+        0.163620586,
+        0.0,
+        0.0
+      ],
+      [
+        0.0977426255,
+        0.163689711,
+        0.0,
+        0.0
+      ],
+      [
+        0.0978022965,
+        0.163565239,
+        0.0,
+        0.0
+      ],
+      [
+        0.0978438735,
+        0.163477321,
+        0.0,
+        0.0
+      ],
+      [
+        0.0977180095,
+        0.163576875,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.163576875,
+    "reference_seconds": 0.0977426255,
+    "ratio_to_reference": 1.6739685533606783,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "after",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "order": 8,
+    "mode": 1,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+      "4096",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 2.7755575615628914e-15,
+    "samples": [
+      [
+        0.097548866,
+        0.164908749,
+        0.0,
+        0.0
+      ],
+      [
+        0.0974687945,
+        0.164445697,
+        0.0,
+        0.0
+      ],
+      [
+        0.097563392,
+        0.164591805,
+        0.0,
+        0.0
+      ],
+      [
+        0.0975602005,
+        0.164506272,
+        0.0,
+        0.0
+      ],
+      [
+        0.097504102,
+        0.16426011,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.164506272,
+    "reference_seconds": 0.097548866,
+    "ratio_to_reference": 1.6870242170341927,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "after",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "order": 8,
+    "mode": 1,
+    "repeat": 1,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+      "4096",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 2.7755575615628914e-15,
+    "samples": [
+      [
+        0.0976041795,
+        0.16452786,
+        0.0,
+        0.0
+      ],
+      [
+        0.0976149235,
+        0.164511567,
+        0.0,
+        0.0
+      ],
+      [
+        0.097679322,
+        0.164396173,
+        0.0,
+        0.0
+      ],
+      [
+        0.0977246035,
+        0.164596784,
+        0.0,
+        0.0
+      ],
+      [
+        0.09759639,
+        0.164553539,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.16452786,
+    "reference_seconds": 0.0976149235,
+    "ratio_to_reference": 1.685311641923276,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "order": 8,
+    "mode": 1,
+    "repeat": 1,
+    "command": [
+      "/tmp/accelnet-common-default/before-gnu",
+      "4096",
+      "8",
+      "0.1",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 2.7755575615628914e-15,
+    "samples": [
+      [
+        0.097690272,
+        0.164571983,
+        0.0,
+        0.0
+      ],
+      [
+        0.0978089895,
+        0.164848371,
+        0.0,
+        0.0
+      ],
+      [
+        0.0977789235,
+        0.164801175,
+        0.0,
+        0.0
+      ],
+      [
+        0.097673643,
+        0.164714029,
+        0.0,
+        0.0
+      ],
+      [
+        0.0977023795,
+        0.164778848,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.164778848,
+    "reference_seconds": 0.0977023795,
+    "ratio_to_reference": 1.6854468130854394,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  }
+]

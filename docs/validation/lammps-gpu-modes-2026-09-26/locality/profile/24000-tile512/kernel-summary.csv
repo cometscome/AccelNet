@@ -1,0 +1,15 @@
+Generating SQLite file /tmp/accelnet-moment-analysis/profile/24000-tile512/trace.sqlite from /tmp/accelnet-moment-analysis/profile/24000-tile512/trace.nsys-rep
+Processing [/tmp/accelnet-moment-analysis/profile/24000-tile512/trace.sqlite] with [/opt/nvidia/nsight-systems/2025.5.2/host-linux-x64/reports/cuda_gpu_kern_sum.py]... 
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+39.8,801627081,123,6517293.3,6499179.0,6453323,8373207,172925.8,nvkernel_accelnet_target_kernels_run_target_batch__F1L240_10_
+26.5,532638772,123,4330396.5,4327644.0,4229755,4418621,38765.2,nvkernel_accelnet_target_kernels_run_target_batch__F1L126_4_
+21.3,427990861,123,3479600.5,3481143.0,3423447,3542647,21692.9,nvkernel_accelnet_target_kernels_run_target_batch__F1L41_2_
+5.6,112214692,123,912314.6,923718.0,644389,929671,41951.8,nvkernel_accelnet_batch_target_import_lammps_inputs__F1L541_4_
+2.8,55531406,123,451474.8,451683.0,444963,459043,2733.4,nvkernel_accelnet_target_kernels_run_target_batch__F1L316_12_
+1.9,38381371,123,312043.7,310274.0,295074,338754,8307.0,nvkernel_accelnet_batch_target_import_lammps_inputs__F1L549_6_
+1.3,27142475,123,220670.5,220641.0,218465,223457,846.3,nvkernel_accelnet_target_kernels_run_target_batch__F1L149_6_
+0.8,16927597,123,137622.7,137217.0,133921,144705,2016.0,nvkernel_accelnet_target_kernels_run_target_batch__F1L183_8_
+0.0,396771,3,132257.0,131969.0,131521,133281,914.7,calc_neigh_list_cell
+0.0,4032,1,4032.0,4032.0,4032,4032,0.0,nvkernel_accelnet_batch_target_initialize_target_model__F1L230_2_
+0.0,1056,1,1056.0,1056.0,1056,1056,0.0,kernel_info
+

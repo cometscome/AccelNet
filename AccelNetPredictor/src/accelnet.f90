@@ -1,11 +1,11 @@
 module accelnet
     use iso_c_binding, only: c_bool, c_char, c_double, c_f_pointer, c_int, c_null_char, c_ptr
     use iso_fortran_env, only: real64
+    use accelnet_batch_target_serial, only: target_model, target_workspace, evaluate_batch_target
     use accelnet_descriptors, only: atomic_structure, neighbor_data, descriptor_config, &
-        build_neighbor_list, initialize_config, evaluate_atom, chebyshev_values, &
+        build_neighbor_list, initialize_config, chebyshev_values, &
         CHEBYSHEV_EVALUATION_AUTO, CHEBYSHEV_EVALUATION_DIRECT, CHEBYSHEV_EVALUATION_MOMENT
-    use accelnet_descriptor_models, only: evaluate_model_values, evaluate_model_values_derivatives, &
-        contract_model_derivatives, model_supports_direct_contraction
+    use accelnet_descriptor_models, only: add_chebyshev
     use accelnet_legacy_lcl, only: lcl_nmax_nbdist
     use accelnet_predictor, only: predictor_model, load_predictor_from_network_data, &
         load_predictor_from_n2p2
@@ -56,6 +56,12 @@ module accelnet
     type(atomic_network), allocatable :: pending_networks(:)
     logical, allocatable :: potential_loaded(:)
     type(predictor_model), allocatable :: global_model
+    type(target_model) :: global_batch_model
+    type(target_workspace) :: global_shared_work
+    logical :: batch_cache_valid = .false.
+    integer :: batch_packed_status = 1
+    integer, allocatable :: atomic_species(:),atomic_indices(:)
+    real(real64), allocatable :: atomic_displacements(:,:),atomic_forces(:,:)
 
     logical :: neighbor_list_initialized = .false.
     type(atomic_structure) :: neighbor_structure
@@ -63,6 +69,8 @@ module accelnet
 
     logical :: sfb_initialized = .false.
     type(descriptor_config) :: sfb_config
+    type(target_model) :: sfb_model
+    type(target_workspace) :: sfb_work
     real(real64) :: sfb_radial_cutoff = 0.0_real64
 
     public :: accelnet_init, accelnet_init_n2p2, accelnet_final, accelnet_all_loaded
@@ -72,6 +80,7 @@ module accelnet
     public :: accelnet_set_g5_evaluation
     public :: accelnet_atomic_energy, accelnet_atomic_energy_and_forces
     public :: accelnet_atomic_energy_and_forces_virial
+    public :: accelnet_batch_energy_and_forces
     public :: accelnet_convert_atom_types, accelnet_free_atom_energy
     public :: accelnet_nbl_init, accelnet_nbl_final, accelnet_nbl_neighbors
     public :: accelnet_sfb_init, accelnet_sfb_final, accelnet_sfb_nvalues
@@ -145,6 +154,7 @@ contains
         pending_networks = global_model%networks
         potential_loaded = .true.
         is_loaded = .true.
+        batch_cache_valid = .false.
         accelnet_Rc_min = global_model%minimum_distance
         accelnet_Rc_max = global_model%maximum_cutoff
         accelnet_nsf_max = maxval([(global_model%networks(species)%nodes(1), &
@@ -167,6 +177,10 @@ contains
         integer(c_int), intent(out) :: stat
         stat = ACCELNET_OK
         if (neighbor_list_initialized) call accelnet_nbl_final()
+        call global_shared_work%release()
+        call global_batch_model%release()
+        if (allocated(atomic_species)) deallocate(atomic_species,atomic_indices,atomic_displacements,atomic_forces)
+        batch_cache_valid = .false.
         if (allocated(global_model)) deallocate(global_model)
         if (allocated(pending_networks)) deallocate(pending_networks)
         if (allocated(potential_loaded)) deallocate(potential_loaded)
@@ -208,6 +222,7 @@ contains
             stat = ACCELNET_ERR_ARGUMENT
         else
             chebyshev_evaluation_mode = int(mode)
+            batch_cache_valid = .false.
             if (is_loaded .and. allocated(global_model)) &
                 call global_model%set_chebyshev_evaluation(chebyshev_evaluation_mode)
         end if
@@ -227,6 +242,7 @@ contains
             stat = ACCELNET_ERR_ARGUMENT
         else
             call global_model%set_g5_evaluation(int(mode))
+            batch_cache_valid = .false.
         end if
     end subroutine accelnet_set_g5_evaluation
 
@@ -277,6 +293,7 @@ contains
             call load_predictor_from_network_data(pending_networks, global_model, chebyshev_version)
             call global_model%set_chebyshev_evaluation(chebyshev_evaluation_mode)
             is_loaded = .true.
+            batch_cache_valid = .false.
             accelnet_Rc_min = global_model%minimum_distance
             accelnet_Rc_max = global_model%maximum_cutoff
             accelnet_nsf_max = maxval([(global_model%networks(species)%nodes(1), &
@@ -329,6 +346,7 @@ contains
         potential_loaded = .true.
         call global_model%set_chebyshev_evaluation(chebyshev_evaluation_mode)
         is_loaded = .true.
+        batch_cache_valid = .false.
         accelnet_Rc_min = global_model%minimum_distance
         accelnet_Rc_max = global_model%maximum_cutoff
         accelnet_nsf_max = maxval([(global_model%networks(species)%nodes(1), &
@@ -457,29 +475,18 @@ contains
         integer(c_int), intent(in) :: type_j(n_j)
         real(c_double), intent(out) :: energy_i
         integer(c_int), intent(out) :: stat
-        real(real64), allocatable :: displacements(:, :), descriptor(:), normalized(:)
-        integer, allocatable :: local_species(:)
-        real(real64) :: network_energy
-        integer :: allocation_status, dimension
-        energy_i = 0.0_c_double
-        call validate_atomic_arguments(type_i, n_j, type_j, stat)
-        if (stat /= ACCELNET_OK) return
-        dimension = global_model%networks(type_i)%nodes(1)
-        allocate(displacements(3,n_j), descriptor(dimension), normalized(dimension), &
-                 local_species(n_j), stat=allocation_status)
-        if (allocation_status /= 0) then
-            stat = ACCELNET_ERR_MALLOC
+        real(real64) :: energies(1)
+        energy_i=0
+        call prepare_atomic_environment(coo_i,type_i,n_j,coo_j,type_j,stat)
+        if (stat/=ACCELNET_OK) return
+        call evaluate_batch_target(global_batch_model,atomic_species(:n_j+1),[1],[1,n_j+1], &
+            atomic_indices(:n_j),atomic_displacements(:,:n_j),energies,atomic_forces(:,:n_j+1), &
+            global_shared_work,status=stat,energy_only=.true.,reuse_model=.true.)
+        if (stat/=0) then
+            stat=ACCELNET_ERR_ARGUMENT
             return
         end if
-        displacements = coo_j - spread(coo_i, 2, n_j)
-        call global_model%setups(type_i)%map_species(type_j, local_species)
-        call evaluate_model_values(global_model%setups(type_i)%model, displacements, local_species, descriptor)
-        normalized = (descriptor - global_model%networks(type_i)%descriptor_shift)* &
-                     global_model%networks(type_i)%descriptor_scale
-        call global_model%networks(type_i)%evaluate(normalized, network_energy)
-        energy_i = network_energy/global_model%networks(type_i)%energy_scale + &
-                   global_model%networks(type_i)%energy_shift + &
-                   global_model%networks(type_i)%atomic_references(type_i)
+        energy_i=energies(1)
     end subroutine accelnet_atomic_energy
 
     subroutine accelnet_atomic_energy_and_forces(coo_i, type_i, index_i, n_j, coo_j, type_j, &
@@ -506,6 +513,40 @@ contains
                                   index_j, natoms, energy_i, forces, stat, virial)
     end subroutine accelnet_atomic_energy_and_forces_virial
 
+    ! CSR batch on the same loaded model as the atomic C API. Indices are
+    ! one-based; targets include ghosts/images. All forces are additive.
+    subroutine accelnet_batch_energy_and_forces(natoms,nrows,nedges,species,centers,offsets,indices, &
+            displacements,energies,forces,stat) bind(C)
+        integer(c_int), value, intent(in) :: natoms,nrows,nedges
+        integer(c_int), intent(in) :: species(natoms),centers(nrows),offsets(nrows+1),indices(nedges)
+        real(c_double), intent(in) :: displacements(3,nedges)
+        real(c_double), intent(out) :: energies(nrows)
+        real(c_double), intent(inout) :: forces(3,natoms)
+        integer(c_int), intent(out) :: stat
+        stat=ACCELNET_ERR_INIT
+        if (.not. is_loaded .or. .not. allocated(global_model)) return
+        stat=ACCELNET_ERR_ARGUMENT
+        if (natoms<0 .or. nrows<0 .or. nedges<0) return
+        if (any(species<1) .or. any(species>number_of_types)) return
+        if (any(centers<1) .or. any(centers>natoms)) return
+        if (any(indices<1) .or. any(indices>natoms)) return
+        if (offsets(1)/=1 .or. offsets(nrows+1)/=nedges+1) return
+        if (any(offsets<1) .or. any(offsets>nedges+1)) return
+        if (any(offsets(2:)<offsets(:nrows))) return
+        ! This model is private to the C API: only loading and mode setters
+        ! can change it. Reuse packed metadata across small LAMMPS chunks;
+        ! each such mutation invalidates the cache above.
+        if (.not. batch_cache_valid) then
+            call global_shared_work%release()
+            call global_batch_model%initialize(global_model,use_host=.true.,status=batch_packed_status)
+            batch_cache_valid = .true.
+        end if
+        if (batch_packed_status /= 0) return
+        call evaluate_batch_target(global_batch_model,species,centers,offsets,indices,displacements, &
+            energies,forces,global_shared_work,status=stat,reuse_model=.true.)
+        if (stat/=0) stat=ACCELNET_ERR_ARGUMENT
+    end subroutine
+
     subroutine atomic_energy_forces(coo_i, type_i, index_i, n_j, coo_j, type_j, &
                                     index_j, natoms, energy_i, forces, stat, virial)
         real(c_double), intent(in) :: coo_i(3)
@@ -516,82 +557,70 @@ contains
         real(c_double), intent(inout) :: forces(3,natoms)
         real(c_double), intent(inout), optional :: virial(3,3)
         integer(c_int), intent(out) :: stat
-        real(real64), allocatable :: displacements(:, :), descriptor(:), normalized(:), gradient(:), contribution(:)
-        real(real64), allocatable :: derivative_center(:, :), derivative_neighbors(:, :, :), contracted_neighbors(:, :)
-        integer, allocatable :: local_species(:)
-        real(real64) :: network_energy, contracted_center(3), neighbor_force(3)
-        integer :: allocation_status, dimension, neighbor, component
-        logical :: direct_contraction
-        energy_i = 0.0_c_double
-        call validate_atomic_arguments(type_i, n_j, type_j, stat)
-        if (stat /= ACCELNET_OK) return
-        if (natoms < 1 .or. index_i < 1 .or. index_i > natoms .or. &
-            any(index_j < 1) .or. any(index_j > natoms)) then
-            stat = ACCELNET_ERR_ARGUMENT
+        real(real64) :: energies(1)
+        integer :: j
+        energy_i=0
+        call validate_atomic_arguments(type_i,n_j,type_j,stat)
+        if (stat/=ACCELNET_OK) return
+        if (natoms<1 .or. index_i<1 .or. index_i>natoms .or. &
+            any(index_j<1) .or. any(index_j>natoms)) then
+            stat=ACCELNET_ERR_ARGUMENT
             return
         end if
-        dimension = global_model%networks(type_i)%nodes(1)
-        direct_contraction = model_supports_direct_contraction(global_model%setups(type_i)%model)
-        allocate(displacements(3,n_j), descriptor(dimension), normalized(dimension), gradient(dimension), &
-                 contribution(dimension), local_species(n_j), stat=allocation_status)
-        if (allocation_status /= 0) then
-            stat = ACCELNET_ERR_MALLOC
+        call prepare_atomic_environment(coo_i,type_i,n_j,coo_j,type_j,stat)
+        if (stat/=ACCELNET_OK) return
+        call evaluate_batch_target(global_batch_model,atomic_species(:n_j+1),[1],[1,n_j+1], &
+            atomic_indices(:n_j),atomic_displacements(:,:n_j),energies,atomic_forces(:,:n_j+1), &
+            global_shared_work,virial,status=stat,reuse_model=.true.)
+        if (stat/=0) then
+            stat=ACCELNET_ERR_ARGUMENT
             return
         end if
-        if (direct_contraction) then
-            allocate(contracted_neighbors(3,n_j), stat=allocation_status)
-        else
-            allocate(derivative_center(3,dimension), derivative_neighbors(3,dimension,n_j), stat=allocation_status)
-        end if
-        if (allocation_status /= 0) then
-            stat = ACCELNET_ERR_MALLOC
-            return
-        end if
-        displacements = coo_j - spread(coo_i, 2, n_j)
-        call global_model%setups(type_i)%map_species(type_j, local_species)
-        if (direct_contraction) then
-            call evaluate_model_values(global_model%setups(type_i)%model, displacements, local_species, descriptor)
-        else
-            call evaluate_model_values_derivatives(global_model%setups(type_i)%model, displacements, local_species, &
-                descriptor, derivative_center, derivative_neighbors)
-        end if
-        normalized = (descriptor - global_model%networks(type_i)%descriptor_shift)* &
-                     global_model%networks(type_i)%descriptor_scale
-        call global_model%networks(type_i)%input_gradient(normalized, network_energy, gradient)
-        energy_i = network_energy/global_model%networks(type_i)%energy_scale + &
-                   global_model%networks(type_i)%energy_shift + &
-                   global_model%networks(type_i)%atomic_references(type_i)
-        contribution = -gradient*global_model%networks(type_i)%descriptor_scale / &
-                       global_model%networks(type_i)%energy_scale
-        ! W(a,b) = sum_images (r_image-r_center)(a) * F_image(b).
-        ! Accumulate before image forces are folded onto original atom IDs.
-        ! This is the full energy-unit virial, without a factor 1/2 or volume division.
-        if (direct_contraction) then
-            call contract_model_derivatives(global_model%setups(type_i)%model, displacements, local_species, &
-                contribution, contracted_center, contracted_neighbors)
-            forces(:,index_i) = forces(:,index_i) + contracted_center
-            do neighbor = 1, n_j
-                forces(:,index_j(neighbor)) = forces(:,index_j(neighbor)) + contracted_neighbors(:,neighbor)
-                if (present(virial)) then
-                    do component = 1, 3
-                        virial(:,component) = virial(:,component) + &
-                            displacements(:,neighbor)*contracted_neighbors(component,neighbor)
-                    end do
-                end if
-            end do
-        else
-            forces(:,index_i) = forces(:,index_i) + matmul(derivative_center, contribution)
-            do neighbor = 1, n_j
-                neighbor_force = matmul(derivative_neighbors(:,:,neighbor), contribution)
-                forces(:,index_j(neighbor)) = forces(:,index_j(neighbor)) + neighbor_force
-                if (present(virial)) then
-                    do component = 1, 3
-                        virial(:,component) = virial(:,component) + displacements(:,neighbor)*neighbor_force(component)
-                    end do
-                end if
-            end do
-        end if
+        energy_i=energies(1)
+        forces(:,index_i)=forces(:,index_i)+atomic_forces(:,1)
+        do j=1,n_j
+            forces(:,index_j(j))=forces(:,index_j(j))+atomic_forces(:,j+1)
+        end do
     end subroutine atomic_energy_forces
+
+    ! Map the local environment to one CSR row. Keep image slots distinct until
+    ! final scatter so repeated physical indices and additive force semantics hold.
+    subroutine prepare_atomic_environment(coo_i,type_i,n_j,coo_j,type_j,stat)
+        real(real64), intent(in) :: coo_i(3),coo_j(3,n_j)
+        integer, intent(in) :: type_i,n_j,type_j(n_j)
+        integer(c_int), intent(out) :: stat
+        integer :: j,allocation_status
+        logical :: grow
+        call validate_atomic_arguments(type_i,n_j,type_j,stat)
+        if (stat/=ACCELNET_OK) return
+        grow=.not.allocated(atomic_species)
+        if (.not.grow) grow=size(atomic_species)<n_j+1
+        if (grow) then
+            if (allocated(atomic_species)) &
+                deallocate(atomic_species,atomic_indices,atomic_displacements,atomic_forces)
+            allocate(atomic_species(n_j+1),atomic_indices(n_j),atomic_displacements(3,n_j), &
+                atomic_forces(3,n_j+1),stat=allocation_status)
+            if (allocation_status/=0) then
+                stat=ACCELNET_ERR_MALLOC
+                return
+            end if
+        end if
+        if (.not.batch_cache_valid) then
+            call global_shared_work%release()
+            call global_batch_model%initialize(global_model,use_host=.true.,status=batch_packed_status)
+            batch_cache_valid=.true.
+        end if
+        if (batch_packed_status/=0) then
+            stat=ACCELNET_ERR_ARGUMENT
+            return
+        end if
+        atomic_species(1)=type_i; atomic_species(2:n_j+1)=type_j
+        do j=1,n_j
+            atomic_indices(j)=j+1
+            atomic_displacements(:,j)=coo_j(:,j)-coo_i
+        end do
+        atomic_forces(:,:n_j+1)=0
+    end subroutine
 
     subroutine validate_atomic_arguments(type_i, n_j, type_j, stat)
         integer, intent(in) :: type_i, n_j, type_j(n_j)
@@ -668,6 +697,8 @@ contains
         integer, intent(in) :: radial_order, angular_order
         real(real64), intent(in) :: radial_cutoff, angular_cutoff
         integer, intent(out) :: stat
+        type(predictor_model) :: basis_model
+        integer :: i,j,d,ns
         stat = ACCELNET_OK
         if (sfb_initialized) then
             stat = ACCELNET_ERR_INIT
@@ -680,6 +711,25 @@ contains
         end if
         call initialize_config(sfb_config, size(species), radial_cutoff, radial_order, &
                                angular_cutoff, angular_order, version=0)
+        ns=size(species); d=sfb_config%num_descriptors()
+        allocate(basis_model%setups(ns),basis_model%networks(ns))
+        do i=1,ns
+            basis_model%setups(i)%global_to_local=[(j,j=1,ns)]
+            call add_chebyshev(basis_model%setups(i)%model,sfb_config)
+            basis_model%networks(i)%nlayers=2
+            basis_model%networks(i)%nodes=[d,1]
+            basis_model%networks(i)%activation=[0]
+            basis_model%networks(i)%weight_offsets=[0]
+            allocate(basis_model%networks(i)%weights(d+1),basis_model%networks(i)%descriptor_shift(d), &
+                basis_model%networks(i)%descriptor_scale(d),basis_model%networks(i)%atomic_references(ns))
+            basis_model%networks(i)%weights=0; basis_model%networks(i)%descriptor_shift=0
+            basis_model%networks(i)%descriptor_scale=1; basis_model%networks(i)%atomic_references=0
+        end do
+        call sfb_model%initialize(basis_model,use_host=.true.,status=stat)
+        if (stat/=0) then
+            stat=ACCELNET_ERR_ARGUMENT
+            return
+        end if
         sfb_radial_cutoff = radial_cutoff
         sfb_initialized = .true.
     end subroutine accelnet_sfb_init
@@ -706,6 +756,8 @@ contains
             stat = ACCELNET_ERR_INIT
             return
         end if
+        call sfb_work%release()
+        call sfb_model%release()
         sfb_initialized = .false.
         sfb_radial_cutoff = 0.0_real64
     end subroutine accelnet_sfb_final
@@ -725,6 +777,9 @@ contains
         real(c_double), intent(inout) :: values(nvalues)
         integer(c_int), intent(out) :: stat
         real(real64), allocatable :: displacements(:, :)
+        real(real64), allocatable :: raw(:,:)
+        real(real64) :: energy(1),force(3,n_j+1)
+        integer :: j
         stat = ACCELNET_OK
         if (.not. sfb_initialized) then
             stat = ACCELNET_ERR_INIT
@@ -739,9 +794,16 @@ contains
             stat = ACCELNET_ERR_ARGUMENT
             return
         end if
-        allocate(displacements(3,n_j))
+        allocate(displacements(3,n_j),raw(1,sfb_config%num_descriptors()))
         displacements = coo_j - spread(coo_i,2,n_j)
-        call evaluate_atom(sfb_config, displacements, type_j, values)
+        force=0
+        call evaluate_batch_target(sfb_model,[type_i,type_j],[1],[1,n_j+1],[(j+1,j=1,n_j)], &
+            displacements,energy,force,sfb_work,status=stat,descriptor_values=raw)
+        if (stat/=0) then
+            stat=ACCELNET_ERR_ARGUMENT
+            return
+        end if
+        values(:size(raw,2))=raw(1,:)
     end subroutine accelnet_sfb_eval
 
     subroutine accelnet_sfb_reconstruct_radial(nvalues, values, nx, x, y, stat) bind(C)

@@ -1,0 +1,16 @@
+{
+  "AccelNetPredictor/src/accelnet_batch_target.f90": "76a747e94913ef37864ac2876c8f68d0cd8eec6aa5d8e75894b88e7e816a8020",
+  "AccelNetPredictor/src/accelnet_target_descriptors.f90": "96317680ce193a5c96361499fc624e7b9d7cf57484253e4b829fad0428046f9e",
+  "AccelNetPredictor/src/accelnet_target_kernels.f90": "9b809c4ee29eb1f9af1d33ec922bd16e75be9f1616df2d75f34321f5c6d0a987",
+  "AccelNetPredictor/src/accelnet_target_math.f90": "1fd95f817dfdb78d5f806b58343ac452bd9f5c3340c26a842743faa6cd4abe2b",
+  "AccelNetPredictor/test/test_batch_target.f90": "bd858ed082341d6ff41ad640a42bf5fa73a8187a83bead475085ed8638b36fd9",
+  "AccelNetPredictor/test/batch_test_support.f90": "5da4929266ae1dd8e9e9ea2372fea6eb2c2996da9191c34077132eaf042ddb1d",
+  "AccelNetPredictor/benchmark/target_benchmark.f90": "0881ddef0b9e8358e2001a1173190d0da26a6bd1fbfb7bb8016fef81043590d9",
+  "AccelNetPredictor/benchmark/compare_chebyshev_variants.py": "0b739dadf2a3498d643d69cc4b5844fe8ff8c2fa140c4988f3971074c8da5c77",
+  "AccelNetDescriptors/src/shared/cutoff_value.inc": "6b6003f3937a49f71d6df2964a2a8a6613492eb9c5d5e8ff9a74a1ec41933150",
+  "AccelNetDescriptors/src/shared/cutoff_derivative.inc": "c9ffc4fb7cf4c684fc425f469a27710a54579bde9359ac38999c2e76ddd273f0",
+  "AccelNetDescriptors/src/shared/angular_power.inc": "ef7906929bcc3fb6e8903ddc2e9f0a5c4be3f4cf860ecbb1f9de45898c56ad14",
+  "AccelNetDescriptors/src/shared/angular_value.inc": "f85e9dbd92a3e1a8957deb3e2e332a6f4aa441ada2a82713da2c21a3555e3af8",
+  "AccelNetDescriptors/src/shared/activate.inc": "6984779360201b85f3b9466e5f84700ec247d11070701ba5aa52372df2e28a38",
+  "AccelNetDescriptors/src/shared/activation_derivative.inc": "5c1f1ea46798f66d556430e1982263ba3874cb9a34c88dbb7a68ca83031a8fd1"
+}

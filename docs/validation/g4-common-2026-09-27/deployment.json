@@ -1,0 +1,8 @@
+{
+  "path": "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp",
+  "sha256": "6aea0e455b53f6033a55ab4f450db27f2231c9cc6453c30a37b6f524eb27ce8c",
+  "backup": "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp-before-g4-pair-work",
+  "backup_sha256": "9a7200fba689020f9f53381de9ed6dd22e973d3e9c24bb440ed9af4700f8b5b5",
+  "previous_sha256": "9a7200fba689020f9f53381de9ed6dd22e973d3e9c24bb440ed9af4700f8b5b5",
+  "validated_source": "/tmp/accelnet-lammps-gpu/build/lmp"
+}

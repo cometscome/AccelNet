@@ -110,7 +110,6 @@ contains
             scale = 2.0_real64 + 1.0e-12_real64*rep
             do pair = 1, np
                 do component = 1, 3
-                    !GCC$ ivdep
                     do concurrent (member = 1:nm)
                         ojs(member, component, pair) = scale*ad(member)*prod(member, pair)* &
                             dcj(component, pair) + scale*av(member)*rjs(member, component, pair)

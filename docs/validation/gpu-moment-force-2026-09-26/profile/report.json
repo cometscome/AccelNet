@@ -1,0 +1,50 @@
+{
+  "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L541_4_": {
+    "mean_ms": 0.91648657,
+    "median_ms": 0.911814,
+    "min_ms": 0.908454,
+    "max_ms": 0.93175
+  },
+  "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L549_6_": {
+    "mean_ms": 0.31215654,
+    "median_ms": 0.310562,
+    "min_ms": 0.29645,
+    "max_ms": 0.33357
+  },
+  "nvkernel_accelnet_target_kernels_run_target_batch__F1L41_2_": {
+    "mean_ms": 3.46582079,
+    "median_ms": 3.466662,
+    "min_ms": 3.43791,
+    "max_ms": 3.512407
+  },
+  "nvkernel_accelnet_target_kernels_run_target_batch__F1L126_4_": {
+    "mean_ms": 1.03436383,
+    "median_ms": 1.0342145,
+    "min_ms": 1.031143,
+    "max_ms": 1.038535
+  },
+  "nvkernel_accelnet_target_kernels_run_target_batch__F1L145_6_": {
+    "mean_ms": 0.2208394,
+    "median_ms": 0.22077,
+    "min_ms": 0.219425,
+    "max_ms": 0.224577
+  },
+  "nvkernel_accelnet_target_kernels_run_target_batch__F1L179_8_": {
+    "mean_ms": 0.22486554,
+    "median_ms": 0.2250895,
+    "min_ms": 0.219905,
+    "max_ms": 0.231489
+  },
+  "nvkernel_accelnet_target_kernels_run_target_batch__F1L251_10_": {
+    "mean_ms": 3.36549618,
+    "median_ms": 3.365446,
+    "min_ms": 3.359253,
+    "max_ms": 3.37439
+  },
+  "nvkernel_accelnet_target_kernels_run_target_batch__F1L325_12_": {
+    "mean_ms": 0.45195141,
+    "median_ms": 0.45166700000000004,
+    "min_ms": 0.446723,
+    "max_ms": 0.457091
+  }
+}

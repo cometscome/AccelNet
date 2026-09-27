@@ -1,0 +1,26 @@
+clear
+    
+    units electron
+    atom_style atomic
+    boundary p p p
+    read_data /tmp/accelnet-n2p2-cpu-opt/lammps-final24/Ethylbenzene_SCAN/structure.data
+    pair_style hdnnp 15.0000000001 dir /home/nagai/AccelNetGPU/n2p2-master/examples/nnp-predict/Ethylbenzene_SCAN showew no resetew no showewsum 0 maxew -1 cflength 1 cfenergy 1
+pair_coeff * * H C
+    neighbor 0.6 bin
+    neigh_modify every 5 delay 0 check no one 10000 page 1000000
+    atom_modify sort 0 0.0
+    velocity all create 100 4928459 mom yes rot no dist gaussian
+    fix integrate all nve
+    timestep 0.1
+    compute vir all pressure NULL virial
+    thermo 3
+    thermo_style custom step pe c_vir[1] c_vir[2] c_vir[3] c_vir[4] c_vir[5] c_vir[6]
+    thermo_modify format float %.17g lost error
+    run 0
+    write_dump all custom initial.dump id type x y z fx fy fz modify sort id format float %.17g
+    run 2
+    run 3
+run 3
+run 3
+write_dump all custom final.dump id type x y z fx fy fz modify sort id format float %.17g
+    

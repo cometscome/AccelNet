@@ -1,0 +1,125 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-research/build-nvhpc
+UpdateCTestConfiguration  from :/tmp/accelnet-gpu-research/build-nvhpc/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-gpu-research/build-nvhpc/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/tmp/accelnet-gpu-research/build-nvhpc/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-gpu-research/build-nvhpc/DartConfiguration.tcl
+Test project /tmp/accelnet-gpu-research/build-nvhpc
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 9
+    Start  9: predictor_target_c_api
+
+9: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_target_c "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/Ti.nn.ascii" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict/O.nn.ascii"
+9: Test timeout computed to be: 120
+9: GPU C API: independent instances, validation, cleanup passed
+1/4 Test  #9: predictor_target_c_api ...............   Passed    0.35 sec
+test 10
+    Start 10: predictor_target_equivalence
+
+10: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target
+10: Test timeout computed to be: 300
+10:  GPU checks:           78  maximum absolute E/F/W error:
+10:    7.9797279894933126E-016
+10:  GPU batch FP64 equivalence and finite differences passed
+2/4 Test #10: predictor_target_equivalence .........   Passed    3.74 sec
+test 18
+    Start 18: predictor_target_g5_moments
+
+18: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--g5-moments"
+18: Test timeout computed to be: 300
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18: WARNING: G5 zeta=11 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+18:  GPU checks:          185  maximum absolute E/F/W error:
+18:    2.2204460492503131E-016
+18:  GPU batch FP64 equivalence and finite differences passed
+3/4 Test #18: predictor_target_g5_moments ..........   Passed    8.33 sec
+test 20
+    Start 20: predictor_target_other_descriptors
+
+20: Test command: /tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target "--descriptors"
+20: Test timeout computed to be: 300
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=16 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20: WARNING: G5 zeta=17 exceeds the moment maximum order 10; high-order descriptors will use direct evaluation.
+20:  DESCRIPTOR CASE lj            0
+20:  DESCRIPTOR CASE lj            1
+20:  DESCRIPTOR CASE lj            2
+20:  DESCRIPTOR CASE lj            3
+20:  DESCRIPTOR CASE lj            4
+20:  DESCRIPTOR CASE lj            5
+20:  DESCRIPTOR CASE lj            6
+20:  DESCRIPTOR CASE lj            7
+20:  DESCRIPTOR CASE lj            8
+20:  DESCRIPTOR CASE lj            9
+20:  DESCRIPTOR CASE behler            0
+20:  DESCRIPTOR CASE behler            1
+20:  DESCRIPTOR CASE behler            2
+20:  DESCRIPTOR CASE behler            3
+20:  DESCRIPTOR CASE behler            4
+20:  DESCRIPTOR CASE behler            5
+20:  DESCRIPTOR CASE behler            6
+20:  DESCRIPTOR CASE behler            7
+20:  DESCRIPTOR CASE behler            8
+20:  DESCRIPTOR CASE behler            9
+20:  DESCRIPTOR CASE g4            0
+20:  DESCRIPTOR CASE g4            1
+20:  DESCRIPTOR CASE g4            2
+20:  DESCRIPTOR CASE g4            3
+20:  DESCRIPTOR CASE g4            4
+20:  DESCRIPTOR CASE g4            5
+20:  DESCRIPTOR CASE g4            6
+20:  DESCRIPTOR CASE g4            7
+20:  DESCRIPTOR CASE g4            8
+20:  DESCRIPTOR CASE g4            9
+20:  DESCRIPTOR CASE g5            0
+20:  DESCRIPTOR CASE g5            1
+20:  DESCRIPTOR CASE g5            2
+20:  DESCRIPTOR CASE g5            3
+20:  DESCRIPTOR CASE g5            4
+20:  DESCRIPTOR CASE g5            5
+20:  DESCRIPTOR CASE g5            6
+20:  DESCRIPTOR CASE g5            7
+20:  DESCRIPTOR CASE g5            8
+20:  DESCRIPTOR CASE g5            9
+20:  DESCRIPTOR CASE lj-behler            0
+20:  DESCRIPTOR CASE lj-behler            1
+20:  DESCRIPTOR CASE lj-behler            2
+20:  DESCRIPTOR CASE lj-behler            3
+20:  DESCRIPTOR CASE lj-behler            4
+20:  DESCRIPTOR CASE lj-behler            5
+20:  DESCRIPTOR CASE lj-behler            6
+20:  DESCRIPTOR CASE lj-behler            7
+20:  DESCRIPTOR CASE lj-behler            8
+20:  DESCRIPTOR CASE lj-behler            9
+20:  GPU checks:          137  maximum absolute E/F/W error:
+20:    2.2204460492503131E-016
+20:  GPU batch FP64 equivalence and finite differences passed
+4/4 Test #20: predictor_target_other_descriptors ...   Passed    8.28 sec
+
+The following tests passed:
+	predictor_target_c_api
+	predictor_target_equivalence
+	predictor_target_g5_moments
+	predictor_target_other_descriptors
+
+100% tests passed, 0 tests failed out of 4
+
+Label Time Summary:
+gpu    =  20.70 sec*proc (4 tests)
+
+Total Test time (real) =  20.70 sec

@@ -6,7 +6,7 @@ module n2p2_network
     use accelnet_setup, only: descriptor_setup
     use accelnet_descriptors, only: validate_cutoff_parameters
     use accelnet_descriptor_models, only: add_behler
-    use accelnet_behler, only: behler_config, initialize_behler_config, add_g2, add_g4, add_g5
+    use accelnet_behler, only: behler_config, initialize_behler_config, add_g2, add_g4, add_g5, add_extended, compact_subtype
     implicit none
     private
 
@@ -14,6 +14,8 @@ module n2p2_network
 
     type :: symmetry_function
         integer :: kind = 0, neighbor1 = 0, neighbor2 = 0
+        character(len=3) :: subtype=""
+        real(real64) :: left=0, right=0
         real(real64) :: eta = 0.0_real64, shift = 0.0_real64
         real(real64) :: lambda = 0.0_real64, zeta = 0.0_real64, cutoff = 0.0_real64
     end type symmetry_function
@@ -219,6 +221,7 @@ contains
             case("symfunction_short")
                 if (.not. allocated(settings%species)) error stop "n2p2 symmetry functions precede elements"
                 sf = symmetry_function()
+                sf=symmetry_function()
                 read(rest, *, iostat=ios) central, sf%kind
                 if (ios /= 0) error stop "invalid n2p2 symfunction_short"
                 central_index = species_index(central, settings%species)
@@ -240,11 +243,34 @@ contains
                     if (sf%neighbor1 > sf%neighbor2) then
                         count = sf%neighbor1; sf%neighbor1 = sf%neighbor2; sf%neighbor2 = count
                     end if
+                case(12)
+                    read(rest,*,iostat=ios) central,sf%kind,sf%eta,sf%shift,sf%cutoff
+                case(13)
+                    read(rest,*,iostat=ios) central,sf%kind,sf%eta,sf%shift,sf%lambda,sf%zeta,sf%cutoff
+                case(20)
+                    read(rest,*,iostat=ios) central,sf%kind,neighbor1,sf%shift,sf%cutoff,sf%subtype
+                    sf%neighbor1=species_index(neighbor1,settings%species)
+                case(21,22)
+                    read(rest,*,iostat=ios) central,sf%kind,neighbor1,neighbor2,sf%shift,sf%cutoff, &
+                        sf%left,sf%right,sf%subtype
+                    sf%neighbor1=species_index(neighbor1,settings%species)
+                    sf%neighbor2=species_index(neighbor2,settings%species)
+                    if (sf%neighbor1 > sf%neighbor2) then
+                        count=sf%neighbor1; sf%neighbor1=sf%neighbor2; sf%neighbor2=count
+                    end if
+                case(23)
+                    read(rest,*,iostat=ios) central,sf%kind,sf%shift,sf%cutoff,sf%subtype
+                case(24,25)
+                    read(rest,*,iostat=ios) central,sf%kind,sf%shift,sf%cutoff,sf%left,sf%right,sf%subtype
                 case default
-                    error stop "AccelNetPredictor supports n2p2 symmetry-function types 2, 3, and 9"
+                    error stop "unsupported n2p2 symmetry-function type"
                 end select
-                if (ios /= 0 .or. sf%neighbor1 == 0 .or. (sf%kind /= 2 .and. sf%neighbor2 == 0)) &
-                    error stop "invalid n2p2 symmetry-function parameters"
+                if (ios /= 0) error stop "invalid n2p2 symmetry-function parameters"
+                if (sf%kind < 12 .or. (sf%kind >= 20 .and. sf%kind <= 22)) then
+                    if (sf%neighbor1 == 0) error stop 'unknown n2p2 neighbor species'
+                    if (sf%kind /= 2 .and. sf%kind /= 20 .and. sf%neighbor2 == 0) &
+                        error stop 'unknown n2p2 angular species'
+                end if
                 call append_function(settings%functions(central_index), sf)
             case default
                 if (index(trim(key), "global_") == 1 .or. index(trim(key), "element_") == 1 .or. &
@@ -319,6 +345,7 @@ contains
         network%atomtype = settings%species(species)
         network%description = "Imported n2p2 2G-HDNNP model"
         network%descriptor_name = "Behler2011"
+        if (any(settings%functions(species)%values%kind >= 12)) network%descriptor_name="n2p2_extended"
         network%minimum_radius = 0.1_real64
         network%maximum_radius = maxval(settings%functions(species)%values%cutoff)
         network%nlayers = topology%hidden_layers + 2
@@ -369,9 +396,13 @@ contains
         integer :: i, n
         type(symmetry_function) :: sf
         n = size(settings%functions(species)%values)
-        allocate(network%descriptor_kinds(n), network%descriptor_parameters(7, n), &
+        allocate(network%descriptor_kinds(n), network%descriptor_parameters(merge(9,7,trim(network%descriptor_name) == "n2p2_extended"), n), &
                  network%descriptor_environments(2, n))
         network%descriptor_parameters = 0.0_real64
+        if (size(network%descriptor_parameters,1) == 9) then
+            network%descriptor_parameters(8,:)=real(settings%cutoff_type,real64)
+            network%descriptor_parameters(9,:)=settings%cutoff_alpha
+        end if
         network%descriptor_cutoff_type = settings%cutoff_type
         network%descriptor_cutoff_alpha = settings%cutoff_alpha
         network%descriptor_environments = 0
@@ -390,11 +421,28 @@ contains
                 network%descriptor_kinds(i) = 5
                 network%descriptor_parameters(1:4, i) = [sf%cutoff, sf%lambda, sf%zeta, sf%eta]
             end select
+            if (sf%kind >= 12) then
+                network%descriptor_kinds(i)=sf%kind
+                network%descriptor_parameters(1:7,i)=extended_parameters(sf,settings%cutoff_alpha)
+                cycle
+            end if
             network%descriptor_parameters(5, i) = real(settings%cutoff_type, real64)
             network%descriptor_parameters(6, i) = settings%cutoff_alpha
             if (sf%kind == 3 .or. sf%kind == 9) network%descriptor_parameters(7, i) = sf%shift
         end do
     end subroutine set_descriptor_metadata
+
+    function extended_parameters(sf,alpha) result(p)
+        type(symmetry_function), intent(in) :: sf
+        real(real64), intent(in) :: alpha
+        real(real64) :: p(7)
+        p=0
+        if (sf%kind < 20) then
+            p=[sf%cutoff,sf%eta,sf%shift,sf%lambda,sf%zeta,0.0_real64,alpha]
+        else
+            p(1:5)=[sf%cutoff,sf%shift,sf%left,sf%right,real(compact_subtype(sf%subtype),real64)]
+        end if
+    end function
 
     subroutine build_setup(settings, species, setup)
         type(n2p2_settings), intent(in) :: settings
@@ -412,6 +460,7 @@ contains
         setup%global_to_local = [(i, i=1, size(settings%species))]
         call initialize_behler_config(config, size(settings%species), &
             settings%cutoff_type, settings%cutoff_alpha)
+        config%species_weights=[(real(atomic_number(settings%species(i)),real64),i=1,size(settings%species))]
         do i = 1, size(settings%functions(species)%values)
             sf = settings%functions(species)%values(i)
             select case(sf%kind)
@@ -421,6 +470,9 @@ contains
                 call add_g4(config, sf%neighbor1, sf%neighbor2, sf%cutoff, sf%lambda, sf%zeta, sf%eta, sf%shift)
             case(9)
                 call add_g5(config, sf%neighbor1, sf%neighbor2, sf%cutoff, sf%lambda, sf%zeta, sf%eta, sf%shift)
+            case default
+                call add_extended(config,sf%kind,sf%neighbor1,sf%neighbor2, &
+                    extended_parameters(sf,settings%cutoff_alpha))
             end select
         end do
         call add_behler(setup%model, config)
@@ -526,6 +578,15 @@ contains
         type(symmetry_function), intent(in) :: a, b
         less = .false.
         if (a%kind /= b%kind) then; less = a%kind < b%kind; return; end if
+        if (a%kind >= 20) then
+            if (a%subtype /= b%subtype) then; less=a%subtype < b%subtype; return; end if
+            if (a%neighbor1 /= b%neighbor1) then; less=a%neighbor1 < b%neighbor1; return; end if
+            if (a%neighbor2 /= b%neighbor2) then; less=a%neighbor2 < b%neighbor2; return; end if
+            if (a%cutoff /= b%cutoff) then; less=a%cutoff < b%cutoff; return; end if
+            if (a%shift /= b%shift) then; less=a%shift < b%shift; return; end if
+            if (a%left /= b%left) then; less=a%left < b%left; return; end if
+            less=a%right < b%right; return
+        end if
         if (a%cutoff /= b%cutoff) then; less = a%cutoff < b%cutoff; return; end if
         if (a%eta /= b%eta) then; less = a%eta < b%eta; return; end if
         if (a%shift /= b%shift) then; less = a%shift < b%shift; return; end if

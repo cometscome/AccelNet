@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AccelNetDescriptors VERSION 1.0.2 LANGUAGES Fortran)
+project(AccelNetDescriptors VERSION 1.1.0 LANGUAGES Fortran)
 
 set(CMAKE_Fortran_STANDARD 2008)
 set(CMAKE_Fortran_STANDARD_REQUIRED ON)
@@ -36,7 +36,10 @@ add_library(AccelNetDescriptors
 )
 add_library(AccelNetDescriptors::AccelNetDescriptors ALIAS AccelNetDescriptors)
 set_target_properties(AccelNetDescriptors PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
     Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/modules")
+target_include_directories(AccelNetDescriptors PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/shared"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../legacy/cpu-reference")
 target_include_directories(AccelNetDescriptors PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/modules>"
     "$<INSTALL_INTERFACE:include>")
@@ -60,6 +63,10 @@ if(ACCELNET_DESCRIPTORS_BUILD_TESTING)
     add_executable(test_descriptor test/test_descriptor.f90)
     target_link_libraries(test_descriptor PRIVATE AccelNetDescriptors)
     add_test(NAME descriptor_unit COMMAND test_descriptor)
+
+    add_executable(test_neighbor_images test/test_neighbor_images.f90)
+    target_link_libraries(test_neighbor_images PRIVATE AccelNetDescriptors)
+    add_test(NAME descriptor_neighbor_images COMMAND test_neighbor_images)
 
     add_executable(test_tio2 test/test_tio2.f90)
     target_link_libraries(test_tio2 PRIVATE AccelNetDescriptors)

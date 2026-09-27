@@ -1,0 +1,12 @@
+Internal ctest changing into directory: /tmp/accelnet-n2p2-cpu-opt/build-gnu
+Test project /tmp/accelnet-n2p2-cpu-opt/build-gnu
+    Start 82: n2p2_high_g5_moments
+1/1 Test #82: n2p2_high_g5_moments .............   Passed    1.25 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Label Time Summary:
+integration       =   1.25 sec*proc (1 test)
+n2p2-reference    =   1.25 sec*proc (1 test)
+
+Total Test time (real) =   1.25 sec

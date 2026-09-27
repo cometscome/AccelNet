@@ -1,0 +1,6 @@
+newton: explicit MPI-safe rejection
+missing: explicit MPI-safe rejection
+malformed: explicit MPI-safe rejection
+ordering: explicit MPI-safe rejection
+stress: explicit MPI-safe rejection
+excluded: explicit MPI-safe rejection

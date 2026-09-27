@@ -1,0 +1,342 @@
+{
+  "provenance": {
+    "command": [
+      "interfaces/lammps/29Aug2024/tests/benchmark_gpu_modes.py",
+      "--lammps",
+      "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp",
+      "--input",
+      "/tmp/accelnet-lammps-gpu/validation-h100/orthogonal-auto-cpu-1rank/in.test",
+      "--output",
+      "/tmp/accelnet-lammps-modes-blackwell",
+      "--replicates",
+      "2",
+      "6",
+      "10"
+    ],
+    "executable": "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp",
+    "executable_sha256": "6fb237a8c912d811423d1d23d5e74a949f2e8fc66aebe307173c22f1688d28b3",
+    "cuda_visible_devices": "GPU-c8a7b723-d4eb-a67d-5ebd-139cedd981c9",
+    "warmup": 20,
+    "steps": 100,
+    "samples": 3,
+    "script_sha256": "316ffb5214f8fc926731bbf9fb60ee58d3fc34d7d769cca60548d38b81abd41c",
+    "input": "/tmp/accelnet-lammps-gpu/validation-h100/orthogonal-auto-cpu-1rank/in.test"
+  },
+  "results": [
+    {
+      "atoms": 192,
+      "mode": "direct",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.0172609,
+          "pair_seconds_per_step": 0.017249,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.0172456,
+          "pair_seconds_per_step": 0.017233000000000002,
+          "max_force_error": 4.440892098500626e-16,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.637978807091713e-12
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0172362,
+          "pair_seconds_per_step": 0.017224,
+          "max_force_error": 8.881784197001252e-16,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.1827872842550278e-11
+        }
+      ],
+      "seconds_per_step": 0.0172456,
+      "pair_seconds_per_step": 0.017233000000000002
+    },
+    {
+      "atoms": 192,
+      "mode": "moment",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.00269035,
+          "pair_seconds_per_step": 0.0026796999999999997,
+          "max_force_error": 2.5868196473766147e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.1827872842550278e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.00268943,
+          "pair_seconds_per_step": 0.0026781,
+          "max_force_error": 2.5868196473766147e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.382431946694851e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.00268899,
+          "pair_seconds_per_step": 0.0026782,
+          "max_force_error": 2.930988785010413e-14,
+          "max_atom_energy_error": 5.684341886080802e-14,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.255546860396862e-10
+        }
+      ],
+      "seconds_per_step": 0.00268943,
+      "pair_seconds_per_step": 0.0026782
+    },
+    {
+      "atoms": 192,
+      "mode": "auto",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.00268816,
+          "pair_seconds_per_step": 0.0026774999999999998,
+          "max_force_error": 2.6645352591003757e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.1100277081131935e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.0026904,
+          "pair_seconds_per_step": 0.0026796999999999997,
+          "max_force_error": 2.5868196473766147e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.4551915228366852e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0026959300000000005,
+          "pair_seconds_per_step": 0.0026850000000000003,
+          "max_force_error": 2.5868196473766147e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.4551915228366852e-10
+        }
+      ],
+      "seconds_per_step": 0.0026904,
+      "pair_seconds_per_step": 0.0026796999999999997
+    },
+    {
+      "atoms": 5184,
+      "mode": "direct",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.0252297,
+          "pair_seconds_per_step": 0.025172,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.0251934,
+          "pair_seconds_per_step": 0.025135,
+          "max_force_error": 7.260858581048524e-14,
+          "max_atom_energy_error": 5.684341886080802e-14,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 9.458744898438454e-11
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0251784,
+          "pair_seconds_per_step": 0.02512,
+          "max_force_error": 7.066569551739121e-14,
+          "max_atom_energy_error": 5.684341886080802e-14,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 6.548361852765083e-11
+        }
+      ],
+      "seconds_per_step": 0.0251934,
+      "pair_seconds_per_step": 0.025135
+    },
+    {
+      "atoms": 5184,
+      "mode": "moment",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.00912412,
+          "pair_seconds_per_step": 0.0090678,
+          "max_force_error": 8.060219158778636e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.4551915228366852e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.009105499999999999,
+          "pair_seconds_per_step": 0.0090495,
+          "max_force_error": 8.115730310009894e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.673470251262188e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.009109230000000001,
+          "pair_seconds_per_step": 0.0090528,
+          "max_force_error": 8.115730310009894e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.6007106751203537e-10
+        }
+      ],
+      "seconds_per_step": 0.009109230000000001,
+      "pair_seconds_per_step": 0.0090528
+    },
+    {
+      "atoms": 5184,
+      "mode": "auto",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.00911565,
+          "pair_seconds_per_step": 0.0090579,
+          "max_force_error": 8.060219158778636e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.3096723705530167e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.009117469999999999,
+          "pair_seconds_per_step": 0.0090612,
+          "max_force_error": 8.104628079763643e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.382431946694851e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.009102550000000001,
+          "pair_seconds_per_step": 0.0090451,
+          "max_force_error": 8.08242361927114e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.5279510989785194e-10
+        }
+      ],
+      "seconds_per_step": 0.00911565,
+      "pair_seconds_per_step": 0.0090579
+    },
+    {
+      "atoms": 24000,
+      "mode": "direct",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.0579807,
+          "pair_seconds_per_step": 0.057755,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.057779699999999996,
+          "pair_seconds_per_step": 0.057561,
+          "max_force_error": 1.0286216323152075e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.1100277081131935e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0577527,
+          "pair_seconds_per_step": 0.057534,
+          "max_force_error": 1.1479706074624119e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 1.673470251262188e-10
+        }
+      ],
+      "seconds_per_step": 0.057779699999999996,
+      "pair_seconds_per_step": 0.057561
+    },
+    {
+      "atoms": 24000,
+      "mode": "moment",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.0542828,
+          "pair_seconds_per_step": 0.054063,
+          "max_force_error": 1.659783421814609e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.4010660126805305e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.054249099999999995,
+          "pair_seconds_per_step": 0.054036,
+          "max_force_error": 1.6564527527407336e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.2741809263825417e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0542152,
+          "pair_seconds_per_step": 0.053997,
+          "max_force_error": 1.6608936448392342e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.6557245291769505e-10
+        }
+      ],
+      "seconds_per_step": 0.054249099999999995,
+      "pair_seconds_per_step": 0.054036
+    },
+    {
+      "atoms": 24000,
+      "mode": "auto",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.0542789,
+          "pair_seconds_per_step": 0.054058999999999996,
+          "max_force_error": 1.6586731987899839e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.055902197957039e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.054254300000000005,
+          "pair_seconds_per_step": 0.054036,
+          "max_force_error": 1.6575629757653587e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.9467628337442875e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0542497,
+          "pair_seconds_per_step": 0.054032,
+          "max_force_error": 1.6586731987899839e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.473825588822365e-10
+        }
+      ],
+      "seconds_per_step": 0.054254300000000005,
+      "pair_seconds_per_step": 0.054036
+    }
+  ]
+}

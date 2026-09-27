@@ -1,0 +1,11 @@
+Generating SQLite file /tmp/accelnet-g4-tuning/nsys-scalars.sqlite from /tmp/accelnet-g4-tuning/nsys-scalars.nsys-rep
+Processing [/tmp/accelnet-g4-tuning/nsys-scalars.sqlite] with [/opt/nvidia/nsight-systems/2025.5.2/host-linux-x64/reports/cuda_gpu_kern_gb_sum.py]... 
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),GridXYZ,BlockXYZ,Name
+96.7,158416972,11,14401542.9,14387693.0,14229036,14655758,161988.1, 128    1    1,  32    1    1,nvkernel_accelnet_target_kernels_g4_values_derivatives__F1L446_26_
+1.1,1828297,11,166208.8,166753.0,163393,167841,1617.4, 928    1    1, 128    1    1,nvkernel_accelnet_target_kernels_generic_forces__F1L692_39_
+0.8,1373960,11,124905.5,124961.0,123968,125344,365.9, 128    1    1,  32    1    1,nvkernel_accelnet_target_kernels_run_target_batch__F1L219_8_
+0.8,1298183,11,118016.6,118593.0,110752,119745,2507.0, 128    1    1,  32    1    1,nvkernel_accelnet_target_kernels_run_target_batch__F1L49_2_
+0.5,811779,11,73798.1,73632.0,72896,74721,562.5, 128    1    1,  32    1    1,nvkernel_accelnet_target_kernels_run_target_batch__F1L402_12_
+0.0,41056,11,3732.4,3776.0,3392,3936,179.5, 928    1    1, 128    1    1,nvkernel_accelnet_target_kernels_run_target_batch__F1L306_10_
+0.0,4128,1,4128.0,4128.0,4128,4128,0.0, 132    1    1, 128    1    1,nvkernel_accelnet_batch_target_initialize_target_model__F1L256_2_
+

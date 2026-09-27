@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AccelNetModelConverterFortran VERSION 1.0.2 LANGUAGES Fortran)
+project(AccelNetModelConverterFortran VERSION 1.1.0 LANGUAGES Fortran)
 
 set(CMAKE_Fortran_STANDARD 2008)
 set(CMAKE_Fortran_STANDARD_REQUIRED ON)
@@ -48,4 +48,61 @@ if(BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/fixtures/n2p2/inpu
         set_tests_properties(fortran_converter_per_element_roundtrip
             PROPERTIES LABELS "integration;n2p2-reference")
     endif()
+endif()
+
+# Synthetic checks are self-contained; an optional independent n2p2 executable
+# adds an external oracle without making n2p2 a runtime/build dependency.
+set(N2P2_REFERENCE_BENCHMARK "" CACHE FILEPATH "Independent serial n2p2-reference executable")
+set(N2P2_PREDICT_EXAMPLES "" CACHE PATH "Optional n2p2/examples/nnp-predict directory")
+if(BUILD_TESTING AND TARGET accelnet-n2p2-benchmark)
+    find_package(Python3 COMPONENTS Interpreter QUIET)
+    if(Python3_Interpreter_FOUND)
+        set(_n2p2_oracle)
+        if(N2P2_REFERENCE_BENCHMARK)
+            list(APPEND _n2p2_oracle --reference "${N2P2_REFERENCE_BENCHMARK}")
+        endif()
+        add_test(NAME n2p2_extended_multi_element
+            COMMAND "${Python3_EXECUTABLE}" "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/check_n2p2_extended.py"
+                ${_n2p2_oracle} --candidate $<TARGET_FILE:accelnet-n2p2-benchmark>
+                --converter $<TARGET_FILE:accelnet-model-converter-fortran>
+                --output "${CMAKE_CURRENT_BINARY_DIR}/extended-check")
+        set_tests_properties(n2p2_extended_multi_element PROPERTIES TIMEOUT 300 LABELS "integration")
+        if(N2P2_REFERENCE_BENCHMARK)
+            add_test(NAME n2p2_high_g5_moments
+                COMMAND "${Python3_EXECUTABLE}" "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/check_n2p2_high_moments.py"
+                    ${_n2p2_oracle} --candidate $<TARGET_FILE:accelnet-n2p2-benchmark>
+                    --converter $<TARGET_FILE:accelnet-model-converter-fortran>
+                    --output "${CMAKE_CURRENT_BINARY_DIR}/high-moment-check")
+            set_tests_properties(n2p2_high_g5_moments PROPERTIES TIMEOUT 300 LABELS "integration;n2p2-reference")
+        endif()
+        if(N2P2_REFERENCE_BENCHMARK AND N2P2_PREDICT_EXAMPLES)
+            add_test(NAME n2p2_official_multi_element
+                COMMAND "${Python3_EXECUTABLE}" "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/check_n2p2_official.py"
+                    ${_n2p2_oracle} --candidate $<TARGET_FILE:accelnet-n2p2-benchmark>
+                    --converter $<TARGET_FILE:accelnet-model-converter-fortran>
+                    --examples "${N2P2_PREDICT_EXAMPLES}" --output "${CMAKE_CURRENT_BINARY_DIR}/official-check")
+            set_tests_properties(n2p2_official_multi_element PROPERTIES TIMEOUT 900 LABELS "integration;n2p2-reference")
+        endif()
+    endif()
+endif()
+
+option(ACCELNET_TEST_N2P2_GPU "Run extended n2p2 checks on an actual GPU" OFF)
+if(ACCELNET_TEST_N2P2_GPU AND BUILD_TESTING AND TARGET accelnet-n2p2-benchmark
+   AND Python3_Interpreter_FOUND AND NOT ACCELNET_TARGET_SERIAL)
+    if(N2P2_REFERENCE_BENCHMARK)
+        add_test(NAME n2p2_high_g5_moments_gpu
+            COMMAND "${Python3_EXECUTABLE}" "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/check_n2p2_high_moments.py"
+                ${_n2p2_oracle} --candidate $<TARGET_FILE:accelnet-n2p2-benchmark>
+                --converter $<TARGET_FILE:accelnet-model-converter-fortran> --backend gpu
+                --output "${CMAKE_CURRENT_BINARY_DIR}/high-moment-gpu-check")
+        set_tests_properties(n2p2_high_g5_moments_gpu PROPERTIES TIMEOUT 600
+            LABELS "gpu;integration;n2p2-reference" ENVIRONMENT "OMP_TARGET_OFFLOAD=MANDATORY;OMP_NUM_THREADS=1")
+    endif()
+    add_test(NAME n2p2_extended_multi_element_gpu
+        COMMAND "${Python3_EXECUTABLE}" "${ACCELNET_PREDICTOR_SOURCE_DIR}/test/check_n2p2_extended.py"
+            ${_n2p2_oracle} --candidate $<TARGET_FILE:accelnet-n2p2-benchmark>
+            --converter $<TARGET_FILE:accelnet-model-converter-fortran> --backend gpu
+            --output "${CMAKE_CURRENT_BINARY_DIR}/extended-gpu-check")
+    set_tests_properties(n2p2_extended_multi_element_gpu PROPERTIES TIMEOUT 600
+        LABELS "gpu;integration" ENVIRONMENT "OMP_TARGET_OFFLOAD=MANDATORY;OMP_NUM_THREADS=1")
 endif()

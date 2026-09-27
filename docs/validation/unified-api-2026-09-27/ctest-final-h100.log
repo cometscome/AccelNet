@@ -1,0 +1,79 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-research/build-nvhpc
+Test project /tmp/accelnet-gpu-research/build-nvhpc
+      Start  9: openmp_target_device_smoke
+ 1/34 Test  #9: openmp_target_device_smoke ................   Passed    0.36 sec
+      Start 10: predictor_target_c_api
+ 2/34 Test #10: predictor_target_c_api ....................   Passed    0.40 sec
+      Start 11: predictor_target_equivalence
+ 3/34 Test #11: predictor_target_equivalence ..............   Passed    3.11 sec
+      Start 12: predictor_target_direct_equivalence
+ 4/34 Test #12: predictor_target_direct_equivalence .......   Passed    3.18 sec
+      Start 13: predictor_target_moment_equivalence
+ 5/34 Test #13: predictor_target_moment_equivalence .......   Passed    3.10 sec
+      Start 14: predictor_target_write_fixtures
+ 6/34 Test #14: predictor_target_write_fixtures ...........   Passed    0.01 sec
+      Start 15: predictor_target_embedded_lj
+ 7/34 Test #15: predictor_target_embedded_lj ..............   Passed    0.37 sec
+      Start 16: predictor_target_c_lj
+ 8/34 Test #16: predictor_target_c_lj .....................   Passed    0.36 sec
+      Start 17: predictor_target_embedded_behler
+ 9/34 Test #17: predictor_target_embedded_behler ..........   Passed    0.42 sec
+      Start 18: predictor_target_c_behler
+10/34 Test #18: predictor_target_c_behler .................   Passed    0.34 sec
+      Start 19: predictor_target_composite
+11/34 Test #19: predictor_target_composite ................   Passed    1.97 sec
+      Start 21: predictor_target_g5_moments
+12/34 Test #21: predictor_target_g5_moments ...............   Passed    5.39 sec
+      Start 23: predictor_target_other_descriptors
+13/34 Test #23: predictor_target_other_descriptors ........   Passed    4.72 sec
+      Start 26: predictor_target_n2p2
+14/34 Test #26: predictor_target_n2p2 .....................   Passed    0.45 sec
+      Start 27: predictor_target_n2p2-per-element
+15/34 Test #27: predictor_target_n2p2-per-element .........   Passed    0.49 sec
+      Start 28: predictor_target_n2p2-per-element-depth
+16/34 Test #28: predictor_target_n2p2-per-element-depth ...   Passed    0.46 sec
+      Start 29: predictor_target_n2p2-virial-angular
+17/34 Test #29: predictor_target_n2p2-virial-angular ......   Passed    0.47 sec
+      Start 30: predictor_target_reject_offset
+18/34 Test #30: predictor_target_reject_offset ............   Passed    0.32 sec
+      Start 31: predictor_target_reject_monotonic
+19/34 Test #31: predictor_target_reject_monotonic .........   Passed    0.36 sec
+      Start 32: predictor_target_reject_target
+20/34 Test #32: predictor_target_reject_target ............   Passed    0.31 sec
+      Start 33: predictor_target_reject_center
+21/34 Test #33: predictor_target_reject_center ............   Passed    0.29 sec
+      Start 34: predictor_target_reject_species
+22/34 Test #34: predictor_target_reject_species ...........   Passed    0.30 sec
+      Start 35: predictor_target_reject_shape
+23/34 Test #35: predictor_target_reject_shape .............   Passed    0.32 sec
+      Start 36: predictor_target_reject_unsupported
+24/34 Test #36: predictor_target_reject_unsupported .......   Passed    0.01 sec
+      Start 37: predictor_target_reject_activation
+25/34 Test #37: predictor_target_reject_activation ........   Passed    0.00 sec
+      Start 38: predictor_target_reject_version10
+26/34 Test #38: predictor_target_reject_version10 .........   Passed    0.34 sec
+      Start 39: predictor_target_reject_composite10
+27/34 Test #39: predictor_target_reject_composite10 .......   Passed    0.34 sec
+      Start 40: predictor_target_reject_uninitialized
+28/34 Test #40: predictor_target_reject_uninitialized .....   Passed    0.02 sec
+      Start 41: predictor_target_reject_host_fallback
+29/34 Test #41: predictor_target_reject_host_fallback .....   Passed    0.01 sec
+      Start 62: predictor_target_aenet_golden
+30/34 Test #62: predictor_target_aenet_golden .............   Passed    1.54 sec
+      Start 63: predictor_target_aenet_mode1
+31/34 Test #63: predictor_target_aenet_mode1 ..............   Passed    2.30 sec
+      Start 64: predictor_target_aenet_mode2
+32/34 Test #64: predictor_target_aenet_mode2 ..............   Passed    1.68 sec
+      Start 83: n2p2_high_g5_moments_gpu
+33/34 Test #83: n2p2_high_g5_moments_gpu ..................   Passed    4.94 sec
+      Start 84: n2p2_extended_multi_element_gpu
+34/34 Test #84: n2p2_extended_multi_element_gpu ...........   Passed   55.07 sec
+
+100% tests passed, 0 tests failed out of 34
+
+Label Time Summary:
+gpu               =  93.76 sec*proc (34 tests)
+integration       =  60.01 sec*proc (2 tests)
+n2p2-reference    =   4.94 sec*proc (1 test)
+
+Total Test time (real) =  93.76 sec

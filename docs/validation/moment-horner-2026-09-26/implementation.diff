@@ -1,0 +1,94 @@
+--- before/accelnet_target_kernels.f90
++++ after/accelnet_target_kernels.f90
+@@ -34,6 +34,7 @@
+         real(real64) :: rj, rk, fcj, fck, dfcj, sj, sk, cosine, x, t0, t1, t2, dt0, dt1, dt2
+         real(real64) :: v, dv, z, rc, ac, alpha, xscale, vc, dc, coeff, radial, fj(3), center_f(3), w(3,3)
+         real(real64) :: self0, self1, mono, u(3), grad(3), dm(3), correction, started
++        real(real64) :: hy, hz, dhy, dhz, hyz
+         ! All arrays have persistent mappings owned by target_workspace.
+         ! Structured references here neither copy data nor allocate device memory.
+         !$omp target data device(device) if(device /= omp_get_initial_device()) &
+@@ -267,7 +268,7 @@
+         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
+         !$omp& private(row,s,nr,na,multi,version,ct,k,b,rj,rk,fcj,fck,dfcj,sj,sk,cosine,x, &
+         !$omp& t0,t1,t2,dt0,dt1,dt2,rc,ac,alpha,xscale,vc,dc,coeff,radial,fj, &
+-        !$omp& entry,q,ax,ay,az,nm,mono,u,grad,dm,correction,v)
++        !$omp& entry,q,ax,ay,az,nm,mono,u,grad,dm,correction,v,hy,hz,dhy,dhz,hyz)
+         do j = 1, nedges
+             row = edge_row(j); s = species(centers(row))
+             if (meta(10,s) == 1) cycle
+@@ -295,17 +296,29 @@
+                     fcj = geom(5,j); dfcj = geom(6,j)
+                     if (use_moment(row) == 1) then
+                         u = geom(1:3,j)
+-                        v = 0; dm = 0
+-                        do entry = 1, nm
+-                            ax = mp(1,entry,s); ay = mp(2,entry,s); az = mp(3,entry,s)
+-                            mono = powers(j,ax+1,1)*powers(j,ay+1,2)*powers(j,az+1,3)
+-                            grad = 0
+-                            if (ax > 0) grad(1) = ax*powers(j,ax,1)*powers(j,ay+1,2)*powers(j,az+1,3)
+-                            if (ay > 0) grad(2) = ay*powers(j,ax+1,1)*powers(j,ay,2)*powers(j,az+1,3)
+-                            if (az > 0) grad(3) = az*powers(j,ax+1,1)*powers(j,ay+1,2)*powers(j,az,3)
+-                            coeff = moments(row,entry,1)+sj*moments(row,entry,2)
+-                            v = v+coeff*mono
+-                            dm = dm+coeff*grad
++                        ! Evaluate the total-degree polynomial and all three
++                        ! partial derivatives together. Differentiating Horner
++                        ! uses the previous value before each multiply/add and
++                        ! remains valid when any component of u is zero.
++                        v = 0; dm = 0; q = nm
++                        do ax = na-1, 0, -1
++                            hy = 0; dhy = 0; hyz = 0
++                            do ay = na-1-ax, 0, -1
++                                hz = 0; dhz = 0
++                                do az = na-1-ax-ay, 0, -1
++                                    entry = q; q = q-1
++                                    coeff = moments(row,entry,1)+sj*moments(row,entry,2)
++                                    dhz = dhz*u(3)+hz
++                                    hz = hz*u(3)+coeff
++                                end do
++                                dhy = dhy*u(2)+hy
++                                hyz = hyz*u(2)+dhz
++                                hy = hy*u(2)+hz
++                            end do
++                            dm(1) = dm(1)*u(1)+v
++                            dm(2) = dm(2)*u(1)+dhy
++                            dm(3) = dm(3)*u(1)+hyz
++                            v = v*u(1)+hy
+                         end do
+                         ! Contract the polynomial and its Cartesian gradient
+                         ! before projecting onto the tangent plane of u.
+--- before/accelnet_batch_target.f90
++++ after/accelnet_batch_target.f90
+@@ -66,6 +66,7 @@
+         type(descriptor_config) :: config
+         type(atomic_network) :: net
+         integer :: ns, s, d, ml, mn, mw, l, count_weights, j, local, mm, ma, nm, na
++        integer :: ax, ay, az, remaining, horner_index
+         integer, allocatable :: fi(:,:)
+         real(real64), allocatable :: fr(:,:)
+         integer :: descriptor_species, pack_status
+@@ -278,11 +279,18 @@
+                 config%evaluation_mode, config%number_of_angular_moments]
+             if (present(mode)) self%meta(8,s) = mode
+             nm = config%number_of_angular_moments; na = config%angular_order+1
+-            self%mp(1,:nm,s) = config%moment_x_power
+-            self%mp(2,:nm,s) = config%moment_y_power
+-            self%mp(3,:nm,s) = config%moment_z_power
+-            self%mp(4,:nm,s) = config%moment_x_power+config%moment_y_power+config%moment_z_power+1
+-            self%multiplicity(:nm,s) = config%moment_multinomial
++            ! Pack lexicographically in x/y/z so nested Horner reads force
++            ! coefficients consecutively, without an indirection per term.
++            ! For each total degree, x/y order is unchanged; the descriptor
++            ! reduction therefore retains its original summation order.
++            do j = 1, nm
++                ax = config%moment_x_power(j); ay = config%moment_y_power(j); az = config%moment_z_power(j)
++                remaining = na-ax
++                horner_index = nm-remaining*(remaining+1)*(remaining+2)/6 + &
++                    ay*remaining-ay*(ay-1)/2+az+1
++                self%mp(:,horner_index,s) = [ax,ay,az,ax+ay+az+1]
++                self%multiplicity(horner_index,s) = config%moment_multinomial(j)
++            end do
+             self%polynomial(:na,:na,s) = config%angular_power_coefficients
+             self%params(:,s) = [config%radial_rc, config%angular_rc, config%cutoff_alpha, &
+                 net%energy_scale, net%energy_shift+net%atomic_references(s)]

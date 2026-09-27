@@ -1,0 +1,781 @@
+{
+  "binaries": {
+    "before": {
+      "path": "/tmp/accelnet-n2p2-cpu-opt/lmp-before",
+      "sha256": "1c584daac604517ddbd33f4159cf1977ee8d6a7c3fd9cd0dcf93cf82757cd66a"
+    },
+    "after": {
+      "path": "/tmp/accelnet-n2p2-cpu-opt/lammps-gnu/lmp",
+      "sha256": "438a77768076fb3e41586db24d53e6a0221fa465ff346ea4b0aea5942b5a65e9"
+    },
+    "gpu": {
+      "path": "/tmp/accelnet-lammps-gpu/build/lmp",
+      "sha256": "f1d80a0735b39259271bfd9ca4d3133a077c3b91d80e28aa0935877c3f8dd053"
+    },
+    "gpu_before": {
+      "path": "/tmp/accelnet-n2p2-cpu-opt/lmp-gpu-before",
+      "sha256": "83ac483088ad4dc1114b27464f5bf4f078b8e2f7688ff45bed1526e9b89b9dcf"
+    }
+  },
+  "affinity": 6,
+  "samples": 3,
+  "rounds": 2,
+  "units": "electron",
+  "timestep_fs": 0.1,
+  "neighbor": "skin .6; every 5 delay 0 check no",
+  "gpu_uuid": "GPU-2644154d-7268-af42-6631-59e1f3c6e7f3",
+  "core_warmup_seconds": 20,
+  "rows": [
+    {
+      "model": "Ethylbenzene_SCAN",
+      "atoms": 288,
+      "elements": [
+        "H",
+        "C"
+      ],
+      "steps": 3,
+      "records": {
+        "n2p2": {
+          "samples": [
+            1.2675233333333333,
+            1.26755,
+            1.26752,
+            1.2666600000000001,
+            1.2668933333333332,
+            1.2672533333333333
+          ],
+          "pair_samples": [
+            1.2675,
+            1.2675333333333334,
+            1.2675,
+            1.2666333333333333,
+            1.2668666666666668,
+            1.2672333333333332
+          ],
+          "errors": [
+            {
+              "initial_force": 0.0,
+              "initial_position": 0.0,
+              "final_force": 0.0,
+              "final_position": 0.0,
+              "energy": 0.0,
+              "virial_pressure_pa": 0.0
+            },
+            {
+              "initial_force": 0.0,
+              "initial_position": 0.0,
+              "final_force": 0.0,
+              "final_position": 0.0,
+              "energy": 0.0,
+              "virial_pressure_pa": 0.0
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lmp-before",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 1.2673866666666667
+        },
+        "after": {
+          "samples": [
+            1.16336,
+            1.1637566666666668,
+            1.1646066666666666,
+            1.16472,
+            1.1639666666666666,
+            1.1654566666666668
+          ],
+          "pair_samples": [
+            1.1633333333333333,
+            1.1637333333333333,
+            1.1645999999999999,
+            1.1647,
+            1.1639666666666666,
+            1.1654333333333333
+          ],
+          "errors": [
+            {
+              "initial_force": 1.1858569681777453e-14,
+              "initial_position": 0.0,
+              "final_force": 2.1437712716121382e-14,
+              "final_position": 7.105427357601002e-15,
+              "energy": 7.958078640513122e-13,
+              "virial_pressure_pa": 0.0004372596740722656
+            },
+            {
+              "initial_force": 1.1858569681777453e-14,
+              "initial_position": 0.0,
+              "final_force": 2.1437712716121382e-14,
+              "final_position": 7.105427357601002e-15,
+              "energy": 7.958078640513122e-13,
+              "virial_pressure_pa": 0.0004372596740722656
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lammps-gnu/lmp",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 1.1642866666666665
+        },
+        "gpu_before": {
+          "samples": [
+            0.11311900000000001,
+            0.11184933333333334,
+            0.11367899999999999,
+            0.11299633333333332,
+            0.11171199999999999,
+            0.11197333333333333
+          ],
+          "pair_samples": [
+            0.11306333333333334,
+            0.11181333333333333,
+            0.11364333333333333,
+            0.11296,
+            0.11167666666666666,
+            0.11192333333333333
+          ],
+          "errors": [
+            {
+              "initial_force": 9.135053824493866e-15,
+              "initial_position": 0.0,
+              "final_force": 1.0198439315267649e-14,
+              "final_position": 7.105427357601002e-15,
+              "energy": 6.821210263296962e-13,
+              "virial_pressure_pa": 0.0005030632019042969
+            },
+            {
+              "initial_force": 9.128114930589959e-15,
+              "initial_position": 0.0,
+              "final_force": 1.0198439315267649e-14,
+              "final_position": 7.105427357601002e-15,
+              "energy": 6.821210263296962e-13,
+              "virial_pressure_pa": 0.0005030632019042969
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lmp-gpu-before",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.11248483333333333
+        },
+        "gpu": {
+          "samples": [
+            0.086872,
+            0.08628999999999999,
+            0.087316,
+            0.08546666666666668,
+            0.08755633333333333,
+            0.088207
+          ],
+          "pair_samples": [
+            0.08682000000000001,
+            0.08625666666666666,
+            0.08728000000000001,
+            0.08543333333333332,
+            0.08752333333333334,
+            0.08817333333333333
+          ],
+          "errors": [
+            {
+              "initial_force": 9.14893161230168e-15,
+              "initial_position": 0.0,
+              "final_force": 1.0220123358717359e-14,
+              "final_position": 7.105427357601002e-15,
+              "energy": 7.958078640513122e-13,
+              "virial_pressure_pa": 0.0005087852478027344
+            },
+            {
+              "initial_force": 9.14893161230168e-15,
+              "initial_position": 0.0,
+              "final_force": 1.0220123358717359e-14,
+              "final_position": 7.105427357601002e-15,
+              "energy": 7.958078640513122e-13,
+              "virial_pressure_pa": 0.0005068778991699219
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-lammps-gpu/build/lmp",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.087094
+        }
+      },
+      "model_sha256": {
+        "input.data": "034f8c701cbdd9c8867f7a93348501cc9cdd117a92d68842a6d6108157d620ea",
+        "input.nn": "721a3f2ef064745421526d7ac78cb72084a1e3a554fce607c88dcfca6a6106cd",
+        "scaling.data": "ed1aa72ea1db1ee73b65a5e5f830c0299466afc9fd2ed411d07bf490e54acf7d",
+        "weights.001.data": "353bb76411aeea53bd943c6a594b8224583c3257c4a7ce1813b8547a2c8f2473",
+        "weights.006.data": "0b3a0742fdebf05787ac794891d42ec291180ea667ff0e82445ecbcfdf464a78"
+      }
+    },
+    {
+      "model": "Anisole_SCAN",
+      "atoms": 256,
+      "elements": [
+        "H",
+        "C",
+        "O"
+      ],
+      "steps": 3,
+      "records": {
+        "n2p2": {
+          "samples": [
+            1.1711233333333333,
+            1.1704366666666666,
+            1.1707,
+            1.17001,
+            1.1699066666666667,
+            1.17123
+          ],
+          "pair_samples": [
+            1.1711,
+            1.1704,
+            1.1706666666666667,
+            1.1699666666666666,
+            1.1698666666666666,
+            1.1712
+          ],
+          "errors": [
+            {
+              "initial_force": 0.0,
+              "initial_position": 0.0,
+              "final_force": 0.0,
+              "final_position": 0.0,
+              "energy": 0.0,
+              "virial_pressure_pa": 0.0
+            },
+            {
+              "initial_force": 0.0,
+              "initial_position": 0.0,
+              "final_force": 0.0,
+              "final_position": 0.0,
+              "energy": 0.0,
+              "virial_pressure_pa": 0.0
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lmp-before",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 1.1705683333333332
+        },
+        "after": {
+          "samples": [
+            1.0881133333333333,
+            1.0897033333333332,
+            1.0896700000000001,
+            1.0904766666666668,
+            1.09134,
+            1.0909766666666667
+          ],
+          "pair_samples": [
+            1.0881,
+            1.0897,
+            1.0896666666666668,
+            1.0904666666666667,
+            1.0913333333333333,
+            1.0909666666666666
+          ],
+          "errors": [
+            {
+              "initial_force": 2.776251450953282e-14,
+              "initial_position": 0.0,
+              "final_force": 1.0602629885170245e-14,
+              "final_position": 5.329070518200751e-15,
+              "energy": 4.547473508864641e-13,
+              "virial_pressure_pa": 0.0016698837280273438
+            },
+            {
+              "initial_force": 2.776251450953282e-14,
+              "initial_position": 0.0,
+              "final_force": 1.0602629885170245e-14,
+              "final_position": 5.329070518200751e-15,
+              "energy": 4.547473508864641e-13,
+              "virial_pressure_pa": 0.0016698837280273438
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lammps-gnu/lmp",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 1.09009
+        },
+        "gpu_before": {
+          "samples": [
+            0.12449266666666665,
+            0.12355733333333334,
+            0.124911,
+            0.12121799999999999,
+            0.12450933333333335,
+            0.12341099999999999
+          ],
+          "pair_samples": [
+            0.12445333333333335,
+            0.12352,
+            0.12487666666666668,
+            0.12118333333333332,
+            0.12447333333333332,
+            0.12335333333333333
+          ],
+          "errors": [
+            {
+              "initial_force": 2.696454171058349e-14,
+              "initial_position": 0.0,
+              "final_force": 9.001940902766958e-15,
+              "final_position": 5.329070518200751e-15,
+              "energy": 5.684341886080801e-13,
+              "virial_pressure_pa": 0.00040912628173828125
+            },
+            {
+              "initial_force": 2.696454171058349e-14,
+              "initial_position": 0.0,
+              "final_force": 9.002483003853201e-15,
+              "final_position": 5.329070518200751e-15,
+              "energy": 5.684341886080801e-13,
+              "virial_pressure_pa": 0.0004105567932128906
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lmp-gpu-before",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.124025
+        },
+        "gpu": {
+          "samples": [
+            0.08282199999999999,
+            0.08269633333333333,
+            0.08318333333333333,
+            0.08415233333333333,
+            0.08288866666666667,
+            0.08306433333333334
+          ],
+          "pair_samples": [
+            0.08277,
+            0.08266,
+            0.08314666666666666,
+            0.08411666666666667,
+            0.08285333333333333,
+            0.08302666666666667
+          ],
+          "errors": [
+            {
+              "initial_force": 2.695413336972763e-14,
+              "initial_position": 0.0,
+              "final_force": 9.062222543557152e-15,
+              "final_position": 5.329070518200751e-15,
+              "energy": 5.684341886080801e-13,
+              "virial_pressure_pa": 0.00040531158447265625
+            },
+            {
+              "initial_force": 2.695413336972763e-14,
+              "initial_position": 0.0,
+              "final_force": 9.056584692260228e-15,
+              "final_position": 5.329070518200751e-15,
+              "energy": 5.684341886080801e-13,
+              "virial_pressure_pa": 0.00040531158447265625
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-lammps-gpu/build/lmp",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.08297650000000001
+        }
+      },
+      "model_sha256": {
+        "input.data": "0bd01de050e850e7b2b5d931180d15f9d834c4ce9aec9244942b192c50a733df",
+        "input.nn": "40f8360ceb9317218f42f4be08a18b9b83943425785d9ad22d5059bf1645a0f7",
+        "scaling.data": "3319a02b68fe2826e92666050cd89e2fd00a508b44dbb3f76c76719348168303",
+        "weights.001.data": "6ca254aea056fda4f0653c30821ac75a2115d7400e24ac9dbb078cddc1bd5bff",
+        "weights.006.data": "37de16fb2db48238572797d7d3108ed0cf60861ebdf698f54730cd3b4d93d0aa",
+        "weights.008.data": "1249aa5eaa7d7da6ec1ebf9a96c369941451452797d547ab9b3c3580ff43bcfb"
+      }
+    },
+    {
+      "model": "DMABN_SCAN",
+      "atoms": 21,
+      "elements": [
+        "H",
+        "C",
+        "N"
+      ],
+      "steps": 100,
+      "records": {
+        "n2p2": {
+          "samples": [
+            0.0034778599999999997,
+            0.0034859,
+            0.0034890100000000003,
+            0.0034957700000000005,
+            0.00347533,
+            0.00349152
+          ],
+          "pair_samples": [
+            0.0034755000000000003,
+            0.0034836,
+            0.0034866999999999997,
+            0.0034935,
+            0.0034731000000000002,
+            0.0034893999999999997
+          ],
+          "errors": [
+            {
+              "initial_force": 0.0,
+              "initial_position": 0.0,
+              "final_force": 0.0,
+              "final_position": 0.0,
+              "energy": 0.0,
+              "virial_pressure_pa": 0.0
+            },
+            {
+              "initial_force": 0.0,
+              "initial_position": 0.0,
+              "final_force": 0.0,
+              "final_position": 0.0,
+              "energy": 0.0,
+              "virial_pressure_pa": 0.0
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lmp-before",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.0034874550000000004
+        },
+        "after": {
+          "samples": [
+            0.0021004400000000003,
+            0.0020982,
+            0.0020897299999999997,
+            0.00210439,
+            0.00210311,
+            0.00210336
+          ],
+          "pair_samples": [
+            0.0020982,
+            0.0020961,
+            0.0020876000000000002,
+            0.0021022,
+            0.0021011,
+            0.0021013
+          ],
+          "errors": [
+            {
+              "initial_force": 1.3114509478384662e-15,
+              "initial_position": 0.0,
+              "final_force": 4.967705934111333e-15,
+              "final_position": 2.1316282072803006e-14,
+              "energy": 2.842170943040401e-14,
+              "virial_pressure_pa": 1.833587884902954e-05
+            },
+            {
+              "initial_force": 1.3114509478384662e-15,
+              "initial_position": 0.0,
+              "final_force": 4.967705934111333e-15,
+              "final_position": 2.1316282072803006e-14,
+              "energy": 2.842170943040401e-14,
+              "virial_pressure_pa": 1.833587884902954e-05
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lammps-gnu/lmp",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.002101775
+        },
+        "gpu_before": {
+          "samples": [
+            0.0039749,
+            0.00398129,
+            0.00397501,
+            0.00396806,
+            0.00396327,
+            0.00396461
+          ],
+          "pair_samples": [
+            0.0039731,
+            0.0039789000000000005,
+            0.0039731,
+            0.0039662,
+            0.0039615,
+            0.0039628
+          ],
+          "errors": [
+            {
+              "initial_force": 1.6792123247455493e-15,
+              "initial_position": 0.0,
+              "final_force": 5.091413401991929e-15,
+              "final_position": 2.1316282072803006e-14,
+              "energy": 2.842170943040401e-14,
+              "virial_pressure_pa": 1.4141201972961426e-05
+            },
+            {
+              "initial_force": 1.6792123247455493e-15,
+              "initial_position": 0.0,
+              "final_force": 5.091413401991929e-15,
+              "final_position": 2.1316282072803006e-14,
+              "energy": 2.842170943040401e-14,
+              "virial_pressure_pa": 1.4141201972961426e-05
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lmp-gpu-before",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.0039714799999999995
+        },
+        "gpu": {
+          "samples": [
+            0.00414583,
+            0.00414581,
+            0.00414292,
+            0.00414337,
+            0.00414826,
+            0.00414138
+          ],
+          "pair_samples": [
+            0.0041439,
+            0.004144,
+            0.0041411,
+            0.0041415,
+            0.0041459,
+            0.0041395
+          ],
+          "errors": [
+            {
+              "initial_force": 1.6792123247455493e-15,
+              "initial_position": 0.0,
+              "final_force": 6.907668881339646e-15,
+              "final_position": 1.7763568394002505e-14,
+              "energy": 2.842170943040401e-14,
+              "virial_pressure_pa": 1.3560056686401367e-05
+            },
+            {
+              "initial_force": 1.6792123247455493e-15,
+              "initial_position": 0.0,
+              "final_force": 6.907668881339646e-15,
+              "final_position": 1.7763568394002505e-14,
+              "energy": 2.842170943040401e-14,
+              "virial_pressure_pa": 1.3560056686401367e-05
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-lammps-gpu/build/lmp",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.00414459
+        }
+      },
+      "model_sha256": {
+        "input.data": "c058414710606f6b6e0f30cd5232e3f7db1150429e515e133521cd9b7fa1e6d7",
+        "input.nn": "3a183ec1a70c0b2109ecb6174befa6256402aa23a43092e6b6fad708365acc19",
+        "scaling.data": "504fb4bfa031b2e1da2a00b95260bb81d430f4d3571350eb04a4717f7aa073c4",
+        "weights.001.data": "7bc0faa8ed353c072ced0f53944da67d04490ccb796c3c934241d78ec5f795e1",
+        "weights.006.data": "25b81ea96777ad35d7530c46c5a41a77a37313e3feb82bd2eb9a945236b0c5ae",
+        "weights.007.data": "924c7eaccd376ef7c1741e059bccf20d22858e40095531e42813b523167710ab"
+      }
+    },
+    {
+      "model": "H2O_RPBE-D3",
+      "atoms": 1080,
+      "elements": [
+        "H",
+        "O"
+      ],
+      "steps": 10,
+      "records": {
+        "n2p2": {
+          "samples": [
+            0.227686,
+            0.227568,
+            0.227613,
+            0.22755299999999998,
+            0.227477,
+            0.22764299999999998
+          ],
+          "pair_samples": [
+            0.22705000000000003,
+            0.22693,
+            0.22696999999999998,
+            0.22691,
+            0.22684,
+            0.227
+          ],
+          "errors": [
+            {
+              "initial_force": 0.0,
+              "initial_position": 0.0,
+              "final_force": 0.0,
+              "final_position": 0.0,
+              "energy": 0.0,
+              "virial_pressure_pa": 0.0
+            },
+            {
+              "initial_force": 0.0,
+              "initial_position": 0.0,
+              "final_force": 0.0,
+              "final_position": 0.0,
+              "energy": 0.0,
+              "virial_pressure_pa": 0.0
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lmp-before",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.2275905
+        },
+        "after": {
+          "samples": [
+            0.233442,
+            0.23352699999999998,
+            0.23342999999999997,
+            0.234231,
+            0.233435,
+            0.233512
+          ],
+          "pair_samples": [
+            0.23281000000000002,
+            0.23290000000000002,
+            0.23281000000000002,
+            0.23359999999999997,
+            0.23281000000000002,
+            0.23288000000000003
+          ],
+          "errors": [
+            {
+              "initial_force": 5.342948306008566e-16,
+              "initial_position": 0.0,
+              "final_force": 2.3696322681843185e-15,
+              "final_position": 7.105427357601002e-15,
+              "energy": 2.9103830456733704e-11,
+              "virial_pressure_pa": 7.44163990020752e-05
+            },
+            {
+              "initial_force": 5.342948306008566e-16,
+              "initial_position": 0.0,
+              "final_force": 2.3696322681843185e-15,
+              "final_position": 7.105427357601002e-15,
+              "energy": 2.9103830456733704e-11,
+              "virial_pressure_pa": 7.44163990020752e-05
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lammps-gnu/lmp",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.233477
+        },
+        "gpu_before": {
+          "samples": [
+            0.0184718,
+            0.0184311,
+            0.0186028,
+            0.0184541,
+            0.0184923,
+            0.0184338
+          ],
+          "pair_samples": [
+            0.018437000000000002,
+            0.018396000000000003,
+            0.018568,
+            0.018418999999999998,
+            0.018458,
+            0.018390999999999998
+          ],
+          "errors": [
+            {
+              "initial_force": 8.951173136040325e-16,
+              "initial_position": 0.0,
+              "final_force": 2.7269853042355408e-15,
+              "final_position": 7.105427357601002e-15,
+              "energy": 2.9103830456733704e-11,
+              "virial_pressure_pa": 7.62939453125e-05
+            },
+            {
+              "initial_force": 8.881784197001252e-16,
+              "initial_position": 0.0,
+              "final_force": 2.71657696337968e-15,
+              "final_position": 7.105427357601002e-15,
+              "energy": 2.9103830456733704e-11,
+              "virial_pressure_pa": 7.635354995727539e-05
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/lmp-gpu-before",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.01846295
+        },
+        "gpu": {
+          "samples": [
+            0.0149365,
+            0.0148884,
+            0.014917900000000001,
+            0.0149722,
+            0.0149923,
+            0.0149835
+          ],
+          "pair_samples": [
+            0.014901000000000001,
+            0.014854000000000001,
+            0.014882999999999999,
+            0.014937,
+            0.014957999999999999,
+            0.014949
+          ],
+          "errors": [
+            {
+              "initial_force": 9.020562075079397e-16,
+              "initial_position": 0.0,
+              "final_force": 2.7582103268031233e-15,
+              "final_position": 7.105427357601002e-15,
+              "energy": 2.9103830456733704e-11,
+              "virial_pressure_pa": 7.572770118713379e-05
+            },
+            {
+              "initial_force": 9.020562075079397e-16,
+              "initial_position": 0.0,
+              "final_force": 2.7582103268031233e-15,
+              "final_position": 7.105427357601002e-15,
+              "energy": 2.9103830456733704e-11,
+              "virial_pressure_pa": 7.554888725280762e-05
+            }
+          ],
+          "command": [
+            "/tmp/accelnet-lammps-gpu/build/lmp",
+            "-in",
+            "in.benchmark"
+          ],
+          "seconds_per_step": 0.01495435
+        }
+      },
+      "model_sha256": {
+        "input.data": "32c38c1139a9c4afc2f38d536ce900956432b3689ecccd3f5a8a723c853c4405",
+        "input.nn": "726e941d994058a95c8dcc7c658837a2da0e7738aab164a7905b2c993b27224a",
+        "scaling.data": "468998f9b880d96f4b49f192fc8c3c8229e3ca53b9036c7ec6e66ae58a54c1e3",
+        "weights.001.data": "207728de9f248d4d8440620075086b60c6ab188a82ae8af91ac403e2aecf3379",
+        "weights.008.data": "f0337923e3cf2425741d408aa4ea6c457aea67c0d743808cd7e4addc45db3fd8"
+      }
+    }
+  ],
+  "max_n2p2_slowdown": 1.1,
+  "n2p2_regressions": [],
+  "passed": true
+}

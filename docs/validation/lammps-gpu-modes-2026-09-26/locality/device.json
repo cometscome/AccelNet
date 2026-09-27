@@ -1,0 +1,5 @@
+{
+  "multiprocessors": 132,
+  "l2_bytes": 62914560,
+  "max_threads_per_multiprocessor": 2048
+}

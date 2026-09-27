@@ -1,0 +1,266 @@
+[
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "natoms": 512,
+    "order": 5,
+    "mode": 2,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-moment-horner/before-nvhpc/accelnet-target-benchmark",
+      "512",
+      "5",
+      "0.08",
+      "2",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.220446049250313e-16,
+    "samples": [
+      [
+        0.006940925000000001,
+        0.005302875,
+        0.0,
+        0.0
+      ],
+      [
+        0.006959341666666667,
+        0.0052945625,
+        0.0,
+        0.0
+      ],
+      [
+        0.006944258333333334,
+        0.005291625,
+        0.0,
+        0.0
+      ],
+      [
+        0.006937683333333333,
+        0.005292625,
+        0.0,
+        0.0
+      ],
+      [
+        0.006940841666666667,
+        0.00528975,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.005292625,
+    "reference_seconds": 0.006940925000000001,
+    "ratio_to_reference": 0.7621193875382548,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "horner",
+    "backend": "cpu-shared",
+    "natoms": 512,
+    "order": 5,
+    "mode": 2,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "512",
+      "5",
+      "0.08",
+      "2",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 14824,
+    "max_error": 2.3592239273284576e-16,
+    "samples": [
+      [
+        0.0069770000000000006,
+        0.004244678947368421,
+        0.0,
+        0.0
+      ],
+      [
+        0.006980758333333333,
+        0.0042350526315789476,
+        0.0,
+        0.0
+      ],
+      [
+        0.0069845666666666665,
+        0.004252584210526315,
+        0.0,
+        0.0
+      ],
+      [
+        0.0069739166666666665,
+        0.004240684210526316,
+        0.0,
+        0.0
+      ],
+      [
+        0.0069829083333333335,
+        0.004249157894736842,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.004244678947368421,
+    "reference_seconds": 0.006980758333333333,
+    "ratio_to_reference": 0.6083816751280522,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "before",
+    "backend": "cpu-shared",
+    "natoms": 4096,
+    "order": 5,
+    "mode": 2,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-moment-horner/before-nvhpc/accelnet-target-benchmark",
+      "4096",
+      "5",
+      "0.08",
+      "2",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 6.38378239159465e-15,
+    "samples": [
+      [
+        0.05554855,
+        0.0426774,
+        0.0,
+        0.0
+      ],
+      [
+        0.055691,
+        0.0426911,
+        0.0,
+        0.0
+      ],
+      [
+        0.05556905,
+        0.0428176,
+        0.0,
+        0.0
+      ],
+      [
+        0.05556295,
+        0.04265295,
+        0.0,
+        0.0
+      ],
+      [
+        0.0555105,
+        0.04269995,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.0426911,
+    "reference_seconds": 0.05556295,
+    "ratio_to_reference": 0.7682900813792618,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "label": "horner",
+    "backend": "cpu-shared",
+    "natoms": 4096,
+    "order": 5,
+    "mode": 2,
+    "repeat": 0,
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "4096",
+      "5",
+      "0.08",
+      "2",
+      "1.7",
+      "cpu-shared",
+      "chebyshev",
+      "no-neighbors"
+    ],
+    "neighbors": 118750,
+    "max_error": 6.5503158452884236e-15,
+    "samples": [
+      [
+        0.05547095,
+        0.0339137,
+        0.0,
+        0.0
+      ],
+      [
+        0.055801,
+        0.03392766666666667,
+        0.0,
+        0.0
+      ],
+      [
+        0.05549145,
+        0.033933,
+        0.0,
+        0.0
+      ],
+      [
+        0.05548595,
+        0.03384636666666666,
+        0.0,
+        0.0
+      ],
+      [
+        0.0554991,
+        0.03387466666666667,
+        0.0,
+        0.0
+      ]
+    ],
+    "seconds": 0.0339137,
+    "reference_seconds": 0.05549145,
+    "ratio_to_reference": 0.6103642521530379,
+    "phase_medians": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  }
+]

@@ -1,0 +1,34 @@
+Internal ctest changing into directory: /tmp/accelnet-other-descriptors/build-nvhpc-serial
+UpdateCTestConfiguration  from :/tmp/accelnet-other-descriptors/build-nvhpc-serial/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-other-descriptors/build-nvhpc-serial/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/tmp/accelnet-other-descriptors/build-nvhpc-serial/DartConfiguration.tcl
+Parse Config file:/tmp/accelnet-other-descriptors/build-nvhpc-serial/DartConfiguration.tcl
+Test project /tmp/accelnet-other-descriptors/build-nvhpc-serial
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 39
+    Start 39: predictor_g5_moment_performance
+
+39: Test command: /usr/bin/python3.10 "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/benchmark/check_g5_moment_performance.py" "--executable" "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark" "--max-slowdown" "1.10" "--output" "/tmp/accelnet-other-descriptors/build-nvhpc-serial/AccelNetPredictor/g5-moment-performance.json"
+39: Test timeout computed to be: 300
+39: {
+39:   "old_moment_over_direct": 0.8971326089726325,
+39:   "common_moment_over_old_moment": 0.11948898999738704,
+39:   "common_moment_over_common_direct": 0.11627377314344152
+39: }
+39: PASS
+1/1 Test #39: predictor_g5_moment_performance ...   Passed    4.54 sec
+
+The following tests passed:
+	predictor_g5_moment_performance
+
+100% tests passed, 0 tests failed out of 1
+
+Label Time Summary:
+performance    =   4.54 sec*proc (1 test)
+
+Total Test time (real) =   4.54 sec

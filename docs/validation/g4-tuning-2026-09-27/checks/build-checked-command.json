@@ -1,0 +1,14 @@
+[
+  "cmake",
+  "--build",
+  "/tmp/accelnet-gpu-stage23/build-gnu-target",
+  "-j",
+  "8",
+  "--target",
+  "accelnet-model-converter-fortran",
+  "accelnet-target-benchmark",
+  "test_batch",
+  "test_batch_target",
+  "test_target_c",
+  "write_target_fixtures"
+]

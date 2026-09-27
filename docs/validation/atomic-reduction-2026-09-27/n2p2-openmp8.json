@@ -1,0 +1,126 @@
+{
+  "passed": true,
+  "backend": "host",
+  "degrees": [
+    1,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    11.5,
+    11.0000000000004,
+    2.3
+  ],
+  "cases": [
+    {
+      "case": "g5-high",
+      "mode": 0,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.5352472168984194e-21
+      }
+    },
+    {
+      "case": "g5-high",
+      "mode": 1,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.5352472168984194e-21
+      }
+    },
+    {
+      "case": "g5-high",
+      "mode": 2,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.5352472168984194e-21,
+        "direct": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "g5-high",
+      "mode": 3,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.5881867761018131e-21,
+        "direct": {
+          "ENERGY": 0.0,
+          "FORCE": 7.940933880509066e-23
+        }
+      }
+    },
+    {
+      "case": "g5-high-native",
+      "mode": 3,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.5881867761018131e-21
+      }
+    },
+    {
+      "case": "g5-high-finite-differences",
+      "force_error": 3.8801913530470484e-12,
+      "strain_error": 1.757060106321759e-11
+    },
+    {
+      "case": "mixed-four",
+      "mode": 0,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.3552527156068805e-20
+      }
+    },
+    {
+      "case": "mixed-four",
+      "mode": 1,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.3552527156068805e-20
+      }
+    },
+    {
+      "case": "mixed-four",
+      "mode": 2,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.3552527156068805e-20,
+        "direct": {
+          "ENERGY": 0.0,
+          "FORCE": 0.0
+        }
+      }
+    },
+    {
+      "case": "mixed-four",
+      "mode": 3,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.4399560103323106e-20,
+        "direct": {
+          "ENERGY": 0.0,
+          "FORCE": 8.470329472543003e-22
+        }
+      }
+    },
+    {
+      "case": "mixed-four-native",
+      "mode": 3,
+      "errors": {
+        "ENERGY": 0.0,
+        "FORCE": 1.4399560103323106e-20
+      }
+    },
+    {
+      "case": "mixed-four-finite-differences",
+      "force_error": 5.845250637181849e-12,
+      "strain_error": 4.156269798457696e-12
+    }
+  ]
+}

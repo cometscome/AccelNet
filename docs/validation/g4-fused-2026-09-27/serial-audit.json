@@ -1,0 +1,66 @@
+[
+  {
+    "compiler": "gnu",
+    "variant": "before",
+    "path": "/tmp/accelnet-g4-fused/before/gnu",
+    "sha256": "04449c166a1c075c67c4d6d3204acd46c6067b065843799492e050c7c2a36601",
+    "target_serial": true,
+    "flags": [
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3 -Jmodules -O3 -ffree-line-length-none",
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3 -Jtarget-modules",
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3"
+    ],
+    "undefined_openmp_symbols": [],
+    "cpu_affinity": [
+      6
+    ]
+  },
+  {
+    "compiler": "gnu",
+    "variant": "after",
+    "path": "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+    "sha256": "f28584173c8378af60737dc44a3841a6d221fc33b12b1553a3ea7f0d8a8b8a78",
+    "target_serial": true,
+    "flags": [
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3 -Jmodules -O3 -ffree-line-length-none",
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3 -Jtarget-modules",
+      "Fortran_FLAGS = -O3 -DNDEBUG -O3"
+    ],
+    "undefined_openmp_symbols": [],
+    "cpu_affinity": [
+      6
+    ]
+  },
+  {
+    "compiler": "nvhpc",
+    "variant": "before",
+    "path": "/tmp/accelnet-g4-fused/before/nvhpc",
+    "sha256": "02e4f475d818f9e2ad6ccfe8cf5924c0a18a69dcd4e3c26daf81062782ebdbba",
+    "target_serial": true,
+    "flags": [
+      "Fortran_FLAGS = -fast -O3 -module modules",
+      "Fortran_FLAGS = -fast -O3 -module target-modules",
+      "Fortran_FLAGS = -fast -O3"
+    ],
+    "undefined_openmp_symbols": [],
+    "cpu_affinity": [
+      6
+    ]
+  },
+  {
+    "compiler": "nvhpc",
+    "variant": "after",
+    "path": "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+    "sha256": "45dcef2f757d16c058a5a8c78308e0d6f324f99803622f66b49f61ba55f53b96",
+    "target_serial": true,
+    "flags": [
+      "Fortran_FLAGS = -fast -O3 -module modules",
+      "Fortran_FLAGS = -fast -O3 -module target-modules",
+      "Fortran_FLAGS = -fast -O3"
+    ],
+    "undefined_openmp_symbols": [],
+    "cpu_affinity": [
+      6
+    ]
+  }
+]

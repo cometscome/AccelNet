@@ -1,0 +1,11 @@
+Internal ctest changing into directory: /tmp/accelnet-other-descriptors/build-gnu-serial
+Test project /tmp/accelnet-other-descriptors/build-gnu-serial
+    Start 36: predictor_common_cpu_performance
+1/1 Test #36: predictor_common_cpu_performance ...   Passed   46.99 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Label Time Summary:
+performance    =  46.99 sec*proc (1 test)
+
+Total Test time (real) =  47.00 sec

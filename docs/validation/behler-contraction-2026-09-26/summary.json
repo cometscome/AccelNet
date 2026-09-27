@@ -1,0 +1,482 @@
+[
+  {
+    "backend": "gnu",
+    "atoms": 512,
+    "family": "lj",
+    "before_ms": 1.3660610681818182,
+    "after_ms": 1.4169712325581396,
+    "speedup": 0.967638806370776,
+    "after_over_cpu_reference": 1.085349039043543,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 512,
+    "family": "g4",
+    "before_ms": 36.0980975,
+    "after_ms": 21.65921433333333,
+    "speedup": 1.6526804300759728,
+    "after_over_cpu_reference": 1.5225508116846407,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 512,
+    "family": "g5",
+    "before_ms": 22.371044333333337,
+    "after_ms": 13.711414199999998,
+    "speedup": 1.6296964277011643,
+    "after_over_cpu_reference": 0.800538918414265,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 512,
+    "family": "behler",
+    "before_ms": 61.569423,
+    "after_ms": 38.0288605,
+    "speedup": 1.6127513630672596,
+    "after_over_cpu_reference": 0.7550844163707087,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 512,
+    "family": "g4-series",
+    "before_ms": 315.910112,
+    "after_ms": 32.813421000000005,
+    "speedup": 9.603755539990678,
+    "after_over_cpu_reference": 1.0445281178838297,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 512,
+    "family": "g5-series",
+    "before_ms": 164.989569,
+    "after_ms": 21.86192833333333,
+    "speedup": 7.442116648587954,
+    "after_over_cpu_reference": 0.36651696652170934,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 4096,
+    "family": "lj",
+    "before_ms": 11.0218005,
+    "after_ms": 11.299466166666667,
+    "speedup": 0.9803451777404316,
+    "after_over_cpu_reference": 1.0784834533653576,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 4096,
+    "family": "g4",
+    "before_ms": 292.33627,
+    "after_ms": 174.56907099999998,
+    "speedup": 2.1240482956632496,
+    "after_over_cpu_reference": 1.1909588406718854,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 4096,
+    "family": "g5",
+    "before_ms": 178.511573,
+    "after_ms": 108.7803,
+    "speedup": 1.6352293858051294,
+    "after_over_cpu_reference": 0.7932681537612236,
+    "max_error": 1.1171619185290638e-15
+  },
+  {
+    "backend": "gnu",
+    "atoms": 4096,
+    "family": "behler",
+    "before_ms": 496.440553,
+    "after_ms": 305.443804,
+    "speedup": 1.658991295358848,
+    "after_over_cpu_reference": 0.7366512847767718,
+    "max_error": 7.7021722333370235e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 4096,
+    "family": "g4-series",
+    "before_ms": 2553.720984,
+    "after_ms": 263.400329,
+    "speedup": 9.60220997782261,
+    "after_over_cpu_reference": 1.0481078083558042,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "gnu",
+    "atoms": 4096,
+    "family": "g5-series",
+    "before_ms": 1324.610184,
+    "after_ms": 174.881369,
+    "speedup": 7.47720362728041,
+    "after_over_cpu_reference": 0.36402400579339983,
+    "max_error": 3.9968028886505635e-15
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 512,
+    "family": "lj",
+    "before_ms": 0.9722903225806453,
+    "after_ms": 0.9968016393442622,
+    "speedup": 0.9709041649165862,
+    "after_over_cpu_reference": 0.7557272439516288,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 512,
+    "family": "g4",
+    "before_ms": 26.60736666666667,
+    "after_ms": 16.531525,
+    "speedup": 1.6099310717661863,
+    "after_over_cpu_reference": 1.492547338744049,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 512,
+    "family": "g5",
+    "before_ms": 22.66,
+    "after_ms": 14.183440000000001,
+    "speedup": 1.6003831388976866,
+    "after_over_cpu_reference": 0.777747174067055,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 512,
+    "family": "behler",
+    "before_ms": 50.93595,
+    "after_ms": 32.429899999999996,
+    "speedup": 1.572059259354059,
+    "after_over_cpu_reference": 0.7267193542962838,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 512,
+    "family": "g4-series",
+    "before_ms": 262.63779999999997,
+    "after_ms": 28.273033333333334,
+    "speedup": 9.418253204401797,
+    "after_over_cpu_reference": 0.9578235654717485,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 512,
+    "family": "g5-series",
+    "before_ms": 155.56900000000002,
+    "after_ms": 19.857225,
+    "speedup": 7.8985656438053935,
+    "after_over_cpu_reference": 0.33237993691263595,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 4096,
+    "family": "lj",
+    "before_ms": 7.829012499999999,
+    "after_ms": 7.980625,
+    "speedup": 0.9823287659079929,
+    "after_over_cpu_reference": 0.7555768289409277,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 4096,
+    "family": "g4",
+    "before_ms": 213.825,
+    "after_ms": 132.52710000000002,
+    "speedup": 1.6060331779332935,
+    "after_over_cpu_reference": 1.4904981083781448,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 4096,
+    "family": "g5",
+    "before_ms": 180.4528,
+    "after_ms": 112.60390000000001,
+    "speedup": 1.6048363851935572,
+    "after_over_cpu_reference": 0.7622736359260797,
+    "max_error": 1.1518563880486e-15
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 4096,
+    "family": "behler",
+    "before_ms": 408.257,
+    "after_ms": 259.069,
+    "speedup": 1.606710832109585,
+    "after_over_cpu_reference": 0.7102773041656439,
+    "max_error": 7.771561172376096e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 4096,
+    "family": "g4-series",
+    "before_ms": 2116.955,
+    "after_ms": 226.0718,
+    "speedup": 9.378776978169268,
+    "after_over_cpu_reference": 0.957322967276667,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "nvhpc",
+    "atoms": 4096,
+    "family": "g5-series",
+    "before_ms": 1246.897,
+    "after_ms": 159.00400000000002,
+    "speedup": 7.958366716412335,
+    "after_over_cpu_reference": 0.3338469688192676,
+    "max_error": 3.885780586188048e-15
+  },
+  {
+    "backend": "h100",
+    "atoms": 512,
+    "family": "lj",
+    "before_ms": 0.34221079545454547,
+    "after_ms": 0.344012,
+    "speedup": 0.9947641229217163,
+    "after_over_cpu_reference": 0.2589297451687453,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 512,
+    "family": "g4",
+    "before_ms": 1.5297775,
+    "after_ms": 1.4031162790697673,
+    "speedup": 1.0902713644048132,
+    "after_over_cpu_reference": 0.1269999480615008,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 512,
+    "family": "g5",
+    "before_ms": 1.1436754716981132,
+    "after_ms": 1.0866267857142857,
+    "speedup": 1.052500717572802,
+    "after_over_cpu_reference": 0.059579867654491234,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 512,
+    "family": "behler",
+    "before_ms": 1.831669696969697,
+    "after_ms": 1.6376216216216217,
+    "speedup": 1.1184938405710125,
+    "after_over_cpu_reference": 0.0366895104161709,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 512,
+    "family": "g4-series",
+    "before_ms": 3.9341875,
+    "after_ms": 1.572871794871795,
+    "speedup": 2.5012766538423916,
+    "after_over_cpu_reference": 0.05356114064512982,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 512,
+    "family": "g5-series",
+    "before_ms": 2.414884,
+    "after_ms": 1.366772727272727,
+    "speedup": 1.7668511756293859,
+    "after_over_cpu_reference": 0.02297453971798185,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 4096,
+    "family": "lj",
+    "before_ms": 1.120872222222222,
+    "after_ms": 1.1138518518518519,
+    "speedup": 1.006302786460065,
+    "after_over_cpu_reference": 0.10513491451714115,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 4096,
+    "family": "g4",
+    "before_ms": 3.245678947368421,
+    "after_ms": 2.8078227272727276,
+    "speedup": 1.1559415471079217,
+    "after_over_cpu_reference": 0.0312933358960203,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 4096,
+    "family": "g5",
+    "before_ms": 3.046895,
+    "after_ms": 2.6747347826086956,
+    "speedup": 1.1391391100946213,
+    "after_over_cpu_reference": 0.018125795209088705,
+    "max_error": 1.0755285551056204e-15
+  },
+  {
+    "backend": "h100",
+    "atoms": 4096,
+    "family": "behler",
+    "before_ms": 4.7325307692307685,
+    "after_ms": 4.196073333333333,
+    "speedup": 1.1278474881827858,
+    "after_over_cpu_reference": 0.011712591944386935,
+    "max_error": 6.314393452555578e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 4096,
+    "family": "g4-series",
+    "before_ms": 13.73162,
+    "after_ms": 6.584,
+    "speedup": 2.085604495747266,
+    "after_over_cpu_reference": 0.027675937906995372,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "h100",
+    "atoms": 4096,
+    "family": "g5-series",
+    "before_ms": 11.934833333333334,
+    "after_ms": 5.610354545454546,
+    "speedup": 2.127286829493302,
+    "after_over_cpu_reference": 0.011757039738797747,
+    "max_error": 2.9976021664879227e-15
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 512,
+    "family": "lj",
+    "before_ms": 0.406852027027027,
+    "after_ms": 0.40714189189189187,
+    "speedup": 0.9992880495212174,
+    "after_over_cpu_reference": 0.3028976701467529,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 512,
+    "family": "g4",
+    "before_ms": 4.212186666666667,
+    "after_ms": 3.87936875,
+    "speedup": 1.0857917713201837,
+    "after_over_cpu_reference": 0.3501018497507668,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 512,
+    "family": "g5",
+    "before_ms": 2.6918695652173916,
+    "after_ms": 2.4670400000000003,
+    "speedup": 1.0911333278817494,
+    "after_over_cpu_reference": 0.13491071184401235,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 512,
+    "family": "behler",
+    "before_ms": 4.9857000000000005,
+    "after_ms": 4.3885,
+    "speedup": 1.1360829440583344,
+    "after_over_cpu_reference": 0.09823280134163516,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 512,
+    "family": "g4-series",
+    "before_ms": 11.57635,
+    "after_ms": 2.6885652173913046,
+    "speedup": 4.305772433979656,
+    "after_over_cpu_reference": 0.09110703872476893,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 512,
+    "family": "g5-series",
+    "before_ms": 5.087183333333334,
+    "after_ms": 1.89335,
+    "speedup": 2.686868953618366,
+    "after_over_cpu_reference": 0.03181768012714858,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 4096,
+    "family": "lj",
+    "before_ms": 1.1959411764705883,
+    "after_ms": 1.223722,
+    "speedup": 0.9772980925983094,
+    "after_over_cpu_reference": 0.11578466038995157,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 4096,
+    "family": "g4",
+    "before_ms": 11.210849999999999,
+    "after_ms": 8.965857142857141,
+    "speedup": 1.2503935565080226,
+    "after_over_cpu_reference": 0.10088188263554057,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 4096,
+    "family": "g5",
+    "before_ms": 6.896233333333333,
+    "after_ms": 5.6558090909090915,
+    "speedup": 1.2193186195796544,
+    "after_over_cpu_reference": 0.03833022775883327,
+    "max_error": 1.0547118733938987e-15
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 4096,
+    "family": "behler",
+    "before_ms": 16.2742,
+    "after_ms": 13.00222,
+    "speedup": 1.2516477955303018,
+    "after_over_cpu_reference": 0.03588795754571828,
+    "max_error": 7.077671781985373e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 4096,
+    "family": "g4-series",
+    "before_ms": 50.243,
+    "after_ms": 11.994,
+    "speedup": 4.189011172252793,
+    "after_over_cpu_reference": 0.05089771189450755,
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "backend": "blackwell",
+    "atoms": 4096,
+    "family": "g5-series",
+    "before_ms": 19.6002,
+    "after_ms": 7.901375000000001,
+    "speedup": 2.4806062236003226,
+    "after_over_cpu_reference": 0.016503281283940716,
+    "max_error": 4.274358644806853e-15
+  }
+]

@@ -1,0 +1,443 @@
+{
+  "provenance": {
+    "command": [
+      "interfaces/lammps/29Aug2024/tests/benchmark_gpu_modes.py",
+      "--lammps",
+      "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp",
+      "--input",
+      "/tmp/accelnet-lammps-gpu/validation-h100/orthogonal-auto-cpu-1rank/in.test",
+      "--output",
+      "/tmp/accelnet-lammps-modes-h100"
+    ],
+    "executable": "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp",
+    "executable_sha256": "6fb237a8c912d811423d1d23d5e74a949f2e8fc66aebe307173c22f1688d28b3",
+    "cuda_visible_devices": "GPU-2644154d-7268-af42-6631-59e1f3c6e7f3",
+    "warmup": 20,
+    "steps": 100,
+    "samples": 3,
+    "script_sha256": "316ffb5214f8fc926731bbf9fb60ee58d3fc34d7d769cca60548d38b81abd41c",
+    "input": "/tmp/accelnet-lammps-gpu/validation-h100/orthogonal-auto-cpu-1rank/in.test"
+  },
+  "results": [
+    {
+      "atoms": 24,
+      "mode": "direct",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.0083248,
+          "pair_seconds_per_step": 0.008317999999999999,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.008328780000000001,
+          "pair_seconds_per_step": 0.0083213,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.00832726,
+          "pair_seconds_per_step": 0.00832,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        }
+      ],
+      "seconds_per_step": 0.00832726,
+      "pair_seconds_per_step": 0.00832
+    },
+    {
+      "atoms": 24,
+      "mode": "moment",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.0015734,
+          "pair_seconds_per_step": 0.0015677,
+          "max_force_error": 2.19824158875781e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 8.149072527885437e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.00156803,
+          "pair_seconds_per_step": 0.0015622,
+          "max_force_error": 2.19824158875781e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 8.149072527885437e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.00157299,
+          "pair_seconds_per_step": 0.0015670999999999999,
+          "max_force_error": 2.19824158875781e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 8.149072527885437e-10
+        }
+      ],
+      "seconds_per_step": 0.00157299,
+      "pair_seconds_per_step": 0.0015670999999999999
+    },
+    {
+      "atoms": 24,
+      "mode": "auto",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.00157241,
+          "pair_seconds_per_step": 0.0015668000000000001,
+          "max_force_error": 2.19824158875781e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 8.149072527885437e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.00157364,
+          "pair_seconds_per_step": 0.0015679000000000001,
+          "max_force_error": 2.19824158875781e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 8.149072527885437e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0015699499999999999,
+          "pair_seconds_per_step": 0.0015641,
+          "max_force_error": 2.19824158875781e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 8.149072527885437e-10
+        }
+      ],
+      "seconds_per_step": 0.00157241,
+      "pair_seconds_per_step": 0.0015668000000000001
+    },
+    {
+      "atoms": 192,
+      "mode": "direct",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.009073409999999999,
+          "pair_seconds_per_step": 0.0090613,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.00906139,
+          "pair_seconds_per_step": 0.009050200000000001,
+          "max_force_error": 1.709743457922741e-14,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.637978807091713e-11
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.00907373,
+          "pair_seconds_per_step": 0.0090622,
+          "max_force_error": 1.6653345369377348e-14,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.637978807091713e-11
+        }
+      ],
+      "seconds_per_step": 0.009073409999999999,
+      "pair_seconds_per_step": 0.0090613
+    },
+    {
+      "atoms": 192,
+      "mode": "moment",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.0016025,
+          "pair_seconds_per_step": 0.0015929,
+          "max_force_error": 2.6756374893466273e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.6193447411060333e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.0016065699999999999,
+          "pair_seconds_per_step": 0.0015955,
+          "max_force_error": 2.6756374893466273e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.6193447411060333e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.00160929,
+          "pair_seconds_per_step": 0.0015982,
+          "max_force_error": 2.6756374893466273e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.9831426218152046e-10
+        }
+      ],
+      "seconds_per_step": 0.0016065699999999999,
+      "pair_seconds_per_step": 0.0015955
+    },
+    {
+      "atoms": 192,
+      "mode": "auto",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.00160881,
+          "pair_seconds_per_step": 0.0015979,
+          "max_force_error": 2.6756374893466273e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.837623469531536e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.0016048599999999998,
+          "pair_seconds_per_step": 0.0015952,
+          "max_force_error": 2.6756374893466273e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.6193447411060333e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0016045699999999998,
+          "pair_seconds_per_step": 0.0015948000000000002,
+          "max_force_error": 2.6423307986078726e-14,
+          "max_atom_energy_error": 5.684341886080802e-14,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.9103830456733704e-10
+        }
+      ],
+      "seconds_per_step": 0.0016048599999999998,
+      "pair_seconds_per_step": 0.0015952
+    },
+    {
+      "atoms": 5184,
+      "mode": "direct",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.0137205,
+          "pair_seconds_per_step": 0.013640000000000001,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.013691100000000001,
+          "pair_seconds_per_step": 0.01361,
+          "max_force_error": 7.172040739078511e-14,
+          "max_atom_energy_error": 5.684341886080802e-14,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 7.275957614183426e-11
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0137031,
+          "pair_seconds_per_step": 0.013624,
+          "max_force_error": 7.233103005432895e-14,
+          "max_atom_energy_error": 5.684341886080802e-14,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 9.458744898438454e-11
+        }
+      ],
+      "seconds_per_step": 0.0137031,
+      "pair_seconds_per_step": 0.013624
+    },
+    {
+      "atoms": 5184,
+      "mode": "moment",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.00516339,
+          "pair_seconds_per_step": 0.0050824,
+          "max_force_error": 8.071321389024888e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.255546860396862e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.00515278,
+          "pair_seconds_per_step": 0.0050758,
+          "max_force_error": 7.926992395823618e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.41970007866621e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.005152,
+          "pair_seconds_per_step": 0.0050756,
+          "max_force_error": 8.004708007547379e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.9103830456733704e-10
+        }
+      ],
+      "seconds_per_step": 0.00515278,
+      "pair_seconds_per_step": 0.0050758
+    },
+    {
+      "atoms": 5184,
+      "mode": "auto",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.00514593,
+          "pair_seconds_per_step": 0.005067199999999999,
+          "max_force_error": 8.071321389024888e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.0372681319713593e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.00516185,
+          "pair_seconds_per_step": 0.0050825,
+          "max_force_error": 8.060219158778636e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.4924596548080444e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.005158439999999999,
+          "pair_seconds_per_step": 0.0050812999999999995,
+          "max_force_error": 8.08242361927114e-14,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.6193447411060333e-10
+        }
+      ],
+      "seconds_per_step": 0.005158439999999999,
+      "pair_seconds_per_step": 0.0050812999999999995
+    },
+    {
+      "atoms": 24000,
+      "mode": "direct",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.029329200000000003,
+          "pair_seconds_per_step": 0.029039000000000002,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.029093300000000002,
+          "pair_seconds_per_step": 0.028876,
+          "max_force_error": 1.4954704141700859e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.764863893389702e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.0290794,
+          "pair_seconds_per_step": 0.028863,
+          "max_force_error": 1.4988010832439613e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.764863893389702e-10
+        }
+      ],
+      "seconds_per_step": 0.029093300000000002,
+      "pair_seconds_per_step": 0.028876
+    },
+    {
+      "atoms": 24000,
+      "mode": "moment",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.025183399999999998,
+          "pair_seconds_per_step": 0.024889,
+          "max_force_error": 1.659783421814609e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.4924596548080444e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.025066199999999997,
+          "pair_seconds_per_step": 0.024848,
+          "max_force_error": 1.659783421814609e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.6921043172478676e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.025068899999999998,
+          "pair_seconds_per_step": 0.024852,
+          "max_force_error": 1.6608936448392342e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.637978807091713e-10
+        }
+      ],
+      "seconds_per_step": 0.025068899999999998,
+      "pair_seconds_per_step": 0.024852
+    },
+    {
+      "atoms": 24000,
+      "mode": "auto",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.025178500000000003,
+          "pair_seconds_per_step": 0.024893000000000002,
+          "max_force_error": 1.6608936448392342e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.546585164964199e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.0250679,
+          "pair_seconds_per_step": 0.024853,
+          "max_force_error": 1.6608936448392342e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 4.43833414465189e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.025071,
+          "pair_seconds_per_step": 0.024853,
+          "max_force_error": 1.6620038678638593e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.2014213502407074e-10
+        }
+      ],
+      "seconds_per_step": 0.025071,
+      "pair_seconds_per_step": 0.024853
+    }
+  ]
+}

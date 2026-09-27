@@ -1,0 +1,8 @@
+g4-distinct-before-n512-order8-mode1-round0 seconds 0.02680689225 ratio 1.7129622424812418
+g4-distinct-after-n512-order8-mode1-round0 seconds 0.0244084502 ratio 1.564053146643166
+g4-distinct-after-n512-order8-mode1-round1 seconds 0.0244181342 ratio 1.5576122292110777
+g4-distinct-before-n512-order8-mode1-round1 seconds 0.0268525625 ratio 1.716080402147683
+g4-distinct-before-n4096-order8-mode1-round0 seconds 0.216739 ratio 1.7290850113662248
+g4-distinct-after-n4096-order8-mode1-round0 seconds 0.197819348 ratio 1.5805757135375655
+g4-distinct-after-n4096-order8-mode1-round1 seconds 0.197069751 ratio 1.5730655301393357
+g4-distinct-before-n4096-order8-mode1-round1 seconds 0.21706833 ratio 1.7278089442990212

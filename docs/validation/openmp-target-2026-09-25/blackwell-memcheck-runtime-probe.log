@@ -1,0 +1,14 @@
+========= COMPUTE-SANITIZER
+========= Program hit CUDA_ERROR_NO_BINARY_FOR_GPU (error 209) due to "no kernel image is available for execution on the device" on CUDA API call to cuModuleLoadDataEx.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: __pgi_uacc_cuda_load_this_module in cuda_init.c:2205 [0x21649] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_cuda_load_module in cuda_init.c:2440 [0x2214e] in libaccdevice.so
+=========         Host Frame: __pgi_uacc_init_device in init.c:814 [0x39908] in libacchost.so
+=========         Host Frame: __pgi_uacc_dataenterstart2 in dataenterstart.c:42 [0x2e806] in libacchost.so
+=========         Host Frame: accelnet_target_kernels_run_target_batch_ in accelnet_target_kernels.f90:30 [0x30e0b] in test_batch_target
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:189 [0x30607] in test_batch_target
+=========         Host Frame: test_batch_target_check in test_batch_target.f90:180 [0x197cf] in test_batch_target
+=========         Host Frame: MAIN_ in test_batch_target.f90:28 [0x4c06] in test_batch_target
+=========         Host Frame: main [0x49f0] in test_batch_target
+========= 
+========= ERROR SUMMARY: 1 error

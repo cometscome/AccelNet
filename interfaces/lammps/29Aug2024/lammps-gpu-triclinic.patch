@@ -1,0 +1,20 @@
+--- a/src/atom.cpp
++++ b/src/atom.cpp
+@@ -2457,7 +2457,7 @@
+   }
+ 
+ #ifdef LMP_GPU
+-  if (userbinsize == 0.0) {
++  if (userbinsize == 0.0 && !domain->triclinic) {
+     auto ifix = dynamic_cast<FixGPU *>(modify->get_fix_by_id("package_gpu"));
+     if (ifix) {
+       const double subx = domain->subhi[0] - domain->sublo[0];
+@@ -2540,7 +2540,7 @@
+ #endif
+ 
+ #ifdef LMP_GPU
+-  if (userbinsize == 0.0) {
++  if (userbinsize == 0.0 && !domain->triclinic) {
+     FixGPU *fix = dynamic_cast<FixGPU *>(modify->get_fix_by_id("package_gpu"));
+     if (fix) {
+       const double subx = domain->subhi[0] - domain->sublo[0];

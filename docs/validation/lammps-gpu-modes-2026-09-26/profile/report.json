@@ -1,0 +1,554 @@
+[
+  {
+    "atoms": 192,
+    "mode": "direct",
+    "profiled_loop_ms_per_step": 9.08296,
+    "phases": {
+      "import_541": {
+        "mean_ms": 0.00842596,
+        "median_ms": 0.008448,
+        "min_ms": 0.008288,
+        "max_ms": 0.008512,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L541_4_",
+        "steps": 100,
+        "gridX": 132,
+        "blockX": 128,
+        "registersPerThread": 50,
+        "localMemoryPerThread": 0
+      },
+      "import_549": {
+        "mean_ms": 0.10683738,
+        "median_ms": 0.1067685,
+        "min_ms": 0.105473,
+        "max_ms": 0.108833,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L549_6_",
+        "steps": 100,
+        "gridX": 15,
+        "blockX": 128,
+        "registersPerThread": 40,
+        "localMemoryPerThread": 0
+      },
+      "geometry_radial_direct_or_powers": {
+        "mean_ms": 8.47281102,
+        "median_ms": 8.475359000000001,
+        "min_ms": 8.436015,
+        "max_ms": 8.496879,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L41_2_",
+        "steps": 100,
+        "gridX": 60,
+        "blockX": 32,
+        "registersPerThread": 120,
+        "localMemoryPerThread": 0
+      },
+      "network_and_moment_adjoint": {
+        "mean_ms": 0.08781779,
+        "median_ms": 0.0878245,
+        "min_ms": 0.087361,
+        "max_ms": 0.088033,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L179_8_",
+        "steps": 100,
+        "gridX": 6,
+        "blockX": 32,
+        "registersPerThread": 98,
+        "localMemoryPerThread": 0
+      },
+      "edge_force": {
+        "mean_ms": 0.1750941,
+        "median_ms": 0.175249,
+        "min_ms": 0.172705,
+        "max_ms": 0.176577,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L236_10_",
+        "steps": 100,
+        "gridX": 206,
+        "blockX": 128,
+        "registersPerThread": 144,
+        "localMemoryPerThread": 0
+      },
+      "force_virial_scatter": {
+        "mean_ms": 0.06478788,
+        "median_ms": 0.064769,
+        "min_ms": 0.064512,
+        "max_ms": 0.065184,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L312_12_",
+        "steps": 100,
+        "gridX": 6,
+        "blockX": 32,
+        "registersPerThread": 63,
+        "localMemoryPerThread": 0
+      }
+    },
+    "max_force_difference_from_unprofiled": 1.0880185641326534e-14
+  },
+  {
+    "atoms": 192,
+    "mode": "moment",
+    "profiled_loop_ms_per_step": 1.63455,
+    "phases": {
+      "import_541": {
+        "mean_ms": 0.00848902,
+        "median_ms": 0.008512,
+        "min_ms": 0.008288,
+        "max_ms": 0.008576,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L541_4_",
+        "steps": 100,
+        "gridX": 132,
+        "blockX": 128,
+        "registersPerThread": 50,
+        "localMemoryPerThread": 0
+      },
+      "import_549": {
+        "mean_ms": 0.10705209,
+        "median_ms": 0.10702500000000001,
+        "min_ms": 0.105377,
+        "max_ms": 0.109185,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L549_6_",
+        "steps": 100,
+        "gridX": 15,
+        "blockX": 128,
+        "registersPerThread": 40,
+        "localMemoryPerThread": 0
+      },
+      "geometry_radial_direct_or_powers": {
+        "mean_ms": 0.89805901,
+        "median_ms": 0.898725,
+        "min_ms": 0.894757,
+        "max_ms": 0.899653,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L41_2_",
+        "steps": 100,
+        "gridX": 60,
+        "blockX": 32,
+        "registersPerThread": 120,
+        "localMemoryPerThread": 0
+      },
+      "moment_build": {
+        "mean_ms": 0.0874296,
+        "median_ms": 0.087456,
+        "min_ms": 0.087104,
+        "max_ms": 0.087808,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L126_4_",
+        "steps": 100,
+        "gridX": 126,
+        "blockX": 128,
+        "registersPerThread": 48,
+        "localMemoryPerThread": 0
+      },
+      "moment_to_descriptor": {
+        "mean_ms": 0.09901783,
+        "median_ms": 0.099009,
+        "min_ms": 0.098848,
+        "max_ms": 0.099169,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L145_6_",
+        "steps": 100,
+        "gridX": 6,
+        "blockX": 32,
+        "registersPerThread": 56,
+        "localMemoryPerThread": 0
+      },
+      "network_and_moment_adjoint": {
+        "mean_ms": 0.09339255,
+        "median_ms": 0.093408,
+        "min_ms": 0.093089,
+        "max_ms": 0.093601,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L179_8_",
+        "steps": 100,
+        "gridX": 6,
+        "blockX": 32,
+        "registersPerThread": 98,
+        "localMemoryPerThread": 0
+      },
+      "edge_force": {
+        "mean_ms": 0.08753039,
+        "median_ms": 0.087521,
+        "min_ms": 0.086976,
+        "max_ms": 0.087937,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L236_10_",
+        "steps": 100,
+        "gridX": 206,
+        "blockX": 128,
+        "registersPerThread": 144,
+        "localMemoryPerThread": 0
+      },
+      "force_virial_scatter": {
+        "mean_ms": 0.06491461,
+        "median_ms": 0.0648965,
+        "min_ms": 0.064608,
+        "max_ms": 0.065344,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L312_12_",
+        "steps": 100,
+        "gridX": 6,
+        "blockX": 32,
+        "registersPerThread": 63,
+        "localMemoryPerThread": 0
+      }
+    },
+    "max_force_difference_from_unprofiled": 9.2148511043888e-15
+  },
+  {
+    "atoms": 5184,
+    "mode": "direct",
+    "profiled_loop_ms_per_step": 13.7493,
+    "phases": {
+      "import_541": {
+        "mean_ms": 0.20243855,
+        "median_ms": 0.20387300000000003,
+        "min_ms": 0.198497,
+        "max_ms": 0.20621,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L541_4_",
+        "steps": 100,
+        "gridX": 132,
+        "blockX": 128,
+        "registersPerThread": 50,
+        "localMemoryPerThread": 0
+      },
+      "import_549": {
+        "mean_ms": 0.14229094,
+        "median_ms": 0.141953,
+        "min_ms": 0.138945,
+        "max_ms": 0.146497,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L549_6_",
+        "steps": 100,
+        "gridX": 108,
+        "blockX": 128,
+        "registersPerThread": 40,
+        "localMemoryPerThread": 0
+      },
+      "geometry_radial_direct_or_powers": {
+        "mean_ms": 10.74770559,
+        "median_ms": 10.748346999999999,
+        "min_ms": 10.688282,
+        "max_ms": 10.816859,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L41_2_",
+        "steps": 100,
+        "gridX": 431,
+        "blockX": 32,
+        "registersPerThread": 120,
+        "localMemoryPerThread": 0
+      },
+      "network_and_moment_adjoint": {
+        "mean_ms": 0.10237052,
+        "median_ms": 0.102353,
+        "min_ms": 0.100769,
+        "max_ms": 0.103584,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L179_8_",
+        "steps": 100,
+        "gridX": 162,
+        "blockX": 32,
+        "registersPerThread": 98,
+        "localMemoryPerThread": 0
+      },
+      "edge_force": {
+        "mean_ms": 2.03061715,
+        "median_ms": 2.0310035,
+        "min_ms": 2.017067,
+        "max_ms": 2.044043,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L236_10_",
+        "steps": 100,
+        "gridX": 5558,
+        "blockX": 128,
+        "registersPerThread": 144,
+        "localMemoryPerThread": 0
+      },
+      "force_virial_scatter": {
+        "mean_ms": 0.16248696,
+        "median_ms": 0.16219299999999998,
+        "min_ms": 0.159296,
+        "max_ms": 0.166209,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L312_12_",
+        "steps": 100,
+        "gridX": 162,
+        "blockX": 32,
+        "registersPerThread": 63,
+        "localMemoryPerThread": 0
+      }
+    },
+    "max_force_difference_from_unprofiled": 3.8219427622721014e-14
+  },
+  {
+    "atoms": 5184,
+    "mode": "moment",
+    "profiled_loop_ms_per_step": 5.1661,
+    "phases": {
+      "import_541": {
+        "mean_ms": 0.20276465,
+        "median_ms": 0.204577,
+        "min_ms": 0.199041,
+        "max_ms": 0.207201,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L541_4_",
+        "steps": 100,
+        "gridX": 132,
+        "blockX": 128,
+        "registersPerThread": 50,
+        "localMemoryPerThread": 0
+      },
+      "import_549": {
+        "mean_ms": 0.14263787,
+        "median_ms": 0.1427045,
+        "min_ms": 0.139265,
+        "max_ms": 0.146081,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L549_6_",
+        "steps": 100,
+        "gridX": 108,
+        "blockX": 128,
+        "registersPerThread": 40,
+        "localMemoryPerThread": 0
+      },
+      "geometry_radial_direct_or_powers": {
+        "mean_ms": 1.32544746,
+        "median_ms": 1.324151,
+        "min_ms": 1.309287,
+        "max_ms": 1.370056,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L41_2_",
+        "steps": 100,
+        "gridX": 431,
+        "blockX": 32,
+        "registersPerThread": 120,
+        "localMemoryPerThread": 0
+      },
+      "moment_build": {
+        "mean_ms": 1.23228151,
+        "median_ms": 1.231943,
+        "min_ms": 1.213094,
+        "max_ms": 1.271399,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L126_4_",
+        "steps": 100,
+        "gridX": 3402,
+        "blockX": 128,
+        "registersPerThread": 48,
+        "localMemoryPerThread": 0
+      },
+      "moment_to_descriptor": {
+        "mean_ms": 0.20760656,
+        "median_ms": 0.2073935,
+        "min_ms": 0.204641,
+        "max_ms": 0.210658,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L145_6_",
+        "steps": 100,
+        "gridX": 162,
+        "blockX": 32,
+        "registersPerThread": 56,
+        "localMemoryPerThread": 0
+      },
+      "network_and_moment_adjoint": {
+        "mean_ms": 0.11605601,
+        "median_ms": 0.116033,
+        "min_ms": 0.114592,
+        "max_ms": 0.117857,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L179_8_",
+        "steps": 100,
+        "gridX": 162,
+        "blockX": 32,
+        "registersPerThread": 98,
+        "localMemoryPerThread": 0
+      },
+      "edge_force": {
+        "mean_ms": 1.41006012,
+        "median_ms": 1.4070960000000001,
+        "min_ms": 1.397128,
+        "max_ms": 1.42676,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L236_10_",
+        "steps": 100,
+        "gridX": 5558,
+        "blockX": 128,
+        "registersPerThread": 144,
+        "localMemoryPerThread": 0
+      },
+      "force_virial_scatter": {
+        "mean_ms": 0.17134594,
+        "median_ms": 0.171361,
+        "min_ms": 0.165921,
+        "max_ms": 0.175809,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L312_12_",
+        "steps": 100,
+        "gridX": 162,
+        "blockX": 32,
+        "registersPerThread": 63,
+        "localMemoryPerThread": 0
+      }
+    },
+    "max_force_difference_from_unprofiled": 5.94246873930615e-14
+  },
+  {
+    "atoms": 24000,
+    "mode": "direct",
+    "profiled_loop_ms_per_step": 29.376,
+    "phases": {
+      "import_541": {
+        "mean_ms": 0.92131492,
+        "median_ms": 0.928133,
+        "min_ms": 0.909797,
+        "max_ms": 0.932389,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L541_4_",
+        "steps": 100,
+        "gridX": 132,
+        "blockX": 128,
+        "registersPerThread": 50,
+        "localMemoryPerThread": 0
+      },
+      "import_549": {
+        "mean_ms": 0.31310145,
+        "median_ms": 0.3116655,
+        "min_ms": 0.298882,
+        "max_ms": 0.330082,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L549_6_",
+        "steps": 100,
+        "gridX": 351,
+        "blockX": 128,
+        "registersPerThread": 40,
+        "localMemoryPerThread": 0
+      },
+      "geometry_radial_direct_or_powers": {
+        "mean_ms": 17.66699151,
+        "median_ms": 17.712573,
+        "min_ms": 17.436316,
+        "max_ms": 18.013726,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L41_2_",
+        "steps": 100,
+        "gridX": 1402,
+        "blockX": 32,
+        "registersPerThread": 120,
+        "localMemoryPerThread": 0
+      },
+      "network_and_moment_adjoint": {
+        "mean_ms": 0.12486337,
+        "median_ms": 0.1245925,
+        "min_ms": 0.121024,
+        "max_ms": 0.134785,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L179_8_",
+        "steps": 100,
+        "gridX": 750,
+        "blockX": 32,
+        "registersPerThread": 98,
+        "localMemoryPerThread": 0
+      },
+      "edge_force": {
+        "mean_ms": 9.08341267,
+        "median_ms": 9.079408,
+        "min_ms": 9.067312,
+        "max_ms": 9.482098,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L236_10_",
+        "steps": 100,
+        "gridX": 25731,
+        "blockX": 128,
+        "registersPerThread": 144,
+        "localMemoryPerThread": 0
+      },
+      "force_virial_scatter": {
+        "mean_ms": 0.45143717,
+        "median_ms": 0.45125000000000004,
+        "min_ms": 0.446274,
+        "max_ms": 0.457154,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L312_12_",
+        "steps": 100,
+        "gridX": 750,
+        "blockX": 32,
+        "registersPerThread": 63,
+        "localMemoryPerThread": 0
+      }
+    },
+    "max_force_difference_from_unprofiled": 1.4988010832439613e-13
+  },
+  {
+    "atoms": 24000,
+    "mode": "moment",
+    "profiled_loop_ms_per_step": 25.1961,
+    "phases": {
+      "import_541": {
+        "mean_ms": 0.92181903,
+        "median_ms": 0.9281485,
+        "min_ms": 0.910597,
+        "max_ms": 0.932933,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L541_4_",
+        "steps": 100,
+        "gridX": 132,
+        "blockX": 128,
+        "registersPerThread": 50,
+        "localMemoryPerThread": 0
+      },
+      "import_549": {
+        "mean_ms": 0.31305977,
+        "median_ms": 0.311442,
+        "min_ms": 0.296801,
+        "max_ms": 0.333025,
+        "kernel": "nvkernel_accelnet_batch_target_import_lammps_inputs__F1L549_6_",
+        "steps": 100,
+        "gridX": 351,
+        "blockX": 128,
+        "registersPerThread": 40,
+        "localMemoryPerThread": 0
+      },
+      "geometry_radial_direct_or_powers": {
+        "mean_ms": 3.47647386,
+        "median_ms": 3.476738,
+        "min_ms": 3.437137,
+        "max_ms": 3.518162,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L41_2_",
+        "steps": 100,
+        "gridX": 1402,
+        "blockX": 32,
+        "registersPerThread": 120,
+        "localMemoryPerThread": 0
+      },
+      "moment_build": {
+        "mean_ms": 12.35789137,
+        "median_ms": 12.352910000000001,
+        "min_ms": 12.232766,
+        "max_ms": 12.500831,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L126_4_",
+        "steps": 100,
+        "gridX": 15750,
+        "blockX": 128,
+        "registersPerThread": 48,
+        "localMemoryPerThread": 0
+      },
+      "moment_to_descriptor": {
+        "mean_ms": 0.21944881,
+        "median_ms": 0.219377,
+        "min_ms": 0.217569,
+        "max_ms": 0.221441,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L145_6_",
+        "steps": 100,
+        "gridX": 750,
+        "blockX": 32,
+        "registersPerThread": 56,
+        "localMemoryPerThread": 0
+      },
+      "network_and_moment_adjoint": {
+        "mean_ms": 0.13792869,
+        "median_ms": 0.1373285,
+        "min_ms": 0.133472,
+        "max_ms": 0.146977,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L179_8_",
+        "steps": 100,
+        "gridX": 750,
+        "blockX": 32,
+        "registersPerThread": 98,
+        "localMemoryPerThread": 0
+      },
+      "edge_force": {
+        "mean_ms": 6.50607947,
+        "median_ms": 6.501888,
+        "min_ms": 6.489633,
+        "max_ms": 6.917347,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L236_10_",
+        "steps": 100,
+        "gridX": 25731,
+        "blockX": 128,
+        "registersPerThread": 144,
+        "localMemoryPerThread": 0
+      },
+      "force_virial_scatter": {
+        "mean_ms": 0.45154243,
+        "median_ms": 0.4516985,
+        "min_ms": 0.445794,
+        "max_ms": 0.457954,
+        "kernel": "nvkernel_accelnet_target_kernels_run_target_batch__F1L312_12_",
+        "steps": 100,
+        "gridX": 750,
+        "blockX": 32,
+        "registersPerThread": 63,
+        "localMemoryPerThread": 0
+      }
+    },
+    "max_force_difference_from_unprofiled": 1.4732659536775827e-13
+  }
+]

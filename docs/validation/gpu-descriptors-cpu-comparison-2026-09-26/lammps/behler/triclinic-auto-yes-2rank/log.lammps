@@ -1,0 +1,185 @@
+LAMMPS (29 Aug 2024 - Update 4)
+clear
+package gpu 1 neigh yes newton on split 1
+units metal
+atom_style atomic
+boundary p p p
+
+read_data /tmp/accelnet-other-descriptors/lammps/behler/triclinic.data
+Reading data file ...
+  triclinic box = (0 0 0) to (5.6 5.8 6) with tilt (0.7 -0.4 0.3)
+  1 by 1 by 2 MPI processor grid
+  reading atoms ...
+  8 atoms
+  read_data CPU = 0.001 seconds
+replicate 1 1 1
+Replication is creating a 1x1x1 = 1 times larger system...
+  triclinic box = (0 0 0) to (5.6 5.8 6) with tilt (0.7 -0.4 0.3)
+  1 by 1 by 2 MPI processor grid
+  8 atoms
+  replicate CPU = 0.000 seconds
+pair_style accelnet/gpu auto /tmp/accelnet-other-descriptors/lammps/behler-model/H.nn.ascii /tmp/accelnet-other-descriptors/lammps/behler-model/O.nn.ascii
+pair_coeff * *
+neighbor 0.6 bin
+neigh_modify every 1 delay 0 check no
+atom_modify sort 1 0.0
+velocity all create 100 4928459 mom yes rot no dist gaussian
+
+fix integrate all nve
+timestep 0.0001
+compute ea all pe/atom
+compute vir all pressure NULL virial
+thermo 1
+thermo_style custom step pe c_vir[1] c_vir[2] c_vir[3] c_vir[4] c_vir[5] c_vir[6]
+thermo_modify format float %.17g lost error
+run 0
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- GPU package (short-range, long-range and three-body potentials): doi:10.1016/j.cpc.2010.12.021, doi:10.1016/j.cpc.2011.10.012, doi:10.1016/j.cpc.2013.08.002, doi:10.1016/j.commatsci.2014.10.068, doi:10.1016/j.cpc.2016.10.020, doi:10.3233/APC200086
+
+@Article{Brown11,
+ author = {W. M. Brown and P. Wang and S. J. Plimpton and A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers---Short Range Forces},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2011,
+ volume =  182,
+ pages =   {898--911},
+ doi =     {10.1016/j.cpc.2010.12.021}
+}
+
+@Article{Brown12,
+ author = {W. M. Brown and A. Kohlmeyer and S. J. Plimpton and A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Particle-Particle Particle-Mesh},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2012,
+ volume =  183,
+ doi =     {10.1016/j.cpc.2011.10.012},
+ pages =   {449--459}
+}
+
+@Article{Brown13,
+ author = {W. M. Brown and Y. Masako},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers---Three-Body Potentials},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2013,
+ volume =  184,
+ pages =   {2785--2793},
+ doi =     {10.1016/j.cpc.2013.08.002},
+}
+
+@Article{Trung15,
+ author = {T. D. Nguyen and S. J. Plimpton},
+ title = {Accelerating Dissipative Particle Dynamics Simulations for Soft Matter Systems},
+ journal = {Comput.\ Mater.\ Sci.},
+ year =    2015,
+ doi =     {10.1016/j.commatsci.2014.10.068},
+ volume =  100,
+ pages =   {173--180}
+}
+
+@Article{Trung17,
+ author = {T. D. Nguyen},
+ title = {{GPU}-Accelerated {T}ersoff Potentials for Massively Parallel
+    Molecular Dynamics Simulations},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2017,
+ doi =     {10.1016/j.cpc.2016.10.020},
+ volume =  212,
+ pages =   {113--122}
+}
+
+@inproceedings{Nikolskiy19,
+ author = {V. Nikolskiy and V. Stegailov},
+ title = {{GPU} Acceleration of Four-Site Water Models in {LAMMPS}},
+ booktitle = {Proceedings of the International Conference on Parallel
+    Computing (ParCo 2019), Prague, Czech Republic},
+ doi =     {10.3233/APC200086},
+ year =    2019
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Per MPI rank memory allocation (min/avg/max) = 1.93 | 1.992 | 2.055 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  5.9884134070181272 -0.46767568050464353 -1.0688344824082994 0.98726510089445563 0.36535036408531385 -0.0012035757136612817 0.21501544739527587
+Loop time of 1.9905e-06 on 2 procs for 0 steps with 8 atoms
+
+25.1% CPU use with 2 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 1.991e-06  |            |       |100.00
+
+Nlocal:              4 ave           8 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:             93 ave         100 max          86 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:              0 ave           0 max           0 min
+Histogram: 2 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0
+Neighbor list builds = 0
+Dangerous builds not checked
+write_dump all custom initial.dump id type x y z fx fy fz c_ea modify sort id format float %.17g
+run 20
+Per MPI rank memory allocation (min/avg/max) = 2.055 | 2.117 | 2.18 Mbytes
+   Step         PotEng        c_vir[1]       c_vir[2]       c_vir[3]       c_vir[4]       c_vir[5]       c_vir[6]   
+         0  5.9884134070181272 -0.46767568050464142 -1.0688344824083009 0.98726510089445529 0.36535036408531307 -0.0012035757136613374 0.21501544739527531
+         1  5.9884132521607851 -0.46849639667672549 -1.0695161037801808 0.98677998016196411 0.36472055547746751 -0.0014478777459145855 0.21491153522934273
+         2  5.9884130973131828 -0.46931676030929409 -1.070197628144395 0.98629476833245344 0.36409132965225216 -0.0016921072495844011 0.21480715814163678
+         3  5.9884129424753727 -0.47013677059421927 -1.0708790549393479 0.9858094648413831 0.36346268778937485 -0.0019362641626856894 0.21470231683236757
+         4  5.9884127876473983 -0.47095642672120425 -1.0715603836061252 0.98532406912483905 0.36283463106656288 -0.0021803484233653336 0.21459701200240916
+         5  5.9884126328293066 -0.4717757278778103 -1.0722416135884829 0.98483858061953911 0.36220716065956077 -0.0024243599698993527 0.21449124435328792
+         6  5.9884124780211474 -0.47259467324944299 -1.0729227443328408 0.98435299876282534 0.36158027774211893 -0.0026682987406976924 0.2143850145871937
+         7  5.9884123232229651 -0.47341326201936312 -1.0736037752882881 0.9838673229926711 0.36095398348598401 -0.0029121646742963692 0.21427832340697175
+         8  5.9884121684348068 -0.4742314933686988 -1.0742847059065701 0.98338155274769312 0.3603282790609012 -0.0031559577093605933 0.21417117151611964
+         9  5.9884120136567214 -0.47504936647644497 -1.0749655356420891 0.98289568746711842 0.35970316563458982 -0.0033996777846969093 0.21406355961879187
+        10  5.988411858888754 -0.47586688051944698 -1.0756462639518898 0.9824097265908196 0.35907864437275316 -0.0036433248392260115 0.21395548841978884
+        11  5.9884117041309537 -0.47668403467245363 -1.0763268902956753 0.98192366955929189 0.35845471643905363 -0.0038868988120114379 0.21384695862456443
+        12  5.9884115493833665 -0.47750082810808475 -1.0770074141357771 0.98143751581367822 0.35783138299512413 -0.0041303996422364436 0.21373797093922006
+        13  5.988411394646036 -0.47831725999683244 -1.0776878349371697 0.98095126479574868 0.35720864520053813 -0.0043738272692202731 0.21362852607050156
+        14  5.9884112399190164 -0.47913332950708881 -1.0783681521674611 0.98046491594790419 0.35658650421281984 -0.0046171816324062937 0.21351862472580097
+        15  5.9884110852023484 -0.47994903580514109 -1.0790483652968834 0.97997846871318228 0.35596496118742843 -0.0048604626713673422 0.21340826761315146
+        16  5.988410930496082 -0.48076437805517069 -1.0797284737982891 0.97949192253525896 0.35534401727775006 -0.0051036703258055009 0.2132974554412283
+        17  5.988410775800264 -0.48157935541926811 -1.0804084771471545 0.97900527685844829 0.35472367363509427 -0.0053468045355519371 0.21318618891934799
+        18  5.988410621114939 -0.48239396705743398 -1.0810883748215649 0.97851853112769915 0.35410393140867807 -0.0055898652405621009 0.21307446875746064
+        19  5.9884104664401558 -0.48320821212757575 -1.0817681663022154 0.97803168478859914 0.35348479174562619 -0.0058328523809214206 0.21296229566615513
+        20  5.9884103117759624 -0.48402208978553074 -1.0824478510724014 0.97754473728737479 0.35286625579096037 -0.0060757658968443977 0.21284967035665944
+Loop time of 0.0171285 on 2 procs for 20 steps with 8 atoms
+
+Performance: 10.088 ns/day, 2.379 hours/ns, 1167.645 timesteps/s, 9.341 katom-step/s
+94.9% CPU use with 2 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 5.18e-06   | 0.0067998  | 0.013594   |   8.2 | 39.70
+Neigh   | 9.46e-07   | 1.1805e-06 | 1.415e-06  |   0.0 |  0.01
+Comm    | 0.001855   | 0.0086305  | 0.015406   |   7.3 | 50.39
+Output  | 0.00165    | 0.0016776  | 0.0017052  |   0.1 |  9.79
+Modify  | 3.126e-06  | 5.7115e-06 | 8.297e-06  |   0.0 |  0.03
+Other   |            | 1.368e-05  |            |       |  0.08
+
+Nlocal:              4 ave           8 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:             93 ave         100 max          86 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:              0 ave           0 max           0 min
+Histogram: 2 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0
+Neighbor list builds = 20
+Dangerous builds not checked
+write_dump all custom final.dump id type x y z fx fy fz c_ea modify sort id format float %.17g
+Total wall time: 0:00:00

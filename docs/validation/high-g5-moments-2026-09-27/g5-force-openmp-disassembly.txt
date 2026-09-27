@@ -1,0 +1,1250 @@
+
+/tmp/accelnet-high-moments/build-gnu-openmp/AccelNetPredictor/CMakeFiles/AccelNetTarget.dir/src/accelnet_target_kernels.f90.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000000130d0 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1>:
+   130d0:	41 57                	push   %r15
+   130d2:	41 56                	push   %r14
+   130d4:	41 55                	push   %r13
+   130d6:	41 54                	push   %r12
+   130d8:	55                   	push   %rbp
+   130d9:	53                   	push   %rbx
+   130da:	48 81 ec 58 04 00 00 	sub    $0x458,%rsp
+   130e1:	8b 87 24 02 00 00    	mov    0x224(%rdi),%eax
+   130e7:	8b af 2c 02 00 00    	mov    0x22c(%rdi),%ebp
+   130ed:	8b 9f 28 02 00 00    	mov    0x228(%rdi),%ebx
+   130f3:	48 89 3c 24          	mov    %rdi,(%rsp)
+   130f7:	89 84 24 34 03 00 00 	mov    %eax,0x334(%rsp)
+   130fe:	e8 00 00 00 00       	call   13103 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x33>
+   13103:	41 89 c4             	mov    %eax,%r12d
+   13106:	e8 00 00 00 00       	call   1310b <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x3b>
+   1310b:	4c 8b 1c 24          	mov    (%rsp),%r11
+   1310f:	89 c1                	mov    %eax,%ecx
+   13111:	89 d8                	mov    %ebx,%eax
+   13113:	29 e8                	sub    %ebp,%eax
+   13115:	99                   	cltd   
+   13116:	41 f7 fc             	idiv   %r12d
+   13119:	39 d1                	cmp    %edx,%ecx
+   1311b:	0f 8c af 0f 00 00    	jl     140d0 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1000>
+   13121:	0f af c8             	imul   %eax,%ecx
+   13124:	01 ca                	add    %ecx,%edx
+   13126:	01 d0                	add    %edx,%eax
+   13128:	39 c2                	cmp    %eax,%edx
+   1312a:	0f 8d 50 09 00 00    	jge    13a80 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x9b0>
+   13130:	49 8b 9b 18 02 00 00 	mov    0x218(%r11),%rbx
+   13137:	49 8b 8b 90 01 00 00 	mov    0x190(%r11),%rcx
+   1313e:	01 e8                	add    %ebp,%eax
+   13140:	44 8d 4c 15 00       	lea    0x0(%rbp,%rdx,1),%r9d
+   13145:	31 d2                	xor    %edx,%edx
+   13147:	4c 89 dd             	mov    %r11,%rbp
+   1314a:	48 89 5c 24 40       	mov    %rbx,0x40(%rsp)
+   1314f:	49 8b 9b 10 02 00 00 	mov    0x210(%r11),%rbx
+   13156:	48 89 5c 24 48       	mov    %rbx,0x48(%rsp)
+   1315b:	49 8b 9b f0 01 00 00 	mov    0x1f0(%r11),%rbx
+   13162:	48 89 9c 24 68 02 00 	mov    %rbx,0x268(%rsp)
+   13169:	00 
+   1316a:	49 8b 9b d8 01 00 00 	mov    0x1d8(%r11),%rbx
+   13171:	48 89 9c 24 b0 01 00 	mov    %rbx,0x1b0(%rsp)
+   13178:	00 
+   13179:	49 8b 9b d0 01 00 00 	mov    0x1d0(%r11),%rbx
+   13180:	48 89 9c 24 b8 01 00 	mov    %rbx,0x1b8(%rsp)
+   13187:	00 
+   13188:	49 8b 9b c0 01 00 00 	mov    0x1c0(%r11),%rbx
+   1318f:	48 89 9c 24 70 01 00 	mov    %rbx,0x170(%rsp)
+   13196:	00 
+   13197:	49 8b 9b b8 01 00 00 	mov    0x1b8(%r11),%rbx
+   1319e:	48 89 9c 24 78 01 00 	mov    %rbx,0x178(%rsp)
+   131a5:	00 
+   131a6:	49 8b 9b b0 01 00 00 	mov    0x1b0(%r11),%rbx
+   131ad:	48 89 9c 24 80 01 00 	mov    %rbx,0x180(%rsp)
+   131b4:	00 
+   131b5:	49 8b 9b a0 01 00 00 	mov    0x1a0(%r11),%rbx
+   131bc:	48 89 9c 24 b0 00 00 	mov    %rbx,0xb0(%rsp)
+   131c3:	00 
+   131c4:	49 8b 9b 98 01 00 00 	mov    0x198(%r11),%rbx
+   131cb:	48 89 9c 24 b8 00 00 	mov    %rbx,0xb8(%rsp)
+   131d2:	00 
+   131d3:	49 8b 9b 80 01 00 00 	mov    0x180(%r11),%rbx
+   131da:	48 89 9c 24 88 01 00 	mov    %rbx,0x188(%rsp)
+   131e1:	00 
+   131e2:	49 8b 9b 78 01 00 00 	mov    0x178(%r11),%rbx
+   131e9:	48 89 9c 24 90 01 00 	mov    %rbx,0x190(%rsp)
+   131f0:	00 
+   131f1:	49 8b 9b 70 01 00 00 	mov    0x170(%r11),%rbx
+   131f8:	48 89 9c 24 00 01 00 	mov    %rbx,0x100(%rsp)
+   131ff:	00 
+   13200:	49 8b 9b 60 01 00 00 	mov    0x160(%r11),%rbx
+   13207:	48 89 9c 24 c0 01 00 	mov    %rbx,0x1c0(%rsp)
+   1320e:	00 
+   1320f:	49 8b 9b 50 01 00 00 	mov    0x150(%r11),%rbx
+   13216:	48 89 5c 24 10       	mov    %rbx,0x10(%rsp)
+   1321b:	49 8b 9b e8 00 00 00 	mov    0xe8(%r11),%rbx
+   13222:	48 89 9c 24 18 01 00 	mov    %rbx,0x118(%rsp)
+   13229:	00 
+   1322a:	49 8b 9b d8 00 00 00 	mov    0xd8(%r11),%rbx
+   13231:	49 8b 7b 48          	mov    0x48(%r11),%rdi
+   13235:	49 8b 73 28          	mov    0x28(%r11),%rsi
+   13239:	44 89 4c 24 70       	mov    %r9d,0x70(%rsp)
+   1323e:	4d 8b 43 78          	mov    0x78(%r11),%r8
+   13242:	4d 8b 63 20          	mov    0x20(%r11),%r12
+   13246:	48 89 9c 24 a8 01 00 	mov    %rbx,0x1a8(%rsp)
+   1324d:	00 
+   1324e:	49 8b 9b c8 00 00 00 	mov    0xc8(%r11),%rbx
+   13255:	4d 8b 53 68          	mov    0x68(%r11),%r10
+   13259:	89 84 24 e8 00 00 00 	mov    %eax,0xe8(%rsp)
+   13260:	48 8d 04 89          	lea    (%rcx,%rcx,4),%rax
+   13264:	48 01 c0             	add    %rax,%rax
+   13267:	4d 8b b3 d0 00 00 00 	mov    0xd0(%r11),%r14
+   1326e:	48 89 bc 24 c0 00 00 	mov    %rdi,0xc0(%rsp)
+   13275:	00 
+   13276:	48 89 9c 24 c8 01 00 	mov    %rbx,0x1c8(%rsp)
+   1327d:	00 
+   1327e:	49 8b 9b b8 00 00 00 	mov    0xb8(%r11),%rbx
+   13285:	48 01 c1             	add    %rax,%rcx
+   13288:	48 89 8c 24 38 01 00 	mov    %rcx,0x138(%rsp)
+   1328f:	00 
+   13290:	49 8b 8b f8 00 00 00 	mov    0xf8(%r11),%rcx
+   13297:	48 89 9c 24 d0 01 00 	mov    %rbx,0x1d0(%rsp)
+   1329e:	00 
+   1329f:	49 8b 9b 90 00 00 00 	mov    0x90(%r11),%rbx
+   132a6:	48 89 84 24 e0 00 00 	mov    %rax,0xe0(%rsp)
+   132ad:	00 
+   132ae:	48 89 9c 24 d8 01 00 	mov    %rbx,0x1d8(%rsp)
+   132b5:	00 
+   132b6:	49 8b 9b 88 00 00 00 	mov    0x88(%r11),%rbx
+   132bd:	4c 89 34 24          	mov    %r14,(%rsp)
+   132c1:	48 89 9c 24 e0 01 00 	mov    %rbx,0x1e0(%rsp)
+   132c8:	00 
+   132c9:	49 8b 5b 10          	mov    0x10(%r11),%rbx
+   132cd:	4c 89 44 24 08       	mov    %r8,0x8(%rsp)
+   132d2:	48 89 9c 24 c8 00 00 	mov    %rbx,0xc8(%rsp)
+   132d9:	00 
+   132da:	49 8b 5b 08          	mov    0x8(%r11),%rbx
+   132de:	48 89 b4 24 08 02 00 	mov    %rsi,0x208(%rsp)
+   132e5:	00 
+   132e6:	48 89 9c 24 d0 00 00 	mov    %rbx,0xd0(%rsp)
+   132ed:	00 
+   132ee:	49 8b 9b f0 00 00 00 	mov    0xf0(%r11),%rbx
+   132f5:	4c 89 a4 24 60 02 00 	mov    %r12,0x260(%rsp)
+   132fc:	00 
+   132fd:	48 89 5c 24 18       	mov    %rbx,0x18(%rsp)
+   13302:	48 89 8c 24 e8 01 00 	mov    %rcx,0x1e8(%rsp)
+   13309:	00 
+   1330a:	49 8b 43 70          	mov    0x70(%r11),%rax
+   1330e:	48 85 c0             	test   %rax,%rax
+   13311:	48 0f 48 c2          	cmovs  %rdx,%rax
+   13315:	48 89 fa             	mov    %rdi,%rdx
+   13318:	49 8b 7b 38          	mov    0x38(%r11),%rdi
+   1331c:	8d 44 00 01          	lea    0x1(%rax,%rax,1),%eax
+   13320:	48 89 bc 24 d8 02 00 	mov    %rdi,0x2d8(%rsp)
+   13327:	00 
+   13328:	48 98                	cltq   
+   1332a:	48 0f af c3          	imul   %rbx,%rax
+   1332e:	49 8b 9b f8 01 00 00 	mov    0x1f8(%r11),%rbx
+   13335:	48 89 9c 24 b8 02 00 	mov    %rbx,0x2b8(%rsp)
+   1333c:	00 
+   1333d:	48 01 c8             	add    %rcx,%rax
+   13340:	48 89 f1             	mov    %rsi,%rcx
+   13343:	48 89 84 24 60 01 00 	mov    %rax,0x160(%rsp)
+   1334a:	00 
+   1334b:	4b 8d 04 52          	lea    (%r10,%r10,2),%rax
+   1334f:	48 01 f9             	add    %rdi,%rcx
+   13352:	49 8b bb 10 01 00 00 	mov    0x110(%r11),%rdi
+   13359:	48 c1 e0 02          	shl    $0x2,%rax
+   1335d:	48 89 84 24 a8 02 00 	mov    %rax,0x2a8(%rsp)
+   13364:	00 
+   13365:	4c 01 d0             	add    %r10,%rax
+   13368:	48 89 84 24 30 02 00 	mov    %rax,0x230(%rsp)
+   1336f:	00 
+   13370:	4b 8d 04 92          	lea    (%r10,%r10,4),%rax
+   13374:	48 89 84 24 b0 02 00 	mov    %rax,0x2b0(%rsp)
+   1337b:	00 
+   1337c:	49 8d 04 42          	lea    (%r10,%rax,2),%rax
+   13380:	48 89 84 24 00 02 00 	mov    %rax,0x200(%rsp)
+   13387:	00 
+   13388:	49 8b 83 00 02 00 00 	mov    0x200(%r11),%rax
+   1338f:	48 89 bc 24 a8 00 00 	mov    %rdi,0xa8(%rsp)
+   13396:	00 
+   13397:	48 8d 04 58          	lea    (%rax,%rbx,2),%rax
+   1339b:	49 8b 9b 08 01 00 00 	mov    0x108(%r11),%rbx
+   133a2:	48 89 84 24 70 02 00 	mov    %rax,0x270(%rsp)
+   133a9:	00 
+   133aa:	49 8b 83 48 01 00 00 	mov    0x148(%r11),%rax
+   133b1:	4c 8d 3c 9d 00 00 00 	lea    0x0(,%rbx,4),%r15
+   133b8:	00 
+   133b9:	48 89 9c 24 98 01 00 	mov    %rbx,0x198(%rsp)
+   133c0:	00 
+   133c1:	48 89 84 24 08 01 00 	mov    %rax,0x108(%rsp)
+   133c8:	00 
+   133c9:	49 63 c1             	movslq %r9d,%rax
+   133cc:	4d 8b 8b 30 01 00 00 	mov    0x130(%r11),%r9
+   133d3:	48 0f af d0          	imul   %rax,%rdx
+   133d7:	49 03 53 50          	add    0x50(%r11),%rdx
+   133db:	4c 89 bc 24 c0 02 00 	mov    %r15,0x2c0(%rsp)
+   133e2:	00 
+   133e3:	48 89 54 24 30       	mov    %rdx,0x30(%rsp)
+   133e8:	49 8b 53 30          	mov    0x30(%r11),%rdx
+   133ec:	4c 89 8c 24 c8 02 00 	mov    %r9,0x2c8(%rsp)
+   133f3:	00 
+   133f4:	48 89 54 24 60       	mov    %rdx,0x60(%rsp)
+   133f9:	48 0f af d0          	imul   %rax,%rdx
+   133fd:	48 01 ca             	add    %rcx,%rdx
+   13400:	49 8b 8b 18 01 00 00 	mov    0x118(%r11),%rcx
+   13407:	48 89 54 24 78       	mov    %rdx,0x78(%rsp)
+   1340c:	48 89 da             	mov    %rbx,%rdx
+   1340f:	48 01 ca             	add    %rcx,%rdx
+   13412:	48 89 8c 24 d0 02 00 	mov    %rcx,0x2d0(%rsp)
+   13419:	00 
+   1341a:	48 89 f9             	mov    %rdi,%rcx
+   1341d:	48 0f af c8          	imul   %rax,%rcx
+   13421:	48 01 d1             	add    %rdx,%rcx
+   13424:	48 c1 e2 03          	shl    $0x3,%rdx
+   13428:	48 89 4c 24 68       	mov    %rcx,0x68(%rsp)
+   1342d:	49 8b 8b 28 01 00 00 	mov    0x128(%r11),%rcx
+   13434:	48 89 8c 24 a0 00 00 	mov    %rcx,0xa0(%rsp)
+   1343b:	00 
+   1343c:	48 0f af c8          	imul   %rax,%rcx
+   13440:	4c 01 c9             	add    %r9,%rcx
+   13443:	48 89 8c 24 80 00 00 	mov    %rcx,0x80(%rsp)
+   1344a:	00 
+   1344b:	49 8b 8b 58 01 00 00 	mov    0x158(%r11),%rcx
+   13452:	4d 8b 8b e8 01 00 00 	mov    0x1e8(%r11),%r9
+   13459:	48 89 8c 24 d8 00 00 	mov    %rcx,0xd8(%rsp)
+   13460:	00 
+   13461:	48 0f af c8          	imul   %rax,%rcx
+   13465:	49 0f af c1          	imul   %r9,%rax
+   13469:	4c 89 8c 24 98 00 00 	mov    %r9,0x98(%rsp)
+   13470:	00 
+   13471:	48 89 8c 24 88 00 00 	mov    %rcx,0x88(%rsp)
+   13478:	00 
+   13479:	48 89 84 24 90 00 00 	mov    %rax,0x90(%rsp)
+   13480:	00 
+   13481:	48 89 f8             	mov    %rdi,%rax
+   13484:	48 f7 d8             	neg    %rax
+   13487:	48 8d 0c c5 00 00 00 	lea    0x0(,%rax,8),%rcx
+   1348e:	00 
+   1348f:	48 89 c8             	mov    %rcx,%rax
+   13492:	48 89 8c 24 28 01 00 	mov    %rcx,0x128(%rsp)
+   13499:	00 
+   1349a:	48 29 d0             	sub    %rdx,%rax
+   1349d:	48 89 84 24 f0 01 00 	mov    %rax,0x1f0(%rsp)
+   134a4:	00 
+   134a5:	4c 89 f8             	mov    %r15,%rax
+   134a8:	48 29 d8             	sub    %rbx,%rax
+   134ab:	48 c1 e0 03          	shl    $0x3,%rax
+   134af:	48 89 84 24 f8 01 00 	mov    %rax,0x1f8(%rsp)
+   134b6:	00 
+   134b7:	49 8b 83 b0 00 00 00 	mov    0xb0(%r11),%rax
+   134be:	48 c1 e0 03          	shl    $0x3,%rax
+   134c2:	49 83 fe 01          	cmp    $0x1,%r14
+   134c6:	0f 95 c2             	setne  %dl
+   134c9:	49 83 f8 01          	cmp    $0x1,%r8
+   134cd:	48 89 44 24 28       	mov    %rax,0x28(%rsp)
+   134d2:	0f 95 c0             	setne  %al
+   134d5:	48 f7 d9             	neg    %rcx
+   134d8:	09 c2                	or     %eax,%edx
+   134da:	4a 8d 04 cd 00 00 00 	lea    0x0(,%r9,8),%rax
+   134e1:	00 
+   134e2:	48 89 8c 24 e0 02 00 	mov    %rcx,0x2e0(%rsp)
+   134e9:	00 
+   134ea:	48 89 84 24 20 01 00 	mov    %rax,0x120(%rsp)
+   134f1:	00 
+   134f2:	48 8d 04 f5 00 00 00 	lea    0x0(,%rsi,8),%rax
+   134f9:	00 
+   134fa:	48 89 84 24 a0 01 00 	mov    %rax,0x1a0(%rsp)
+   13501:	00 
+   13502:	4a 8d 04 e5 00 00 00 	lea    0x0(,%r12,8),%rax
+   13509:	00 
+   1350a:	88 94 24 ef 02 00 00 	mov    %dl,0x2ef(%rsp)
+   13511:	48 89 84 24 a0 02 00 	mov    %rax,0x2a0(%rsp)
+   13518:	00 
+   13519:	eb 6a                	jmp    13585 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x4b5>
+   1351b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+   13520:	48 8b 8c 24 c0 00 00 	mov    0xc0(%rsp),%rcx
+   13527:	00 
+   13528:	48 8b 9c 24 a0 00 00 	mov    0xa0(%rsp),%rbx
+   1352f:	00 
+   13530:	48 01 4c 24 30       	add    %rcx,0x30(%rsp)
+   13535:	48 8b b4 24 d8 00 00 	mov    0xd8(%rsp),%rsi
+   1353c:	00 
+   1353d:	48 8b 4c 24 60       	mov    0x60(%rsp),%rcx
+   13542:	48 01 9c 24 80 00 00 	add    %rbx,0x80(%rsp)
+   13549:	00 
+   1354a:	48 01 4c 24 78       	add    %rcx,0x78(%rsp)
+   1354f:	8b 54 24 70          	mov    0x70(%rsp),%edx
+   13553:	48 8b 8c 24 a8 00 00 	mov    0xa8(%rsp),%rcx
+   1355a:	00 
+   1355b:	48 01 b4 24 88 00 00 	add    %rsi,0x88(%rsp)
+   13562:	00 
+   13563:	48 01 4c 24 68       	add    %rcx,0x68(%rsp)
+   13568:	48 8b 8c 24 98 00 00 	mov    0x98(%rsp),%rcx
+   1356f:	00 
+   13570:	48 01 8c 24 90 00 00 	add    %rcx,0x90(%rsp)
+   13577:	00 
+   13578:	39 94 24 e8 00 00 00 	cmp    %edx,0xe8(%rsp)
+   1357f:	0f 8e fb 04 00 00    	jle    13a80 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x9b0>
+   13585:	48 8b 45 40          	mov    0x40(%rbp),%rax
+   13589:	48 8b 5c 24 30       	mov    0x30(%rsp),%rbx
+   1358e:	48 8b 00             	mov    (%rax),%rax
+   13591:	48 63 0c 98          	movslq (%rax,%rbx,4),%rcx
+   13595:	48 8b 85 08 02 00 00 	mov    0x208(%rbp),%rax
+   1359c:	8b 5c 24 70          	mov    0x70(%rsp),%ebx
+   135a0:	48 8b 30             	mov    (%rax),%rsi
+   135a3:	48 8b 45 00          	mov    0x0(%rbp),%rax
+   135a7:	48 89 ca             	mov    %rcx,%rdx
+   135aa:	89 5c 24 74          	mov    %ebx,0x74(%rsp)
+   135ae:	83 c3 01             	add    $0x1,%ebx
+   135b1:	48 8b 38             	mov    (%rax),%rdi
+   135b4:	48 8b 84 24 d0 00 00 	mov    0xd0(%rsp),%rax
+   135bb:	00 
+   135bc:	89 5c 24 70          	mov    %ebx,0x70(%rsp)
+   135c0:	48 8b 9c 24 e0 00 00 	mov    0xe0(%rsp),%rbx
+   135c7:	00 
+   135c8:	48 0f af c1          	imul   %rcx,%rax
+   135cc:	48 03 84 24 c8 00 00 	add    0xc8(%rsp),%rax
+   135d3:	00 
+   135d4:	48 63 04 87          	movslq (%rdi,%rax,4),%rax
+   135d8:	48 8b bd 88 01 00 00 	mov    0x188(%rbp),%rdi
+   135df:	48 0f af 44 24 48    	imul   0x48(%rsp),%rax
+   135e5:	48 03 44 24 40       	add    0x40(%rsp),%rax
+   135ea:	4c 8b 07             	mov    (%rdi),%r8
+   135ed:	48 63 04 86          	movslq (%rsi,%rax,4),%rax
+   135f1:	48 8b bc 24 b8 00 00 	mov    0xb8(%rsp),%rdi
+   135f8:	00 
+   135f9:	48 0f af f8          	imul   %rax,%rdi
+   135fd:	48 03 bc 24 b0 00 00 	add    0xb0(%rsp),%rdi
+   13604:	00 
+   13605:	4c 8d 0c 1f          	lea    (%rdi,%rbx,1),%r9
+   13609:	43 83 3c 88 01       	cmpl   $0x1,(%r8,%r9,4)
+   1360e:	0f 85 0c ff ff ff    	jne    13520 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x450>
+   13614:	48 03 bc 24 38 01 00 	add    0x138(%rsp),%rdi
+   1361b:	00 
+   1361c:	45 8b 0c b8          	mov    (%r8,%rdi,4),%r9d
+   13620:	48 89 7c 24 50       	mov    %rdi,0x50(%rsp)
+   13625:	45 85 c9             	test   %r9d,%r9d
+   13628:	7e 29                	jle    13653 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x583>
+   1362a:	48 8b bd e0 00 00 00 	mov    0xe0(%rbp),%rdi
+   13631:	4c 8b 07             	mov    (%rdi),%r8
+   13634:	48 8b bc 24 18 01 00 	mov    0x118(%rsp),%rdi
+   1363b:	00 
+   1363c:	48 0f af f9          	imul   %rcx,%rdi
+   13640:	48 03 bc 24 60 01 00 	add    0x160(%rsp),%rdi
+   13647:	00 
+   13648:	41 83 3c b8 01       	cmpl   $0x1,(%r8,%rdi,4)
+   1364d:	0f 84 1d 0a 00 00    	je     14070 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xfa0>
+   13653:	48 8b bc 24 90 01 00 	mov    0x190(%rsp),%rdi
+   1365a:	00 
+   1365b:	4c 8b 85 20 01 00 00 	mov    0x120(%rbp),%r8
+   13662:	66 0f ef c0          	pxor   %xmm0,%xmm0
+   13666:	48 c7 84 24 70 03 00 	movq   $0x0,0x370(%rsp)
+   1366d:	00 00 00 00 00 
+   13672:	4c 8b bc 24 80 00 00 	mov    0x80(%rsp),%r15
+   13679:	00 
+   1367a:	48 8b 9c 24 88 01 00 	mov    0x188(%rsp),%rbx
+   13681:	00 
+   13682:	0f 29 84 24 60 03 00 	movaps %xmm0,0x360(%rsp)
+   13689:	00 
+   1368a:	48 0f af f8          	imul   %rax,%rdi
+   1368e:	4d 8b 00             	mov    (%r8),%r8
+   13691:	4f 63 04 b8          	movslq (%r8,%r15,4),%r8
+   13695:	4c 0f af 44 24 48    	imul   0x48(%rsp),%r8
+   1369b:	4c 03 44 24 40       	add    0x40(%rsp),%r8
+   136a0:	48 01 fb             	add    %rdi,%rbx
+   136a3:	48 8b bd 68 01 00 00 	mov    0x168(%rbp),%rdi
+   136aa:	4a 63 34 86          	movslq (%rsi,%r8,4),%rsi
+   136ae:	4c 8b 84 24 78 01 00 	mov    0x178(%rsp),%r8
+   136b5:	00 
+   136b6:	48 89 9c 24 10 01 00 	mov    %rbx,0x110(%rsp)
+   136bd:	00 
+   136be:	48 0f af b4 24 00 01 	imul   0x100(%rsp),%rsi
+   136c5:	00 00 
+   136c7:	48 8b 3f             	mov    (%rdi),%rdi
+   136ca:	4c 0f af c0          	imul   %rax,%r8
+   136ce:	48 01 de             	add    %rbx,%rsi
+   136d1:	8b 1c b7             	mov    (%rdi,%rsi,4),%ebx
+   136d4:	48 8b b5 a8 01 00 00 	mov    0x1a8(%rbp),%rsi
+   136db:	48 8b 3e             	mov    (%rsi),%rdi
+   136de:	48 8b b4 24 70 01 00 	mov    0x170(%rsp),%rsi
+   136e5:	00 
+   136e6:	89 9c 24 ec 00 00 00 	mov    %ebx,0xec(%rsp)
+   136ed:	48 03 b4 24 80 01 00 	add    0x180(%rsp),%rsi
+   136f4:	00 
+   136f5:	4c 01 c6             	add    %r8,%rsi
+   136f8:	8b 1c b7             	mov    (%rdi,%rsi,4),%ebx
+   136fb:	8b bc 24 34 03 00 00 	mov    0x334(%rsp),%edi
+   13702:	89 5c 24 20          	mov    %ebx,0x20(%rsp)
+   13706:	89 bc 24 e8 02 00 00 	mov    %edi,0x2e8(%rsp)
+   1370d:	85 db                	test   %ebx,%ebx
+   1370f:	0f 8e 2b 0c 00 00    	jle    14340 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1270>
+   13715:	48 8b bc 24 e0 01 00 	mov    0x1e0(%rsp),%rdi
+   1371c:	00 
+   1371d:	4c 8b 8c 24 b8 01 00 	mov    0x1b8(%rsp),%r9
+   13724:	00 
+   13725:	83 c2 01             	add    $0x1,%edx
+   13728:	66 0f ef e4          	pxor   %xmm4,%xmm4
+   1372c:	48 8b 9c 24 d8 01 00 	mov    0x1d8(%rsp),%rbx
+   13733:	00 
+   13734:	48 63 d2             	movslq %edx,%rdx
+   13737:	66 0f ef d2          	pxor   %xmm2,%xmm2
+   1373b:	4c 8b b4 24 b0 01 00 	mov    0x1b0(%rsp),%r14
+   13742:	00 
+   13743:	48 89 fe             	mov    %rdi,%rsi
+   13746:	49 0f af d1          	imul   %r9,%rdx
+   1374a:	4c 8b bc 24 c8 01 00 	mov    0x1c8(%rsp),%r15
+   13751:	00 
+   13752:	66 0f 28 cc          	movapd %xmm4,%xmm1
+   13756:	48 0f af f0          	imul   %rax,%rsi
+   1375a:	48 83 e8 01          	sub    $0x1,%rax
+   1375e:	4c 0f af f9          	imul   %rcx,%r15
+   13762:	4c 01 f2             	add    %r14,%rdx
+   13765:	48 01 f3             	add    %rsi,%rbx
+   13768:	4c 89 ce             	mov    %r9,%rsi
+   1376b:	48 89 94 24 10 02 00 	mov    %rdx,0x210(%rsp)
+   13772:	00 
+   13773:	48 8b 54 24 68       	mov    0x68(%rsp),%rdx
+   13778:	48 0f af f1          	imul   %rcx,%rsi
+   1377c:	4c 89 bc 24 50 02 00 	mov    %r15,0x250(%rsp)
+   13783:	00 
+   13784:	48 c1 e2 03          	shl    $0x3,%rdx
+   13788:	48 89 9c 24 58 01 00 	mov    %rbx,0x158(%rsp)
+   1378f:	00 
+   13790:	48 0f af 8c 24 18 01 	imul   0x118(%rsp),%rcx
+   13797:	00 00 
+   13799:	4c 01 f6             	add    %r14,%rsi
+   1379c:	41 be 01 00 00 00    	mov    $0x1,%r14d
+   137a2:	48 89 b4 24 38 02 00 	mov    %rsi,0x238(%rsp)
+   137a9:	00 
+   137aa:	48 8b b4 24 f0 01 00 	mov    0x1f0(%rsp),%rsi
+   137b1:	00 
+   137b2:	48 01 d6             	add    %rdx,%rsi
+   137b5:	48 03 94 24 f8 01 00 	add    0x1f8(%rsp),%rdx
+   137bc:	00 
+   137bd:	48 89 b4 24 68 01 00 	mov    %rsi,0x168(%rsp)
+   137c4:	00 
+   137c5:	48 8b 74 24 08       	mov    0x8(%rsp),%rsi
+   137ca:	48 89 94 24 48 01 00 	mov    %rdx,0x148(%rsp)
+   137d1:	00 
+   137d2:	48 89 f2             	mov    %rsi,%rdx
+   137d5:	48 01 da             	add    %rbx,%rdx
+   137d8:	4e 8d 2c 12          	lea    (%rdx,%r10,1),%r13
+   137dc:	48 8b 94 24 e8 01 00 	mov    0x1e8(%rsp),%rdx
+   137e3:	00 
+   137e4:	48 03 54 24 18       	add    0x18(%rsp),%rdx
+   137e9:	48 01 d1             	add    %rdx,%rcx
+   137ec:	48 8b 94 24 a8 01 00 	mov    0x1a8(%rsp),%rdx
+   137f3:	00 
+   137f4:	48 03 14 24          	add    (%rsp),%rdx
+   137f8:	4e 8d 24 3a          	lea    (%rdx,%r15,1),%r12
+   137fc:	4c 8b bc 24 88 00 00 	mov    0x88(%rsp),%r15
+   13803:	00 
+   13804:	48 8b 94 24 c0 01 00 	mov    0x1c0(%rsp),%rdx
+   1380b:	00 
+   1380c:	48 03 94 24 08 01 00 	add    0x108(%rsp),%rdx
+   13813:	00 
+   13814:	48 03 54 24 10       	add    0x10(%rsp),%rdx
+   13819:	4e 8d 1c 3a          	lea    (%rdx,%r15,1),%r11
+   1381d:	48 8b 94 24 d0 01 00 	mov    0x1d0(%rsp),%rdx
+   13824:	00 
+   13825:	4d 89 d7             	mov    %r10,%r15
+   13828:	48 0f af d0          	imul   %rax,%rdx
+   1382c:	48 0f af c7          	imul   %rdi,%rax
+   13830:	4c 8d 0c d5 00 00 00 	lea    0x0(,%rdx,8),%r9
+   13837:	00 
+   13838:	49 8d 14 32          	lea    (%r10,%rsi,1),%rdx
+   1383c:	48 29 d0             	sub    %rdx,%rax
+   1383f:	4d 89 ca             	mov    %r9,%r10
+   13842:	48 8b 95 00 01 00 00 	mov    0x100(%rbp),%rdx
+   13849:	48 29 d8             	sub    %rbx,%rax
+   1384c:	4c 89 db             	mov    %r11,%rbx
+   1384f:	49 89 cb             	mov    %rcx,%r11
+   13852:	48 89 84 24 28 02 00 	mov    %rax,0x228(%rsp)
+   13859:	00 
+   1385a:	e9 e7 00 00 00       	jmp    13946 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x876>
+   1385f:	90                   	nop
+   13860:	48 8b 85 88 01 00 00 	mov    0x188(%rbp),%rax
+   13867:	48 8b 7c 24 50       	mov    0x50(%rsp),%rdi
+   1386c:	48 8b 00             	mov    (%rax),%rax
+   1386f:	8b 3c b8             	mov    (%rax,%rdi,4),%edi
+   13872:	85 ff                	test   %edi,%edi
+   13874:	7e 1c                	jle    13892 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x7c2>
+   13876:	48 8b 85 e0 00 00 00 	mov    0xe0(%rbp),%rax
+   1387d:	48 8b 38             	mov    (%rax),%rdi
+   13880:	48 8b 04 24          	mov    (%rsp),%rax
+   13884:	4c 01 e0             	add    %r12,%rax
+   13887:	42 83 3c 9f 01       	cmpl   $0x1,(%rdi,%r11,4)
+   1388c:	0f 84 8e 00 00 00    	je     13920 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x850>
+   13892:	4b 8d 04 2f          	lea    (%r15,%r13,1),%rax
+   13896:	48 8b 3a             	mov    (%rdx),%rdi
+   13899:	41 8b 04 80          	mov    (%r8,%rax,4),%eax
+   1389d:	89 44 24 38          	mov    %eax,0x38(%rsp)
+   138a1:	4b 8d 44 7d 00       	lea    0x0(%r13,%r15,2),%rax
+   138a6:	41 8b 04 80          	mov    (%r8,%rax,4),%eax
+   138aa:	89 44 24 58          	mov    %eax,0x58(%rsp)
+   138ae:	83 fe 04             	cmp    $0x4,%esi
+   138b1:	0f 84 b9 00 00 00    	je     13970 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x8a0>
+   138b7:	83 fe 0b             	cmp    $0xb,%esi
+   138ba:	0f 8f b0 00 00 00    	jg     13970 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x8a0>
+   138c0:	4b 8d 04 ff          	lea    (%r15,%r15,8),%rax
+   138c4:	4c 01 e8             	add    %r13,%rax
+   138c7:	45 8b 0c 80          	mov    (%r8,%rax,4),%r9d
+   138cb:	45 85 c9             	test   %r9d,%r9d
+   138ce:	74 0c                	je     138dc <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x80c>
+   138d0:	48 8b 04 24          	mov    (%rsp),%rax
+   138d4:	4c 01 e0             	add    %r12,%rax
+   138d7:	45 39 f1             	cmp    %r14d,%r9d
+   138da:	75 44                	jne    13920 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x850>
+   138dc:	4b 8d 04 7f          	lea    (%r15,%r15,2),%rax
+   138e0:	49 8d 44 45 00       	lea    0x0(%r13,%rax,2),%rax
+   138e5:	41 8b 04 80          	mov    (%r8,%rax,4),%eax
+   138e9:	89 84 24 f0 00 00 00 	mov    %eax,0xf0(%rsp)
+   138f0:	8d 46 fc             	lea    -0x4(%rsi),%eax
+   138f3:	83 f8 01             	cmp    $0x1,%eax
+   138f6:	0f 86 9c 01 00 00    	jbe    13a98 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x9c8>
+   138fc:	48 8b 04 24          	mov    (%rsp),%rax
+   13900:	44 8b 4c 24 38       	mov    0x38(%rsp),%r9d
+   13905:	4c 01 e0             	add    %r12,%rax
+   13908:	44 39 8c 24 ec 00 00 	cmp    %r9d,0xec(%rsp)
+   1390f:	00 
+   13910:	0f 84 f2 06 00 00    	je     14008 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xf38>
+   13916:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+   1391d:	00 00 00 
+   13920:	49 83 c6 01          	add    $0x1,%r14
+   13924:	4c 03 6c 24 08       	add    0x8(%rsp),%r13
+   13929:	4c 03 5c 24 18       	add    0x18(%rsp),%r11
+   1392e:	49 89 c4             	mov    %rax,%r12
+   13931:	48 03 5c 24 10       	add    0x10(%rsp),%rbx
+   13936:	4c 03 54 24 28       	add    0x28(%rsp),%r10
+   1393b:	44 39 74 24 20       	cmp    %r14d,0x20(%rsp)
+   13940:	0f 8c 9a 00 00 00    	jl     139e0 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x910>
+   13946:	48 8b 45 58          	mov    0x58(%rbp),%rax
+   1394a:	44 89 f1             	mov    %r14d,%ecx
+   1394d:	4c 8b 00             	mov    (%rax),%r8
+   13950:	43 8b 34 a8          	mov    (%r8,%r13,4),%esi
+   13954:	89 b4 24 38 03 00 00 	mov    %esi,0x338(%rsp)
+   1395b:	83 fe 07             	cmp    $0x7,%esi
+   1395e:	0f 85 fc fe ff ff    	jne    13860 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x790>
+   13964:	48 8b 04 24          	mov    (%rsp),%rax
+   13968:	4c 01 e0             	add    %r12,%rax
+   1396b:	eb b3                	jmp    13920 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x850>
+   1396d:	0f 1f 00             	nopl   (%rax)
+   13970:	48 8b 85 c0 00 00 00 	mov    0xc0(%rbp),%rax
+   13977:	48 8b b4 24 08 01 00 	mov    0x108(%rsp),%rsi
+   1397e:	00 
+   1397f:	48 8b 00             	mov    (%rax),%rax
+   13982:	48 8d 0c 1e          	lea    (%rsi,%rbx,1),%rcx
+   13986:	f2 42 0f 10 1c e0    	movsd  (%rax,%r12,8),%xmm3
+   1398c:	48 8b 85 38 01 00 00 	mov    0x138(%rbp),%rax
+   13993:	48 8b 00             	mov    (%rax),%rax
+   13996:	66 0f 28 eb          	movapd %xmm3,%xmm5
+   1399a:	66 0f 14 ed          	unpcklpd %xmm5,%xmm5
+   1399e:	f2 0f 10 04 d8       	movsd  (%rax,%rbx,8),%xmm0
+   139a3:	66 0f 16 04 c8       	movhpd (%rax,%rcx,8),%xmm0
+   139a8:	48 8d 0c 73          	lea    (%rbx,%rsi,2),%rcx
+   139ac:	f2 0f 59 1c c8       	mulsd  (%rax,%rcx,8),%xmm3
+   139b1:	48 8b 04 24          	mov    (%rsp),%rax
+   139b5:	66 0f 59 c5          	mulpd  %xmm5,%xmm0
+   139b9:	4c 01 e0             	add    %r12,%rax
+   139bc:	f2 0f 58 e3          	addsd  %xmm3,%xmm4
+   139c0:	66 0f 58 d0          	addpd  %xmm0,%xmm2
+   139c4:	f2 0f 11 a4 24 70 03 	movsd  %xmm4,0x370(%rsp)
+   139cb:	00 00 
+   139cd:	0f 29 94 24 60 03 00 	movaps %xmm2,0x360(%rsp)
+   139d4:	00 
+   139d5:	e9 46 ff ff ff       	jmp    13920 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x850>
+   139da:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+   139e0:	4d 89 fa             	mov    %r15,%r10
+   139e3:	48 8b 02             	mov    (%rdx),%rax
+   139e6:	48 8b 74 24 68       	mov    0x68(%rsp),%rsi
+   139eb:	66 0f 28 d9          	movapd %xmm1,%xmm3
+   139ef:	48 8b 8c 24 98 01 00 	mov    0x198(%rsp),%rcx
+   139f6:	00 
+   139f7:	66 0f 14 db          	unpcklpd %xmm3,%xmm3
+   139fb:	44 8b 84 24 e8 02 00 	mov    0x2e8(%rsp),%r8d
+   13a02:	00 
+   13a03:	f2 0f 10 04 f0       	movsd  (%rax,%rsi,8),%xmm0
+   13a08:	48 89 ca             	mov    %rcx,%rdx
+   13a0b:	48 01 f2             	add    %rsi,%rdx
+   13a0e:	66 0f 16 04 d0       	movhpd (%rax,%rdx,8),%xmm0
+   13a13:	48 8d 14 4e          	lea    (%rsi,%rcx,2),%rdx
+   13a17:	66 0f 59 c3          	mulpd  %xmm3,%xmm0
+   13a1b:	f2 0f 59 0c d0       	mulsd  (%rax,%rdx,8),%xmm1
+   13a20:	48 8b 45 18          	mov    0x18(%rbp),%rax
+   13a24:	48 8b 10             	mov    (%rax),%rdx
+   13a27:	66 0f 58 c2          	addpd  %xmm2,%xmm0
+   13a2b:	f2 0f 58 cc          	addsd  %xmm4,%xmm1
+   13a2f:	66 0f 28 f8          	movapd %xmm0,%xmm7
+   13a33:	0f 29 84 24 60 03 00 	movaps %xmm0,0x360(%rsp)
+   13a3a:	00 
+   13a3b:	f2 0f 11 8c 24 70 03 	movsd  %xmm1,0x370(%rsp)
+   13a42:	00 00 
+   13a44:	66 0f 15 ff          	unpckhpd %xmm7,%xmm7
+   13a48:	45 85 c0             	test   %r8d,%r8d
+   13a4b:	0f 85 3f 05 00 00    	jne    13f90 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xec0>
+   13a51:	48 8b 9c 24 08 02 00 	mov    0x208(%rsp),%rbx
+   13a58:	00 
+   13a59:	48 8b 4c 24 78       	mov    0x78(%rsp),%rcx
+   13a5e:	48 89 d8             	mov    %rbx,%rax
+   13a61:	f2 0f 11 04 ca       	movsd  %xmm0,(%rdx,%rcx,8)
+   13a66:	48 01 c8             	add    %rcx,%rax
+   13a69:	f2 0f 11 3c c2       	movsd  %xmm7,(%rdx,%rax,8)
+   13a6e:	48 8d 04 59          	lea    (%rcx,%rbx,2),%rax
+   13a72:	f2 0f 11 0c c2       	movsd  %xmm1,(%rdx,%rax,8)
+   13a77:	e9 a4 fa ff ff       	jmp    13520 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x450>
+   13a7c:	0f 1f 40 00          	nopl   0x0(%rax)
+   13a80:	48 81 c4 58 04 00 00 	add    $0x458,%rsp
+   13a87:	5b                   	pop    %rbx
+   13a88:	5d                   	pop    %rbp
+   13a89:	41 5c                	pop    %r12
+   13a8b:	41 5d                	pop    %r13
+   13a8d:	41 5e                	pop    %r14
+   13a8f:	41 5f                	pop    %r15
+   13a91:	c3                   	ret    
+   13a92:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+   13a98:	8b 84 24 ec 00 00 00 	mov    0xec(%rsp),%eax
+   13a9f:	8b 7c 24 38          	mov    0x38(%rsp),%edi
+   13aa3:	31 f6                	xor    %esi,%esi
+   13aa5:	39 f8                	cmp    %edi,%eax
+   13aa7:	40 0f 95 c6          	setne  %sil
+   13aab:	31 ff                	xor    %edi,%edi
+   13aad:	3b 44 24 58          	cmp    0x58(%rsp),%eax
+   13ab1:	40 0f 95 c7          	setne  %dil
+   13ab5:	89 b4 24 40 01 00 00 	mov    %esi,0x140(%rsp)
+   13abc:	89 bc 24 50 01 00 00 	mov    %edi,0x150(%rsp)
+   13ac3:	85 f6                	test   %esi,%esi
+   13ac5:	74 0f                	je     13ad6 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xa06>
+   13ac7:	48 8b 04 24          	mov    (%rsp),%rax
+   13acb:	4c 01 e0             	add    %r12,%rax
+   13ace:	85 ff                	test   %edi,%edi
+   13ad0:	0f 85 4a fe ff ff    	jne    13920 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x850>
+   13ad6:	48 8b 84 24 00 02 00 	mov    0x200(%rsp),%rax
+   13add:	00 
+   13ade:	4c 01 e8             	add    %r13,%rax
+   13ae1:	41 8b 04 80          	mov    (%r8,%rax,4),%eax
+   13ae5:	89 84 24 30 01 00 00 	mov    %eax,0x130(%rsp)
+   13aec:	89 84 24 3c 03 00 00 	mov    %eax,0x33c(%rsp)
+   13af3:	85 c0                	test   %eax,%eax
+   13af5:	0f 88 7d 09 00 00    	js     14478 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x13a8>
+   13afb:	48 63 84 24 30 01 00 	movslq 0x130(%rsp),%rax
+   13b02:	00 
+   13b03:	31 f6                	xor    %esi,%esi
+   13b05:	48 8d bc 24 c0 03 00 	lea    0x3c0(%rsp),%rdi
+   13b0c:	00 
+   13b0d:	4c 89 9c 24 88 02 00 	mov    %r11,0x288(%rsp)
+   13b14:	00 
+   13b15:	4c 89 94 24 80 02 00 	mov    %r10,0x280(%rsp)
+   13b1c:	00 
+   13b1d:	48 8d 14 c5 08 00 00 	lea    0x8(,%rax,8),%rdx
+   13b24:	00 
+   13b25:	89 8c 24 58 02 00 00 	mov    %ecx,0x258(%rsp)
+   13b2c:	4c 89 84 24 20 02 00 	mov    %r8,0x220(%rsp)
+   13b33:	00 
+   13b34:	f2 0f 11 a4 24 78 02 	movsd  %xmm4,0x278(%rsp)
+   13b3b:	00 00 
+   13b3d:	0f 29 94 24 40 02 00 	movaps %xmm2,0x240(%rsp)
+   13b44:	00 
+   13b45:	f2 0f 11 8c 24 18 02 	movsd  %xmm1,0x218(%rsp)
+   13b4c:	00 00 
+   13b4e:	e8 00 00 00 00       	call   13b53 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xa83>
+   13b53:	8b b4 24 30 01 00 00 	mov    0x130(%rsp),%esi
+   13b5a:	48 8b 85 c0 00 00 00 	mov    0xc0(%rbp),%rax
+   13b61:	f2 0f 10 8c 24 18 02 	movsd  0x218(%rsp),%xmm1
+   13b68:	00 00 
+   13b6a:	4c 8b 84 24 20 02 00 	mov    0x220(%rsp),%r8
+   13b71:	00 
+   13b72:	85 f6                	test   %esi,%esi
+   13b74:	48 8b 38             	mov    (%rax),%rdi
+   13b77:	66 0f 28 94 24 40 02 	movapd 0x240(%rsp),%xmm2
+   13b7e:	00 00 
+   13b80:	8b 8c 24 58 02 00 00 	mov    0x258(%rsp),%ecx
+   13b87:	4c 8b 94 24 80 02 00 	mov    0x280(%rsp),%r10
+   13b8e:	00 
+   13b8f:	f2 0f 10 a4 24 78 02 	movsd  0x278(%rsp),%xmm4
+   13b96:	00 00 
+   13b98:	4c 8b 9c 24 88 02 00 	mov    0x288(%rsp),%r11
+   13b9f:	00 
+   13ba0:	0f 8f 01 06 00 00    	jg     141a7 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x10d7>
+   13ba6:	48 8b 95 00 01 00 00 	mov    0x100(%rbp),%rdx
+   13bad:	f2 42 0f 10 04 e7    	movsd  (%rdi,%r12,8),%xmm0
+   13bb3:	f2 0f 11 84 24 c0 03 	movsd  %xmm0,0x3c0(%rsp)
+   13bba:	00 00 
+   13bbc:	48 8b 85 c8 01 00 00 	mov    0x1c8(%rbp),%rax
+   13bc3:	8b 8c 24 e8 02 00 00 	mov    0x2e8(%rsp),%ecx
+   13bca:	48 8b 00             	mov    (%rax),%rax
+   13bcd:	85 c9                	test   %ecx,%ecx
+   13bcf:	0f 84 4b 07 00 00    	je     14320 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1250>
+   13bd5:	8b 4c 24 70          	mov    0x70(%rsp),%ecx
+   13bd9:	89 8c 24 18 02 00 00 	mov    %ecx,0x218(%rsp)
+   13be0:	48 8b 8c 24 10 02 00 	mov    0x210(%rsp),%rcx
+   13be7:	00 
+   13be8:	8b 04 88             	mov    (%rax,%rcx,4),%eax
+   13beb:	89 84 24 30 01 00 00 	mov    %eax,0x130(%rsp)
+   13bf2:	39 84 24 18 02 00 00 	cmp    %eax,0x218(%rsp)
+   13bf9:	0f 8d 65 fd ff ff    	jge    13964 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x894>
+   13bff:	48 63 b4 24 f0 00 00 	movslq 0xf0(%rsp),%rsi
+   13c06:	00 
+   13c07:	48 8b 84 24 28 02 00 	mov    0x228(%rsp),%rax
+   13c0e:	00 
+   13c0f:	4c 89 bc 24 00 03 00 	mov    %r15,0x300(%rsp)
+   13c16:	00 
+   13c17:	48 8b bc 24 70 02 00 	mov    0x270(%rsp),%rdi
+   13c1e:	00 
+   13c1f:	4c 8b 84 24 90 00 00 	mov    0x90(%rsp),%r8
+   13c26:	00 
+   13c27:	4c 89 94 24 40 02 00 	mov    %r10,0x240(%rsp)
+   13c2e:	00 
+   13c2f:	48 0f af b4 24 68 02 	imul   0x268(%rsp),%rsi
+   13c36:	00 00 
+   13c38:	4c 01 e8             	add    %r13,%rax
+   13c3b:	4c 8b 8c 24 b8 02 00 	mov    0x2b8(%rsp),%r9
+   13c42:	00 
+   13c43:	48 89 9c 24 08 03 00 	mov    %rbx,0x308(%rsp)
+   13c4a:	00 
+   13c4b:	48 c1 e0 02          	shl    $0x2,%rax
+   13c4f:	4c 89 a4 24 10 03 00 	mov    %r12,0x310(%rsp)
+   13c56:	00 
+   13c57:	48 89 84 24 78 02 00 	mov    %rax,0x278(%rsp)
+   13c5e:	00 
+   13c5f:	48 8d 0c 37          	lea    (%rdi,%rsi,1),%rcx
+   13c63:	4c 89 9c 24 18 03 00 	mov    %r11,0x318(%rsp)
+   13c6a:	00 
+   13c6b:	f2 0f 11 8c 24 f8 02 	movsd  %xmm1,0x2f8(%rsp)
+   13c72:	00 00 
+   13c74:	4a 8d 04 01          	lea    (%rcx,%r8,1),%rax
+   13c78:	48 c1 e0 03          	shl    $0x3,%rax
+   13c7c:	48 89 84 24 88 02 00 	mov    %rax,0x288(%rsp)
+   13c83:	00 
+   13c84:	48 89 f8             	mov    %rdi,%rax
+   13c87:	48 8b bc 24 e0 02 00 	mov    0x2e0(%rsp),%rdi
+   13c8e:	00 
+   13c8f:	4c 29 c8             	sub    %r9,%rax
+   13c92:	48 01 f0             	add    %rsi,%rax
+   13c95:	4c 01 c0             	add    %r8,%rax
+   13c98:	48 c1 e0 03          	shl    $0x3,%rax
+   13c9c:	48 89 84 24 80 02 00 	mov    %rax,0x280(%rsp)
+   13ca3:	00 
+   13ca4:	48 63 84 24 18 02 00 	movslq 0x218(%rsp),%rax
+   13cab:	00 
+   13cac:	48 8d 70 ff          	lea    -0x1(%rax),%rsi
+   13cb0:	49 89 c0             	mov    %rax,%r8
+   13cb3:	48 0f af fe          	imul   %rsi,%rdi
+   13cb7:	44 89 c3             	mov    %r8d,%ebx
+   13cba:	48 89 bc 24 f0 00 00 	mov    %rdi,0xf0(%rsp)
+   13cc1:	00 
+   13cc2:	48 8b bc 24 98 00 00 	mov    0x98(%rsp),%rdi
+   13cc9:	00 
+   13cca:	48 0f af f8          	imul   %rax,%rdi
+   13cce:	48 01 f9             	add    %rdi,%rcx
+   13cd1:	48 8b bc 24 a0 00 00 	mov    0xa0(%rsp),%rdi
+   13cd8:	00 
+   13cd9:	48 c1 e1 03          	shl    $0x3,%rcx
+   13cdd:	48 89 8c 24 f0 02 00 	mov    %rcx,0x2f0(%rsp)
+   13ce4:	00 
+   13ce5:	48 8b 4c 24 60       	mov    0x60(%rsp),%rcx
+   13cea:	49 89 ff             	mov    %rdi,%r15
+   13ced:	48 0f af c8          	imul   %rax,%rcx
+   13cf1:	48 03 8c 24 d8 02 00 	add    0x2d8(%rsp),%rcx
+   13cf8:	00 
+   13cf9:	48 89 8c 24 20 02 00 	mov    %rcx,0x220(%rsp)
+   13d00:	00 
+   13d01:	48 89 f9             	mov    %rdi,%rcx
+   13d04:	48 0f af c8          	imul   %rax,%rcx
+   13d08:	48 03 8c 24 c8 02 00 	add    0x2c8(%rsp),%rcx
+   13d0f:	00 
+   13d10:	48 89 8c 24 18 02 00 	mov    %rcx,0x218(%rsp)
+   13d17:	00 
+   13d18:	4c 89 c9             	mov    %r9,%rcx
+   13d1b:	48 f7 d9             	neg    %rcx
+   13d1e:	4c 8d 0c cd 00 00 00 	lea    0x0(,%rcx,8),%r9
+   13d25:	00 
+   13d26:	4c 89 8c 24 98 02 00 	mov    %r9,0x298(%rsp)
+   13d2d:	00 
+   13d2e:	4c 8b 8c 24 c0 02 00 	mov    0x2c0(%rsp),%r9
+   13d35:	00 
+   13d36:	4c 03 8c 24 d0 02 00 	add    0x2d0(%rsp),%r9
+   13d3d:	00 
+   13d3e:	4c 89 c9             	mov    %r9,%rcx
+   13d41:	4c 8b 8c 24 a8 00 00 	mov    0xa8(%rsp),%r9
+   13d48:	00 
+   13d49:	49 0f af c1          	imul   %r9,%rax
+   13d4d:	49 0f af f1          	imul   %r9,%rsi
+   13d51:	48 01 c8             	add    %rcx,%rax
+   13d54:	48 29 f0             	sub    %rsi,%rax
+   13d57:	48 c1 e0 03          	shl    $0x3,%rax
+   13d5b:	48 89 84 24 90 02 00 	mov    %rax,0x290(%rsp)
+   13d62:	00 
+   13d63:	48 8d 84 24 a0 03 00 	lea    0x3a0(%rsp),%rax
+   13d6a:	00 
+   13d6b:	48 89 84 24 58 02 00 	mov    %rax,0x258(%rsp)
+   13d72:	00 
+   13d73:	4c 89 ac 24 20 03 00 	mov    %r13,0x320(%rsp)
+   13d7a:	00 
+   13d7b:	4c 8b ac 24 f0 00 00 	mov    0xf0(%rsp),%r13
+   13d82:	00 
+   13d83:	4c 89 b4 24 28 03 00 	mov    %r14,0x328(%rsp)
+   13d8a:	00 
+   13d8b:	4c 8b a4 24 18 02 00 	mov    0x218(%rsp),%r12
+   13d92:	00 
+   13d93:	4c 8b 94 24 20 02 00 	mov    0x220(%rsp),%r10
+   13d9a:	00 
+   13d9b:	4c 8b b4 24 f0 02 00 	mov    0x2f0(%rsp),%r14
+   13da2:	00 
+   13da3:	eb 2b                	jmp    13dd0 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xd00>
+   13da5:	0f 1f 00             	nopl   (%rax)
+   13da8:	83 c3 01             	add    $0x1,%ebx
+   13dab:	4c 2b ac 24 28 01 00 	sub    0x128(%rsp),%r13
+   13db2:	00 
+   13db3:	4c 03 54 24 60       	add    0x60(%rsp),%r10
+   13db8:	4d 01 fc             	add    %r15,%r12
+   13dbb:	4c 03 b4 24 20 01 00 	add    0x120(%rsp),%r14
+   13dc2:	00 
+   13dc3:	39 9c 24 30 01 00 00 	cmp    %ebx,0x130(%rsp)
+   13dca:	0f 84 50 04 00 00    	je     14220 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1150>
+   13dd0:	39 5c 24 74          	cmp    %ebx,0x74(%rsp)
+   13dd4:	74 d2                	je     13da8 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xcd8>
+   13dd6:	48 8b 85 68 01 00 00 	mov    0x168(%rbp),%rax
+   13ddd:	48 8b 08             	mov    (%rax),%rcx
+   13de0:	48 8b 85 08 02 00 00 	mov    0x208(%rbp),%rax
+   13de7:	48 8b 30             	mov    (%rax),%rsi
+   13dea:	48 8b 85 20 01 00 00 	mov    0x120(%rbp),%rax
+   13df1:	48 8b 00             	mov    (%rax),%rax
+   13df4:	4a 63 04 a0          	movslq (%rax,%r12,4),%rax
+   13df8:	48 0f af 44 24 48    	imul   0x48(%rsp),%rax
+   13dfe:	48 03 44 24 40       	add    0x40(%rsp),%rax
+   13e03:	48 63 04 86          	movslq (%rsi,%rax,4),%rax
+   13e07:	48 0f af 84 24 00 01 	imul   0x100(%rsp),%rax
+   13e0e:	00 00 
+   13e10:	48 03 84 24 10 01 00 	add    0x110(%rsp),%rax
+   13e17:	00 
+   13e18:	8b 04 81             	mov    (%rcx,%rax,4),%eax
+   13e1b:	39 44 24 58          	cmp    %eax,0x58(%rsp)
+   13e1f:	75 0d                	jne    13e2e <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xd5e>
+   13e21:	44 8b 8c 24 40 01 00 	mov    0x140(%rsp),%r9d
+   13e28:	00 
+   13e29:	45 85 c9             	test   %r9d,%r9d
+   13e2c:	74 19                	je     13e47 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xd77>
+   13e2e:	39 44 24 38          	cmp    %eax,0x38(%rsp)
+   13e32:	0f 85 70 ff ff ff    	jne    13da8 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xcd8>
+   13e38:	8b bc 24 50 01 00 00 	mov    0x150(%rsp),%edi
+   13e3f:	85 ff                	test   %edi,%edi
+   13e41:	0f 85 61 ff ff ff    	jne    13da8 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xcd8>
+   13e47:	48 8b b4 24 68 01 00 	mov    0x168(%rsp),%rsi
+   13e4e:	00 
+   13e4f:	48 8b 12             	mov    (%rdx),%rdx
+   13e52:	4c 89 94 24 20 02 00 	mov    %r10,0x220(%rsp)
+   13e59:	00 
+   13e5a:	48 83 ec 08          	sub    $0x8,%rsp
+   13e5e:	48 8b bc 24 48 02 00 	mov    0x248(%rsp),%rdi
+   13e65:	00 
+   13e66:	48 8b 85 e0 01 00 00 	mov    0x1e0(%rbp),%rax
+   13e6d:	f2 0f 11 a4 24 20 02 	movsd  %xmm4,0x220(%rsp)
+   13e74:	00 00 
+   13e76:	4c 8d 1c 32          	lea    (%rdx,%rsi,1),%r11
+   13e7a:	48 8b b5 98 00 00 00 	mov    0x98(%rbp),%rsi
+   13e81:	48 8b 8c 24 98 02 00 	mov    0x298(%rsp),%rcx
+   13e88:	00 
+   13e89:	0f 29 94 24 f8 00 00 	movaps %xmm2,0xf8(%rsp)
+   13e90:	00 
+   13e91:	4c 8b 94 24 80 02 00 	mov    0x280(%rsp),%r10
+   13e98:	00 
+   13e99:	48 8b 00             	mov    (%rax),%rax
+   13e9c:	48 03 3e             	add    (%rsi),%rdi
+   13e9f:	4e 8d 0c 29          	lea    (%rcx,%r13,1),%r9
+   13ea3:	4a 8d 0c 2a          	lea    (%rdx,%r13,1),%rcx
+   13ea7:	48 89 fe             	mov    %rdi,%rsi
+   13eaa:	48 8b 7d 58          	mov    0x58(%rbp),%rdi
+   13eae:	49 01 d1             	add    %rdx,%r9
+   13eb1:	4c 03 17             	add    (%rdi),%r10
+   13eb4:	ff b4 24 60 02 00 00 	push   0x260(%rsp)
+   13ebb:	4c 89 d7             	mov    %r10,%rdi
+   13ebe:	4c 8d 84 24 90 03 00 	lea    0x390(%rsp),%r8
+   13ec5:	00 
+   13ec6:	41 50                	push   %r8
+   13ec8:	4c 8d 84 24 4c 03 00 	lea    0x34c(%rsp),%r8
+   13ecf:	00 
+   13ed0:	41 50                	push   %r8
+   13ed2:	4c 8d 84 24 5c 03 00 	lea    0x35c(%rsp),%r8
+   13ed9:	00 
+   13eda:	41 50                	push   %r8
+   13edc:	4c 8d 84 24 e8 03 00 	lea    0x3e8(%rsp),%r8
+   13ee3:	00 
+   13ee4:	41 50                	push   %r8
+   13ee6:	4e 8d 04 30          	lea    (%rax,%r14,1),%r8
+   13eea:	41 50                	push   %r8
+   13eec:	4c 8b 94 24 c0 02 00 	mov    0x2c0(%rsp),%r10
+   13ef3:	00 
+   13ef4:	4e 8d 04 10          	lea    (%rax,%r10,1),%r8
+   13ef8:	41 50                	push   %r8
+   13efa:	4c 8b 94 24 d8 02 00 	mov    0x2d8(%rsp),%r10
+   13f01:	00 
+   13f02:	4f 8d 04 32          	lea    (%r10,%r14,1),%r8
+   13f06:	49 01 c0             	add    %rax,%r8
+   13f09:	41 50                	push   %r8
+   13f0b:	48 03 84 24 c8 02 00 	add    0x2c8(%rsp),%rax
+   13f12:	00 
+   13f13:	50                   	push   %rax
+   13f14:	48 8b 84 24 98 01 00 	mov    0x198(%rsp),%rax
+   13f1b:	00 
+   13f1c:	4c 8d 04 02          	lea    (%rdx,%rax,1),%r8
+   13f20:	4c 89 da             	mov    %r11,%rdx
+   13f23:	e8 00 00 00 00       	call   13f28 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xe58>
+   13f28:	66 0f 28 94 24 40 01 	movapd 0x140(%rsp),%xmm2
+   13f2f:	00 00 
+   13f31:	f2 0f 10 a4 24 68 02 	movsd  0x268(%rsp),%xmm4
+   13f38:	00 00 
+   13f3a:	66 0f 58 94 24 d0 03 	addpd  0x3d0(%rsp),%xmm2
+   13f41:	00 00 
+   13f43:	f2 0f 58 a4 24 e0 03 	addsd  0x3e0(%rsp),%xmm4
+   13f4a:	00 00 
+   13f4c:	0f 29 94 24 b0 03 00 	movaps %xmm2,0x3b0(%rsp)
+   13f53:	00 
+   13f54:	f2 0f 11 a4 24 c0 03 	movsd  %xmm4,0x3c0(%rsp)
+   13f5b:	00 00 
+   13f5d:	48 83 c4 50          	add    $0x50,%rsp
+   13f61:	44 8b 84 24 e8 02 00 	mov    0x2e8(%rsp),%r8d
+   13f68:	00 
+   13f69:	4c 8b 94 24 20 02 00 	mov    0x220(%rsp),%r10
+   13f70:	00 
+   13f71:	45 85 c0             	test   %r8d,%r8d
+   13f74:	0f 85 36 03 00 00    	jne    142b0 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x11e0>
+   13f7a:	48 8b 95 00 01 00 00 	mov    0x100(%rbp),%rdx
+   13f81:	e9 22 fe ff ff       	jmp    13da8 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xcd8>
+   13f86:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+   13f8d:	00 00 00 
+   13f90:	48 8b 5c 24 78       	mov    0x78(%rsp),%rbx
+   13f95:	48 8b 30             	mov    (%rax),%rsi
+   13f98:	48 8d 94 24 60 03 00 	lea    0x360(%rsp),%rdx
+   13f9f:	00 
+   13fa0:	4c 8d 84 24 78 03 00 	lea    0x378(%rsp),%r8
+   13fa7:	00 
+   13fa8:	4c 8b 9c 24 a0 01 00 	mov    0x1a0(%rsp),%r11
+   13faf:	00 
+   13fb0:	f2 0f 10 02          	movsd  (%rdx),%xmm0
+   13fb4:	48 8d 3c dd 00 00 00 	lea    0x0(,%rbx,8),%rdi
+   13fbb:	00 
+   13fbc:	48 01 fe             	add    %rdi,%rsi
+   13fbf:	48 8b 0e             	mov    (%rsi),%rcx
+   13fc2:	66 48 0f 6e f1       	movq   %rcx,%xmm6
+   13fc7:	48 89 c8             	mov    %rcx,%rax
+   13fca:	f2 0f 58 f0          	addsd  %xmm0,%xmm6
+   13fce:	66 49 0f 7e f1       	movq   %xmm6,%r9
+   13fd3:	f0 4c 0f b1 0e       	lock cmpxchg %r9,(%rsi)
+   13fd8:	0f 85 1e 05 00 00    	jne    144fc <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x142c>
+   13fde:	48 83 c2 08          	add    $0x8,%rdx
+   13fe2:	4c 01 df             	add    %r11,%rdi
+   13fe5:	49 39 d0             	cmp    %rdx,%r8
+   13fe8:	0f 84 32 f5 ff ff    	je     13520 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x450>
+   13fee:	48 8b 45 18          	mov    0x18(%rbp),%rax
+   13ff2:	f2 0f 10 02          	movsd  (%rdx),%xmm0
+   13ff6:	48 8b 30             	mov    (%rax),%rsi
+   13ff9:	48 01 fe             	add    %rdi,%rsi
+   13ffc:	48 8b 0e             	mov    (%rsi),%rcx
+   13fff:	eb c1                	jmp    13fc2 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xef2>
+   14001:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+   14008:	83 fe 06             	cmp    $0x6,%esi
+   1400b:	0f 84 47 03 00 00    	je     14358 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1288>
+   14011:	83 fe 02             	cmp    $0x2,%esi
+   14014:	0f 85 c6 00 00 00    	jne    140e0 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1010>
+   1401a:	48 8b 8d e0 01 00 00 	mov    0x1e0(%rbp),%rcx
+   14021:	48 63 b4 24 f0 00 00 	movslq 0xf0(%rsp),%rsi
+   14028:	00 
+   14029:	48 0f af b4 24 68 02 	imul   0x268(%rsp),%rsi
+   14030:	00 00 
+   14032:	48 8b 39             	mov    (%rcx),%rdi
+   14035:	48 8b 8c 24 70 02 00 	mov    0x270(%rsp),%rcx
+   1403c:	00 
+   1403d:	48 03 8c 24 90 00 00 	add    0x90(%rsp),%rcx
+   14044:	00 
+   14045:	48 01 f1             	add    %rsi,%rcx
+   14048:	48 8b b5 c0 00 00 00 	mov    0xc0(%rbp),%rsi
+   1404f:	f2 0f 10 04 cf       	movsd  (%rdi,%rcx,8),%xmm0
+   14054:	48 8b 36             	mov    (%rsi),%rsi
+   14057:	f2 42 0f 59 04 e6    	mulsd  (%rsi,%r12,8),%xmm0
+   1405d:	f2 0f 58 c8          	addsd  %xmm0,%xmm1
+   14061:	e9 ba f8 ff ff       	jmp    13920 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x850>
+   14066:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+   1406d:	00 00 00 
+   14070:	48 83 bc 24 60 02 00 	cmpq   $0x0,0x260(%rsp)
+   14077:	00 00 
+   14079:	0f 8e a1 f4 ff ff    	jle    13520 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x450>
+   1407f:	48 83 bc 24 08 02 00 	cmpq   $0x1,0x208(%rsp)
+   14086:	00 01 
+   14088:	48 8b 45 18          	mov    0x18(%rbp),%rax
+   1408c:	48 8b 38             	mov    (%rax),%rdi
+   1408f:	0f 85 ae 03 00 00    	jne    14443 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1373>
+   14095:	48 8b 54 24 78       	mov    0x78(%rsp),%rdx
+   1409a:	b8 08 00 00 00       	mov    $0x8,%eax
+   1409f:	31 f6                	xor    %esi,%esi
+   140a1:	48 2b 84 24 a0 01 00 	sub    0x1a0(%rsp),%rax
+   140a8:	00 
+   140a9:	4c 89 54 24 20       	mov    %r10,0x20(%rsp)
+   140ae:	48 8d 04 d0          	lea    (%rax,%rdx,8),%rax
+   140b2:	48 8b 94 24 a0 02 00 	mov    0x2a0(%rsp),%rdx
+   140b9:	00 
+   140ba:	48 01 c7             	add    %rax,%rdi
+   140bd:	e8 00 00 00 00       	call   140c2 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xff2>
+   140c2:	4c 8b 54 24 20       	mov    0x20(%rsp),%r10
+   140c7:	e9 54 f4 ff ff       	jmp    13520 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x450>
+   140cc:	0f 1f 40 00          	nopl   0x0(%rax)
+   140d0:	83 c0 01             	add    $0x1,%eax
+   140d3:	31 d2                	xor    %edx,%edx
+   140d5:	e9 47 f0 ff ff       	jmp    13121 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x51>
+   140da:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+   140e0:	48 8b 95 98 00 00 00 	mov    0x98(%rbp),%rdx
+   140e7:	4c 89 d1             	mov    %r10,%rcx
+   140ea:	48 89 84 24 40 01 00 	mov    %rax,0x140(%rsp)
+   140f1:	00 
+   140f2:	4c 8d 8c 24 48 03 00 	lea    0x348(%rsp),%r9
+   140f9:	00 
+   140fa:	48 8b 84 24 a8 02 00 	mov    0x2a8(%rsp),%rax
+   14101:	00 
+   14102:	4c 89 54 24 38       	mov    %r10,0x38(%rsp)
+   14107:	48 03 0a             	add    (%rdx),%rcx
+   1410a:	4c 89 9c 24 50 01 00 	mov    %r11,0x150(%rsp)
+   14111:	00 
+   14112:	4a 8d 14 a8          	lea    (%rax,%r13,4),%rdx
+   14116:	48 8b 84 24 48 01 00 	mov    0x148(%rsp),%rax
+   1411d:	00 
+   1411e:	f2 0f 11 a4 24 30 01 	movsd  %xmm4,0x130(%rsp)
+   14125:	00 00 
+   14127:	4c 01 c2             	add    %r8,%rdx
+   1412a:	4c 8d 84 24 40 03 00 	lea    0x340(%rsp),%r8
+   14131:	00 
+   14132:	0f 29 94 24 f0 00 00 	movaps %xmm2,0xf0(%rsp)
+   14139:	00 
+   1413a:	48 8d 34 07          	lea    (%rdi,%rax,1),%rsi
+   1413e:	48 8d bc 24 38 03 00 	lea    0x338(%rsp),%rdi
+   14145:	00 
+   14146:	f2 0f 11 4c 24 58    	movsd  %xmm1,0x58(%rsp)
+   1414c:	e8 00 00 00 00       	call   14151 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1081>
+   14151:	f2 0f 10 4c 24 58    	movsd  0x58(%rsp),%xmm1
+   14157:	48 8b 95 c0 00 00 00 	mov    0xc0(%rbp),%rdx
+   1415e:	4c 8b 54 24 38       	mov    0x38(%rsp),%r10
+   14163:	48 8b 84 24 40 01 00 	mov    0x140(%rsp),%rax
+   1416a:	00 
+   1416b:	48 8b 12             	mov    (%rdx),%rdx
+   1416e:	4c 8b 9c 24 50 01 00 	mov    0x150(%rsp),%r11
+   14175:	00 
+   14176:	66 0f 28 94 24 f0 00 	movapd 0xf0(%rsp),%xmm2
+   1417d:	00 00 
+   1417f:	f2 0f 10 a4 24 30 01 	movsd  0x130(%rsp),%xmm4
+   14186:	00 00 
+   14188:	f2 42 0f 10 04 e2    	movsd  (%rdx,%r12,8),%xmm0
+   1418e:	48 8b 95 00 01 00 00 	mov    0x100(%rbp),%rdx
+   14195:	f2 0f 59 84 24 48 03 	mulsd  0x348(%rsp),%xmm0
+   1419c:	00 00 
+   1419e:	f2 0f 58 c8          	addsd  %xmm0,%xmm1
+   141a2:	e9 79 f7 ff ff       	jmp    13920 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x850>
+   141a7:	48 8b 84 24 a8 01 00 	mov    0x1a8(%rsp),%rax
+   141ae:	00 
+   141af:	48 03 84 24 50 02 00 	add    0x250(%rsp),%rax
+   141b6:	00 
+   141b7:	80 bc 24 ef 02 00 00 	cmpb   $0x0,0x2ef(%rsp)
+   141be:	00 
+   141bf:	48 89 84 24 30 01 00 	mov    %rax,0x130(%rsp)
+   141c6:	00 
+   141c7:	44 8b 8c 24 f0 00 00 	mov    0xf0(%rsp),%r9d
+   141ce:	00 
+   141cf:	0f 85 b2 02 00 00    	jne    14487 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x13b7>
+   141d5:	0f 1f 00             	nopl   (%rax)
+   141d8:	48 8b 84 24 58 01 00 	mov    0x158(%rsp),%rax
+   141df:	00 
+   141e0:	48 8b b4 24 30 02 00 	mov    0x230(%rsp),%rsi
+   141e7:	00 
+   141e8:	48 63 d1             	movslq %ecx,%rdx
+   141eb:	48 01 d0             	add    %rdx,%rax
+   141ee:	48 01 c6             	add    %rax,%rsi
+   141f1:	41 39 0c b0          	cmp    %ecx,(%r8,%rsi,4)
+   141f5:	74 79                	je     14270 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x11a0>
+   141f7:	48 03 84 24 00 02 00 	add    0x200(%rsp),%rax
+   141fe:	00 
+   141ff:	41 8b 0c 80          	mov    (%r8,%rax,4),%ecx
+   14203:	85 c9                	test   %ecx,%ecx
+   14205:	75 d1                	jne    141d8 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1108>
+   14207:	44 89 8c 24 f0 00 00 	mov    %r9d,0xf0(%rsp)
+   1420e:	00 
+   1420f:	48 8b 95 00 01 00 00 	mov    0x100(%rbp),%rdx
+   14216:	e9 a1 f9 ff ff       	jmp    13bbc <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xaec>
+   1421b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+   14220:	4c 8b a4 24 10 03 00 	mov    0x310(%rsp),%r12
+   14227:	00 
+   14228:	48 8b 04 24          	mov    (%rsp),%rax
+   1422c:	4c 8b bc 24 00 03 00 	mov    0x300(%rsp),%r15
+   14233:	00 
+   14234:	4c 8b 94 24 40 02 00 	mov    0x240(%rsp),%r10
+   1423b:	00 
+   1423c:	f2 0f 10 8c 24 f8 02 	movsd  0x2f8(%rsp),%xmm1
+   14243:	00 00 
+   14245:	48 8b 9c 24 08 03 00 	mov    0x308(%rsp),%rbx
+   1424c:	00 
+   1424d:	4c 01 e0             	add    %r12,%rax
+   14250:	4c 8b 9c 24 18 03 00 	mov    0x318(%rsp),%r11
+   14257:	00 
+   14258:	4c 8b ac 24 20 03 00 	mov    0x320(%rsp),%r13
+   1425f:	00 
+   14260:	4c 8b b4 24 28 03 00 	mov    0x328(%rsp),%r14
+   14267:	00 
+   14268:	e9 b3 f6 ff ff       	jmp    13920 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x850>
+   1426d:	0f 1f 00             	nopl   (%rax)
+   14270:	48 8b 8c 24 b0 02 00 	mov    0x2b0(%rsp),%rcx
+   14277:	00 
+   14278:	48 03 94 24 30 01 00 	add    0x130(%rsp),%rdx
+   1427f:	00 
+   14280:	f2 0f 10 04 d7       	movsd  (%rdi,%rdx,8),%xmm0
+   14285:	48 01 c1             	add    %rax,%rcx
+   14288:	48 03 84 24 00 02 00 	add    0x200(%rsp),%rax
+   1428f:	00 
+   14290:	49 63 0c 88          	movslq (%r8,%rcx,4),%rcx
+   14294:	f2 0f 11 84 cc c0 03 	movsd  %xmm0,0x3c0(%rsp,%rcx,8)
+   1429b:	00 00 
+   1429d:	41 8b 0c 80          	mov    (%r8,%rax,4),%ecx
+   142a1:	85 c9                	test   %ecx,%ecx
+   142a3:	0f 85 2f ff ff ff    	jne    141d8 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1108>
+   142a9:	e9 59 ff ff ff       	jmp    14207 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1137>
+   142ae:	66 90                	xchg   %ax,%ax
+   142b0:	4c 8b 8c 24 a0 01 00 	mov    0x1a0(%rsp),%r9
+   142b7:	00 
+   142b8:	48 8b 94 24 58 02 00 	mov    0x258(%rsp),%rdx
+   142bf:	00 
+   142c0:	4c 8d 84 24 b8 03 00 	lea    0x3b8(%rsp),%r8
+   142c7:	00 
+   142c8:	4b 8d 3c d1          	lea    (%r9,%r10,8),%rdi
+   142cc:	48 8b 45 18          	mov    0x18(%rbp),%rax
+   142d0:	f2 0f 10 02          	movsd  (%rdx),%xmm0
+   142d4:	48 8b 30             	mov    (%rax),%rsi
+   142d7:	48 01 fe             	add    %rdi,%rsi
+   142da:	48 8b 0e             	mov    (%rsi),%rcx
+   142dd:	66 48 0f 6e f9       	movq   %rcx,%xmm7
+   142e2:	48 89 c8             	mov    %rcx,%rax
+   142e5:	f2 0f 58 f8          	addsd  %xmm0,%xmm7
+   142e9:	66 49 0f 7e fb       	movq   %xmm7,%r11
+   142ee:	f0 4c 0f b1 1e       	lock cmpxchg %r11,(%rsi)
+   142f3:	0f 85 fb 01 00 00    	jne    144f4 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1424>
+   142f9:	48 83 c2 08          	add    $0x8,%rdx
+   142fd:	4c 01 cf             	add    %r9,%rdi
+   14300:	49 39 d0             	cmp    %rdx,%r8
+   14303:	75 c7                	jne    142cc <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x11fc>
+   14305:	8b 84 24 34 03 00 00 	mov    0x334(%rsp),%eax
+   1430c:	89 84 24 e8 02 00 00 	mov    %eax,0x2e8(%rsp)
+   14313:	e9 62 fc ff ff       	jmp    13f7a <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xeaa>
+   14318:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+   1431f:	00 
+   14320:	48 8b 8c 24 38 02 00 	mov    0x238(%rsp),%rcx
+   14327:	00 
+   14328:	8b 0c 88             	mov    (%rax,%rcx,4),%ecx
+   1432b:	89 8c 24 18 02 00 00 	mov    %ecx,0x218(%rsp)
+   14332:	e9 a9 f8 ff ff       	jmp    13be0 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xb10>
+   14337:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+   1433e:	00 00 
+   14340:	66 0f ef e4          	pxor   %xmm4,%xmm4
+   14344:	48 8b 95 00 01 00 00 	mov    0x100(%rbp),%rdx
+   1434b:	66 0f ef d2          	pxor   %xmm2,%xmm2
+   1434f:	66 0f 28 cc          	movapd %xmm4,%xmm1
+   14353:	e9 8b f6 ff ff       	jmp    139e3 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x913>
+   14358:	48 8b 95 98 00 00 00 	mov    0x98(%rbp),%rdx
+   1435f:	48 89 84 24 40 01 00 	mov    %rax,0x140(%rsp)
+   14366:	00 
+   14367:	4c 89 d0             	mov    %r10,%rax
+   1436a:	48 8d 8c 24 58 03 00 	lea    0x358(%rsp),%rcx
+   14371:	00 
+   14372:	4c 89 9c 24 50 01 00 	mov    %r11,0x150(%rsp)
+   14379:	00 
+   1437a:	48 03 bc 24 48 01 00 	add    0x148(%rsp),%rdi
+   14381:	00 
+   14382:	48 03 02             	add    (%rdx),%rax
+   14385:	4c 89 54 24 38       	mov    %r10,0x38(%rsp)
+   1438a:	f2 0f 11 a4 24 30 01 	movsd  %xmm4,0x130(%rsp)
+   14391:	00 00 
+   14393:	48 89 c2             	mov    %rax,%rdx
+   14396:	48 8b 84 24 a8 02 00 	mov    0x2a8(%rsp),%rax
+   1439d:	00 
+   1439e:	0f 29 94 24 f0 00 00 	movaps %xmm2,0xf0(%rsp)
+   143a5:	00 
+   143a6:	f2 0f 11 4c 24 58    	movsd  %xmm1,0x58(%rsp)
+   143ac:	4a 8d 34 a8          	lea    (%rax,%r13,4),%rsi
+   143b0:	51                   	push   %rcx
+   143b1:	4c 01 c6             	add    %r8,%rsi
+   143b4:	48 8d 8c 24 50 03 00 	lea    0x350(%rsp),%rcx
+   143bb:	00 
+   143bc:	51                   	push   %rcx
+   143bd:	48 8d 0d 00 00 00 00 	lea    0x0(%rip),%rcx        # 143c4 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x12f4>
+   143c4:	4c 8d 8c 24 60 03 00 	lea    0x360(%rsp),%r9
+   143cb:	00 
+   143cc:	4c 8d 84 24 50 03 00 	lea    0x350(%rsp),%r8
+   143d3:	00 
+   143d4:	e8 00 00 00 00       	call   143d9 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1309>
+   143d9:	48 8b 95 c0 00 00 00 	mov    0xc0(%rbp),%rdx
+   143e0:	f2 0f 10 4c 24 68    	movsd  0x68(%rsp),%xmm1
+   143e6:	48 8b 84 24 50 01 00 	mov    0x150(%rsp),%rax
+   143ed:	00 
+   143ee:	48 8b 12             	mov    (%rdx),%rdx
+   143f1:	f2 42 0f 10 04 e2    	movsd  (%rdx,%r12,8),%xmm0
+   143f7:	f2 0f 59 84 24 58 03 	mulsd  0x358(%rsp),%xmm0
+   143fe:	00 00 
+   14400:	f2 0f 58 c8          	addsd  %xmm0,%xmm1
+   14404:	f2 0f 10 04 c2       	movsd  (%rdx,%rax,8),%xmm0
+   14409:	f2 0f 59 84 24 68 03 	mulsd  0x368(%rsp),%xmm0
+   14410:	00 00 
+   14412:	5a                   	pop    %rdx
+   14413:	48 8b 95 00 01 00 00 	mov    0x100(%rbp),%rdx
+   1441a:	59                   	pop    %rcx
+   1441b:	4c 8b 54 24 38       	mov    0x38(%rsp),%r10
+   14420:	66 0f 28 94 24 f0 00 	movapd 0xf0(%rsp),%xmm2
+   14427:	00 00 
+   14429:	4c 8b 9c 24 50 01 00 	mov    0x150(%rsp),%r11
+   14430:	00 
+   14431:	f2 0f 10 a4 24 30 01 	movsd  0x130(%rsp),%xmm4
+   14438:	00 00 
+   1443a:	f2 0f 58 c8          	addsd  %xmm0,%xmm1
+   1443e:	e9 dd f4 ff ff       	jmp    13920 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x850>
+   14443:	48 8b 44 24 78       	mov    0x78(%rsp),%rax
+   14448:	48 8b 8c 24 60 02 00 	mov    0x260(%rsp),%rcx
+   1444f:	00 
+   14450:	48 8b b4 24 a0 01 00 	mov    0x1a0(%rsp),%rsi
+   14457:	00 
+   14458:	48 8d 14 c7          	lea    (%rdi,%rax,8),%rdx
+   1445c:	31 c0                	xor    %eax,%eax
+   1445e:	66 90                	xchg   %ax,%ax
+   14460:	48 83 c0 01          	add    $0x1,%rax
+   14464:	48 c7 02 00 00 00 00 	movq   $0x0,(%rdx)
+   1446b:	48 01 f2             	add    %rsi,%rdx
+   1446e:	48 39 c8             	cmp    %rcx,%rax
+   14471:	75 ed                	jne    14460 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1390>
+   14473:	e9 a8 f0 ff ff       	jmp    13520 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x450>
+   14478:	48 8b 85 c0 00 00 00 	mov    0xc0(%rbp),%rax
+   1447f:	48 8b 38             	mov    (%rax),%rdi
+   14482:	e9 26 f7 ff ff       	jmp    13bad <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xadd>
+   14487:	44 8b 8c 24 f0 00 00 	mov    0xf0(%rsp),%r9d
+   1448e:	00 
+   1448f:	90                   	nop
+   14490:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+   14495:	48 8b b4 24 30 02 00 	mov    0x230(%rsp),%rsi
+   1449c:	00 
+   1449d:	48 63 d1             	movslq %ecx,%rdx
+   144a0:	48 0f af c2          	imul   %rdx,%rax
+   144a4:	48 03 84 24 58 01 00 	add    0x158(%rsp),%rax
+   144ab:	00 
+   144ac:	48 01 c6             	add    %rax,%rsi
+   144af:	41 39 0c b0          	cmp    %ecx,(%r8,%rsi,4)
+   144b3:	75 2a                	jne    144df <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x140f>
+   144b5:	48 8b 8c 24 b0 02 00 	mov    0x2b0(%rsp),%rcx
+   144bc:	00 
+   144bd:	48 0f af 14 24       	imul   (%rsp),%rdx
+   144c2:	48 03 94 24 30 01 00 	add    0x130(%rsp),%rdx
+   144c9:	00 
+   144ca:	48 01 c1             	add    %rax,%rcx
+   144cd:	f2 0f 10 04 d7       	movsd  (%rdi,%rdx,8),%xmm0
+   144d2:	49 63 0c 88          	movslq (%r8,%rcx,4),%rcx
+   144d6:	f2 0f 11 84 cc c0 03 	movsd  %xmm0,0x3c0(%rsp,%rcx,8)
+   144dd:	00 00 
+   144df:	48 03 84 24 00 02 00 	add    0x200(%rsp),%rax
+   144e6:	00 
+   144e7:	41 8b 0c 80          	mov    (%r8,%rax,4),%ecx
+   144eb:	85 c9                	test   %ecx,%ecx
+   144ed:	75 a1                	jne    14490 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x13c0>
+   144ef:	e9 13 fd ff ff       	jmp    14207 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x1137>
+   144f4:	48 89 c1             	mov    %rax,%rcx
+   144f7:	e9 e1 fd ff ff       	jmp    142dd <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0x120d>
+   144fc:	48 89 c1             	mov    %rax,%rcx
+   144ff:	e9 be fa ff ff       	jmp    13fc2 <__accelnet_target_kernels_MOD_generic_forces._omp_fn.1+0xef2>

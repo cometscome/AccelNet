@@ -1,0 +1,301 @@
+Start testing: Sep 25 18:55 JST
+----------------------------------------------------------
+9/61 Testing: predictor_target_equivalence
+9/61 Test: predictor_target_equivalence
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_equivalence" start time: Sep 25 18:55 JST
+Output:
+----------------------------------------------------------
+ GPU checks:           59  maximum absolute E/F/W error: 
+   3.8857805861880479E-016
+ GPU batch FP64 equivalence and finite differences passed
+<end of output>
+Test time =   1.78 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_equivalence" end time: Sep 25 18:55 JST
+"predictor_target_equivalence" time elapsed: 00:00:01
+----------------------------------------------------------
+
+10/61 Testing: predictor_target_direct_equivalence
+10/61 Test: predictor_target_direct_equivalence
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "--direct"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_direct_equivalence" start time: Sep 25 18:55 JST
+Output:
+----------------------------------------------------------
+ GPU checks:           59  maximum absolute E/F/W error: 
+   1.0234868508263162E-015
+ GPU batch FP64 equivalence and finite differences passed
+<end of output>
+Test time =   2.07 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_direct_equivalence" end time: Sep 25 18:56 JST
+"predictor_target_direct_equivalence" time elapsed: 00:00:02
+----------------------------------------------------------
+
+11/61 Testing: predictor_target_moment_equivalence
+11/61 Test: predictor_target_moment_equivalence
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "--moment"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_moment_equivalence" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+ GPU checks:           59  maximum absolute E/F/W error: 
+   3.9551695252271202E-016
+ GPU batch FP64 equivalence and finite differences passed
+<end of output>
+Test time =   1.70 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_moment_equivalence" end time: Sep 25 18:56 JST
+"predictor_target_moment_equivalence" time elapsed: 00:00:01
+----------------------------------------------------------
+
+12/61 Testing: predictor_target_reject_offset
+12/61 Test: predictor_target_reject_offset
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "offset"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_offset" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: CSR offset out of range
+<end of output>
+Test time =   0.28 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_offset" end time: Sep 25 18:56 JST
+"predictor_target_reject_offset" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/61 Testing: predictor_target_reject_monotonic
+13/61 Test: predictor_target_reject_monotonic
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "monotonic"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_monotonic" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: CSR offsets must be nondecreasing
+<end of output>
+Test time =   0.28 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_monotonic" end time: Sep 25 18:56 JST
+"predictor_target_reject_monotonic" time elapsed: 00:00:00
+----------------------------------------------------------
+
+14/61 Testing: predictor_target_reject_target
+14/61 Test: predictor_target_reject_target
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "target"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_target" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: neighbor index out of range
+<end of output>
+Test time =   0.29 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_target" end time: Sep 25 18:56 JST
+"predictor_target_reject_target" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/61 Testing: predictor_target_reject_center
+15/61 Test: predictor_target_reject_center
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "center"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_center" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: center index out of range
+<end of output>
+Test time =   0.29 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_center" end time: Sep 25 18:56 JST
+"predictor_target_reject_center" time elapsed: 00:00:00
+----------------------------------------------------------
+
+16/61 Testing: predictor_target_reject_species
+16/61 Test: predictor_target_reject_species
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "species"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_species" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: species out of range
+<end of output>
+Test time =   0.28 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_species" end time: Sep 25 18:56 JST
+"predictor_target_reject_species" time elapsed: 00:00:00
+----------------------------------------------------------
+
+17/61 Testing: predictor_target_reject_shape
+17/61 Test: predictor_target_reject_shape
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "shape"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_shape" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: wrong CSR offset count
+<end of output>
+Test time =   0.28 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_shape" end time: Sep 25 18:56 JST
+"predictor_target_reject_shape" time elapsed: 00:00:00
+----------------------------------------------------------
+
+18/61 Testing: predictor_target_reject_unsupported
+18/61 Test: predictor_target_reject_unsupported
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "unsupported"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_unsupported" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: only a single Chebyshev component per species is supported
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_unsupported" end time: Sep 25 18:56 JST
+"predictor_target_reject_unsupported" time elapsed: 00:00:00
+----------------------------------------------------------
+
+19/61 Testing: predictor_target_reject_activation
+19/61 Test: predictor_target_reject_activation
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "activation"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_activation" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: unsupported network activation
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_activation" end time: Sep 25 18:56 JST
+"predictor_target_reject_activation" time elapsed: 00:00:00
+----------------------------------------------------------
+
+20/61 Testing: predictor_target_reject_version10
+20/61 Test: predictor_target_reject_version10
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "version10"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_version10" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: too few neighbors for version 10 center lookup
+<end of output>
+Test time =   0.26 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_version10" end time: Sep 25 18:56 JST
+"predictor_target_reject_version10" time elapsed: 00:00:00
+----------------------------------------------------------
+
+21/61 Testing: predictor_target_reject_uninitialized
+21/61 Test: predictor_target_reject_uninitialized
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "uninitialized"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_uninitialized" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: initialize target_model first
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_uninitialized" end time: Sep 25 18:56 JST
+"predictor_target_reject_uninitialized" time elapsed: 00:00:00
+----------------------------------------------------------
+
+22/61 Testing: predictor_target_reject_host_fallback
+22/61 Test: predictor_target_reject_host_fallback
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "fallback"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_reject_host_fallback" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+Warning: ieee_inexact is signaling
+ERROR STOP OpenMP target: GPU device unavailable
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_reject_host_fallback" end time: Sep 25 18:56 JST
+"predictor_target_reject_host_fallback" time elapsed: 00:00:00
+----------------------------------------------------------
+
+43/61 Testing: predictor_target_aenet_golden
+43/61 Test: predictor_target_aenet_golden
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "--aenet" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_aenet_golden" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+ GPU checks:           18  maximum absolute E/F/W error: 
+   3.2400748750660568E-012
+ GPU batch FP64 equivalence and finite differences passed
+<end of output>
+Test time =   2.05 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_aenet_golden" end time: Sep 25 18:56 JST
+"predictor_target_aenet_golden" time elapsed: 00:00:02
+----------------------------------------------------------
+
+44/61 Testing: predictor_target_aenet_mode1
+44/61 Test: predictor_target_aenet_mode1
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "--aenet" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict" "1"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_aenet_mode1" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+ GPU checks:           18  maximum absolute E/F/W error: 
+   3.4248159863636829E-012
+ GPU batch FP64 equivalence and finite differences passed
+<end of output>
+Test time =   3.54 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_aenet_mode1" end time: Sep 25 18:56 JST
+"predictor_target_aenet_mode1" time elapsed: 00:00:03
+----------------------------------------------------------
+
+45/61 Testing: predictor_target_aenet_mode2
+45/61 Test: predictor_target_aenet_mode2
+Command: "/tmp/accelnet-gpu-research/build-nvhpc/bin/test_batch_target" "--aenet" "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict" "2"
+Directory: /tmp/accelnet-gpu-research/build-nvhpc/AccelNetPredictor
+"predictor_target_aenet_mode2" start time: Sep 25 18:56 JST
+Output:
+----------------------------------------------------------
+ GPU checks:           18  maximum absolute E/F/W error: 
+   3.2400748750660568E-012
+ GPU batch FP64 equivalence and finite differences passed
+<end of output>
+Test time =   2.01 sec
+----------------------------------------------------------
+Test Passed.
+"predictor_target_aenet_mode2" end time: Sep 25 18:56 JST
+"predictor_target_aenet_mode2" time elapsed: 00:00:02
+----------------------------------------------------------
+
+End testing: Sep 25 18:56 JST
+
+gpu =  15.14 sec*proc
+

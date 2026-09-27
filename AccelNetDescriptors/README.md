@@ -5,11 +5,19 @@ Chebyshev, Behler 2011, and Lennard-Jones atomic-environment descriptors
 used by AccelNet. It can read AccelNet `.fingerprint.stp` setup files
 directly.
 
+This is the low-level descriptor/compatibility API. Production potential
+inference uses the common CPU/GPU kernels in
+[AccelNetPredictor](../AccelNetPredictor/README.md). The standalone evaluators
+retain reference behavior and can have different method-selection thresholds;
+see [current inference coverage](../docs/implementation-status.md).
+
 The package supports all Chebyshev compatibility modes accepted by AccelNet:
 
 - Chebyshev `version=0`, `version=1`, and `version=10`
 - Lennard-Jones (`sum(r^-6)`, `sum(r^-12)`) values and analytical derivatives
 - Behler 2011 G1, G2, G3, G4, and G5 values and analytical derivatives
+- n2p2 weighted/compact types 12/13/20--25, loaded through the predictor or
+  constructed with the descriptor API
 - a statically dispatched descriptor model that can concatenate Chebyshev,
   Behler, and LJ blocks
 - one or more chemical species
@@ -58,20 +66,29 @@ tree and can be overridden with `N2P2_SOURCE_DIR`.
 
 ## Build and test
 
+Commands in this README run inside `AccelNetDescriptors/`. A standalone
+build writes executables directly under `build/`; the root project uses
+`build/bin/`. For a build without external reference trees:
+
 ```sh
-cmake -S . -B build \
-  -DACCELNET_ORIGINAL_DIR=/path/to/AccelNet-a76ec3a83c8b0246328e9cca4817cc0afc84c925 \
-  -DAENET_GENERATE_EXECUTABLE=/path/to/aenet/generate.x_serial \
-  -DAENET_TRNSET2ASCII_EXECUTABLE=/path/to/aenet/trnset2ASCII.x
-cmake --build build -j
-ctest --test-dir build --output-on-failure
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+  -DACCELNET_DESCRIPTORS_BUILD_REFERENCE=OFF \
+  -DACCELNET_DESCRIPTORS_BUILD_AENET_REFERENCE=OFF \
+  -DACCELNET_DESCRIPTORS_BUILD_N2P2_REFERENCE=OFF
+cmake --build build --parallel
+ctest --test-dir build -LE performance --output-on-failure
 ```
+
+Enable the reference options above and provide the corresponding paths when
+running external comparisons. These tools are not inference dependencies.
 
 The standalone Fortran G4 derivative-layout benchmark is available as
 `build/benchmark-g4-derivative`. It checks numerical equivalence before timing
 the array-expression, contiguous fused-scalar, and member-first SoA kernels.
 
-At model setup, G4 descriptors with exactly zero radial shift (`Rs=0`) are
+In the standalone/reference evaluator, the main-branch 1.0.2 optimization is
+retained alongside the common inference backend. At model setup, G4
+descriptors with exactly zero radial shift (`Rs=0`) are
 grouped by neighbor-species pair and cutoff radius. These groups automatically
 use a fast path that shares triangle geometry and cutoff factors, reuses
 exponentials and angular powers, and forms derivatives from shared edge
@@ -250,14 +267,16 @@ coefficient order for manually constructed models. The setup reader creates
 one model per central species and applies AccelNet's coefficient ordering
 automatically.
 
-Chebyshev angular evaluation has three runtime modes. `AUTO` uses direct pair
+### Low-level evaluation modes
+
+The standalone Chebyshev evaluator has three runtime modes. `AUTO` uses direct pair
 enumeration below 16 angular neighbors and exact Cartesian moments otherwise;
 `DIRECT` and `MOMENT` force one path for every environment. Use
 `set_chebyshev_evaluation(config, mode)` with
 `CHEBYSHEV_EVALUATION_AUTO`, `CHEBYSHEV_EVALUATION_DIRECT`, or
 `CHEBYSHEV_EVALUATION_MOMENT`.
 
-Integer-exponent G5/type-9 functions support exact Cartesian-moment
+The standalone/reference integer-exponent G5/type-9 functions support exact Cartesian-moment
 evaluation, including nonzero radial shifts. Selection deliberately uses only
 two fixed bounds: moment evaluation is used with at least 16 neighbors and for
 integer angular orders `zeta <= 10`. Fewer neighbors and orders `zeta >= 11` use
@@ -269,7 +288,13 @@ and H2O; the precise direct/moment crossover depends on the number of species
 and G5 functions. `G5_EVALUATION_MOMENT_FORCE` bypasses only the neighbor-count
 bound and exists for tests and benchmarking; it does not bypass the maximum
 order.
-Measure the crossover for a descriptor configuration with:
+These are the retained low-level rules. In the common potential-inference
+kernels, Chebyshev auto uses an operation-count heuristic, and explicit G5
+moment modes also support integer powers 11--16. The public inference APIs do
+not fall back to these older evaluators. See the
+[current selection table](../docs/implementation-status.md#descriptor-coverage).
+
+Measure the standalone crossover for a descriptor configuration with:
 
 ```sh
 build/benchmark-g5-scaling 500
@@ -296,4 +321,3 @@ reference under the same compiler and optimization flags.
 `compare_extension_performance` separately gates the common-model overhead,
 LJ kernel, and Behler kernel. This prevents later descriptor additions from
 silently slowing the existing Chebyshev fast path.
-# AccelNetDescriptors

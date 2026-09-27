@@ -1,0 +1,300 @@
+--- before/accelnet_batch_target.f90
++++ source-team/accelnet_batch_target.f90
+@@ -35,7 +35,8 @@
+     type :: target_workspace
+         private
+         type(target_model) :: cached
+-        real(real64), allocatable :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:), moments(:,:,:), powers(:,:,:), radial(:,:,:)
++        real(real64), allocatable :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:), moments(:,:,:), &
++            powers(:,:,:), radial(:,:,:), jacobian(:,:,:)
+         integer, allocatable :: species(:), centers(:), offsets(:), indices(:), use_moment(:), edge_row(:)
+         real(real64), allocatable :: dr(:,:), energies(:), forces(:,:), virial(:,:), geom(:,:), edge_force(:,:)
+         integer :: growth_count = 0, upload_count = 0
+@@ -343,10 +344,12 @@
+     subroutine release_buffers(self)
+         class(target_workspace), intent(inout) :: self
+         if (.not. allocated(self%g)) return
+-        call map_buffers(self%cached%device,.false.,self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%radial, &
++        call map_buffers(self%cached%device,.false.,self%g,self%values,self%deriv,self%delta,self%moments, &
++            self%powers,self%radial,self%jacobian, &
+             self%species,self%centers,self%offsets,self%indices,self%use_moment,self%dr,self%energies,self%forces,self%virial, &
+             self%geom,self%edge_row,self%edge_force)
+-        deallocate(self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%radial,self%species,self%centers, &
++        deallocate(self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%radial, &
++            self%jacobian,self%species,self%centers, &
+             self%offsets,self%indices,self%use_moment,self%dr,self%energies,self%forces,self%virial, &
+             self%geom,self%edge_row,self%edge_force)
+     end subroutine
+@@ -496,7 +499,7 @@
+         type(target_model), intent(in) :: model
+         type(target_workspace), intent(inout) :: work
+         integer, intent(in) :: nrw,natoms,nedges
+-        integer :: n,mn,ml,ne,na,mm,mpower,ngroups
++        integer :: n,mn,ml,ne,na,mm,mpower,ngroups,njf,nje
+         logical :: grow
+         na = natoms
+         ! Each workspace owns its model cache; compare values, not addresses, so
+@@ -513,24 +516,31 @@
+         n = nrw; mn = model%maxnodes; ml = model%maxlayers
+         ne = max(1,nedges); mm = size(model%mp,2); mpower = size(model%polynomial,1)
+         ngroups = max(1,maxval(model%features(7,:,:)))
++        njf = max(1,maxval(model%nodes(1,:),mask=model%meta(10,:) == 1))
++        nje = 1
++        if (any(model%meta(10,:) == 1)) nje = ne
+         grow = .true.
+         if (allocated(work%g)) then
+             n = max(n,size(work%g,1)); mn = max(mn,size(work%g,2)); ml = max(ml,size(work%values,3))
+             ne = max(ne,size(work%indices)); na = max(na,size(work%species)); mm = max(mm,size(work%moments,2))
+             mpower = max(mpower,size(work%powers,2))
+             ngroups = max(ngroups,size(work%radial,2))
++            njf = max(njf,size(work%jacobian,2)); nje = max(nje,size(work%jacobian,1))
+             grow = n > size(work%g,1) .or. mn > size(work%g,2) .or. ml > size(work%values,3) .or. &
+                 ne > size(work%indices) .or. na > size(work%species) .or. mm > size(work%moments,2) .or. &
+-                mpower > size(work%powers,2) .or. ngroups > size(work%radial,2)
++                mpower > size(work%powers,2) .or. ngroups > size(work%radial,2) .or. &
++                njf > size(work%jacobian,2) .or. nje > size(work%jacobian,1)
+         end if
+         if (grow) then
+             call release_buffers(work)
+             allocate(work%g(n,mn),work%values(n,mn,ml),work%deriv(n,mn,ml),work%delta(n,mn,2), &
+-                work%moments(n,mm,2),work%powers(ne,mpower,3),work%radial(ne,ngroups,2),work%species(na), &
++                work%moments(n,mm,2),work%powers(ne,mpower,3),work%radial(ne,ngroups,2),work%jacobian(nje,njf, &
++            3),work%species(na), &
+                 work%centers(n),work%offsets(n+1), &
+                 work%indices(ne),work%use_moment(n),work%dr(3,ne),work%geom(7,ne),work%edge_row(ne),work%edge_force(3,ne), &
+                 work%energies(n),work%forces(3,na),work%virial(3,3))
+-            call map_buffers(model%device,.true.,work%g,work%values,work%deriv,work%delta,work%moments,work%powers,work%radial, &
++            call map_buffers(model%device,.true.,work%g,work%values,work%deriv,work%delta,work%moments, &
++            work%powers,work%radial,work%jacobian, &
+                 work%species,work%centers,work%offsets,work%indices,work%use_moment,work%dr, &
+                 work%energies,work%forces,work%virial,work%geom,work%edge_row,work%edge_force)
+             work%growth_count = work%growth_count+1
+@@ -551,7 +561,8 @@
+             work%cached%features,work%cached%feature_params,work%cached%local_species, &
+             work%cached%mp,work%cached%multiplicity,work%cached%polynomial,work%species,work%centers,work%offsets, &
+             work%indices,work%dr,work%energies,work%forces,work%virial,work%g,work%values,work%deriv,work%delta, &
+-            work%moments,work%powers,work%radial,work%use_moment,work%geom,work%edge_row,work%edge_force,nrw,natoms,nedges,stages)
++            work%moments,work%powers,work%radial,work%jacobian,work%use_moment,work%geom,work%edge_row, &
++            work%edge_force,nrw,natoms,nedges,stages)
+         timing%descriptors = stages(1); timing%network = stages(2); timing%forces = stages(3)
+         mark = omp_get_wtime()
+         call download_outputs(model%device,natoms,nrw,work%energies,work%forces,work%virial)
+@@ -644,21 +655,21 @@
+         end if
+     end subroutine
+ 
+-    subroutine map_buffers(device,enter,g,values,deriv,delta,moments,powers,radial,species,centers,offsets,indices, &
++    subroutine map_buffers(device,enter,g,values,deriv,delta,moments,powers,radial,jacobian,species,centers,offsets,indices, &
+                            use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
+         integer, intent(in) :: device
+         logical, intent(in) :: enter
+         real(real64), contiguous, intent(inout) :: g(:,:),values(:,:,:),deriv(:,:,:),delta(:,:,:),moments(:,:,:), &
+-            powers(:,:,:), radial(:,:,:)
++            powers(:,:,:), radial(:,:,:), jacobian(:,:,:)
+         integer, contiguous, intent(inout) :: species(:),centers(:),offsets(:),indices(:),use_moment(:),edge_row(:)
+         real(real64), contiguous, intent(inout) :: dr(:,:),energies(:),forces(:,:),virial(:,:),geom(:,:),edge_force(:,:)
+         if (enter) then
+             !$omp target enter data device(device) if(device /= omp_get_initial_device()) &
+-            !$omp& map(alloc:g,values,deriv,delta,moments,powers,radial,species,centers,offsets,indices, &
++            !$omp& map(alloc:g,values,deriv,delta,moments,powers,radial,jacobian,species,centers,offsets,indices, &
+             !$omp& use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
+         else
+             !$omp target exit data device(device) if(device /= omp_get_initial_device()) &
+-            !$omp& map(delete:g,values,deriv,delta,moments,powers,radial,species,centers,offsets,indices, &
++            !$omp& map(delete:g,values,deriv,delta,moments,powers,radial,jacobian,species,centers,offsets,indices, &
+             !$omp& use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
+         end if
+     end subroutine
+--- before/accelnet_target_kernels.f90
++++ source-team/accelnet_target_kernels.f90
+@@ -12,7 +12,8 @@
+     subroutine run_target_batch(device, meta, nodes, acts, woffset, weights, params, shift, scale, spin, &
+                                 features, feature_params, local_species, mp, multiplicity, polynomial, &
+                                 species, centers, offsets, indices, dr, &
+-                                energies, forces, virial, g, values, deriv, delta, moments, powers, radial_cache, use_moment, &
++                                energies, forces, virial, g, values, deriv, delta, moments, powers, &
++            radial_cache, jacobian, use_moment, &
+                                 geom, edge_row, edge_force, nrw, natoms, nedges, stages)
+         integer, contiguous, intent(in) :: features(:,:,:),local_species(:,:)
+         real(real64), contiguous, intent(in) :: feature_params(:,:,:)
+@@ -25,7 +26,7 @@
+         real(real64), contiguous, intent(out) :: energies(:)
+         real(real64), contiguous, intent(inout) :: forces(:,:), virial(:,:)
+         real(real64), contiguous, intent(inout) :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:)
+-        real(real64), contiguous, intent(inout) :: moments(:,:,:), powers(:,:,:), radial_cache(:,:,:)
++        real(real64), contiguous, intent(inout) :: moments(:,:,:), powers(:,:,:), radial_cache(:,:,:), jacobian(:,:,:)
+         integer, contiguous, intent(inout) :: use_moment(:), edge_row(:)
+         real(real64), contiguous, intent(inout) :: geom(:,:), edge_force(:,:)
+         real(real64), intent(out) :: stages(3)
+@@ -41,7 +42,7 @@
+         !$omp& map(alloc: features,feature_params,local_species) &
+         !$omp& map(alloc: meta, nodes, acts, woffset, weights, params, shift, scale, spin, mp, multiplicity, polynomial) &
+         !$omp& map(alloc: species, centers, offsets, indices, dr, energies, forces, virial, &
+-        !$omp& g, values, deriv, delta, moments, powers, radial_cache, use_moment, geom, edge_row, edge_force)
++        !$omp& g, values, deriv, delta, moments, powers, radial_cache, jacobian, use_moment, geom, edge_row, edge_force)
+         started = omp_get_wtime()
+         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+         !$omp& private(s,nr,na,dim,multi,version,ct,j,k,b,l,i,o,nin,nout,rj,rk,fcj,fck,sj,sk,cosine,x, &
+@@ -201,7 +202,7 @@
+             !$omp end target teams distribute parallel do
+         end if
+         if (any(meta(10,:) == 1)) call generic_values(device,nrw,meta,nodes,features,feature_params, &
+-            local_species,species,centers,offsets,indices,geom,radial_cache,g)
++            local_species,species,centers,offsets,indices,geom,radial_cache,jacobian,g)
+         stages(1) = omp_get_wtime()-started
+         started = omp_get_wtime()
+         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+@@ -371,7 +372,7 @@
+         end do
+         !$omp end target teams distribute parallel do
+         if (any(meta(10,:) == 1)) call generic_forces(device,nedges,meta,nodes,features,feature_params, &
+-            local_species,species,centers,offsets,indices,geom,edge_row,radial_cache,g,edge_force)
++            local_species,species,centers,offsets,indices,geom,edge_row,radial_cache,jacobian,g,edge_force)
+         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+         !$omp& private(j,target,c,a,fj,center_f,w)
+         do row = 1, nrw
+@@ -402,17 +403,18 @@
+         stages(3) = omp_get_wtime()-started
+         !$omp end target data
+     end subroutine
+-    subroutine generic_values(device,nrw,meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g)
++    subroutine generic_values(device,nrw,meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
++            geom,radial_cache,jacobian,g)
+         integer, intent(in) :: device,nrw
+         integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),features(:,:,:),local_species(:,:)
+         integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:)
+         real(real64), contiguous, intent(in) :: fp(:,:,:),radial_cache(:,:,:),geom(:,:)
+-        real(real64), contiguous, intent(inout) :: g(:,:)
+-        integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group
+-        real(real64) :: total,v,dv,gradient(3),total12,v12,dv12
+-        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
+-        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g) &
+-        !$omp& private(s,j,k,tj,tk,kind,t1,t2,group,total,v,dv,gradient,total12,v12,dv12)
++        real(real64), contiguous, intent(inout) :: g(:,:),jacobian(:,:,:)
++        integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group,c
++        real(real64) :: total,v,dv,gradient(3),gradient_k(3),total12,v12,dv12
++        !$omp target teams distribute collapse(2) thread_limit(32) device(device) if(device /= omp_get_initial_device()) &
++        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,jacobian,g) &
++        !$omp& private(s,j,k,tj,tk,kind,t1,t2,group,c,total,v,dv,gradient,gradient_k,total12,v12,dv12)
+         do row = 1,nrw
+             do b = 1,size(features,2)
+                 s = species(centers(row))
+@@ -421,6 +423,14 @@
+                 if (kind == 7) cycle
+                 group = features(7,b,s)
+                 total = 0; total12 = 0
++                if (kind == 4 .or. kind == 5) then
++                    !$omp parallel do private(j)
++                    do j = offsets(row),offsets(row+1)-1
++                        jacobian(j,b,:) = 0
++                    end do
++                    !$omp end parallel do
++                end if
++                !$omp parallel do private(j,k,tj,tk,c,v,dv,v12,dv12,gradient,gradient_k) reduction(+:total,total12)
+                 do j = offsets(row),offsets(row+1)-1
+                     tj = local_species(species(indices(j)),s)
+                     if (kind /= 4 .and. kind /= 5) then
+@@ -437,31 +447,39 @@
+                         do k = j+1,offsets(row+1)-1
+                             tk = local_species(species(indices(k)),s)
+                             if (.not. ((tj == t1 .and. tk == t2) .or. (tj == t2 .and. tk == t1))) cycle
+-                            v = generic_pair_value(features(:,b,s),fp(:,b,s),geom(1:3,j),geom(1:3,k), &
+-                                geom(4,j),geom(4,k),radial_cache(j,group,1),radial_cache(k,group,1))
++                            call generic_pair_both(features(:,b,s),fp(:,b,s),geom(1:3,j),geom(1:3,k), &
++                                geom(4,j),geom(4,k),radial_cache(j,group,1),radial_cache(k,group,1), &
++                                radial_cache(j,group,2),radial_cache(k,group,2),v,gradient,gradient_k)
++                            do c = 1,3
++                                !$omp atomic update
++                                jacobian(j,b,c) = jacobian(j,b,c)+gradient(c)
++                                !$omp atomic update
++                                jacobian(k,b,c) = jacobian(k,b,c)+gradient_k(c)
++                            end do
+                             total = total+v
+                         end do
+                     end if
+                 end do
++                !$omp end parallel do
+                 g(row,b) = total
+                 if (kind == 6) g(row,b+1) = total12
+             end do
+         end do
+-        !$omp end target teams distribute parallel do
++        !$omp end target teams distribute
+     end subroutine
+ 
+     subroutine generic_forces(device,nedges,meta,nodes,features,fp,local_species,species,centers,offsets, &
+-                              indices,geom,edge_row,radial_cache,g,edge_force)
++                              indices,geom,edge_row,radial_cache,jacobian,g,edge_force)
+         integer, intent(in) :: device,nedges
+         integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),features(:,:,:),local_species(:,:)
+         integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:),edge_row(:)
+-        real(real64), contiguous, intent(in) :: fp(:,:,:),radial_cache(:,:,:),geom(:,:),g(:,:)
++        real(real64), contiguous, intent(in) :: fp(:,:,:),radial_cache(:,:,:),jacobian(:,:,:),geom(:,:),g(:,:)
+         real(real64), contiguous, intent(inout) :: edge_force(:,:)
+         integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group
+         real(real64) :: f(3),v,dv,gradient(3),v12,dv12,radial_force
+         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
+         !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
+-        !$omp& geom,edge_row,radial_cache,g,edge_force) &
++        !$omp& geom,edge_row,radial_cache,jacobian,g,edge_force) &
+         !$omp& private(row,b,s,k,tj,tk,kind,t1,t2,group,f,v,dv,gradient,v12,dv12,radial_force)
+         do j = 1,nedges
+             row = edge_row(j); s = species(centers(row))
+@@ -481,16 +499,7 @@
+                         radial_force = radial_force+g(row,b)*dv
+                     end if
+                 else
+-                    if (tj /= t1 .and. tj /= t2) cycle
+-                    do k = offsets(row),offsets(row+1)-1
+-                        if (k == j) cycle
+-                        tk = local_species(species(indices(k)),s)
+-                        if (.not. ((tj == t1 .and. tk == t2) .or. (tj == t2 .and. tk == t1))) cycle
+-                        call generic_pair_cached(features(:,b,s),fp(:,b,s),geom(1:3,j),geom(1:3,k), &
+-                            geom(4,j),geom(4,k),radial_cache(j,group,1),radial_cache(k,group,1), &
+-                            radial_cache(j,group,2),gradient)
+-                        f = f+g(row,b)*gradient
+-                    end do
++                    f = f+g(row,b)*jacobian(j,b,:)
+                 end if
+             end do
+             edge_force(:,j) = f+radial_force*geom(1:3,j)
+--- before/accelnet_target_math.f90
++++ source-team/accelnet_target_math.f90
+@@ -9,7 +9,8 @@
+     implicit none
+     private
+     real(real64), parameter :: PI_ACCELNET = 3.14159265358979_real64
+-    public :: generic_radial, generic_pair, generic_radial_value, generic_pair_value, generic_pair_cached, generic_lj
++    public :: generic_pair_both, generic_radial, generic_pair, generic_radial_value, generic_pair_value, &
++            generic_pair_cached, generic_lj
+     public :: angular_power, angular_value
+     public :: target_cutoff_value, target_cutoff_derivative, target_activate, target_activation_derivative
+ contains
+@@ -180,4 +181,27 @@
+             dv=ir6*(dfc-6*fc/r); dv12=ir12*(dfc-12*fc/r)
+         end if
+     end subroutine
++
++    pure subroutine generic_pair_both(f,p,uj,uk,rj,rk,qj,qk,dqj,dqk,value,dj,dk)
++        !$omp declare target
++        integer, intent(in) :: f(:)
++        real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk,qj,qk,dqj,dqk
++        real(real64), intent(out) :: value,dj(3),dk(3)
++        real(real64) :: qjk,dqjk,rjk,ujk(3),cosine,a,da,product
++        value=0;dj=0;dk=0
++        if (rj <= 1e-12_real64 .or. rk <= 1e-12_real64 .or. rj > p(1) .or. rk > p(1)) return
++        qjk=1;dqjk=0;ujk=0
++        if (f(1) == 4) then
++            ujk=rk*uk-rj*uj;rjk=sqrt(sum(ujk**2))
++            if (rjk <= 1e-12_real64 .or. rjk > p(1)) return
++            ujk=ujk/rjk
++            call generic_radial(2,rjk,f(4),p,qjk,dqjk)
++        end if
++        cosine=max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
++        call angular_power(cosine,p(4),p(5),f(5),0.5_real64*p(5)*p(4),a,da)
++        product=qj*qk*qjk
++        value=2*a*product
++        dj=2*(da*product*(uk-cosine*uj)/rj+a*qk*(dqj*qjk*uj-qj*dqjk*ujk))
++        dk=2*(da*product*(uj-cosine*uk)/rk+a*qj*(dqk*qjk*uk+qk*dqjk*ujk))
++    end subroutine
+ end module

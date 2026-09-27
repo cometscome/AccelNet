@@ -1,0 +1,47 @@
+[
+  {
+    "file": "legacy_chebyshev_evaluation.inc",
+    "body_unchanged_from": "543b180",
+    "only_addition": "provenance comment on line 1",
+    "sha256": "0dcce003c4b7d6998d5a8e1758fc6798cee3c220f37ad1a36dddb7357f30cf05"
+  },
+  {
+    "file": "legacy_behler_evaluation.inc",
+    "body_unchanged_from": "543b180",
+    "only_addition": "provenance comment on line 1",
+    "sha256": "7ac1dd404ae4e4122cc5ac016473bec6788b6d34ac054cb4a9f8d30c6d468cfe"
+  },
+  {
+    "file": "legacy_lj_evaluation.inc",
+    "body_unchanged_from": "543b180",
+    "only_addition": "provenance comment on line 1",
+    "sha256": "7299448f0c47d4c42cab52c50611b6fdf20996bbc9aa91ec1921ea8f5bf14fcb"
+  },
+  {
+    "file": "legacy_model_evaluation.inc",
+    "body_unchanged_from": "543b180",
+    "only_addition": "provenance comment on line 1",
+    "sha256": "02ec8f18b4ca6eaf1b38220c1df3f146e97d3c41fb1f6e44b5d832c0645557dd"
+  },
+  {
+    "file": "legacy_network_evaluation.inc",
+    "body_unchanged_from": "543b180",
+    "only_addition": "provenance comment on line 1",
+    "sha256": "540b6c08f5cc21e11180f5d57e928822eac8acb95b21e276ea40a7eccb689364"
+  },
+  {
+    "file": "accelnet_predictor.f90.snapshot",
+    "unchanged_from": "543b180",
+    "sha256": "04cd76a94ae7fdc91aba73166cfd66b1df8d16574456157594c669b7e7db4235"
+  },
+  {
+    "file": "accelnet_batch.f90.snapshot",
+    "unchanged_from": "543b180",
+    "sha256": "fcb6dac271cc59acc90bdc4afb5c05e6dc267329fddd7cde52fc8f4984c7d7f8"
+  },
+  {
+    "file": "accelnet.f90.snapshot",
+    "unchanged_from": "543b180",
+    "sha256": "99e8b4b6ddd9355ee94d719706e114cd57e38941f5bad9325b28d000c55f92fc"
+  }
+]

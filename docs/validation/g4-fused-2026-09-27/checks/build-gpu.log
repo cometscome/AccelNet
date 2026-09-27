@@ -1,0 +1,5 @@
+[ 22%] Built target AccelNetDescriptors
+[ 66%] Built target AccelNetPredictor
+[ 74%] Built target batch_test_support
+[ 96%] Built target AccelNetTarget
+[100%] Built target test_batch_target

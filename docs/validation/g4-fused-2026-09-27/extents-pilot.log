@@ -1,0 +1,70 @@
+========= COMPUTE-SANITIZER
+========= Invalid __global__ read of size 4 bytes
+=========     at nvkernel_accelnet_target_kernels_g4_values_derivatives__F1L448_26_+0x40 in accelnet_target_kernels.f90:448
+=========     by thread (64,0,0) in block (0,0,0)
+=========     Access to 0x0 is out of bounds
+=========     and is 139697678450688 bytes before the nearest allocation at 0x7f0de6800000 of size 1024000 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cuLaunchKernel [0x386d84] in libcuda.so.1
+=========         Host Frame: launchInternal in hxCuda.c:3396 [0x4d261] in libnvomp.so
+=========         Host Frame: hxLaunch in hxInterface.c:155 [0x45abb] in libnvomp.so
+=========         Host Frame: launchHXTarget.constprop.0 in nvomp_target.c:462 [0x21109] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:1190 [0x21ecb] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: accelnet_target_kernels_g4_values_derivatives_ in accelnet_target_kernels.f90:533 [0x602a5] in accelnet-target-benchmark
+=========         Host Frame: accelnet_target_kernels_run_target_batch_ in accelnet_target_kernels.f90:204 [0x42e58] in accelnet-target-benchmark
+=========         Host Frame: accelnet_batch_target_execute_workspace_ in accelnet_batch_target.f90:562 [0x2b576] in accelnet-target-benchmark
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:481 [0x24916] in accelnet-target-benchmark
+=========         Host Frame: target_benchmark_evaluate in target_benchmark.f90:117 [0x86da] in accelnet-target-benchmark
+=========         Host Frame: MAIN_ in target_benchmark.f90:63 [0x640d] in accelnet-target-benchmark
+=========         Host Frame: main [0x4b30] in accelnet-target-benchmark
+========= 
+========= Invalid __global__ read of size 4 bytes
+=========     at nvkernel_accelnet_target_kernels_g4_values_derivatives__F1L448_26_+0x40 in accelnet_target_kernels.f90:448
+=========     by thread (65,0,0) in block (0,0,0)
+=========     Access to 0x0 is out of bounds
+=========     and is 139697678450688 bytes before the nearest allocation at 0x7f0de6800000 of size 1024000 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cuLaunchKernel [0x386d84] in libcuda.so.1
+=========         Host Frame: launchInternal in hxCuda.c:3396 [0x4d261] in libnvomp.so
+=========         Host Frame: hxLaunch in hxInterface.c:155 [0x45abb] in libnvomp.so
+=========         Host Frame: launchHXTarget.constprop.0 in nvomp_target.c:462 [0x21109] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:1190 [0x21ecb] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: accelnet_target_kernels_g4_values_derivatives_ in accelnet_target_kernels.f90:533 [0x602a5] in accelnet-target-benchmark
+=========         Host Frame: accelnet_target_kernels_run_target_batch_ in accelnet_target_kernels.f90:204 [0x42e58] in accelnet-target-benchmark
+=========         Host Frame: accelnet_batch_target_execute_workspace_ in accelnet_batch_target.f90:562 [0x2b576] in accelnet-target-benchmark
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:481 [0x24916] in accelnet-target-benchmark
+=========         Host Frame: target_benchmark_evaluate in target_benchmark.f90:117 [0x86da] in accelnet-target-benchmark
+=========         Host Frame: MAIN_ in target_benchmark.f90:63 [0x640d] in accelnet-target-benchmark
+=========         Host Frame: main [0x4b30] in accelnet-target-benchmark
+========= 
+========= Invalid __global__ read of size 4 bytes
+=========     at nvkernel_accelnet_target_kernels_g4_values_derivatives__F1L448_26_+0x40 in accelnet_target_kernels.f90:448
+=========     by thread (66,0,0) in block (0,0,0)
+=========     Access to 0x0 is out of bounds
+=========     and is 139697678450688 bytes before the nearest allocation at 0x7f0de6800000 of size 1024000 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cuLaunchKernel [0x386d84] in libcuda.so.1
+=========         Host Frame: launchInternal in hxCuda.c:3396 [0x4d261] in libnvomp.so
+=========         Host Frame: hxLaunch in hxInterface.c:155 [0x45abb] in libnvomp.so
+=========         Host Frame: launchHXTarget.constprop.0 in nvomp_target.c:462 [0x21109] in libnvomp.so
+=========         Host Frame: launchTarget in nvomp_target.c:1190 [0x21ecb] in libnvomp.so
+=========         Host Frame: __nvomp_target in nvomp_target.c:1335 [0x22730] in libnvomp.so
+=========         Host Frame: accelnet_target_kernels_g4_values_derivatives_ in accelnet_target_kernels.f90:533 [0x602a5] in accelnet-target-benchmark
+=========         Host Frame: accelnet_target_kernels_run_target_batch_ in accelnet_target_kernels.f90:204 [0x42e58] in accelnet-target-benchmark
+=========         Host Frame: accelnet_batch_target_execute_workspace_ in accelnet_batch_target.f90:562 [0x2b576] in accelnet-target-benchmark
+=========         Host Frame: accelnet_batch_target_evaluate_batch_target_ in accelnet_batch_target.f90:481 [0x24916] in accelnet-target-benchmark
+=========         Host Frame: target_benchmark_evaluate in target_benchmark.f90:117 [0x86da] in accelnet-target-benchmark
+=========         Host Frame: MAIN_ in target_benchmark.f90:63 [0x640d] in accelnet-target-benchmark
+=========         Host Frame: main [0x4b30] in accelnet-target-benchmark
+========= 
+Failing in Thread:1
+Accelerator Fatal Error: call to cuMemcpyDtoHAsync returned error 719 (CUDA_ERROR_LAUNCH_FAILED): Launch failed (often invalid pointer dereference)
+ File: /home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/src/accelnet_target_kernels.f90
+ Function: g4_values_derivatives:434
+ Line: 533
+
+========= Target application returned an error
+========= ERROR SUMMARY: 130 errors
+========= ERROR SUMMARY: 127 errors were not printed. Use --print-limit option to adjust the number of printed errors

@@ -64,9 +64,25 @@ jobs:
           test_cutoff_pair test_g4_groups
           test_virial test_virial_c test_virial_convergence test_virial_invariants
           test_n2p2_network test_n2p2_topology test_n2p2_atomic_api test_network_activations
+          test_batch
           accelnet-descriptor accelnet-setup-descriptor accelnet-predict accelnet-model-converter-fortran
       - name: Run all configured tests
         run: ctest --test-dir build --output-on-failure --no-tests=error --output-junit test-results.xml
+      - name: Compile optional OpenMP backend and check rejection without a GPU
+        run: |
+          cmake -S . -B build-target-syntax \
+            -DCMAKE_Fortran_COMPILER=gfortran-${{ matrix.compiler }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_Fortran_FLAGS="${{ matrix.checks }}" \
+            -DBUILD_SHARED_LIBS=${{ matrix.shared }} \
+            -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_OPENMP_TARGET_FLAGS=-fopenmp \
+            -DACCELNET_DESCRIPTORS_BUILD_AENET_REFERENCE=OFF \
+            -DACCELNET_DESCRIPTORS_BUILD_N2P2_REFERENCE=OFF \
+            -DACCELNET_PREDICTOR_GOLDEN_DIR=
+          cmake --build build-target-syntax --parallel 2 --target test_batch_target
+          ctest --test-dir build-target-syntax --output-on-failure --no-tests=error \
+            -R 'predictor_target_reject_(host_fallback|uninitialized|unsupported|activation)$' \
+            --output-junit target-syntax-tests.xml
       - name: Save test logs and virial convergence data
         if: always()
         uses: actions/upload-artifact@v4
@@ -76,5 +92,7 @@ jobs:
             build/test-results.xml
             build/Testing/Temporary/
             build/**/virial-convergence*.csv
+            build-target-syntax/target-syntax-tests.xml
+            build-target-syntax/Testing/Temporary/
           if-no-files-found: warn
           retention-days: 14

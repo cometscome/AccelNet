@@ -1,0 +1,27 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-stage23/build-gnu-target
+Test project /tmp/accelnet-gpu-stage23/build-gnu-target
+    Start 17: predictor_target_host_equivalence
+1/9 Test #17: predictor_target_host_equivalence .........   Passed    1.44 sec
+    Start 18: predictor_target_host_other_descriptors
+2/9 Test #18: predictor_target_host_other_descriptors ...   Passed    3.93 sec
+    Start 34: predictor_batch_equivalence
+3/9 Test #34: predictor_batch_equivalence ...............   Passed    0.20 sec
+    Start 35: predictor_batch_reject_offset
+4/9 Test #35: predictor_batch_reject_offset .............   Passed    0.11 sec
+    Start 36: predictor_batch_reject_monotonic
+5/9 Test #36: predictor_batch_reject_monotonic ..........   Passed    0.10 sec
+    Start 37: predictor_batch_reject_target
+6/9 Test #37: predictor_batch_reject_target .............   Passed    0.11 sec
+    Start 38: predictor_batch_reject_center
+7/9 Test #38: predictor_batch_reject_center .............   Passed    0.11 sec
+    Start 39: predictor_batch_reject_species
+8/9 Test #39: predictor_batch_reject_species ............   Passed    0.11 sec
+    Start 40: predictor_batch_reject_shape
+9/9 Test #40: predictor_batch_reject_shape ..............   Passed    0.11 sec
+
+100% tests passed, 0 tests failed out of 9
+
+Label Time Summary:
+target-host    =   5.38 sec*proc (2 tests)
+
+Total Test time (real) =   6.25 sec

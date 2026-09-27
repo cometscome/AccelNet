@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-c++"
+	tests="3"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="s218"
+	time="47"
+	timestamp="2026-09-27T14:29:55"
+	>
+	<testcase name="predictor_common_cpu_performance" classname="predictor_common_cpu_performance" time="42.913" status="run">
+		<system-out>chebyshev    N=     8 ratio=0.900 error=1.78e-15 PASS
+chebyshev    N=    64 ratio=0.910 error=1.49e-13 PASS
+chebyshev    N=   512 ratio=0.987 error=6.2e-12 PASS
+lj           N=     8 ratio=1.014 error=2.66e-15 PASS
+lj           N=    64 ratio=1.021 error=1.78e-13 PASS
+lj           N=   512 ratio=1.003 error=5.34e-12 PASS
+n2p2-g5      N=     8 ratio=0.962 error=5.55e-17 PASS
+n2p2-g5      N=    64 ratio=0.939 error=8.88e-16 PASS
+n2p2-g5      N=   512 ratio=0.997 error=3.38e-14 PASS
+n2p2-g4      N=     8 ratio=0.839 error=1.78e-15 PASS
+n2p2-g4      N=    64 ratio=0.883 error=9.24e-14 PASS
+n2p2-g4      N=   512 ratio=0.976 error=1.65e-12 PASS
+</system-out>
+	</testcase>
+	<testcase name="predictor_g5_moment_performance" classname="predictor_g5_moment_performance" time="4.8625" status="run">
+		<system-out>{
+  "old_moment_over_direct": 0.7746724497994144,
+  "common_moment_over_old_moment": 0.1312637901945433,
+  "common_moment_over_common_direct": 0.11144565931045414
+}
+PASS
+</system-out>
+	</testcase>
+	<testcase name="accelnet_order_scaling_benchmark_smoke" classname="accelnet_order_scaling_benchmark_smoke" time="0.0111007" status="run">
+		<system-out>NEIGHBORS 102
+ORDER MOMENTS VALUE_SECONDS_PER_ATOM FORCE_SECONDS_PER_ATOM CHECKSUM
+    0       1   6.0000000000000154E-06   1.0999999999999986E-05   5.3306326458935537E+01
+    2      10   6.0000000000000154E-06   1.3200000000000018E-05   3.1635171982598681E+01
+    4      35   7.2000000000000014E-06   2.0799999999999943E-05   3.2558651373227249E+01
+    6      84   9.6000000000000606E-06   3.4999999999999963E-05   3.0457157734340811E+01
+    8     165   1.3200000000000018E-05   5.7999999999999980E-05   4.2647326398175196E+01
+   10     286   1.8399999999999925E-05   9.2800000000000006E-05   2.9724433846301849E+01
+   12     455   2.5799999999999956E-05   1.4040000000000000E-04   3.3788177062786986E+01
+   14     680   3.4200000000000032E-05   2.0739999999999995E-04   3.4637885462553299E+01
+   16     969   4.8600000000000029E-05   2.9180000000000005E-04   3.5041507311982613E+01
+</system-out>
+	</testcase>
+</testsuite>

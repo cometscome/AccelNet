@@ -1,0 +1,130 @@
+{
+  "provenance": {
+    "command": [
+      "interfaces/lammps/29Aug2024/tests/benchmark_gpu_modes.py",
+      "--lammps",
+      "/tmp/accelnet-lammps-gpu/build/lmp",
+      "--input",
+      "/tmp/accelnet-lammps-gpu/validation-h100/orthogonal-auto-cpu-1rank/in.test",
+      "--output",
+      "/tmp/accelnet-cheb-common/lammps-after",
+      "--replicates",
+      "10"
+    ],
+    "executable": "/tmp/accelnet-lammps-gpu/build/lmp",
+    "executable_sha256": "d7a93267303946c00e5c21c72c73f99760733c6205525df1b4db969bc4fc408c",
+    "cuda_visible_devices": "GPU-2644154d-7268-af42-6631-59e1f3c6e7f3",
+    "warmup": 20,
+    "steps": 100,
+    "samples": 3,
+    "script_sha256": "316ffb5214f8fc926731bbf9fb60ee58d3fc34d7d769cca60548d38b81abd41c",
+    "input": "/tmp/accelnet-lammps-gpu/validation-h100/orthogonal-auto-cpu-1rank/in.test"
+  },
+  "results": [
+    {
+      "atoms": 24000,
+      "mode": "direct",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.024348900000000003,
+          "pair_seconds_per_step": 0.024134000000000003,
+          "max_force_error": 0.0,
+          "max_atom_energy_error": 0.0,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 0.0
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.024290799999999998,
+          "pair_seconds_per_step": 0.024077,
+          "max_force_error": 1.5076828674409626e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 5.165929906070232e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.024331299999999997,
+          "pair_seconds_per_step": 0.024116,
+          "max_force_error": 1.5212830994926207e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 4.3655745685100555e-10
+        }
+      ],
+      "seconds_per_step": 0.024331299999999997,
+      "pair_seconds_per_step": 0.024116
+    },
+    {
+      "atoms": 24000,
+      "mode": "moment",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.009745,
+          "pair_seconds_per_step": 0.0095326,
+          "max_force_error": 1.617594946878853e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 4.5838532969355583e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.00972736,
+          "pair_seconds_per_step": 0.009519300000000001,
+          "max_force_error": 1.6187051699034782e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 2.6193447411060333e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.00974527,
+          "pair_seconds_per_step": 0.0095341,
+          "max_force_error": 1.6187051699034782e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.41970007866621e-10
+        }
+      ],
+      "seconds_per_step": 0.009745,
+      "pair_seconds_per_step": 0.0095326
+    },
+    {
+      "atoms": 24000,
+      "mode": "auto",
+      "samples": [
+        {
+          "sample": 0,
+          "seconds_per_step": 0.00973642,
+          "pair_seconds_per_step": 0.0095274,
+          "max_force_error": 1.6209256159527285e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.128661774098873e-10
+        },
+        {
+          "sample": 1,
+          "seconds_per_step": 0.0097441,
+          "pair_seconds_per_step": 0.0095276,
+          "max_force_error": 1.6187051699034782e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 4.2928149923682213e-10
+        },
+        {
+          "sample": 2,
+          "seconds_per_step": 0.00976298,
+          "pair_seconds_per_step": 0.009549,
+          "max_force_error": 1.6153745008296028e-13,
+          "max_atom_energy_error": 2.2737367544323206e-13,
+          "max_total_energy_error": 0.0,
+          "max_pressure_error": 3.346940502524376e-10
+        }
+      ],
+      "seconds_per_step": 0.0097441,
+      "pair_seconds_per_step": 0.0095276
+    }
+  ]
+}

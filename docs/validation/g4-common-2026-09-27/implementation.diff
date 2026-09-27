@@ -1,0 +1,113 @@
+--- before/accelnet_target_math.f90
++++ after/accelnet_target_math.f90
+@@ -122,19 +122,20 @@
+ 
+     pure subroutine generic_pair_geometry(f,p,uj,uk,rj,rk,cosine,qjk,dqjk,ujk,force)
+         !$omp declare target
+-        integer, intent(in) :: f(:)
++        integer, intent(in) :: f(14)
+         real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk
+         logical, intent(in) :: force
+         real(real64), intent(out) :: cosine,qjk,dqjk,ujk(3)
+-        real(real64) :: rjk
++        real(real64) :: rjk,rjk2
+         cosine=0; qjk=0; dqjk=0; ujk=0
+         if (rj <= 1e-12_real64 .or. rk <= 1e-12_real64 .or. rj > p(1) .or. rk > p(1)) return
+         qjk=1
+         if (f(1) == 4) then
+-            ujk=rk*uk-rj*uj; rjk=sqrt(sum(ujk**2))
+-            if (rjk <= 1e-12_real64 .or. rjk > p(1)) then
++            ujk=rk*uk-rj*uj; rjk2=sum(ujk**2)
++            if (rjk2 <= 1e-24_real64 .or. rjk2 >= p(1)*p(1)) then
+                 qjk=0; return
+             end if
++            rjk=sqrt(rjk2)
+             if (force) then
+                 ujk=ujk/rjk
+                 call generic_radial(2,rjk,f(4),p,qjk,dqjk)
+@@ -148,10 +149,10 @@
+     pure subroutine generic_pair_contracted(f,p,uj,uk,rj,rk,qj,qk,dqj,dqk,coeff,degree,both,gradient,gradient_k)
+         !$omp declare target
+         logical, intent(in) :: both
+-        integer, intent(in) :: f(:),degree
++        integer, intent(in) :: f(14),degree
+         real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk,qj,qk,dqj,dqk,coeff(0:16)
+         real(real64), intent(out) :: gradient(3),gradient_k(3)
+-        real(real64) :: cosine,qjk,dqjk,ujk(3),a,da,t,product
++        real(real64) :: cosine,qjk,dqjk,ujk(3),a,da,t,product,angular_j,angular_k,radial_j,radial_k,radial_jk
+         integer :: d
+         gradient=0; gradient_k=0
+         call generic_pair_geometry(f,p,uj,uk,rj,rk,cosine,qjk,dqjk,ujk,.true.)
+@@ -169,19 +170,30 @@
+             a=a*coeff(0); da=da*coeff(0)
+         end if
+         product=qj*qk*qjk
+-        gradient=2*(da*product*(uk-cosine*uj)/rj+a*qk*(dqj*qjk*uj-qj*dqjk*ujk))
+-        if (both) gradient_k=2*(da*product*(uj-cosine*uk)/rk+a*qj*(dqk*qjk*uk+qk*dqjk*ujk))
++        ! Contract scalar factors before forming Cartesian components. This
++        ! shares the j-k radial term and avoids three divisions per vector.
++        angular_j=2*da*product/rj
++        radial_j=2*a*qk*dqj*qjk-angular_j*cosine
++        radial_jk=2*a*qj*qk*dqjk
++        gradient=angular_j*uk+radial_j*uj-radial_jk*ujk
++        if (both) then
++            angular_k=2*da*product/rk
++            radial_k=2*a*qj*dqk*qjk-angular_k*cosine
++            gradient_k=angular_k*uj+radial_k*uk+radial_jk*ujk
++        end if
+     end subroutine
+     pure real(real64) function generic_pair_value(f,p,uj,uk,rj,rk,qj,qk) result(value)
+         !$omp declare target
+-        integer, intent(in) :: f(:)
++        integer, intent(in) :: f(14)
+         real(real64), intent(in) :: p(7),uj(3),uk(3),rj,rk,qj,qk
+-        real(real64) :: qjk,rjk,cosine
++        real(real64) :: qjk,rjk,rjk2,cosine
+         value = 0
+         if (rj <= 1e-12_real64 .or. rk <= 1e-12_real64 .or. rj > p(1) .or. rk > p(1)) return
+         qjk = 1
+         if (f(1) == 4) then
+-            rjk = sqrt(sum((rk*uk-rj*uj)**2))
++            rjk2 = sum((rk*uk-rj*uj)**2)
++            if (rjk2 <= 1e-24_real64 .or. rjk2 >= p(1)*p(1)) return
++            rjk = sqrt(rjk2)
+             qjk = generic_radial_value(2,rjk,f(4),p)
+         end if
+         cosine = max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
+--- before/accelnet_target_kernels.f90
++++ after/accelnet_target_kernels.f90
+@@ -430,17 +430,18 @@
+         integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:)
+         real(real64), contiguous, intent(in) :: fp(:,:,:),radial_cache(:,:,:),geom(:,:)
+         real(real64), contiguous, intent(inout) :: g(:,:)
+-        integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group
++        integer :: row,b,s,j,k,tj,tk,kind,t1,t2,group,bb
+         real(real64) :: total,v,dv,gradient(3),total12,v12,dv12
+         !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
+         !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g) &
+-        !$omp& private(s,j,k,tj,tk,kind,t1,t2,group,total,v,dv,gradient,total12,v12,dv12)
++        !$omp& private(s,j,k,tj,tk,kind,t1,t2,group,bb,total,v,dv,gradient,total12,v12,dv12)
+         do row = 1,nrw
+             do b = 1,size(features,2)
+                 s = species(centers(row))
+                 if (meta(10,s) /= 1 .or. b > nodes(1,s)) cycle
+                 kind = features(1,b,s); t1 = features(2,b,s); t2 = features(3,b,s)
+                 if (kind == 7) cycle
++                if (features(10,b,s) /= 0 .and. features(10,b,s) /= b) cycle
+                 group = features(7,b,s)
+                 total = 0; total12 = 0
+                 do j = offsets(row),offsets(row+1)-1
+@@ -466,6 +467,13 @@
+                     end if
+                 end do
+                 g(row,b) = total
++                ! This path has one distinct angular power per group. Identical
++                ! inputs still have separate NN weights, but share their value.
++                bb = features(11,b,s)
++                do while (bb /= 0)
++                    g(row,bb) = total
++                    bb = features(11,bb,s)
++                end do
+                 if (kind == 6) g(row,b+1) = total12
+             end do
+         end do

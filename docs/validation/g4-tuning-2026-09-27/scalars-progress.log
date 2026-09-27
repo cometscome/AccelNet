@@ -1,0 +1,16 @@
+scalars h100 512 g4-distinct 3.417 0.198
+scalars h100 512 g4-series 12.498 0.304
+scalars h100 4096 g4-distinct 4.156 0.042
+scalars h100 4096 g4-series 15.797 0.066
+scalars blackwell 512 g4-distinct 9.072 0.733
+scalars blackwell 512 g4-series 20.376 0.692
+scalars blackwell 4096 g4-distinct 9.651 0.097
+scalars blackwell 4096 g4-series 21.351 0.091
+scalars gnu 512 g4-distinct 9.345 0.599
+scalars gnu 512 g4-series 25.971 0.823
+scalars gnu 4096 g4-distinct 75.973 0.606
+scalars gnu 4096 g4-series 231.149 0.911
+scalars nvhpc 512 g4-distinct 7.106 0.574
+scalars nvhpc 512 g4-series 24.353 0.814
+scalars nvhpc 4096 g4-distinct 57.509 0.578
+scalars nvhpc 4096 g4-series 210.536 0.889

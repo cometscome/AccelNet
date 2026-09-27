@@ -1,0 +1,112 @@
+Internal ctest changing into directory: /tmp/accelnet-n2p2-cpu-opt/build-gnu
+Test project /tmp/accelnet-n2p2-cpu-opt/build-gnu
+      Start  1: descriptor_unit
+ 1/50 Test  #1: descriptor_unit ....................................   Passed    0.01 sec
+      Start  2: descriptor_neighbor_images
+ 2/50 Test  #2: descriptor_neighbor_images .........................   Passed    0.02 sec
+      Start  3: descriptor_tio2
+ 3/50 Test  #3: descriptor_tio2 ....................................   Passed    0.01 sec
+      Start  4: descriptor_lj_model
+ 4/50 Test  #4: descriptor_lj_model ................................   Passed    0.00 sec
+      Start  5: descriptor_behler
+ 5/50 Test  #5: descriptor_behler ..................................   Passed    0.02 sec
+      Start  6: descriptor_combined_model
+ 6/50 Test  #6: descriptor_combined_model ..........................   Passed    0.00 sec
+      Start  7: descriptor_setup_parser
+ 7/50 Test  #7: descriptor_setup_parser ............................   Passed    0.01 sec
+      Start  8: descriptor_setup_cli_match
+ 8/50 Test  #8: descriptor_setup_cli_match .........................   Passed    0.04 sec
+      Start  9: descriptor_n2p2_cutoff_reference_match
+ 9/50 Test  #9: descriptor_n2p2_cutoff_reference_match .............   Passed    0.00 sec
+      Start 20: predictor_target_host_g5_moments
+10/50 Test #20: predictor_target_host_g5_moments ...................   Passed    1.43 sec
+      Start 22: predictor_target_host_equivalence
+11/50 Test #22: predictor_target_host_equivalence ..................   Passed    0.63 sec
+      Start 23: predictor_target_host_other_descriptors
+12/50 Test #23: predictor_target_host_other_descriptors ............   Passed    0.77 sec
+      Start 41: predictor_batch_equivalence
+13/50 Test #41: predictor_batch_equivalence ........................   Passed    0.42 sec
+      Start 42: predictor_batch_reject_offset
+14/50 Test #42: predictor_batch_reject_offset ......................   Passed    0.11 sec
+      Start 43: predictor_batch_reject_monotonic
+15/50 Test #43: predictor_batch_reject_monotonic ...................   Passed    0.10 sec
+      Start 44: predictor_batch_reject_target
+16/50 Test #44: predictor_batch_reject_target ......................   Passed    0.10 sec
+      Start 45: predictor_batch_reject_center
+17/50 Test #45: predictor_batch_reject_center ......................   Passed    0.10 sec
+      Start 46: predictor_batch_reject_species
+18/50 Test #46: predictor_batch_reject_species .....................   Passed    0.10 sec
+      Start 47: predictor_batch_reject_shape
+19/50 Test #47: predictor_batch_reject_shape .......................   Passed    0.10 sec
+      Start 48: predictor_atomic_and_structure_virial
+20/50 Test #48: predictor_atomic_and_structure_virial ..............   Passed    0.14 sec
+      Start 49: predictor_c_virial
+21/50 Test #49: predictor_c_virial .................................   Passed    0.00 sec
+      Start 50: predictor_virial_convergence_n2p2
+22/50 Test #50: predictor_virial_convergence_n2p2 ..................   Passed    0.05 sec
+      Start 51: predictor_virial_convergence_n2p2-per-element
+23/50 Test #51: predictor_virial_convergence_n2p2-per-element ......   Passed    0.04 sec
+      Start 52: predictor_virial_invariants_n2p2-per-element
+24/50 Test #52: predictor_virial_invariants_n2p2-per-element .......   Passed    0.02 sec
+      Start 53: predictor_virial_convergence_n2p2-virial-angular
+25/50 Test #53: predictor_virial_convergence_n2p2-virial-angular ...   Passed    0.05 sec
+      Start 54: predictor_virial_invariants_n2p2-virial-angular
+26/50 Test #54: predictor_virial_invariants_n2p2-virial-angular ....   Passed    0.02 sec
+      Start 55: n2p2_model_loader
+27/50 Test #55: n2p2_model_loader ..................................   Passed    0.00 sec
+      Start 56: n2p2_per_element_topology_and_normalize_nodes
+28/50 Test #56: n2p2_per_element_topology_and_normalize_nodes ......   Passed    0.00 sec
+      Start 57: n2p2_atomic_api_and_input_data
+29/50 Test #57: n2p2_atomic_api_and_input_data .....................   Passed    0.00 sec
+      Start 58: n2p2_input_data_cli
+30/50 Test #58: n2p2_input_data_cli ................................   Passed    0.00 sec
+      Start 59: network_activation_compatibility
+31/50 Test #59: network_activation_compatibility ...................   Passed    0.00 sec
+      Start 60: network_aenet_activation_reference_match
+32/50 Test #60: network_aenet_activation_reference_match ...........   Passed    0.00 sec
+      Start 61: network_n2p2_activation_reference_match
+33/50 Test #61: network_n2p2_activation_reference_match ............   Passed    0.01 sec
+      Start 65: predictor_batch_aenet_golden
+34/50 Test #65: predictor_batch_aenet_golden .......................   Passed    0.15 sec
+      Start 66: predictor_virial_convergence_structure0001
+35/50 Test #66: predictor_virial_convergence_structure0001 .........   Passed    2.79 sec
+      Start 67: predictor_virial_convergence_structure2935
+36/50 Test #67: predictor_virial_convergence_structure2935 .........   Passed    2.68 sec
+      Start 68: network_ascii_roundtrip
+37/50 Test #68: network_ascii_roundtrip ............................   Passed    0.00 sec
+      Start 69: network_binary_compatibility
+38/50 Test #69: network_binary_compatibility .......................   Passed    0.01 sec
+      Start 70: predictor_tio2_energy
+39/50 Test #70: predictor_tio2_energy ..............................   Passed    0.01 sec
+      Start 71: predictor_fortran_golden
+40/50 Test #71: predictor_fortran_golden ...........................   Passed    0.02 sec
+      Start 73: accelnet_fortran_api
+41/50 Test #73: accelnet_fortran_api ...............................   Passed    0.02 sec
+      Start 74: accelnet_c_api
+42/50 Test #74: accelnet_c_api .....................................   Passed    0.00 sec
+      Start 75: predictor_original_input
+43/50 Test #75: predictor_original_input ...........................   Passed    0.01 sec
+      Start 76: predictor_default_aenet204_version
+44/50 Test #76: predictor_default_aenet204_version .................   Passed    0.01 sec
+      Start 77: predictor_chebyshev_version1
+45/50 Test #77: predictor_chebyshev_version1 .......................   Passed    0.01 sec
+      Start 78: predictor_chebyshev_version10
+46/50 Test #78: predictor_chebyshev_version10 ......................   Passed    0.01 sec
+      Start 79: fortran_converter_roundtrip
+47/50 Test #79: fortran_converter_roundtrip ........................   Passed    0.07 sec
+      Start 80: fortran_converter_per_element_roundtrip
+48/50 Test #80: fortran_converter_per_element_roundtrip ............   Passed    0.07 sec
+      Start 81: n2p2_extended_multi_element
+49/50 Test #81: n2p2_extended_multi_element ........................   Passed    4.11 sec
+      Start 82: n2p2_high_g5_moments
+50/50 Test #82: n2p2_high_g5_moments ...............................   Passed    1.30 sec
+
+100% tests passed, 0 tests failed out of 50
+
+Label Time Summary:
+aenet-reference    =   0.00 sec*proc (1 test)
+integration        =   5.48 sec*proc (4 tests)
+n2p2-reference     =   1.38 sec*proc (5 tests)
+target-host        =   2.82 sec*proc (3 tests)
+
+Total Test time (real) =  15.62 sec

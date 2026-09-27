@@ -1,0 +1,19 @@
+Internal ctest changing into directory: /tmp/accelnet-gpu-research/build-nvhpc
+Test project /tmp/accelnet-gpu-research/build-nvhpc
+    Start 19: predictor_target_composite
+1/5 Test #19: predictor_target_composite .......   Passed    2.56 sec
+    Start 21: predictor_target_g5_moments
+2/5 Test #21: predictor_target_g5_moments ......   Passed    8.84 sec
+    Start 62: predictor_target_aenet_golden
+3/5 Test #62: predictor_target_aenet_golden ....   Passed    2.05 sec
+    Start 63: predictor_target_aenet_mode1
+4/5 Test #63: predictor_target_aenet_mode1 .....   Passed    3.67 sec
+    Start 64: predictor_target_aenet_mode2
+5/5 Test #64: predictor_target_aenet_mode2 .....   Passed    2.17 sec
+
+100% tests passed, 0 tests failed out of 5
+
+Label Time Summary:
+gpu    =  19.30 sec*proc (5 tests)
+
+Total Test time (real) =  19.30 sec

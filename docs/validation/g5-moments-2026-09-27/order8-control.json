@@ -1,0 +1,458 @@
+[
+  {
+    "tag": "control-order8-gnu-mode1-round0",
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.059412165,
+        0.021232292666666666
+      ],
+      [
+        0.059514198,
+        0.021251515666666665
+      ],
+      [
+        0.059579408,
+        0.021262114666666665
+      ],
+      [
+        0.059357019,
+        0.021269766333333332
+      ],
+      [
+        0.059655887,
+        0.021256212333333333
+      ]
+    ],
+    "old_ms": 59.514198,
+    "new_ms": 21.256212333333334
+  },
+  {
+    "tag": "control-order8-gnu-mode3-round0",
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "3",
+      "1.7",
+      "cpu-shared",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.134875394,
+        0.01546936775
+      ],
+      [
+        0.13373832,
+        0.01561702375
+      ],
+      [
+        0.133368808,
+        0.015452613
+      ],
+      [
+        0.13491494,
+        0.0154196435
+      ],
+      [
+        0.134732747,
+        0.01545033975
+      ]
+    ],
+    "old_ms": 134.73274700000002,
+    "new_ms": 15.452613000000001
+  },
+  {
+    "tag": "control-order8-gnu-mode3-round1",
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "3",
+      "1.7",
+      "cpu-shared",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.135470578,
+        0.01549538125
+      ],
+      [
+        0.135720134,
+        0.0154878065
+      ],
+      [
+        0.135230524,
+        0.01548287025
+      ],
+      [
+        0.135470685,
+        0.01547607525
+      ],
+      [
+        0.135502328,
+        0.01547915975
+      ]
+    ],
+    "old_ms": 135.470685,
+    "new_ms": 15.48287025
+  },
+  {
+    "tag": "control-order8-gnu-mode1-round1",
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-gnu-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.059769146,
+        0.021238085333333333
+      ],
+      [
+        0.059874179,
+        0.021255963333333332
+      ],
+      [
+        0.059854272,
+        0.021251514
+      ],
+      [
+        0.05984838,
+        0.021239053666666664
+      ],
+      [
+        0.059683264,
+        0.02123972366666667
+      ]
+    ],
+    "old_ms": 59.84838,
+    "new_ms": 21.23972366666667
+  },
+  {
+    "tag": "control-order8-nvhpc-mode1-round0",
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.0589511,
+        0.0180904
+      ],
+      [
+        0.058748,
+        0.018128000000000002
+      ],
+      [
+        0.058847,
+        0.01808533333333333
+      ],
+      [
+        0.0587471,
+        0.0181764
+      ],
+      [
+        0.05883,
+        0.018129666666666665
+      ]
+    ],
+    "old_ms": 58.83,
+    "new_ms": 18.128
+  },
+  {
+    "tag": "control-order8-nvhpc-mode3-round0",
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "3",
+      "1.7",
+      "cpu-shared",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.1659541,
+        0.013107225
+      ],
+      [
+        0.1660772,
+        0.0131063
+      ],
+      [
+        0.1654809,
+        0.013085
+      ],
+      [
+        0.1666339,
+        0.0131048
+      ],
+      [
+        0.1675179,
+        0.013106775
+      ]
+    ],
+    "old_ms": 166.0772,
+    "new_ms": 13.1063
+  },
+  {
+    "tag": "control-order8-nvhpc-mode3-round1",
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "3",
+      "1.7",
+      "cpu-shared",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.166415,
+        0.012964525
+      ],
+      [
+        0.1658149,
+        0.01299275
+      ],
+      [
+        0.1655791,
+        0.012977
+      ],
+      [
+        0.1657541,
+        0.01296705
+      ],
+      [
+        0.1650689,
+        0.012981
+      ]
+    ],
+    "old_ms": 165.7541,
+    "new_ms": 12.977
+  },
+  {
+    "tag": "control-order8-nvhpc-mode1-round1",
+    "command": [
+      "/tmp/accelnet-other-descriptors/build-nvhpc-serial/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "1",
+      "1.7",
+      "cpu-shared",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.05903,
+        0.018076966666666666
+      ],
+      [
+        0.0589578,
+        0.018107333333333333
+      ],
+      [
+        0.059833,
+        0.018457333333333333
+      ],
+      [
+        0.059598,
+        0.018184333333333334
+      ],
+      [
+        0.0584021,
+        0.018068333333333336
+      ]
+    ],
+    "old_ms": 59.03,
+    "new_ms": 18.107333333333333
+  },
+  {
+    "tag": "control-order8-h100-mode1-round0",
+    "command": [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "1",
+      "1.7",
+      "gpu",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.0587961,
+        0.0022120478260869566
+      ],
+      [
+        0.058619,
+        0.0013477342105263157
+      ],
+      [
+        0.0590209,
+        0.0013392605263157894
+      ],
+      [
+        0.0586431,
+        0.001348821052631579
+      ],
+      [
+        0.058794,
+        0.004366857142857143
+      ]
+    ],
+    "old_ms": 58.794,
+    "new_ms": 1.3488210526315791
+  },
+  {
+    "tag": "control-order8-h100-mode3-round0",
+    "command": [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "3",
+      "1.7",
+      "gpu",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.16802,
+        0.0013694378378378378
+      ],
+      [
+        0.1648738,
+        0.0013629243243243243
+      ],
+      [
+        0.164229,
+        0.001357
+      ],
+      [
+        0.1649862,
+        0.0013549135135135135
+      ],
+      [
+        0.1647689,
+        0.001359454054054054
+      ]
+    ],
+    "old_ms": 164.8738,
+    "new_ms": 1.3594540540540538
+  },
+  {
+    "tag": "control-order8-h100-mode3-round1",
+    "command": [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "3",
+      "1.7",
+      "gpu",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.1656699,
+        0.005440546153846154
+      ],
+      [
+        0.1661129,
+        0.0013813513513513515
+      ],
+      [
+        0.1657009,
+        0.0013609459459459458
+      ],
+      [
+        0.1652598,
+        0.001359345945945946
+      ],
+      [
+        0.1666238,
+        0.0013620027027027026
+      ]
+    ],
+    "old_ms": 165.70090000000002,
+    "new_ms": 1.3620027027027026
+  },
+  {
+    "tag": "control-order8-h100-mode1-round1",
+    "command": [
+      "/tmp/accelnet-gpu-research/build-nvhpc/bin/accelnet-target-benchmark",
+      "512",
+      "8",
+      ".05",
+      "1",
+      "1.7",
+      "gpu",
+      "g5-series",
+      "no-neighbors"
+    ],
+    "samples": [
+      [
+        0.0591011,
+        0.0013447368421052631
+      ],
+      [
+        0.058847,
+        0.0013421526315789474
+      ],
+      [
+        0.05899,
+        0.0013397868421052633
+      ],
+      [
+        0.059278,
+        0.009741442857142858
+      ],
+      [
+        0.0589268,
+        0.001337842105263158
+      ]
+    ],
+    "old_ms": 58.99,
+    "new_ms": 1.3421526315789474
+  }
+]

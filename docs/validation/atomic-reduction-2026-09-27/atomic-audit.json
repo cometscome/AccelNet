@@ -1,0 +1,15 @@
+{
+  "object": "/tmp/accelnet-high-moments/build-gnu-openmp/AccelNetPredictor/CMakeFiles/AccelNetTarget.dir/src/accelnet_target_kernels.f90.o",
+  "host_functions": [
+    {
+      "symbol": "__accelnet_target_kernels_MOD_generic_forces._omp_fn.0",
+      "lock_instructions": 0
+    },
+    {
+      "symbol": "__accelnet_target_kernels_MOD_generic_forces._omp_fn.1",
+      "lock_instructions": 0
+    }
+  ],
+  "serial_kernel_text_sha256": "cc6c2fc072c14573ed6ec16904ca11f14dfc855ef9cbef16c0faee4dbb6dc3e4",
+  "serial_text_unchanged_by_pool_fix": true
+}

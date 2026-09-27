@@ -1,0 +1,582 @@
+[
+  {
+    "compiler": "gnu",
+    "family": "lj",
+    "natoms": 8,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 0.026156151085712818,
+    "common_ms": 0.024877603966355282,
+    "ratio": 0.9519375621514001
+  },
+  {
+    "compiler": "gnu",
+    "family": "lj",
+    "natoms": 512,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 1.758521807322929,
+    "common_ms": 1.852388702782324,
+    "ratio": 1.0531054262887043
+  },
+  {
+    "compiler": "gnu",
+    "family": "lj",
+    "natoms": 4096,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 11.746446666666667,
+    "common_ms": 12.367671333333332,
+    "ratio": 1.0530445616551736
+  },
+  {
+    "compiler": "gnu",
+    "family": "g4-distinct",
+    "natoms": 8,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 0.27189448777524117,
+    "common_ms": 0.13532457701788392,
+    "ratio": 0.49765339862393565
+  },
+  {
+    "compiler": "gnu",
+    "family": "g4-distinct",
+    "natoms": 512,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 17.754581166666668,
+    "common_ms": 10.158178849999999,
+    "ratio": 0.5718998430841573
+  },
+  {
+    "compiler": "gnu",
+    "family": "g4-distinct",
+    "natoms": 4096,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 142.81794200000002,
+    "common_ms": 82.703157,
+    "ratio": 0.5786872930798738
+  },
+  {
+    "compiler": "gnu",
+    "family": "g4-series",
+    "natoms": 8,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 0.7725836423076924,
+    "common_ms": 0.49401291871921177,
+    "ratio": 0.6391528020512389
+  },
+  {
+    "compiler": "gnu",
+    "family": "g4-series",
+    "natoms": 512,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 47.519338000000005,
+    "common_ms": 29.870116125000003,
+    "ratio": 0.6283694875389132
+  },
+  {
+    "compiler": "gnu",
+    "family": "g4-series",
+    "natoms": 4096,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 383.0836175,
+    "common_ms": 253.77174900000003,
+    "ratio": 0.6624648832250609
+  },
+  {
+    "compiler": "gnu",
+    "family": "g5",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 0.44127406607929515,
+    "common_ms": 0.16475100873715642,
+    "ratio": 0.3733519486359307
+  },
+  {
+    "compiler": "gnu",
+    "family": "g5",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 27.868046875,
+    "common_ms": 12.173931388888889,
+    "ratio": 0.4368322733205098
+  },
+  {
+    "compiler": "gnu",
+    "family": "g5",
+    "natoms": 4096,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 223.447413,
+    "common_ms": 96.23362374999999,
+    "ratio": 0.430566156656611
+  },
+  {
+    "compiler": "gnu",
+    "family": "g5-series",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 2.1802369782608695,
+    "common_ms": 0.38562511720310766,
+    "ratio": 0.17677141462886148
+  },
+  {
+    "compiler": "gnu",
+    "family": "g5-series",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 137.10310049999998,
+    "common_ms": 23.897809600000002,
+    "ratio": 0.17432167878213
+  },
+  {
+    "compiler": "gnu",
+    "family": "g5-series",
+    "natoms": 4096,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 1096.671363,
+    "common_ms": 190.695335,
+    "ratio": 0.1740052974513022
+  },
+  {
+    "compiler": "gnu",
+    "family": "behler",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 0.9329553174974039,
+    "common_ms": 0.33152586423841063,
+    "ratio": 0.35512053191068677
+  },
+  {
+    "compiler": "gnu",
+    "family": "behler",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 57.773911,
+    "common_ms": 24.2156388,
+    "ratio": 0.41919175397663766
+  },
+  {
+    "compiler": "gnu",
+    "family": "behler",
+    "natoms": 4096,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 462.1300745,
+    "common_ms": 197.8272955,
+    "ratio": 0.4280330281822714
+  },
+  {
+    "compiler": "gnu",
+    "family": "lj-behler",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 0.9491623962264151,
+    "common_ms": 0.34694830795847753,
+    "ratio": 0.3656983436250333
+  },
+  {
+    "compiler": "gnu",
+    "family": "lj-behler",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 58.6039545,
+    "common_ms": 25.411931250000002,
+    "ratio": 0.43352772864089495
+  },
+  {
+    "compiler": "gnu",
+    "family": "lj-behler",
+    "natoms": 4096,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 475.80239700000004,
+    "common_ms": 207.4777545,
+    "ratio": 0.4358775488519111
+  },
+  {
+    "compiler": "gnu",
+    "family": "chebyshev",
+    "natoms": 8,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 0.20291616430020282,
+    "common_ms": 0.18200970181818182,
+    "ratio": 0.8971299921189135
+  },
+  {
+    "compiler": "gnu",
+    "family": "chebyshev",
+    "natoms": 8,
+    "mode": 2,
+    "spacing": 1.7,
+    "reference_ms": 0.30571142530487805,
+    "common_ms": 0.1441299264880891,
+    "ratio": 0.47155610123322916
+  },
+  {
+    "compiler": "gnu",
+    "family": "chebyshev",
+    "natoms": 512,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 12.174848611111111,
+    "common_ms": 20.3893506,
+    "ratio": 1.674555091202762
+  },
+  {
+    "compiler": "gnu",
+    "family": "chebyshev",
+    "natoms": 512,
+    "mode": 2,
+    "spacing": 1.7,
+    "reference_ms": 18.964762166666667,
+    "common_ms": 11.4758985,
+    "ratio": 0.6049560053871073
+  },
+  {
+    "compiler": "gnu",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 97.69563525,
+    "common_ms": 164.16438499999998,
+    "ratio": 1.6808816355588216
+  },
+  {
+    "compiler": "gnu",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "mode": 2,
+    "spacing": 1.7,
+    "reference_ms": 152.762512,
+    "common_ms": 88.59513799999999,
+    "ratio": 0.5790113118201348
+  },
+  {
+    "compiler": "gnu",
+    "family": "g5-series",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.2,
+    "reference_ms": 8.206663461538461,
+    "common_ms": 2.6263271153846155,
+    "ratio": 0.3201353082237688
+  },
+  {
+    "compiler": "gnu",
+    "family": "g5-series",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.2,
+    "reference_ms": 495.221138,
+    "common_ms": 158.4077395,
+    "ratio": 0.3200595400832488
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "lj",
+    "natoms": 8,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 0.022644878490594128,
+    "common_ms": 0.02699224002706923,
+    "ratio": 1.1933573132153774
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "lj",
+    "natoms": 512,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 1.3566898648648649,
+    "common_ms": 1.3121361244019139,
+    "ratio": 0.9669839494946326
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "lj",
+    "natoms": 4096,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 10.8874,
+    "common_ms": 10.450295,
+    "ratio": 0.9585807995539005
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g4-distinct",
+    "natoms": 8,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 0.22007131868131868,
+    "common_ms": 0.13142611496821766,
+    "ratio": 0.5978638261308267
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g4-distinct",
+    "natoms": 512,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 14.26826875,
+    "common_ms": 8.882629166666668,
+    "ratio": 0.6227587555193999
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g4-distinct",
+    "natoms": 4096,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 115.38355000000001,
+    "common_ms": 72.37899999999999,
+    "ratio": 0.6268434913940168
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g4-series",
+    "natoms": 8,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 0.6711723713646534,
+    "common_ms": 0.6906351724137931,
+    "ratio": 1.0293890278019728
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g4-series",
+    "natoms": 512,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 40.64233333333333,
+    "common_ms": 38.92918333333333,
+    "ratio": 0.9584966498603107
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g4-series",
+    "natoms": 4096,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 327.0396,
+    "common_ms": 324.14545,
+    "ratio": 0.9916103304008849
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g5",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 0.5005379734493363,
+    "common_ms": 0.15717531138153185,
+    "ratio": 0.3137189979575762
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g5",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 30.6473625,
+    "common_ms": 11.64821111111111,
+    "ratio": 0.37989812995274963
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g5",
+    "natoms": 4096,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 245.70005,
+    "common_ms": 91.6968,
+    "ratio": 0.3728857143076352
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g5-series",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 2.6882223684210524,
+    "common_ms": 0.3695387453874539,
+    "ratio": 0.1373162490852082
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g5-series",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 167.14745,
+    "common_ms": 21.470200000000002,
+    "ratio": 0.12846645037924054
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g5-series",
+    "natoms": 4096,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 1353.61245,
+    "common_ms": 171.74745000000001,
+    "ratio": 0.1274673601768332
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "behler",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 0.8668919865067466,
+    "common_ms": 0.3071335215296598,
+    "ratio": 0.35462852965323133
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "behler",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 52.4118,
+    "common_ms": 21.696530000000003,
+    "ratio": 0.4138783144262683
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "behler",
+    "natoms": 4096,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 421.9151,
+    "common_ms": 179.79149999999998,
+    "ratio": 0.4245536483017459
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "lj-behler",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 0.8961035714285714,
+    "common_ms": 0.3230257513320013,
+    "ratio": 0.3606889947855599
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "lj-behler",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 54.1135,
+    "common_ms": 22.72238,
+    "ratio": 0.4209137341283544
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "lj-behler",
+    "natoms": 4096,
+    "mode": 0,
+    "spacing": 1.7,
+    "reference_ms": 433.159,
+    "common_ms": 185.35805,
+    "ratio": 0.42755622908435487
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "chebyshev",
+    "natoms": 8,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 0.22169867685152478,
+    "common_ms": 0.1937855556846809,
+    "ratio": 0.8740846375692897
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "chebyshev",
+    "natoms": 8,
+    "mode": 2,
+    "spacing": 1.7,
+    "reference_ms": 0.2765070439195635,
+    "common_ms": 0.15298532699284245,
+    "ratio": 0.5521612556831577
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "chebyshev",
+    "natoms": 512,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 13.00199375,
+    "common_ms": 18.974816666666666,
+    "ratio": 1.4711776224014037
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "chebyshev",
+    "natoms": 512,
+    "mode": 2,
+    "spacing": 1.7,
+    "reference_ms": 16.73264761904762,
+    "common_ms": 10.618055,
+    "ratio": 0.6340297586629714
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "mode": 1,
+    "spacing": 1.7,
+    "reference_ms": 102.7826,
+    "common_ms": 155.35545000000002,
+    "ratio": 1.5124068210464936
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "chebyshev",
+    "natoms": 4096,
+    "mode": 2,
+    "spacing": 1.7,
+    "reference_ms": 133.4585,
+    "common_ms": 87.70025,
+    "ratio": 0.6574224260548844
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g5-series",
+    "natoms": 8,
+    "mode": 0,
+    "spacing": 1.2,
+    "reference_ms": 9.57471818181818,
+    "common_ms": 2.2692236111111113,
+    "ratio": 0.23644881514008714
+  },
+  {
+    "compiler": "nvhpc",
+    "family": "g5-series",
+    "natoms": 512,
+    "mode": 0,
+    "spacing": 1.2,
+    "reference_ms": 573.7660000000001,
+    "common_ms": 135.94959999999998,
+    "ratio": 0.23724704364565313
+  }
+]

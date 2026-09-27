@@ -1,0 +1,53 @@
+Internal ctest changing into directory: /tmp/accelnet-n2p2-cpu-opt/build-check
+Test project /tmp/accelnet-n2p2-cpu-opt/build-check
+      Start 19: predictor_target_host_cheb_species
+ 1/22 Test #19: predictor_target_host_cheb_species .................   Passed    0.04 sec
+      Start 21: predictor_target_host_composite
+ 2/22 Test #21: predictor_target_host_composite ....................   Passed    0.20 sec
+      Start 23: predictor_target_host_g5_moments
+ 3/22 Test #23: predictor_target_host_g5_moments ...................   Passed    1.68 sec
+      Start 25: predictor_target_host_equivalence
+ 4/22 Test #25: predictor_target_host_equivalence ..................   Passed    0.58 sec
+      Start 26: predictor_target_host_other_descriptors
+ 5/22 Test #26: predictor_target_host_other_descriptors ............   Passed    0.73 sec
+      Start 43: predictor_batch_equivalence
+ 6/22 Test #43: predictor_batch_equivalence ........................   Passed    0.41 sec
+      Start 44: predictor_batch_reject_offset
+ 7/22 Test #44: predictor_batch_reject_offset ......................   Passed    0.10 sec
+      Start 45: predictor_batch_reject_monotonic
+ 8/22 Test #45: predictor_batch_reject_monotonic ...................   Passed    0.09 sec
+      Start 46: predictor_batch_reject_target
+ 9/22 Test #46: predictor_batch_reject_target ......................   Passed    0.09 sec
+      Start 47: predictor_batch_reject_center
+10/22 Test #47: predictor_batch_reject_center ......................   Passed    0.10 sec
+      Start 48: predictor_batch_reject_species
+11/22 Test #48: predictor_batch_reject_species .....................   Passed    0.09 sec
+      Start 49: predictor_batch_reject_shape
+12/22 Test #49: predictor_batch_reject_shape .......................   Passed    0.09 sec
+      Start 50: predictor_atomic_and_structure_virial
+13/22 Test #50: predictor_atomic_and_structure_virial ..............   Passed    0.16 sec
+      Start 51: predictor_c_virial
+14/22 Test #51: predictor_c_virial .................................   Passed    0.00 sec
+      Start 52: predictor_virial_convergence_n2p2
+15/22 Test #52: predictor_virial_convergence_n2p2 ..................   Passed    0.05 sec
+      Start 53: predictor_virial_convergence_n2p2-per-element
+16/22 Test #53: predictor_virial_convergence_n2p2-per-element ......   Passed    0.06 sec
+      Start 54: predictor_virial_invariants_n2p2-per-element
+17/22 Test #54: predictor_virial_invariants_n2p2-per-element .......   Passed    0.02 sec
+      Start 55: predictor_virial_convergence_n2p2-virial-angular
+18/22 Test #55: predictor_virial_convergence_n2p2-virial-angular ...   Passed    0.06 sec
+      Start 56: predictor_virial_invariants_n2p2-virial-angular
+19/22 Test #56: predictor_virial_invariants_n2p2-virial-angular ....   Passed    0.02 sec
+      Start 66: predictor_batch_aenet_golden
+20/22 Test #66: predictor_batch_aenet_golden .......................   Passed    0.12 sec
+      Start 67: predictor_virial_convergence_structure0001
+21/22 Test #67: predictor_virial_convergence_structure0001 .........   Passed    2.60 sec
+      Start 68: predictor_virial_convergence_structure2935
+22/22 Test #68: predictor_virial_convergence_structure2935 .........   Passed    2.36 sec
+
+100% tests passed, 0 tests failed out of 22
+
+Label Time Summary:
+target-host    =   3.22 sec*proc (5 tests)
+
+Total Test time (real) =   9.65 sec

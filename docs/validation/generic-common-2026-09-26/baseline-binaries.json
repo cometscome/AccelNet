@@ -1,0 +1,18 @@
+{
+  "gnu": {
+    "path": "/tmp/accelnet-generic-common/before-gnu/accelnet-target-benchmark",
+    "sha256": "e69832c58435cd688f59ee2d3c8ebd1cfe48beda9ff14d690b387dce2e594525"
+  },
+  "nvhpc": {
+    "path": "/tmp/accelnet-generic-common/before-nvhpc/accelnet-target-benchmark",
+    "sha256": "885e60727ce4b73d953866249603d47a91e8ce6fbb79cb231dfdfc7ff7d4916a"
+  },
+  "gpu": {
+    "path": "/tmp/accelnet-generic-common/before-gpu/accelnet-target-benchmark",
+    "sha256": "777fd8a17b2762958012cf0864a917f15b44f92635fb50866efe21992bc21ded"
+  },
+  "lammps": {
+    "path": "/tmp/accelnet-generic-common/lmp-before",
+    "sha256": "fa20e636e98e4f7229233f3e25f3eba24d7d24808a38069214113421bcddd61e"
+  }
+}

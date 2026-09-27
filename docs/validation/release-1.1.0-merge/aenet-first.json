@@ -1,0 +1,758 @@
+{
+  "core": 6,
+  "rounds": 4,
+  "seconds": 0.15,
+  "binaries": {
+    "before": {
+      "path": "/tmp/accelnet-unified-api/before-public-api",
+      "sha256": "4e67f5cab502823a1055f242ac9ffb6590894929bdd6dd8fcb70cfde9b1a2627"
+    },
+    "after": {
+      "path": "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+      "sha256": "d80ccbd9128c43fa44dcd03dd9d92afd8169f2f2dd2c3c6a18babbd4e428d256"
+    }
+  },
+  "rows": [
+    {
+      "family": "aenet",
+      "atoms": 64,
+      "api": "energy",
+      "samples": {
+        "before": [
+          0.0059186887692307686,
+          0.005907734499999999,
+          0.005911508846153846,
+          0.005911630461538461
+        ],
+        "after": [
+          0.0062849550833333325,
+          0.006277196333333333,
+          0.006282390541666666,
+          0.006284435416666667
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        }
+      ],
+      "seconds": {
+        "before": 0.005911569653846154,
+        "after": 0.0062834129791666665
+      },
+      "after_over_before": 1.0629009462958092,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 64,
+      "api": "atomic-energy",
+      "samples": {
+        "before": [
+          0.002065288835616438,
+          0.0020622105342465754,
+          0.002055793219178082,
+          0.0020612444246575342
+        ],
+        "after": [
+          0.002217894294117647,
+          0.0022162125294117644,
+          0.002212755838235294,
+          0.0022128438529411764
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        }
+      ],
+      "seconds": {
+        "before": 0.0020617274794520546,
+        "after": 0.0022145281911764704
+      },
+      "after_over_before": 1.0741129529713722,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 192,
+      "api": "energy",
+      "samples": {
+        "before": [
+          0.0262936965,
+          0.02191486642857143,
+          0.021936301285714284,
+          0.021915870714285714
+        ],
+        "after": [
+          0.022528048,
+          0.022481698857142858,
+          0.022515032857142857,
+          0.022497139428571428
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        }
+      ],
+      "seconds": {
+        "before": 0.021926085999999997,
+        "after": 0.022506086142857144
+      },
+      "after_over_before": 1.026452516096906,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 192,
+      "api": "atomic-energy",
+      "samples": {
+        "before": [
+          0.0037874366999999997,
+          0.0037915131249999998,
+          0.0037886079500000004,
+          0.0037981316250000003
+        ],
+        "after": [
+          0.004092687675675675,
+          0.004091686567567568,
+          0.004084096486486486,
+          0.004080215675675676
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        }
+      ],
+      "seconds": {
+        "before": 0.0037900605375,
+        "after": 0.004087891527027028
+      },
+      "after_over_before": 1.0785821193567222,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 512,
+      "api": "energy",
+      "samples": {
+        "before": [
+          0.1303202595,
+          0.1300791155,
+          0.1299530305,
+          0.130113265
+        ],
+        "after": [
+          0.133119652,
+          0.132864803,
+          0.1329787,
+          0.1324234815
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        }
+      ],
+      "seconds": {
+        "before": 0.13009619025000002,
+        "after": 0.13292175150000002
+      },
+      "after_over_before": 1.021719016095477,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 512,
+      "api": "atomic-energy",
+      "samples": {
+        "before": [
+          0.011943808692307692,
+          0.01192913930769231,
+          0.011947665615384616,
+          0.011931531384615383
+        ],
+        "after": [
+          0.01325468975,
+          0.013267519833333333,
+          0.013268352416666665,
+          0.013276764250000002
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-n2p2-cpu-opt/build-gnu/bin/accelnet-public-api-benchmark",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.15",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        }
+      ],
+      "seconds": {
+        "before": 0.011937670038461537,
+        "after": 0.013267936125
+      },
+      "after_over_before": 1.1114343152602248,
+      "performance_passed": false
+    }
+  ],
+  "numerical_passed": true,
+  "max_energy_ratio": 1.1,
+  "passed": false
+}

@@ -1,0 +1,380 @@
+diff --git a/AccelNetPredictor/src/accelnet_batch_target.f90 b/AccelNetPredictor/src/accelnet_batch_target.f90
+index 3f4c0e5..b266ba2 100644
+--- a/AccelNetPredictor/src/accelnet_batch_target.f90
++++ b/AccelNetPredictor/src/accelnet_batch_target.f90
+@@ -36,7 +36,7 @@ module accelnet_batch_target
+         private
+         type(target_model) :: cached
+         real(real64), allocatable :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:), moments(:,:,:), &
+-            powers(:,:,:), radial(:,:,:), jacobian(:,:,:), g4_scratch(:,:,:)
++            powers(:,:,:), radial(:,:,:), jacobian(:,:,:)
+         integer, allocatable :: species(:), centers(:), offsets(:), indices(:), use_moment(:), edge_row(:), g4_first(:,:,:)
+         real(real64), allocatable :: dr(:,:), energies(:), forces(:,:), virial(:,:), geom(:,:), edge_force(:,:)
+         integer :: growth_count = 0, upload_count = 0
+@@ -345,11 +345,11 @@ contains
+         class(target_workspace), intent(inout) :: self
+         if (.not. allocated(self%g)) return
+         call map_buffers(self%cached%device,.false.,self%g,self%values,self%deriv,self%delta,self%moments, &
+-            self%powers,self%radial,self%jacobian,self%g4_scratch,self%g4_first, &
++            self%powers,self%radial,self%jacobian,self%g4_first, &
+             self%species,self%centers,self%offsets,self%indices,self%use_moment,self%dr,self%energies,self%forces,self%virial, &
+             self%geom,self%edge_row,self%edge_force)
+         deallocate(self%g,self%values,self%deriv,self%delta,self%moments,self%powers,self%radial, &
+-            self%jacobian,self%g4_scratch,self%g4_first,self%species,self%centers, &
++            self%jacobian,self%g4_first,self%species,self%centers, &
+             self%offsets,self%indices,self%use_moment,self%dr,self%energies,self%forces,self%virial, &
+             self%geom,self%edge_row,self%edge_force)
+     end subroutine
+@@ -531,23 +531,23 @@ contains
+             mpower = max(mpower,size(work%powers,2))
+             ngroups = max(ngroups,size(work%radial,2))
+             njf = max(njf,size(work%jacobian,2)); nje = max(nje,size(work%jacobian,3))
+-            njr = max(njr,size(work%g4_scratch,3)); nlocal = max(nlocal,size(work%g4_first,1))
++            njr = max(njr,size(work%g4_first,3)); nlocal = max(nlocal,size(work%g4_first,1))
+             grow = n > size(work%g,1) .or. mn > size(work%g,2) .or. ml > size(work%values,3) .or. &
+                 ne > size(work%indices) .or. na > size(work%species) .or. mm > size(work%moments,2) .or. &
+                 mpower > size(work%powers,2) .or. ngroups > size(work%radial,2) .or. &
+                 njf > size(work%jacobian,2) .or. nje > size(work%jacobian,3) .or. &
+-                njr > size(work%g4_scratch,3) .or. nlocal > size(work%g4_first,1)
++                njr > size(work%g4_first,3) .or. nlocal > size(work%g4_first,1)
+         end if
+         if (grow) then
+             call release_buffers(work)
+             allocate(work%g(n,mn),work%values(n,mn,ml),work%deriv(n,mn,ml),work%delta(n,mn,2), &
+                 work%moments(n,mm,2),work%powers(ne,mpower,3),work%radial(ne,ngroups,2), &
+-                work%jacobian(3,njf,nje),work%g4_scratch(12,njf,njr),work%g4_first(nlocal,nlocal,njr),work%species(na), &
++                work%jacobian(3,njf,nje),work%g4_first(nlocal,nlocal,njr),work%species(na), &
+                 work%centers(n),work%offsets(n+1), &
+                 work%indices(ne),work%use_moment(n),work%dr(3,ne),work%geom(7,ne),work%edge_row(ne),work%edge_force(3,ne), &
+                 work%energies(n),work%forces(3,na),work%virial(3,3))
+             call map_buffers(model%device,.true.,work%g,work%values,work%deriv,work%delta,work%moments, &
+-                work%powers,work%radial,work%jacobian,work%g4_scratch,work%g4_first, &
++                work%powers,work%radial,work%jacobian,work%g4_first, &
+                 work%species,work%centers,work%offsets,work%indices,work%use_moment,work%dr, &
+                 work%energies,work%forces,work%virial,work%geom,work%edge_row,work%edge_force)
+             work%growth_count = work%growth_count+1
+@@ -568,7 +568,7 @@ contains
+             work%cached%features,work%cached%feature_params,work%cached%local_species, &
+             work%cached%mp,work%cached%multiplicity,work%cached%polynomial,work%species,work%centers,work%offsets, &
+             work%indices,work%dr,work%energies,work%forces,work%virial,work%g,work%values,work%deriv,work%delta, &
+-            work%moments,work%powers,work%radial,work%jacobian,work%g4_scratch,work%g4_first,work%use_moment, &
++            work%moments,work%powers,work%radial,work%jacobian,work%g4_first,work%use_moment, &
+             work%geom,work%edge_row, &
+             work%edge_force,nrw,natoms,nedges,stages)
+         timing%descriptors = stages(1); timing%network = stages(2); timing%forces = stages(3)
+@@ -663,24 +663,24 @@ contains
+         end if
+     end subroutine
+ 
+-    subroutine map_buffers(device,enter,g,values,deriv,delta,moments,powers,radial,jacobian,g4_scratch, &
++    subroutine map_buffers(device,enter,g,values,deriv,delta,moments,powers,radial,jacobian,&
+             g4_first,species,centers,offsets,indices, &
+                            use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
+         integer, intent(in) :: device
+         logical, intent(in) :: enter
+         real(real64), contiguous, intent(inout) :: g(:,:),values(:,:,:),deriv(:,:,:),delta(:,:,:),moments(:,:,:), &
+-            powers(:,:,:), radial(:,:,:), jacobian(:,:,:), g4_scratch(:,:,:)
++            powers(:,:,:), radial(:,:,:), jacobian(:,:,:)
+         integer, contiguous, intent(inout) :: species(:),centers(:),offsets(:),indices(:),use_moment(:),edge_row(:), &
+             g4_first(:,:,:)
+         real(real64), contiguous, intent(inout) :: dr(:,:),energies(:),forces(:,:),virial(:,:),geom(:,:),edge_force(:,:)
+         if (enter) then
+             !$omp target enter data device(device) if(device /= omp_get_initial_device()) &
+-            !$omp& map(alloc:g,values,deriv,delta,moments,powers,radial,jacobian,g4_scratch,g4_first,species, &
++            !$omp& map(alloc:g,values,deriv,delta,moments,powers,radial,jacobian,g4_first,species, &
+         !$omp& centers,offsets,indices, &
+             !$omp& use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
+         else
+             !$omp target exit data device(device) if(device /= omp_get_initial_device()) &
+-            !$omp& map(delete:g,values,deriv,delta,moments,powers,radial,jacobian,g4_scratch,g4_first,species, &
++            !$omp& map(delete:g,values,deriv,delta,moments,powers,radial,jacobian,g4_first,species, &
+         !$omp& centers,offsets,indices, &
+             !$omp& use_moment,dr,energies,forces,virial,geom,edge_row,edge_force)
+         end if
+diff --git a/AccelNetPredictor/src/accelnet_target_descriptors.f90 b/AccelNetPredictor/src/accelnet_target_descriptors.f90
+index 7a89d67..61bd67f 100644
+--- a/AccelNetPredictor/src/accelnet_target_descriptors.f90
++++ b/AccelNetPredictor/src/accelnet_target_descriptors.f90
+@@ -11,7 +11,7 @@ module accelnet_target_descriptors
+     implicit none
+     private
+     public :: pack_generic_descriptors, PACKED_FEATURE_FIELDS
+-    integer, parameter :: PACKED_FEATURE_FIELDS = 19
++    integer, parameter :: PACKED_FEATURE_FIELDS = 21
+ contains
+     subroutine pack_generic_descriptors(model, fi, fr, status, message)
+         type(descriptor_model), intent(in) :: model
+@@ -209,17 +209,16 @@ contains
+         ! G4 follows the established CPU value/Jacobian traversal. Reuse cutoff,
+         ! exponential, angular and radial factors independently, then follow a
+         ! species-pair list instead of scanning all descriptors for each pair.
+-        ! Fields 15..19: cutoff rep, exponential rep, angular rep (within species
+-        ! pair), next G4 in species pair, and G4 radial rep.
++        ! Fields 15..18: cutoff rep, exponential rep, angular rep (within species
++        ! pair), and next G4 in species pair. Fields 19..21 pack indexed lists.
+         do b = 1,n
+             if (fi(1,b) /= 4) cycle
+-            fi(15:17,b) = b; fi(19,b) = b
++            fi(15:17,b) = b
+             do k = 1,b-1
+                 if (fi(1,k) /= 4) cycle
+                 if (fi(4,k) == fi(4,b) .and. fr(1,k) == fr(1,b) .and. fr(7,k) == fr(7,b)) &
+                     fi(15,b) = fi(15,k)
+                 if (all(fr(2:3,k) == fr(2:3,b))) fi(16,b) = fi(16,k)
+-                if (fi(7,k) == fi(7,b)) fi(19,b) = fi(19,k)
+                 if (minval(fi(2:3,k)) /= minval(fi(2:3,b)) .or. &
+                     maxval(fi(2:3,k)) /= maxval(fi(2:3,b))) cycle
+                 if (all(fr(4:5,k) == fr(4:5,b))) fi(17,b) = fi(17,k)
+@@ -229,6 +228,21 @@ contains
+                 end if
+             end do
+         end do
++        ! Flatten each species-pair list. Static worksharing assigns each
++        ! descriptor to the same thread for every pair of a center.
++        groups = 0
++        do b = 1,n
++            if (fi(1,b) /= 4) cycle
++            if (any(fi(18,:) == b)) cycle
++            fi(20,b) = groups+1
++            r = b
++            do while (r /= 0)
++                groups = groups+1
++                fi(19,groups) = r
++                r = fi(18,r)
++            end do
++            fi(21,b) = groups-fi(20,b)+1
++        end do
+         status = 0; message = ''
+     end subroutine
+ end module
+diff --git a/AccelNetPredictor/src/accelnet_target_kernels.f90 b/AccelNetPredictor/src/accelnet_target_kernels.f90
+index c3302b4..38bd799 100644
+--- a/AccelNetPredictor/src/accelnet_target_kernels.f90
++++ b/AccelNetPredictor/src/accelnet_target_kernels.f90
+@@ -13,7 +13,7 @@ contains
+                                 features, feature_params, local_species, mp, multiplicity, polynomial, &
+                                 species, centers, offsets, indices, dr, &
+                                 energies, forces, virial, g, values, deriv, delta, moments, powers, &
+-            radial_cache, jacobian, g4_scratch, g4_first, use_moment, &
++            radial_cache, jacobian, g4_first, use_moment, &
+                                 geom, edge_row, edge_force, nrw, natoms, nedges, stages)
+         integer, contiguous, intent(in) :: features(:,:,:),local_species(:,:)
+         real(real64), contiguous, intent(in) :: feature_params(:,:,:)
+@@ -27,7 +27,7 @@ contains
+         real(real64), contiguous, intent(inout) :: forces(:,:), virial(:,:)
+         real(real64), contiguous, intent(inout) :: g(:,:), values(:,:,:), deriv(:,:,:), delta(:,:,:)
+         real(real64), contiguous, intent(inout) :: moments(:,:,:), powers(:,:,:), radial_cache(:,:,:), &
+-            jacobian(:,:,:), g4_scratch(:,:,:)
++            jacobian(:,:,:)
+         integer, contiguous, intent(inout) :: use_moment(:), edge_row(:), g4_first(:,:,:)
+         real(real64), contiguous, intent(inout) :: geom(:,:), edge_force(:,:)
+         real(real64), intent(out) :: stages(3)
+@@ -43,7 +43,7 @@ contains
+         !$omp& map(alloc: features,feature_params,local_species) &
+         !$omp& map(alloc: meta, nodes, acts, woffset, weights, params, shift, scale, spin, mp, multiplicity, polynomial) &
+         !$omp& map(alloc: species, centers, offsets, indices, dr, energies, forces, virial, &
+-        !$omp& g, values, deriv, delta, moments, powers, radial_cache, jacobian, g4_scratch, g4_first, &
++        !$omp& g, values, deriv, delta, moments, powers, radial_cache, jacobian, g4_first, &
+         !$omp& use_moment, geom, edge_row, edge_force)
+         started = omp_get_wtime()
+         !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
+@@ -204,7 +204,7 @@ contains
+             !$omp end target teams distribute parallel do
+         end if
+         if (any(features(1,:,:) == 4)) call g4_values_derivatives(device,nrw,meta,nodes,features,feature_params, &
+-            local_species,species,centers,offsets,indices,dr,geom,radial_cache,g,jacobian,g4_scratch,g4_first)
++            local_species,species,centers,offsets,indices,dr,geom,radial_cache,g,jacobian,g4_first)
+         if (any(features(1,:,:) > 0 .and. features(1,:,:) /= 4 .and. features(1,:,:) /= 7)) then
+             if (any(features(12,:,:) > 0 .and. features(1,:,:) == 5)) then
+                 call generic_values_grouped(device,nrw,meta,nodes,features,feature_params, &
+@@ -433,30 +433,58 @@ contains
+     ! G4 evaluator: values and both derivatives are accumulated together. Each
+     ! center owns its CSR edges, so neither CPU nor GPU needs Jacobian atomics.
+     subroutine g4_values_derivatives(device,nrw,meta,nodes,features,fp,local_species,species,centers,offsets, &
+-            indices,dr,geom,radial_cache,g,jacobian,g4_scratch,g4_first)
++            indices,dr,geom,radial_cache,g,jacobian,g4_first)
+         integer, intent(in) :: device,nrw
+         integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),features(:,:,:),local_species(:,:)
+         integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:)
+         real(real64), contiguous, intent(in) :: fp(:,:,:),dr(:,:),geom(:,:),radial_cache(:,:,:)
+-        real(real64), contiguous, intent(inout) :: g(:,:),jacobian(:,:,:),g4_scratch(:,:,:)
++        real(real64), contiguous, intent(inout) :: g(:,:),jacobian(:,:,:)
+         integer, contiguous, intent(inout) :: g4_first(:,:,:)
+-        integer :: row,s,dim,b,j,k,tj,tk,t1,t2,head,group,cr,er,ar,c
++        integer :: row,s,dim,b,j,k,tj,tk,t1,t2,head,group,cr,er,ar,c,last_group,last_cr,last_er,last_ar,q,lane,nlanes,task_index
+         real(real64) :: rcmax,rj,rk,rjk,rjk2,cosine,uj(3),uk(3),ujk(3),dcj(3),dck(3)
+-        real(real64) :: qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj(3),dk(3)
+-        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
+-        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
+-        !$omp& dr,geom,radial_cache,g,jacobian,g4_scratch,g4_first) &
+-        !$omp& private(s,dim,b,j,k,tj,tk,t1,t2,head,group,cr,er,ar,c,rcmax,rj,rk,rjk,rjk2, &
+-        !$omp& cosine,uj,uk,ujk,dcj,dck,qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj,dk)
++        real(real64) :: qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj(3),dk(3),fc,dfc,ex,radial,rgradj(3),rgradk(3)
++        ! Immutable species-pair heads are shared by the descriptor owners.
++        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
++        !$omp& map(alloc:meta,nodes,features,species,centers,g4_first) private(s,b,t1,t2)
+         do row = 1,nrw
+-            s = species(centers(row))
++            s = species(centers(row)); g4_first(:,:,row) = 0
+             if (meta(10,s) /= 1) cycle
+-            dim = nodes(1,s); g4_first(:,:,row) = 0; rcmax = 0
+-            do b = dim,1,-1
++            do b = nodes(1,s),1,-1
+                 if (features(1,b,s) /= 4) cycle
+                 t1 = features(2,b,s); t2 = features(3,b,s)
+                 g4_first(t1,t2,row) = b; g4_first(t2,t1,row) = b
+-                rcmax = max(rcmax,fp(1,b,s))
++            end do
++        end do
++        !$omp end target teams distribute parallel do
++        ! One numerical loop serves both backends. CPU compilation ignores the
++        ! conditional OpenMP line and uses one owner; GPU owners keep disjoint
++        ! descriptor columns for the entire center, so no Jacobian atomics or
++        ! pair-loop barriers are required. Geometry is replicated across owners.
++        ! A flat launch avoids the extra stack and 64-thread blocks observed
++        ! with NVHPC's nested teams/parallel implementation.
++        nlanes = 1
++        !$ if (device /= omp_get_initial_device()) then
++        !$     do while (nlanes < 32 .and. (nlanes < maxval(features(21,:,:)) .or. nrw*nlanes < 16384))
++        !$         nlanes = 2*nlanes
++        !$     end do
++        !$ end if
++        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) thread_limit(32) &
++        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices, &
++        !$omp& dr,geom,radial_cache,g,jacobian,g4_first) &
++        !$omp& firstprivate(nlanes) &
++        !$omp& private(row,s,dim,b,j,k,tj,tk,t1,t2,head,group,cr,er,ar,c,last_group,last_cr,last_er,last_ar,q,lane,rcmax, &
++        !$omp& rj,rk,rjk,rjk2,cosine,uj,uk,ujk,dcj,dck,qj,qk,qjk,dqj,dqk,dqjk,a,da,ca,cv,dj,dk,fc,dfc,ex,radial,rgradj,rgradk)
++        do task_index = 1,nrw*nlanes
++            row = (task_index-1)/nlanes+1; lane = mod(task_index-1,nlanes)
++            s = species(centers(row))
++            if (meta(10,s) /= 1) cycle
++            dim = nodes(1,s); rcmax = 0
++            do b = 1,dim
++                if (features(1,b,s) == 4) rcmax = max(rcmax,fp(1,b,s))
++            end do
++            do q = lane+1,dim,nlanes
++                b = features(19,q,s)
++                if (b == 0) cycle
+                 g(row,b) = 0
+                 do j = offsets(row),offsets(row+1)-1
+                     jacobian(:,b,j) = 0
+@@ -482,46 +510,53 @@ contains
+                     uk = geom(1:3,k)
+                     cosine = max(-1.0_real64,min(1.0_real64,sum(uj*uk)))
+                     dcj = (uk-cosine*uj)/rj; dck = (uj-cosine*uk)/rk
+-                    ! Independent cutoff/exponential groups, as in the CPU
+-                    ! evaluator. No repeated transcendental call per output.
+-                    do b = 1,dim
+-                        if (features(1,b,s) /= 4) cycle
+-                        if (features(15,b,s) == b) then
+-                            g4_scratch(1,b,row) = target_cutoff_value(rjk,fp(1,b,s),features(4,b,s),fp(7,b,s))
+-                            g4_scratch(2,b,row) = target_cutoff_derivative(rjk,fp(1,b,s),features(4,b,s),fp(7,b,s))
+-                        end if
+-                        if (features(16,b,s) == b) g4_scratch(3,b,row) = exp(-fp(2,b,s)*(rjk-fp(3,b,s))**2)
+-                    end do
+-                    do b = 1,dim
+-                        if (features(1,b,s) /= 4 .or. features(19,b,s) /= b) cycle
+-                        group = features(7,b,s); cr = features(15,b,s); er = features(16,b,s)
+-                        qj = radial_cache(j,group,1); qk = radial_cache(k,group,1)
+-                        dqj = radial_cache(j,group,2); dqk = radial_cache(k,group,2)
+-                        qjk = g4_scratch(1,cr,row)*g4_scratch(3,er,row)
+-                        dqjk = (g4_scratch(2,cr,row)-2*fp(2,b,s)*(rjk-fp(3,b,s))*g4_scratch(1,cr,row))*g4_scratch(3,er,row)
+-                        g4_scratch(6,group,row) = qj*qk*qjk
+-                        g4_scratch(7:9,group,row) = dqj*uj*qk*qjk-qj*qk*dqjk*ujk
+-                        g4_scratch(10:12,group,row) = qj*dqk*uk*qjk+qj*qk*dqjk*ujk
+-                    end do
+-                    b = head
+-                    do while (b /= 0)
+-                        ar = features(17,b,s)
+-                        ! Angular representatives precede their followers in
+-                        ! the same species-pair list, irrespective of cutoff.
+-                        if (ar == b) call angular_power(cosine,fp(4,b,s),fp(5,b,s),features(5,b,s), &
+-                            0.5_real64*fp(5,b,s)*fp(4,b,s),g4_scratch(4,b,row),g4_scratch(5,b,row))
++                    ! Only owned columns in the matching species-pair list are
++                    ! visited. Scalar caches reuse consecutive groups within an
++                    ! owner without per-pair global intermediate writes.
++                    last_group = 0; last_cr = 0; last_er = 0; last_ar = 0
++                    ! Global packed position fixes ownership in both the zero
++                    ! pass and every pair pass, including lists shorter than a
++                    ! warp and models wider than the owner count.
++                    do q = features(20,head,s)+modulo(lane-features(20,head,s)+1,nlanes), &
++                            features(20,head,s)+features(21,head,s)-1,nlanes
++                        b = features(19,q,s)
+                         if (rj <= fp(1,b,s) .and. rk <= fp(1,b,s) .and. rjk <= fp(1,b,s)) then
+-                            group = features(7,b,s); a = g4_scratch(4,ar,row); da = g4_scratch(5,ar,row)
+-                            g(row,b) = g(row,b)+2*a*g4_scratch(6,group,row)
+-                            ca = 2*da*g4_scratch(6,group,row); cv = 2*a
+-                            dj = ca*dcj+cv*g4_scratch(7:9,group,row)
+-                            dk = ca*dck+cv*g4_scratch(10:12,group,row)
++                            group = features(7,b,s)
++                            if (group /= last_group) then
++                                cr = features(15,b,s); er = features(16,b,s)
++                                if (cr /= last_cr) then
++                                    fc = target_cutoff_value(rjk,fp(1,b,s),features(4,b,s),fp(7,b,s))
++                                    dfc = target_cutoff_derivative(rjk,fp(1,b,s),features(4,b,s),fp(7,b,s))
++                                    last_cr = cr
++                                end if
++                                if (er /= last_er) then
++                                    ex = exp(-fp(2,b,s)*(rjk-fp(3,b,s))**2)
++                                    last_er = er
++                                end if
++                                qj = radial_cache(j,group,1); qk = radial_cache(k,group,1)
++                                dqj = radial_cache(j,group,2); dqk = radial_cache(k,group,2)
++                                qjk = fc*ex
++                                dqjk = (dfc-2*fp(2,b,s)*(rjk-fp(3,b,s))*fc)*ex
++                                radial = qj*qk*qjk
++                                rgradj = dqj*uj*qk*qjk-qj*qk*dqjk*ujk
++                                rgradk = qj*dqk*uk*qjk+qj*qk*dqjk*ujk
++                                last_group = group
++                            end if
++                            ar = features(17,b,s)
++                            if (ar /= last_ar) then
++                                call angular_power(cosine,fp(4,b,s),fp(5,b,s),features(5,b,s), &
++                                    0.5_real64*fp(5,b,s)*fp(4,b,s),a,da)
++                                last_ar = ar
++                            end if
++                            g(row,b) = g(row,b)+2*a*radial
++                            ca = 2*da*radial; cv = 2*a
++                            dj = ca*dcj+cv*rgradj
++                            dk = ca*dck+cv*rgradk
+                             do c = 1,3
+                                 jacobian(c,b,j) = jacobian(c,b,j)+dj(c)
+                                 jacobian(c,b,k) = jacobian(c,b,k)+dk(c)
+                             end do
+                         end if
+-                        b = features(18,b,s)
+                     end do
+                 end do
+             end do
+diff --git a/AccelNetPredictor/test/test_batch_target.f90 b/AccelNetPredictor/test/test_batch_target.f90
+index d162199..bab1125 100644
+--- a/AccelNetPredictor/test/test_batch_target.f90
++++ b/AccelNetPredictor/test/test_batch_target.f90
+@@ -198,6 +198,26 @@ program test_batch_target
+         call packed%initialize(model,use_host=host)
+         call check(s)
+         call finite_differences(s)
++        ! Interleaved radial and angular groups must refresh scalar pair caches
++        ! when a previously visited group is encountered again.
++        do i = 1,2
++            model%setups(i)%model = descriptor_model()
++            call initialize_behler_config(grouped_config,2)
++            call add_g4(grouped_config,1,2,3.4_real64,1.0_real64,2.0_real64,0.2_real64,0.4_real64)
++            call add_g4(grouped_config,2,1,3.4_real64,-1.0_real64,3.0_real64,0.3_real64,0.1_real64)
++            call add_g4(grouped_config,1,2,3.4_real64,1.0_real64,1.5_real64,0.2_real64,0.4_real64)
++            call add_g4(grouped_config,2,1,3.4_real64,1.0_real64,2.0_real64,0.3_real64,0.1_real64)
++            call add_behler(model%setups(i)%model,grouped_config)
++        end do
++        call packed%initialize(model,use_host=host)
++        call check(s)
++        call finite_differences(s)
++        ! More G4 columns than the GPU owner count: each owner must retain all
++        ! its columns across every pair without races or skipped derivatives.
++        call make_model('g4-series',model,order=12)
++        call packed%initialize(model,use_host=host)
++        call check(s)
++        call finite_differences(s)
+         ! Mixed species families share NN and scatter kernels, but descriptors
+         ! take different paths. Reload metadata and the local species map.
+         call make_model('chebyshev',source_model,order=4)

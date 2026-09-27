@@ -1,0 +1,69 @@
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/accelnet-other-descriptors/build-gnu-serial
+Scanning dependencies of target benchmark-g4-derivative
+Scanning dependencies of target compare_n2p2_descriptors
+Scanning dependencies of target aenet_feedforward_reference
+Consolidate compiler generated dependencies of target n2p2_function_reference
+[  1%] Building Fortran object AccelNetDescriptors/CMakeFiles/benchmark-g4-derivative.dir/benchmark/benchmark_g4_derivative.f90.o
+Scanning dependencies of target AccelNetDescriptors
+[  3%] Built target compare_n2p2_descriptors
+[  5%] Built target aenet_feedforward_reference
+[ 10%] Built target n2p2_function_reference
+[ 15%] Built target AccelNetDescriptors
+f951: internal compiler error: Segmentation fault
+Scanning dependencies of target accelnet-descriptor
+Scanning dependencies of target test_lj_model
+Scanning dependencies of target test_behler
+Scanning dependencies of target test_tio2
+Scanning dependencies of target test_descriptor
+Scanning dependencies of target benchmark-g5-scaling
+Scanning dependencies of target accelnet-setup-descriptor
+[ 17%] Built target test_lj_model
+[ 19%] Built target test_tio2
+[ 20%] Built target test_behler
+[ 22%] Built target accelnet-descriptor
+[ 23%] Built target test_descriptor
+[ 24%] Building Fortran object AccelNetDescriptors/CMakeFiles/benchmark-g5-scaling.dir/benchmark/benchmark_g5_scaling.f90.o
+[ 25%] Built target accelnet-setup-descriptor
+Scanning dependencies of target test_combined_model
+Scanning dependencies of target test_setup_parser
+Scanning dependencies of target dump_descriptor_reference
+Scanning dependencies of target test_n2p2_cutoff_reference
+/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/benchmark/benchmark_g5_scaling.f90:54:132:
+
+   54 |     write(*, "(A)") "NEIGHBORS DIRECT_VALUE MOMENT_VALUE VALUE_SPEEDUP DIRECT_FORCE MOMENT_FORCE FORCE_SPEEDUP VALUE_ERROR FORCE_ERROR"
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetDescriptors/benchmark/benchmark_g5_scaling.f90:54:22:
+
+   54 |     write(*, "(A)") "NEIGHBORS DIRECT_VALUE MOMENT_VALUE VALUE_SPEEDUP DIRECT_FORCE MOMENT_FORCE FORCE_SPEEDUP VALUE_ERROR FORCE_ERROR"
+      |                      1
+Error: Unterminated character constant beginning at (1)
+f951: some warnings being treated as errors
+[ 27%] Built target test_combined_model
+gmake[2]: *** [AccelNetDescriptors/CMakeFiles/benchmark-g5-scaling.dir/build.make:75: AccelNetDescriptors/CMakeFiles/benchmark-g5-scaling.dir/benchmark/benchmark_g5_scaling.f90.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:1080: AccelNetDescriptors/CMakeFiles/benchmark-g5-scaling.dir/all] Error 2
+gmake[1]: *** Waiting for unfinished jobs....
+[ 29%] Built target test_setup_parser
+[ 31%] Built target test_n2p2_cutoff_reference
+[ 31%] Built target dump_descriptor_reference
+Scanning dependencies of target AccelNetPredictor
+[ 32%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/serial/accelnet_target_kernels.F90.o
+0x7fad758bd51f ???
+	./signal/../sysdeps/unix/sysv/linux/x86_64/libc_sigaction.c:0
+0x7fad758a4d8f __libc_start_call_main
+	../sysdeps/nptl/libc_start_call_main.h:58
+0x7fad758a4e3f __libc_start_main_impl
+	../csu/libc-start.c:392
+Please submit a full bug report,
+with preprocessed source if appropriate.
+Please include the complete backtrace with any bug report.
+See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
+gmake[2]: *** [AccelNetDescriptors/CMakeFiles/benchmark-g4-derivative.dir/build.make:75: AccelNetDescriptors/CMakeFiles/benchmark-g4-derivative.dir/benchmark/benchmark_g4_derivative.f90.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:1054: AccelNetDescriptors/CMakeFiles/benchmark-g4-derivative.dir/all] Error 2
+[ 33%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/serial/accelnet_batch_target.F90.o
+[ 34%] Building Fortran object AccelNetPredictor/CMakeFiles/AccelNetPredictor.dir/src/accelnet_batch.f90.o
+[ 35%] Linking Fortran static library ../lib/libaccelnet.a
+[ 42%] Built target AccelNetPredictor
+gmake: *** [Makefile:146: all] Error 2

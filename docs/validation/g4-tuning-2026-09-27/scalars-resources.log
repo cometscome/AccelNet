@@ -1,0 +1,178 @@
+
+Fatbin elf code:
+================
+arch = sm_90
+code version = [1,7]
+host = linux
+compile_size = 64bit
+identifier = /tmp/pgcudafatmybTeKV5ZmpTu.o
+
+Resource usage:
+ Common:
+  GLOBAL:344
+ Function __internal_accurate_pow:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __internal_trig_reduction_slowpathd:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_dblrcp_rn_slowpath_v3:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_div_rn_f64_full:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_dsqrt_rn_f64_mediumpath_v1:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_pair_value_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_pair_contracted_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_pair_geometry_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_lj_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_radial_value_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_radial_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_angular_value_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_angular_power_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_target_activation_derivative_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_target_activate_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_target_cutoff_derivative_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_target_cutoff_value_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_generic_values_grouped__F1L604_34__F1L619_36_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __hxdTargetTeamsBegin:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_div_u64:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_rem_s64:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_div_s64:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_div_rn_f64_full:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_dsqrt_rn_f64_mediumpath_v1:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_generic_forces__F1L692_39_:
+  REG:150 STACK:400 SHARED:0 LOCAL:0 CONSTANT[0]:536 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_generic_values_grouped__F1L604_34_:
+  REG:122 STACK:2384 SHARED:1024 LOCAL:0 CONSTANT[0]:1392 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_generic_values__F1L544_30_:
+  REG:115 STACK:144 SHARED:0 LOCAL:0 CONSTANT[0]:1392 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_g4_values_derivatives__F1L446_26_:
+  REG:250 STACK:128 SHARED:0 LOCAL:0 CONSTANT[0]:536 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L402_12_:
+  REG:63 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L306_10_:
+  REG:80 STACK:112 SHARED:0 LOCAL:0 CONSTANT[0]:1344 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L219_8_:
+  REG:114 STACK:72 SHARED:0 LOCAL:0 CONSTANT[0]:536 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L174_6_:
+  REG:56 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:1496 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L155_4_:
+  REG:48 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:1248 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L49_2_:
+  REG:122 STACK:136 SHARED:0 LOCAL:0 CONSTANT[0]:536 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __hxdTargetBegin:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_batch_target_import_lammps_inputs__F1L621_6_:
+  REG:40 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:888 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_batch_target_import_lammps_inputs__F1L613_4_:
+  REG:122 STACK:704 SHARED:1024 LOCAL:0 CONSTANT[0]:648 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_batch_target_initialize_target_model__F1L256_2_:
+  REG:122 STACK:704 SHARED:1024 LOCAL:0 CONSTANT[0]:544 TEXTURE:0 SURFACE:0 SAMPLER:0
+
+Fatbin elf code:
+================
+arch = sm_120
+code version = [1,8]
+host = linux
+compile_size = 64bit
+identifier = /tmp/pgcudafatmybTeKV5ZmpTu.o
+
+Resource usage:
+ Common:
+  GLOBAL:344
+ Function __internal_accurate_pow:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __internal_trig_reduction_slowpathd:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_dblrcp_rn_slowpath_v3:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_div_rn_f64_full:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_dsqrt_rn_f64_mediumpath_v1:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_pair_value_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_pair_contracted_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_pair_geometry_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_lj_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_radial_value_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_generic_radial_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_angular_value_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_angular_power_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_target_activation_derivative_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_target_activate_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_target_cutoff_derivative_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function accelnet_target_math_target_cutoff_value_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_generic_values_grouped__F1L604_34__F1L619_36_:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __hxdTargetTeamsBegin:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_div_u64:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_rem_s64:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_div_s64:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_div_rn_f64_full:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_dsqrt_rn_f64_mediumpath_v1:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_generic_forces__F1L692_39_:
+  REG:171 STACK:408 SHARED:0 LOCAL:0 CONSTANT[2]:544 CONSTANT[0]:904 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_generic_values_grouped__F1L604_34_:
+  REG:141 STACK:2408 SHARED:1024 LOCAL:0 CONSTANT[2]:560 CONSTANT[0]:1760 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_generic_values__F1L544_30_:
+  REG:126 STACK:152 SHARED:0 LOCAL:0 CONSTANT[2]:448 CONSTANT[0]:1760 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_g4_values_derivatives__F1L446_26_:
+  REG:250 STACK:136 SHARED:0 LOCAL:0 CONSTANT[2]:148 CONSTANT[0]:904 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L402_12_:
+  REG:56 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:1360 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L306_10_:
+  REG:92 STACK:120 SHARED:0 LOCAL:0 CONSTANT[2]:124 CONSTANT[0]:1712 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L219_8_:
+  REG:88 STACK:72 SHARED:0 LOCAL:0 CONSTANT[2]:128 CONSTANT[0]:904 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L174_6_:
+  REG:56 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:1864 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L155_4_:
+  REG:56 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:1616 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_target_kernels_run_target_batch__F1L49_2_:
+  REG:120 STACK:144 SHARED:0 LOCAL:0 CONSTANT[2]:272 CONSTANT[0]:904 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __cuda_sm20_div_u64:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function __hxdTargetBegin:
+  REG:0 STACK:0 SHARED:0 LOCAL:0 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_batch_target_import_lammps_inputs__F1L621_6_:
+  REG:48 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:1256 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_batch_target_import_lammps_inputs__F1L613_4_:
+  REG:141 STACK:720 SHARED:1024 LOCAL:0 CONSTANT[2]:560 CONSTANT[0]:1016 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function nvkernel_accelnet_batch_target_initialize_target_model__F1L256_2_:
+  REG:141 STACK:720 SHARED:1024 LOCAL:0 CONSTANT[2]:560 CONSTANT[0]:912 TEXTURE:0 SURFACE:0 SAMPLER:0

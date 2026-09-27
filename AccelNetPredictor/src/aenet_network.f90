@@ -114,9 +114,11 @@ contains
         close(unit)
     end subroutine write_aenet_network_ascii
 
-    subroutine read_aenet_network_ascii(filename, network)
+    subroutine read_aenet_network_ascii(filename, network, status)
         character(len=*), intent(in) :: filename
         type(atomic_network), intent(out) :: network
+        integer, optional, intent(out) :: status
+        logical :: opened
         integer :: unit, ios, nweights, nvalues, nenv, nsf, nparam, neval
         integer :: ntypes, natoms, nstructures
         integer, allocatable :: integers(:)
@@ -125,45 +127,53 @@ contains
         character(len=1024) :: line, training_file
         logical :: normalized
 
+        if (present(status)) status = 0
+        opened = .false.
         open(newunit=unit, file=trim(filename), status="old", action="read", iostat=ios)
-        if (ios /= 0) error stop "cannot open aenet ASCII network"
-        read(unit, *) network%nlayers
-        read(unit, *) network%maxnodes
-        read(unit, *) nweights
-        read(unit, *) nvalues
+        if (ios /= 0) goto 900
+        opened = .true.
+        read(unit, *, iostat=ios, err=900, end=900) network%nlayers
+        read(unit, *, iostat=ios, err=900, end=900) network%maxnodes
+        read(unit, *, iostat=ios, err=900, end=900) nweights
+        read(unit, *, iostat=ios, err=900, end=900) nvalues
+        if (network%nlayers < 2 .or. network%nlayers > 1024 .or. nweights < 1) goto 900
         allocate(network%nodes(network%nlayers), network%activation(network%nlayers - 1))
         allocate(network%weight_offsets(network%nlayers), network%weights(nweights))
-        read(unit, *) network%nodes
-        read(unit, *) network%activation
-        read(unit, *) network%weight_offsets
-        read(unit, *) ! value offsets
-        read(unit, *) network%weights
+        read(unit, *, iostat=ios, err=900, end=900) network%nodes
+        read(unit, *, iostat=ios, err=900, end=900) network%activation
+        read(unit, *, iostat=ios, err=900, end=900) network%weight_offsets
+        read(unit, *, iostat=ios, err=900, end=900) ! value offsets
+        read(unit, *, iostat=ios, err=900, end=900) network%weights
 
-        read(unit, "(A)") network%description
-        read(unit, "(A)") network%atomtype
+        read(unit, "(A)", iostat=ios, err=900, end=900) network%description
+        read(unit, "(A)", iostat=ios, err=900, end=900) network%atomtype
         network%atomtype = adjustl(network%atomtype)
-        read(unit, *) nenv
-        allocate(network%environment_names(nenv)); read(unit, *) network%environment_names
-        read(unit, *) network%minimum_radius
-        read(unit, *) network%maximum_radius
-        read(unit, "(A)") network%descriptor_name
-        read(unit, *) nsf
-        read(unit, *) nparam
-        if (nsf /= network%nodes(1)) error stop "network and descriptor dimensions differ"
+        read(unit, *, iostat=ios, err=900, end=900) nenv
+        if (nenv < 1 .or. nenv > 10000) goto 900
+        allocate(network%environment_names(nenv))
+        read(unit, *, iostat=ios, err=900, end=900) network%environment_names
+        read(unit, *, iostat=ios, err=900, end=900) network%minimum_radius
+        read(unit, *, iostat=ios, err=900, end=900) network%maximum_radius
+        read(unit, "(A)", iostat=ios, err=900, end=900) network%descriptor_name
+        read(unit, *, iostat=ios, err=900, end=900) nsf
+        read(unit, *, iostat=ios, err=900, end=900) nparam
+        if (nsf < 1 .or. nparam < 1 .or. nparam > 10000) goto 900
+        if (nsf /= network%nodes(1)) goto 900
         allocate(network%descriptor_kinds(nsf), network%descriptor_parameters(nparam, nsf), &
                  network%descriptor_environments(2, nsf))
         allocate(integers(max(nsf, 2*nsf)), reals(max(1, nsf, nparam*nsf)))
-        read(unit, *) network%descriptor_kinds
-        read(unit, *) network%descriptor_parameters
-        call recover_cutoff_metadata(network)
-        read(unit, *) network%descriptor_environments
-        read(unit, *) neval
+        read(unit, *, iostat=ios, err=900, end=900) network%descriptor_kinds
+        read(unit, *, iostat=ios, err=900, end=900) network%descriptor_parameters
+        call recover_cutoff_metadata(network,ios)
+        if (ios /= 0) goto 900
+        read(unit, *, iostat=ios, err=900, end=900) network%descriptor_environments
+        read(unit, *, iostat=ios, err=900, end=900) neval
         allocate(averages(nsf), moments(nsf), network%descriptor_shift(nsf), &
                  network%descriptor_scale(nsf))
-        read(unit, *) reals(1:nsf) ! minima
-        read(unit, *) reals(1:nsf) ! maxima
-        read(unit, *) averages
-        read(unit, *) moments
+        read(unit, *, iostat=ios, err=900, end=900) reals(1:nsf) ! minima
+        read(unit, *, iostat=ios, err=900, end=900) reals(1:nsf) ! maxima
+        read(unit, *, iostat=ios, err=900, end=900) averages
+        read(unit, *, iostat=ios, err=900, end=900) moments
         network%descriptor_shift = averages
         block
             integer :: i
@@ -176,36 +186,49 @@ contains
                 end if
             end do
         end block
-        read(unit, "(A)") training_file
-        read(unit, *) normalized
-        read(unit, *) network%energy_scale
-        read(unit, *) network%energy_shift
-        read(unit, *) ntypes
+        read(unit, "(A)", iostat=ios, err=900, end=900) training_file
+        read(unit, *, iostat=ios, err=900, end=900) normalized
+        read(unit, *, iostat=ios, err=900, end=900) network%energy_scale
+        read(unit, *, iostat=ios, err=900, end=900) network%energy_shift
+        read(unit, *, iostat=ios, err=900, end=900) ntypes
+        if (ntypes < 1 .or. ntypes > 10000) goto 900
         allocate(network%species_names(ntypes), network%atomic_references(ntypes))
-        read(unit, *) network%species_names
-        read(unit, *) network%atomic_references
-        read(unit, *) natoms
-        read(unit, *) nstructures
-        read(unit, *) emin, emax, eavg
+        read(unit, *, iostat=ios, err=900, end=900) network%species_names
+        read(unit, *, iostat=ios, err=900, end=900) network%atomic_references
+        read(unit, *, iostat=ios, err=900, end=900) natoms
+        read(unit, *, iostat=ios, err=900, end=900) nstructures
+        read(unit, *, iostat=ios, err=900, end=900) emin, emax, eavg
         close(unit)
+        opened = .false.
         call upgrade_legacy_n2p2_activations(network)
+        return
+900     continue
+        if (opened) close(unit,iostat=ios)
+        if (present(status)) then
+            status = 1
+            return
+        end if
+        error stop "cannot read aenet network: invalid or incomplete file"
     end subroutine read_aenet_network_ascii
 
-    subroutine read_aenet_network(filename, network)
+    subroutine read_aenet_network(filename, network, status)
         character(len=*), intent(in) :: filename
         type(atomic_network), intent(out) :: network
+        integer, optional, intent(out) :: status
         integer :: name_length
         name_length = len_trim(filename)
         if (name_length >= 6 .and. filename(name_length - 5:name_length) == ".ascii") then
-            call read_aenet_network_ascii(filename, network)
+            call read_aenet_network_ascii(filename, network, status)
         else
-            call read_aenet_network_binary(filename, network)
+            call read_aenet_network_binary(filename, network, status)
         end if
     end subroutine read_aenet_network
 
-    subroutine read_aenet_network_binary(filename, network)
+    subroutine read_aenet_network_binary(filename, network, status)
         character(len=*), intent(in) :: filename
         type(atomic_network), intent(out) :: network
+        integer, optional, intent(out) :: status
+        logical :: opened
         integer :: unit, ios, nweights, nvalues, nenv, nsf, nparam, neval
         integer :: ntypes, natoms, nstructures, i
         integer, allocatable :: value_offsets(:)
@@ -215,40 +238,67 @@ contains
         character(len=2), allocatable :: environment_names(:), species_names(:)
         logical :: normalized
         real(real64) :: emin, emax, eavg, variance
+        if (present(status)) status = 0
+        opened = .false.
         open(newunit=unit, file=trim(filename), status="old", action="read", &
              form="unformatted", iostat=ios)
-        if (ios /= 0) then
-            write(*, "(A,1X,A)") "cannot open aenet binary network:", trim(filename)
-            error stop "cannot open aenet binary network"
-        end if
-        read(unit) network%nlayers; read(unit) network%maxnodes
-        read(unit) nweights; read(unit) nvalues
+        if (ios /= 0) goto 900
+        opened = .true.
+        read(unit, iostat=ios, err=900, end=900) network%nlayers
+        read(unit, iostat=ios, err=900, end=900) network%maxnodes
+        read(unit, iostat=ios, err=900, end=900) nweights
+        read(unit, iostat=ios, err=900, end=900) nvalues
+        if (network%nlayers < 2 .or. network%nlayers > 1024 .or. nweights < 1) goto 900
         allocate(network%nodes(network%nlayers), network%activation(network%nlayers - 1), &
                  network%weight_offsets(network%nlayers), value_offsets(network%nlayers), &
                  network%weights(nweights))
-        read(unit) network%nodes; read(unit) network%activation
-        read(unit) network%weight_offsets; read(unit) value_offsets; read(unit) network%weights
-        read(unit) network%description; read(unit) atomtype; read(unit) nenv
+        read(unit, iostat=ios, err=900, end=900) network%nodes
+        read(unit, iostat=ios, err=900, end=900) network%activation
+        read(unit, iostat=ios, err=900, end=900) network%weight_offsets
+        read(unit, iostat=ios, err=900, end=900) value_offsets
+        read(unit, iostat=ios, err=900, end=900) network%weights
+        read(unit, iostat=ios, err=900, end=900) network%description
+        read(unit, iostat=ios, err=900, end=900) atomtype
+        read(unit, iostat=ios, err=900, end=900) nenv
         network%atomtype = atomtype
-        allocate(environment_names(nenv), network%environment_names(nenv)); read(unit) environment_names
+        if (nenv < 1 .or. nenv > 10000) goto 900
+        allocate(environment_names(nenv), network%environment_names(nenv))
+        read(unit, iostat=ios, err=900, end=900) environment_names
         network%environment_names = environment_names
-        read(unit) network%minimum_radius; read(unit) network%maximum_radius
-        read(unit) network%descriptor_name; read(unit) nsf; read(unit) nparam
-        if (nsf /= network%nodes(1)) error stop "network and descriptor dimensions differ"
+        read(unit, iostat=ios, err=900, end=900) network%minimum_radius
+        read(unit, iostat=ios, err=900, end=900) network%maximum_radius
+        read(unit, iostat=ios, err=900, end=900) network%descriptor_name
+        read(unit, iostat=ios, err=900, end=900) nsf
+        read(unit, iostat=ios, err=900, end=900) nparam
+        if (nsf < 1 .or. nparam < 1 .or. nparam > 10000) goto 900
+        if (nsf /= network%nodes(1)) goto 900
         allocate(network%descriptor_kinds(nsf), network%descriptor_parameters(nparam, nsf), &
                  network%descriptor_environments(2, nsf), minima(nsf), maxima(nsf), &
                  network%descriptor_shift(nsf), network%descriptor_scale(nsf), moments(nsf))
-        read(unit) network%descriptor_kinds; read(unit) network%descriptor_parameters
-        call recover_cutoff_metadata(network)
-        read(unit) network%descriptor_environments; read(unit) neval
-        read(unit) minima; read(unit) maxima; read(unit) network%descriptor_shift; read(unit) moments
-        read(unit) training_file; read(unit) normalized; read(unit) network%energy_scale
-        read(unit) network%energy_shift; read(unit) ntypes
+        read(unit, iostat=ios, err=900, end=900) network%descriptor_kinds
+        read(unit, iostat=ios, err=900, end=900) network%descriptor_parameters
+        call recover_cutoff_metadata(network,ios)
+        if (ios /= 0) goto 900
+        read(unit, iostat=ios, err=900, end=900) network%descriptor_environments
+        read(unit, iostat=ios, err=900, end=900) neval
+        read(unit, iostat=ios, err=900, end=900) minima
+        read(unit, iostat=ios, err=900, end=900) maxima
+        read(unit, iostat=ios, err=900, end=900) network%descriptor_shift
+        read(unit, iostat=ios, err=900, end=900) moments
+        read(unit, iostat=ios, err=900, end=900) training_file
+        read(unit, iostat=ios, err=900, end=900) normalized
+        read(unit, iostat=ios, err=900, end=900) network%energy_scale
+        read(unit, iostat=ios, err=900, end=900) network%energy_shift
+        read(unit, iostat=ios, err=900, end=900) ntypes
+        if (ntypes < 1 .or. ntypes > 10000) goto 900
         allocate(species_names(ntypes), network%species_names(ntypes), network%atomic_references(ntypes))
-        read(unit) species_names; network%species_names = species_names
-        read(unit) network%atomic_references
-        read(unit) natoms; read(unit) nstructures; read(unit) emin, emax, eavg
+        read(unit, iostat=ios, err=900, end=900) species_names; network%species_names = species_names
+        read(unit, iostat=ios, err=900, end=900) network%atomic_references
+        read(unit, iostat=ios, err=900, end=900) natoms
+        read(unit, iostat=ios, err=900, end=900) nstructures
+        read(unit, iostat=ios, err=900, end=900) emin, emax, eavg
         close(unit)
+        opened = .false.
         call upgrade_legacy_n2p2_activations(network)
         do i = 1, nsf
             variance = max(moments(i) - network%descriptor_shift(i)**2, 0.0_real64)
@@ -258,11 +308,21 @@ contains
                 network%descriptor_scale(i) = 1.0_real64
             end if
         end do
+        return
+900     continue
+        if (opened) close(unit,iostat=ios)
+        if (present(status)) then
+            status = 1
+            return
+        end if
+        error stop "cannot read aenet network: invalid or incomplete file"
     end subroutine read_aenet_network_binary
 
-    subroutine recover_cutoff_metadata(network)
+    subroutine recover_cutoff_metadata(network, status)
         type(atomic_network), intent(inout) :: network
+        integer, optional, intent(out) :: status
         integer :: nparam
+        if (present(status)) status = 0
         if (trim(lowercase(network%descriptor_name)) == "lj") then
             network%descriptor_cutoff_type = 0
         else
@@ -270,12 +330,36 @@ contains
         end if
         network%descriptor_cutoff_alpha = 0.0_real64
         nparam = size(network%descriptor_parameters, 1)
+        if (trim(lowercase(network%descriptor_name)) == 'n2p2_extended') then
+            if (nparam /= 9) then
+                if (present(status)) then
+                    status=1; return
+                end if
+                error stop 'invalid n2p2 extended parameter count'
+            end if
+            network%descriptor_cutoff_type=nint(network%descriptor_parameters(8,1))
+            network%descriptor_cutoff_alpha=network%descriptor_parameters(9,1)
+            if (any(network%descriptor_parameters(8,:) /= real(network%descriptor_cutoff_type,real64)) .or. &
+                any(network%descriptor_parameters(9,:) /= network%descriptor_cutoff_alpha)) then
+                if (present(status)) then
+                    status=1; return
+                end if
+                error stop 'inconsistent extended cutoff metadata'
+            end if
+            return
+        end if
         if (nparam < 6) return
         network%descriptor_cutoff_type = nint(network%descriptor_parameters(5, 1))
         network%descriptor_cutoff_alpha = network%descriptor_parameters(6, 1)
         if (any(nint(network%descriptor_parameters(5, :)) /= network%descriptor_cutoff_type) .or. &
             any(network%descriptor_parameters(6, :) /= network%descriptor_cutoff_alpha)) &
+            then
+            if (present(status)) then
+                status = 1
+                return
+            end if
             error stop "embedded descriptors use inconsistent cutoff metadata"
+        end if
     end subroutine recover_cutoff_metadata
 
     subroutine upgrade_legacy_n2p2_activations(network)
@@ -290,65 +374,7 @@ contains
         end if
     end subroutine upgrade_legacy_n2p2_activations
 
-    subroutine evaluate_network(self, input, output)
-        class(atomic_network), intent(in) :: self
-        real(real64), intent(in) :: input(:)
-        real(real64), intent(out) :: output
-        real(real64) :: values(self%maxnodes, self%nlayers)
-        integer :: layer, i, j, nin, nout, offset
-        values = 0.0_real64
-        values(1:self%nodes(1), 1) = input
-        do layer = 1, self%nlayers - 1
-            nin = self%nodes(layer); nout = self%nodes(layer + 1)
-            offset = self%weight_offsets(layer) + 1
-            do j = 1, nout
-                values(j, layer + 1) = self%weights(offset + nin*nout + j - 1)
-                do i = 1, nin
-                    values(j, layer + 1) = values(j, layer + 1) + &
-                        self%weights(offset + (i - 1)*nout + j - 1)*values(i, layer)
-                end do
-                values(j, layer + 1) = activate(values(j, layer + 1), self%activation(layer))
-            end do
-        end do
-        output = values(1, self%nlayers)
-    end subroutine evaluate_network
-
-    subroutine network_input_gradient(self, input, output, gradient)
-        class(atomic_network), intent(in) :: self
-        real(real64), intent(in) :: input(:)
-        real(real64), intent(out) :: output, gradient(:)
-        real(real64) :: values(self%maxnodes, self%nlayers), preactivation(self%maxnodes, self%nlayers)
-        real(real64) :: delta(self%maxnodes), previous(self%maxnodes)
-        integer :: layer, i, j, nin, nout, offset
-        values = 0.0_real64; preactivation = 0.0_real64; values(1:self%nodes(1), 1) = input
-        do layer = 1, self%nlayers - 1
-            nin = self%nodes(layer); nout = self%nodes(layer + 1); offset = self%weight_offsets(layer) + 1
-            do j = 1, nout
-                values(j, layer + 1) = self%weights(offset + nin*nout + j - 1)
-                do i = 1, nin
-                    values(j, layer + 1) = values(j, layer + 1) + self%weights(offset + (i - 1)*nout + j - 1)*values(i, layer)
-                end do
-                preactivation(j, layer + 1) = values(j, layer + 1)
-                values(j, layer + 1) = activate(preactivation(j, layer + 1), self%activation(layer))
-            end do
-        end do
-        output = values(1, self%nlayers); delta = 0.0_real64; delta(1) = 1.0_real64
-        do layer = self%nlayers - 1, 1, -1
-            nin = self%nodes(layer); nout = self%nodes(layer + 1); offset = self%weight_offsets(layer) + 1
-            do j = 1, nout
-                delta(j) = delta(j)*activation_derivative(preactivation(j, layer + 1), &
-                    values(j, layer + 1), self%activation(layer))
-            end do
-            previous = 0.0_real64
-            do i = 1, nin
-                do j = 1, nout
-                    previous(i) = previous(i) + self%weights(offset + (i - 1)*nout + j - 1)*delta(j)
-                end do
-            end do
-            delta = previous
-        end do
-        gradient = delta(1:self%nodes(1))
-    end subroutine network_input_gradient
+    include 'legacy_network_evaluation.inc'
 
     pure real(real64) function activate(x, code) result(y)
         real(real64), intent(in) :: x
@@ -357,25 +383,7 @@ contains
         real(real64), parameter :: b = 0.666666666666667_real64
         real(real64), parameter :: c = 0.1_real64
         select case(code)
-        case(ACTIVATION_LINEAR); y = x
-        case(ACTIVATION_TANH); y = tanh(x)
-        case(ACTIVATION_LOGISTIC); y = 1.0_real64/(1.0_real64 + exp(-x))
-        case(ACTIVATION_AENET_MTANH)
-            y = a*tanh(b*x)
-        case(ACTIVATION_AENET_TWIST)
-            y = a*tanh(b*x) + c*x
-        case(ACTIVATION_SOFTPLUS)
-            if (x > 0.0_real64) then
-                y = x + log(1.0_real64 + exp(-x))
-            else
-                y = log(1.0_real64 + exp(x))
-            end if
-        case(ACTIVATION_RELU); y = max(x, 0.0_real64)
-        case(ACTIVATION_GAUSSIAN); y = exp(-0.5_real64*x*x)
-        case(ACTIVATION_COSINE); y = cos(x)
-        case(ACTIVATION_REVERSE_LOGISTIC); y = 1.0_real64 - 1.0_real64/(1.0_real64 + exp(-x))
-        case(ACTIVATION_EXPONENTIAL); y = exp(-x)
-        case(ACTIVATION_HARMONIC); y = x*x
+        include 'activate.inc'
         case default; error stop "unsupported aenet activation"
         end select
     end function activate
@@ -388,22 +396,7 @@ contains
         real(real64), parameter :: c = 0.1_real64
         real(real64) :: tanhbx
         select case(code)
-        case(ACTIVATION_LINEAR); value = 1.0_real64
-        case(ACTIVATION_TANH); value = 1.0_real64 - y*y
-        case(ACTIVATION_LOGISTIC); value = y*(1.0_real64 - y)
-        case(ACTIVATION_AENET_MTANH)
-            tanhbx = tanh(b*x)
-            value = a*b*(1.0_real64 - tanhbx*tanhbx)
-        case(ACTIVATION_AENET_TWIST)
-            tanhbx = tanh(b*x)
-            value = a*b*(1.0_real64 - tanhbx*tanhbx) + c
-        case(ACTIVATION_SOFTPLUS); value = 1.0_real64 - exp(-y)
-        case(ACTIVATION_RELU); value = merge(1.0_real64, 0.0_real64, y > 0.0_real64)
-        case(ACTIVATION_GAUSSIAN); value = -x*y
-        case(ACTIVATION_COSINE); value = -sin(x)
-        case(ACTIVATION_REVERSE_LOGISTIC); value = -y*(1.0_real64 - y)
-        case(ACTIVATION_EXPONENTIAL); value = -y
-        case(ACTIVATION_HARMONIC); value = 2.0_real64*x
+        include 'activation_derivative.inc'
         case default; error stop "unsupported aenet activation"
         end select
     end function activation_derivative

@@ -1,0 +1,20 @@
+{
+  "base_commit": "c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b",
+  "executable": "/home/nagai/AccelNetGPU/lammps-accelnet-gpu/lmp",
+  "executable_sha256": "6fb237a8c912d811423d1d23d5e74a949f2e8fc66aebe307173c22f1688d28b3",
+  "source_sha256": {
+    "AccelNetPredictor/src/aenet_network.f90": "f6d9f1e99dc27d71cbe8c1a1493afee2cd376fe533410b65f25382919465c0ad",
+    "AccelNetPredictor/src/accelnet_batch_target.f90": "c592c533f94a1ca720d2ae10ae062cb7fdd90467c0624b354280cd665cec33a7",
+    "AccelNetPredictor/src/accelnet_target_c.f90": "c9cd7729390a9a52ea452a6df433ef28a4694c2e3648e8d3c19d0fa5626ddf1b",
+    "AccelNetPredictor/src/accelnet_target_kernels.f90": "3e77c1f50b3300e5c502e1f9cdbe7530846c38534bccf8ee52fd1f34746928cc",
+    "AccelNetPredictor/src/accelnet_target_math.f90": "0a7926bcd41bca57ad23f2ce15a84a5142515eefe8109d6de773cd610c0df2b0",
+    "AccelNetPredictor/CMakeLists.txt": "5211f1385c25404c7f18a2f5f65cc70c29362ab2cb153d8780d7aac439de7e59",
+    "interfaces/lammps/29Aug2024/ACCELNET/pair_accelnet.cpp": "f2ccd0a1f8e40398d1c763d327b7c324f97b3986b36544861d3b64f041f85be0",
+    "interfaces/lammps/29Aug2024/GPU/pair_accelnet_gpu.cpp": "9068899fe19a14bb2fa821e319a5ef195085fb06467b64bb5b90dab87b1e871f",
+    "interfaces/lammps/29Aug2024/lib-gpu/lal_accelnet_ext.cpp": "dd9cc361eb7084ddfd545da402513610b21398438c27cfeea480ac059b3900cc",
+    "interfaces/lammps/29Aug2024/ACCELNET/accelnet.h": "3274c6abbb4a1af8f29226422ed7aa4114001077a6b77a9e9211b751e7220241",
+    "interfaces/lammps/29Aug2024/ACCELNET/pair_accelnet.h": "57a96505ae8e142ca8220606949b3e34a294464c43f7319e0478511a28464124",
+    "interfaces/lammps/29Aug2024/GPU/pair_accelnet_gpu.h": "3084633a2ee1e955ec901372c237117c93ff4b42bbad1dc44c2c948b0852478b"
+  },
+  "target_library_sha256": "0f8963ddaaa55845e9dcddc96782e868d78b08290d1d9caa4dd8f148f29a8185"
+}

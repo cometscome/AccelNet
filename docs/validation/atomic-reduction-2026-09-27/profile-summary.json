@@ -1,0 +1,118 @@
+{
+  "before": [
+    {
+      "name": "nvkernel_accelnet_target_kernels_generic_values_grouped__F1L727_38_",
+      "count": 11,
+      "mean_ms": 2.1903473636363637,
+      "grid_x": 49152,
+      "block_x": 64,
+      "registers": 124
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_generic_forces__F1L820_43_",
+      "count": 11,
+      "mean_ms": 0.9460907272727272,
+      "grid_x": 1024,
+      "block_x": 128,
+      "registers": 156
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_run_target_batch__F1L485_12_",
+      "count": 11,
+      "mean_ms": 0.2640974545454545,
+      "grid_x": 64,
+      "block_x": 32,
+      "registers": 63
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_run_target_batch__F1L74_2_",
+      "count": 11,
+      "mean_ms": 0.227108,
+      "grid_x": 64,
+      "block_x": 32,
+      "registers": 152
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_run_target_batch__F1L295_8_",
+      "count": 11,
+      "mean_ms": 0.08443963636363637,
+      "grid_x": 64,
+      "block_x": 32,
+      "registers": 114
+    },
+    {
+      "name": "nvkernel_accelnet_batch_target_initialize_target_model__F1L270_2_",
+      "count": 1,
+      "mean_ms": 0.004672,
+      "grid_x": 132,
+      "block_x": 128,
+      "registers": 124
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_run_target_batch__F1L387_10_",
+      "count": 11,
+      "mean_ms": 0.003842909090909091,
+      "grid_x": 1024,
+      "block_x": 128,
+      "registers": 80
+    }
+  ],
+  "after": [
+    {
+      "name": "nvkernel_accelnet_target_kernels_generic_values_grouped__F1L743_38_",
+      "count": 11,
+      "mean_ms": 2.1915838181818184,
+      "grid_x": 49152,
+      "block_x": 64,
+      "registers": 124
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_generic_forces__F1L848_44_",
+      "count": 11,
+      "mean_ms": 1.9642547272727273,
+      "grid_x": 1024,
+      "block_x": 128,
+      "registers": 156
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_run_target_batch__F1L492_12_",
+      "count": 11,
+      "mean_ms": 0.26697454545454546,
+      "grid_x": 64,
+      "block_x": 32,
+      "registers": 64
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_run_target_batch__F1L75_2_",
+      "count": 11,
+      "mean_ms": 0.225898,
+      "grid_x": 64,
+      "block_x": 32,
+      "registers": 152
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_run_target_batch__F1L296_8_",
+      "count": 11,
+      "mean_ms": 0.08434372727272728,
+      "grid_x": 64,
+      "block_x": 32,
+      "registers": 114
+    },
+    {
+      "name": "nvkernel_accelnet_batch_target_initialize_target_model__F1L270_2_",
+      "count": 1,
+      "mean_ms": 0.004384,
+      "grid_x": 132,
+      "block_x": 128,
+      "registers": 124
+    },
+    {
+      "name": "nvkernel_accelnet_target_kernels_run_target_batch__F1L388_10_",
+      "count": 11,
+      "mean_ms": 0.0038283636363636367,
+      "grid_x": 1024,
+      "block_x": 128,
+      "registers": 80
+    }
+  ]
+}

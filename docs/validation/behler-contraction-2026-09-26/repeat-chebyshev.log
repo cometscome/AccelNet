@@ -1,0 +1,6 @@
+before-n4096-order5-mode1-round0 seconds 0.075918065 ratio 0.968804540784242
+current-n4096-order5-mode1-round0 seconds 0.074134211 ratio 0.9460684777107735
+reuse-n4096-order5-mode1-round0 seconds 0.07398427 ratio 0.9446183809101626
+reuse-n4096-order5-mode1-round1 seconds 0.074911248 ratio 0.9559843226547154
+current-n4096-order5-mode1-round1 seconds 0.075850379 ratio 0.970844798220598
+before-n4096-order5-mode1-round1 seconds 0.076537966 ratio 0.9748017357973834

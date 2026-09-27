@@ -1,0 +1,147 @@
+! Packed non-Chebyshev features. One column per output in the CPU model.
+! Integer fields: kind (G1..G5=1..5, LJ6=6, LJ12=7), species pair,
+! cutoff type, integer zeta, local species count, angular radial group, group representative.
+! Real fields: Rc, eta, Rs, lambda, zeta, kappa, cutoff alpha.
+module accelnet_target_descriptors
+    use iso_fortran_env, only: real64
+    use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
+    use accelnet_descriptor_models, only: descriptor_model
+    implicit none
+    private
+    public :: pack_generic_descriptors
+contains
+    subroutine pack_generic_descriptors(model, fi, fr, status, message)
+        type(descriptor_model), intent(in) :: model
+        integer, allocatable, intent(out) :: fi(:,:)
+        real(real64), allocatable, intent(out) :: fr(:,:)
+        integer, intent(out) :: status
+        character(len=*), intent(out) :: message
+        integer :: c,j,b,o,t,n,ct,ns,groups,k
+        real(real64) :: alpha
+        status = 1
+        message = 'OpenMP target: invalid LJ/Behler descriptor metadata'
+        n = model%num_outputs
+        allocate(fi(8,n),fr(7,n))
+        fi = 0; fr = 0
+        if (n < 1) return
+        if (allocated(model%lj)) then
+            do c = 1,size(model%lj)
+                associate(cfg => model%lj(c)%config)
+                o = model%lj(c)%output_offset; ns = cfg%num_species
+                if (o < 0 .or. ns < 1 .or. o+2*ns > n) return
+                do t = 1,ns
+                    do j = 1,2
+                        b = o+2*(t-1)+j
+                        if (fi(1,b) /= 0) return
+                        fi(:6,b) = [5+j,t,0,cfg%cutoff_type,0,ns]
+                        fr(1,b) = cfg%radial_rc; fr(7,b) = cfg%cutoff_alpha
+                    end do
+                end do
+                end associate
+            end do
+        end if
+        if (allocated(model%behler)) then
+            do c = 1,size(model%behler)
+                associate(cfg => model%behler(c)%config)
+                o = model%behler(c)%output_offset; ns = cfg%num_species
+                ct = cfg%cutoff_type; alpha = cfg%cutoff_alpha
+                if (cfg%g5_evaluation_mode > 1) then
+                    message = 'OpenMP target: G5 currently supports auto/direct; forced G5 moments are not implemented'
+                    return
+                end if
+                if (allocated(cfg%g1)) then
+                    do j = 1,size(cfg%g1)
+                        associate(p => cfg%g1(j))
+                        b = o+p%output
+                        if (b < 1 .or. b > n) return
+                        if (fi(1,b) /= 0) return
+                        fi(:6,b) = [1,p%species,0,ct,0,ns]
+                        fr(1,b) = p%rc; fr(7,b) = alpha
+                        end associate
+                    end do
+                end if
+                if (allocated(cfg%g2)) then
+                    do j = 1,size(cfg%g2)
+                        associate(p => cfg%g2(j))
+                        b = o+p%output
+                        if (b < 1 .or. b > n) return
+                        if (fi(1,b) /= 0) return
+                        fi(:6,b) = [2,p%species,0,ct,0,ns]
+                        fr(1,b) = p%rc; fr(7,b) = alpha
+                        fr(2,b) = p%eta; fr(3,b) = p%rs
+                        end associate
+                    end do
+                end if
+                if (allocated(cfg%g3)) then
+                    do j = 1,size(cfg%g3)
+                        associate(p => cfg%g3(j))
+                        b = o+p%output
+                        if (b < 1 .or. b > n) return
+                        if (fi(1,b) /= 0) return
+                        fi(:6,b) = [3,p%species,0,ct,0,ns]
+                        fr(1,b) = p%rc; fr(7,b) = alpha
+                        fr(6,b) = p%kappa
+                        end associate
+                    end do
+                end if
+                if (allocated(cfg%g4)) then
+                    do j = 1,size(cfg%g4)
+                        associate(p => cfg%g4(j))
+                        b = o+p%output
+                        if (b < 1 .or. b > n) return
+                        if (fi(1,b) /= 0) return
+                        fi(:6,b) = [4,p%species1,p%species2,ct,p%integer_zeta,ns]
+                        fr(1,b) = p%rc; fr(7,b) = alpha
+                        fr(2,b) = p%eta; fr(3,b) = p%rs
+                        fr(4,b) = p%lambda; fr(5,b) = p%zeta
+                        end associate
+                    end do
+                end if
+                if (allocated(cfg%g5)) then
+                    do j = 1,size(cfg%g5)
+                        associate(p => cfg%g5(j))
+                        b = o+p%output
+                        if (b < 1 .or. b > n) return
+                        if (fi(1,b) /= 0) return
+                        fi(:6,b) = [5,p%species1,p%species2,ct,p%integer_zeta,ns]
+                        fr(1,b) = p%rc; fr(7,b) = alpha
+                        fr(2,b) = p%eta; fr(3,b) = p%rs
+                        fr(4,b) = p%lambda; fr(5,b) = p%zeta
+                        end associate
+                    end do
+                end if
+                end associate
+            end do
+        end if
+        if (.not. all(ieee_is_finite(fr))) return
+        do b = 1,n
+            if (fi(1,b) < 1 .or. fi(1,b) > 7) return
+            if (fi(2,b) < 1 .or. fi(2,b) > fi(6,b)) return
+            if (fr(1,b) <= 0) return
+            ct = fi(4,b); alpha = fr(7,b)
+            if (ct < 0 .or. ct > 9 .or. alpha < 0 .or. alpha >= 1) return
+            if (ct == 9 .and. alpha <= 0) return
+            if (fi(1,b) == 4 .or. fi(1,b) == 5) then
+                if (fi(3,b) < 1 .or. fi(3,b) > fi(6,b)) return
+                if (abs(fr(4,b)) > 1 .or. fr(5,b) < 1) return
+            end if
+        end do
+        ! Only angular features need an edge cache. Share radial parameters
+        ! across species pairs, lambda/zeta, and G4/G5; their q(r) is identical.
+        groups = 0
+        do b = 1,n
+            if (fi(1,b) /= 4 .and. fi(1,b) /= 5) cycle
+            do k = 1,b-1
+                if (fi(7,k) == 0) cycle
+                if (fi(4,b) /= fi(4,k)) cycle
+                if (any(fr(1:3,b) /= fr(1:3,k)) .or. fr(7,b) /= fr(7,k)) cycle
+                fi(7:8,b) = fi(7:8,k)
+                exit
+            end do
+            if (fi(7,b) /= 0) cycle
+            groups = groups+1
+            fi(7:8,b) = [groups,b]
+        end do
+        status = 0; message = ''
+    end subroutine
+end module

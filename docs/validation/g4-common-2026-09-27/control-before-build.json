@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/usr/bin/gfortran",
+    "-O3",
+    "-ffree-line-length-none",
+    "-J/tmp/accelnet-g4-improve/control-before",
+    "-I/tmp/accelnet-g4-improve/control-before",
+    "-I/tmp/accelnet-angular-contraction/build-reuse-gnu/AccelNetPredictor/modules",
+    "-I/tmp/accelnet-angular-contraction/build-reuse-gnu/AccelNetPredictor/target-modules",
+    "-I/tmp/accelnet-angular-contraction/build-reuse-gnu/AccelNetDescriptors/modules",
+    "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/test/batch_test_support.f90",
+    "/home/nagai/AccelNetGPU/AccelNet-clone/AccelNetPredictor/benchmark/target_benchmark.f90",
+    "/tmp/accelnet-angular-contraction/build-reuse-gnu/lib/libaccelnet_target.a",
+    "/tmp/accelnet-angular-contraction/build-reuse-gnu/lib/libaccelnet.a",
+    "/tmp/accelnet-angular-contraction/build-reuse-gnu/lib/libAccelNetDescriptors.a",
+    "-o",
+    "/tmp/accelnet-g4-improve/control-before/benchmark"
+  ],
+  "libraries": {
+    "libaccelnet_target.a": "bab94cff4e85a6c2af476fef5fdbe09bb5d36ea3477677fc5f9801143e0e12ce",
+    "libaccelnet.a": "21605db224fc3751b8c25fa274b6af9e2e7893f49d7b83b45ce5d65ba9c06274",
+    "libAccelNetDescriptors.a": "83f217c7be71fdf3a12542f80a9ed3ebee39322f7c112ee05e20743ae980c025"
+  },
+  "binary_sha256": "4fbe5df0230cff2541c1c5561acd8161db5b95ce8a069db4e609ce6bc81d7c43"
+}

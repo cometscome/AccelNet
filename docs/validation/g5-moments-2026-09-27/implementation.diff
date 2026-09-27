@@ -1,0 +1,906 @@
+diff --git a/AccelNetPredictor/CMakeLists.txt b/AccelNetPredictor/CMakeLists.txt
+index 75ab289..9e55793 100644
+--- a/AccelNetPredictor/CMakeLists.txt
++++ b/AccelNetPredictor/CMakeLists.txt
+@@ -233,0 +234,4 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
++        add_test(NAME predictor_target_g5_moments COMMAND test_batch_target --g5-moments)
++        set_tests_properties(predictor_target_g5_moments PROPERTIES LABELS "gpu" TIMEOUT 300)
++        add_test(NAME predictor_target_host_g5_moments COMMAND test_batch_target --host --g5-moments)
++        set_tests_properties(predictor_target_host_g5_moments PROPERTIES LABELS "target-host" TIMEOUT 300)
+@@ -271,0 +276,15 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
++    option(ACCELNET_TEST_G5_MOMENT_PERFORMANCE
++        "Protect the G5 moment advantage using an OpenMP-disabled CPU build" OFF)
++    if(ACCELNET_TEST_G5_MOMENT_PERFORMANCE)
++        if(NOT ACCELNET_TARGET_SERIAL OR NOT TARGET accelnet-target-benchmark)
++            message(FATAL_ERROR "G5 performance tests need the serial target benchmark and OpenMP disabled")
++        endif()
++        find_package(Python3 COMPONENTS Interpreter REQUIRED)
++        add_test(NAME predictor_g5_moment_performance
++            COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/benchmark/check_g5_moment_performance.py"
++                --executable $<TARGET_FILE:accelnet-target-benchmark>
++                --max-slowdown "${ACCELNET_CPU_MAX_SLOWDOWN}"
++                --output "${CMAKE_CURRENT_BINARY_DIR}/g5-moment-performance.json")
++        set_tests_properties(predictor_g5_moment_performance PROPERTIES
++            LABELS "performance" RUN_SERIAL TRUE TIMEOUT 300)
++    endif()
+diff --git a/AccelNetPredictor/benchmark/check_g5_moment_performance.py b/AccelNetPredictor/benchmark/check_g5_moment_performance.py
+new file mode 100644
+index 0000000..cbbd806
+--- /dev/null
++++ b/AccelNetPredictor/benchmark/check_g5_moment_performance.py
+@@ -0,0 +1,78 @@
++#!/usr/bin/env python3
++"""Guard G5 moment performance on the original degree-4 scaling fixture.
++
++All four paths use one binary/model and exclude neighbor construction. Run only
++with ACCELNET_TARGET_SERIAL=ON and OpenMP disabled, on an otherwise idle host.
++This fixture protects the established moment advantage, not every possible model.
++"""
++import argparse
++import json
++import math
++import os
++from pathlib import Path
++import re
++import statistics
++import subprocess
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--executable", type=Path, required=True)
++    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument("--cpu", type=int)
++    parser.add_argument("--seconds", type=float, default=0.05)
++    parser.add_argument("--rounds", type=int, default=3)
++    parser.add_argument("--max-slowdown", type=float, default=1.10)
++    args = parser.parse_args()
++    if args.seconds <= 0 or args.rounds < 2 or args.max_slowdown < 1:
++        parser.error("need positive seconds, at least two rounds and max-slowdown >= 1")
++    exe = args.executable.resolve()
++    symbols = subprocess.check_output(["nm", "-u", str(exe)], text=True)
++    if re.search(r"\b(?:GOMP_|__kmpc_|__nvomp_|omp_)[A-Za-z0-9_]*", symbols):
++        parser.error("use a binary built without OpenMP, not just OMP_NUM_THREADS=1")
++    cpu = None
++    if hasattr(os, "sched_getaffinity"):
++        available = os.sched_getaffinity(0)
++        cpu = args.cpu if args.cpu is not None else min(available)
++        if cpu not in available:
++            parser.error("requested CPU is outside the available affinity mask")
++        os.sched_setaffinity(0, {cpu})
++    env = dict(os.environ, OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1")
++    rows = []
++    for round_id in range(args.rounds):
++        for mode in ([1, 3] if round_id % 2 == 0 else [3, 1]):
++            command = [str(exe), "64", "4", str(args.seconds), str(mode), "1.7",
++                       "cpu-shared", "g5-scaling", "no-neighbors", "64"]
++            result = subprocess.run(command, env=env, check=True, capture_output=True,
++                                    text=True, timeout=300)
++            samples = [list(map(float, line.split()[2:4]))
++                       for line in result.stdout.splitlines() if line.startswith("TIMING ")]
++            errors = [float(line.split()[4]) for line in result.stdout.splitlines()
++                      if line.startswith("CASE ")]
++            if len(samples) != 5 or len(errors) != 1 or not all(
++                    math.isfinite(t) and t > 0 for pair in samples for t in pair):
++                raise ValueError("missing/invalid benchmark results")
++            if not math.isfinite(errors[0]) or errors[0] > 2e-9:
++                raise ValueError("energy/force/virial mismatch")
++            rows.append(dict(round=round_id, mode=mode, command=command, samples=samples,
++                             error=errors[0], old=statistics.median(s[0] for s in samples),
++                             common=statistics.median(s[1] for s in samples)))
++    direct = [r for r in rows if r["mode"] == 1]
++    moment = [r for r in rows if r["mode"] == 3]
++    ratios = dict(
++        old_moment_over_direct=statistics.median(m["old"] / d["old"] for d, m in zip(direct, moment)),
++        common_moment_over_old_moment=statistics.median(m["common"] / m["old"] for m in moment),
++        common_moment_over_common_direct=statistics.median(
++            m["common"] / d["common"] for d, m in zip(direct, moment)))
++    passed = (ratios["common_moment_over_old_moment"] <= args.max_slowdown
++              and ratios["common_moment_over_common_direct"] <= 1.0)
++    report = dict(cpu=cpu, rows=rows, ratios=ratios, max_slowdown=args.max_slowdown, passed=passed)
++    args.output.parent.mkdir(parents=True, exist_ok=True)
++    args.output.write_text(json.dumps(report, indent=2) + "\n")
++    print(json.dumps(ratios, indent=2))
++    print("PASS" if passed else "FAIL")
++    return 0 if passed else 1
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/AccelNetPredictor/benchmark/compare_chebyshev_variants.py b/AccelNetPredictor/benchmark/compare_chebyshev_variants.py
+index b3d940b..4efefbe 100644
+--- a/AccelNetPredictor/benchmark/compare_chebyshev_variants.py
++++ b/AccelNetPredictor/benchmark/compare_chebyshev_variants.py
+@@ -26 +26 @@ def main():
+-    parser.add_argument('--family', choices=['chebyshev', 'lj', 'g4', 'g4-distinct', 'g5', 'behler', 'lj-behler', 'g4-series', 'g5-series'],
++    parser.add_argument('--family', choices=['chebyshev', 'lj', 'g4', 'g4-distinct', 'g5', 'behler', 'lj-behler', 'g4-series', 'g5-series', 'g5-scaling'],
+@@ -27,0 +28 @@ def main():
++    parser.add_argument('--neighbors', type=int, default=0, help='fixed original G5 scaling environment size')
+@@ -34,2 +35,2 @@ def main():
+-    if args.family != 'chebyshev' and any(mode not in (0, 1) for mode in args.modes):
+-        parser.error('generic descriptor comparisons support modes 0 (auto) and 1 (direct)')
++    if args.family != 'chebyshev' and any(mode not in (0, 1, 2, 3) for mode in args.modes):
++        parser.error('generic modes: 0 auto, 1 direct, 2 moments with threshold, 3 forced moments')
+@@ -51,0 +53,2 @@ def main():
++                        if args.neighbors:
++                            command.append(str(args.neighbors))
+diff --git a/AccelNetPredictor/benchmark/target_benchmark.f90 b/AccelNetPredictor/benchmark/target_benchmark.f90
+index 88a5374..993763c 100644
+--- a/AccelNetPredictor/benchmark/target_benchmark.f90
++++ b/AccelNetPredictor/benchmark/target_benchmark.f90
+@@ -25 +25 @@ program target_benchmark
+-    integer :: n, i, sample, order, method, j, mode, allocations, uploads, methods
++    integer :: n, i, sample, order, method, j, mode, allocations, uploads, methods, fixed_neighbors
+@@ -28,2 +28,3 @@ program target_benchmark
+-    if (command_argument_count() < 3 .or. command_argument_count() > 8) &
+-        error stop 'usage: accelnet-target-benchmark N ORDER SECONDS [MODE] [SPACING] [gpu|host|cpu-shared] [FAMILY] [no-neighbors]'
++    if (command_argument_count() < 3 .or. command_argument_count() > 9) &
++        error stop 'usage: accelnet-target-benchmark N ORDER SECONDS [MODE] [SPACING] '// &
++            '[gpu|host|cpu-shared] [FAMILY] [no-neighbors] [ENV_NEIGHBORS]'
+@@ -38,0 +40,5 @@ program target_benchmark
++    fixed_neighbors = 0
++    if (command_argument_count() == 9) then
++        call get_command_argument(9,arg); read(arg,*) fixed_neighbors
++        if (fixed_neighbors < 1) error stop 'positive environment neighbor count required'
++    end if
+@@ -64 +70,5 @@ program target_benchmark
+-    call packed%initialize(model,mode=mode,use_host=host)
++    if (family == 'chebyshev') then
++        call packed%initialize(model,mode=mode,use_host=host)
++    else
++        call packed%initialize(model,g5_mode=mode,use_host=host)
++    end if
+@@ -67 +77,5 @@ program target_benchmark
+-    call build_neighbor_list(s,model%maximum_cutoff,nb,model%minimum_distance)
++    if (fixed_neighbors > 0) then
++        call make_g5_scaling_neighbors(n,fixed_neighbors,nb)
++    else
++        call build_neighbor_list(s,model%maximum_cutoff,nb,model%minimum_distance)
++    end if
+diff --git a/AccelNetPredictor/include/accelnet_target.h b/AccelNetPredictor/include/accelnet_target.h
+index cba3adf..3708fb9 100644
+--- a/AccelNetPredictor/include/accelnet_target.h
++++ b/AccelNetPredictor/include/accelnet_target.h
+@@ -11,0 +12,6 @@ int accelnet_target_create(int nspecies, const char *const *paths, int device,
++/* Independent modes: Chebyshev 0 auto / 1 direct / 2 moment;
++   G5 0 auto (16 angular neighbors) / 1 direct / 2 moment with 16-neighbor threshold /
++   3 forced moment. Ineligible fractional/high G5 powers remain direct. */
++int accelnet_target_create_modes(int nspecies, const char *const *paths, int device,
++                                 int chebyshev_mode, int g5_mode, double *cutoff,
++                                 void **handle, char *error);
+diff --git a/AccelNetPredictor/src/accelnet_batch.f90 b/AccelNetPredictor/src/accelnet_batch.f90
+index 5c29591..eca1820 100644
+--- a/AccelNetPredictor/src/accelnet_batch.f90
++++ b/AccelNetPredictor/src/accelnet_batch.f90
+@@ -119,2 +119,2 @@ contains
+-    ! fallback for unsupported packing (e.g. mixed Chebyshev components or
+-    ! explicitly requested G5 moments). Do not silently change those modes.
++    ! fallback for unsupported packing (e.g. mixed Chebyshev components).
++    ! Supported G5 direct/auto/moment modes all use the common implementation.
+diff --git a/AccelNetPredictor/src/accelnet_batch_target.f90 b/AccelNetPredictor/src/accelnet_batch_target.f90
+index b266ba2..fbaeb14 100644
+--- a/AccelNetPredictor/src/accelnet_batch_target.f90
++++ b/AccelNetPredictor/src/accelnet_batch_target.f90
+@@ -12 +12 @@ module accelnet_batch_target
+-    use accelnet_target_descriptors, only: pack_generic_descriptors, PACKED_FEATURE_FIELDS
++    use accelnet_target_descriptors, only: pack_generic_descriptors, PACKED_FEATURE_FIELDS, PACKED_PARAMETER_FIELDS
+@@ -40 +40,2 @@ module accelnet_batch_target
+-        integer, allocatable :: species(:), centers(:), offsets(:), indices(:), use_moment(:), edge_row(:), g4_first(:,:,:)
++        integer, allocatable :: species(:), centers(:), offsets(:), indices(:), use_moment(:), edge_row(:), &
++            g4_first(:,:,:), g5_active(:,:)
+@@ -60 +61 @@ contains
+-    subroutine initialize_target_model(self, model, device, mode, status, message, use_host)
++    subroutine initialize_target_model(self, model, device, mode, status, message, use_host, g5_mode)
+@@ -63 +64 @@ contains
+-        integer, intent(in), optional :: device, mode
++        integer, intent(in), optional :: device, mode, g5_mode
+@@ -70 +71 @@ contains
+-        integer :: ax, ay, az, remaining, horner_index
++        integer :: ax, ay, az, remaining, horner_index, degree, q
+@@ -78,0 +80,6 @@ contains
++        if (present(g5_mode)) then
++            if (g5_mode < 0 .or. g5_mode > 3) then
++                call target_failure('OpenMP target: G5 mode must be 0..3',status,message)
++                return
++            end if
++        end if
+@@ -133 +140 @@ contains
+-                call pack_generic_descriptors(model%setups(s)%model,fi,fr,pack_status,pack_message)
++                call pack_generic_descriptors(model%setups(s)%model,fi,fr,pack_status,pack_message,g5_mode)
+@@ -226 +233 @@ contains
+-                    call target_failure('OpenMP target: mode must be auto=0, direct=1 or moment=2',status,message)
++                    call target_failure('OpenMP target: Chebyshev mode must be 0..2',status,message)
+@@ -236,0 +244,6 @@ contains
++            else
++                degree = maxval(fi(5,:),mask=fi(23,:) > 0)
++                if (degree > 0) then
++                    mm = max(mm,(degree+1)*(degree+2)*(degree+3)/6+1)
++                    ma = max(ma,degree+1)
++                end if
+@@ -264 +277 @@ contains
+-        allocate(self%features(PACKED_FEATURE_FIELDS,mn,ns),self%feature_params(7,mn,ns))
++        allocate(self%features(PACKED_FEATURE_FIELDS,mn,ns),self%feature_params(PACKED_PARAMETER_FIELDS,mn,ns))
+@@ -268 +281 @@ contains
+-        allocate(self%meta(10,ns), self%nodes(ml,ns), self%acts(ml,ns), self%woffset(ml,ns), &
++        allocate(self%meta(11,ns), self%nodes(ml,ns), self%acts(ml,ns), self%woffset(ml,ns), &
+@@ -304 +317 @@ contains
+-                call pack_generic_descriptors(model%setups(s)%model,fi,fr,pack_status,pack_message)
++                call pack_generic_descriptors(model%setups(s)%model,fi,fr,pack_status,pack_message,g5_mode)
+@@ -306,0 +320,24 @@ contains
++                ! Lexicographic total-degree basis, shared with differentiated
++                ! Horner. One extra moment slot stores the self-pair correction.
++                degree = maxval(fi(5,:),mask=fi(23,:) > 0)
++                if (degree > 0) then
++                    self%meta(2,s) = degree+1
++                    self%meta(9,s) = (degree+1)*(degree+2)*(degree+3)/6
++                    self%meta(11,s) = maxval(fi(23,:))*ns
++                    j = 0
++                    do ax = 0,degree
++                        do ay = 0,degree-ax
++                            do az = 0,degree-ax-ay
++                                j = j+1
++                                self%mp(:,j,s) = [ax,ay,az,ax+ay+az+1]
++                                self%multiplicity(j,s) = 1
++                                do q = 1,ay
++                                    self%multiplicity(j,s) = self%multiplicity(j,s)*real(ax+q,real64)/q
++                                end do
++                                do q = 1,az
++                                    self%multiplicity(j,s) = self%multiplicity(j,s)*real(ax+ay+q,real64)/q
++                                end do
++                            end do
++                        end do
++                    end do
++                end if
+@@ -348 +385 @@ contains
+-            self%powers,self%radial,self%jacobian,self%g4_first, &
++            self%powers,self%radial,self%jacobian,self%g4_first,self%g5_active, &
+@@ -352 +389 @@ contains
+-            self%jacobian,self%g4_first,self%species,self%centers, &
++            self%jacobian,self%g4_first,self%g5_active,self%species,self%centers, &
+@@ -502 +539 @@ contains
+-        integer :: n,mn,ml,ne,na,mm,mpower,ngroups,njf,nje,njr,nlocal
++        integer :: n,mn,ml,ne,na,mm,mpower,ngroups,njf,nje,njr,nlocal,nchannels,ndelta,mdelta,ng5,nfg5
+@@ -518,0 +556,7 @@ contains
++        nchannels = max(2,2*maxval(model%meta(11,:)))
++        ndelta = max(2,maxval(model%meta(11,:))*size(model%meta,2))
++        mdelta = max(mn,mpower)
++        ng5 = 1; nfg5 = 1
++        if (any(model%meta(11,:) > 0)) then
++            ng5 = max(1,nrw); nfg5 = 2*size(model%features,2)+1
++        end if
+@@ -531,0 +576,3 @@ contains
++            nchannels = max(nchannels,size(work%moments,3))
++            ndelta = max(ndelta,size(work%delta,3)); mdelta = max(mdelta,size(work%delta,2))
++            ng5 = max(ng5,size(work%g5_active,1)); nfg5 = max(nfg5,size(work%g5_active,2))
+@@ -537,0 +585,3 @@ contains
++                nchannels > size(work%moments,3) .or. &
++                ndelta > size(work%delta,3) .or. mdelta > size(work%delta,2) .or. &
++                ng5 > size(work%g5_active,1) .or. nfg5 > size(work%g5_active,2) .or. &
+@@ -543,3 +593,3 @@ contains
+-            allocate(work%g(n,mn),work%values(n,mn,ml),work%deriv(n,mn,ml),work%delta(n,mn,2), &
+-                work%moments(n,mm,2),work%powers(ne,mpower,3),work%radial(ne,ngroups,2), &
+-                work%jacobian(3,njf,nje),work%g4_first(nlocal,nlocal,njr),work%species(na), &
++            allocate(work%g(n,mn),work%values(n,mn,ml),work%deriv(n,mn,ml),work%delta(n,mdelta,ndelta), &
++                work%moments(n,mm,nchannels),work%powers(ne,mpower,3),work%radial(ne,ngroups,2), &
++                work%jacobian(3,njf,nje),work%g4_first(nlocal,nlocal,njr),work%g5_active(ng5,nfg5),work%species(na), &
+@@ -550 +600 @@ contains
+-                work%powers,work%radial,work%jacobian,work%g4_first, &
++                work%powers,work%radial,work%jacobian,work%g4_first,work%g5_active, &
+@@ -571 +621 @@ contains
+-            work%moments,work%powers,work%radial,work%jacobian,work%g4_first,work%use_moment, &
++            work%moments,work%powers,work%radial,work%jacobian,work%g4_first,work%g5_active,work%use_moment, &
+@@ -667 +717 @@ contains
+-            g4_first,species,centers,offsets,indices, &
++            g4_first,g5_active,species,centers,offsets,indices, &
+@@ -674 +724 @@ contains
+-            g4_first(:,:,:)
++            g4_first(:,:,:),g5_active(:,:)
+@@ -678 +728 @@ contains
+-            !$omp& map(alloc:g,values,deriv,delta,moments,powers,radial,jacobian,g4_first,species, &
++            !$omp& map(alloc:g,values,deriv,delta,moments,powers,radial,jacobian,g4_first,g5_active,species, &
+@@ -683 +733 @@ contains
+-            !$omp& map(delete:g,values,deriv,delta,moments,powers,radial,jacobian,g4_first,species, &
++            !$omp& map(delete:g,values,deriv,delta,moments,powers,radial,jacobian,g4_first,g5_active,species, &
+diff --git a/AccelNetPredictor/src/accelnet_target_c.f90 b/AccelNetPredictor/src/accelnet_target_c.f90
+index 23bd3c8..63eed65 100644
+--- a/AccelNetPredictor/src/accelnet_target_c.f90
++++ b/AccelNetPredictor/src/accelnet_target_c.f90
+@@ -14,0 +15 @@ contains
++    ! Preserve the existing ABI and its Chebyshev mode argument.
+@@ -21,0 +23,10 @@ contains
++        status = accelnet_target_create_modes(nspecies,paths,device,mode,0_c_int,cutoff,handle,message)
++    end function
++
++    function accelnet_target_create_modes(nspecies,paths,device,mode,g5_mode,cutoff,handle,message) result(status) bind(C)
++        integer(c_int), value :: nspecies,device,mode,g5_mode
++        type(c_ptr), intent(in) :: paths(nspecies)
++        real(c_double), intent(out) :: cutoff
++        type(c_ptr), intent(out) :: handle
++        character(c_char), intent(out) :: message(512)
++        integer(c_int) :: status
+@@ -33 +44 @@ contains
+-        if (nspecies < 1 .or. mode < 0 .or. mode > 2) then
++        if (nspecies < 1 .or. mode < 0 .or. mode > 2 .or. g5_mode < 0 .or. g5_mode > 3) then
+@@ -138 +149 @@ contains
+-        call ctx%model%initialize(source,device,mode,status,detail)
++        call ctx%model%initialize(source,device,mode,status,detail,g5_mode=g5_mode)
+diff --git a/AccelNetPredictor/src/accelnet_target_descriptors.f90 b/AccelNetPredictor/src/accelnet_target_descriptors.f90
+index 61bd67f..3cb298e 100644
+--- a/AccelNetPredictor/src/accelnet_target_descriptors.f90
++++ b/AccelNetPredictor/src/accelnet_target_descriptors.f90
+@@ -13,2 +13,3 @@ module accelnet_target_descriptors
+-    public :: pack_generic_descriptors, PACKED_FEATURE_FIELDS
+-    integer, parameter :: PACKED_FEATURE_FIELDS = 21
++    public :: pack_generic_descriptors, PACKED_FEATURE_FIELDS, PACKED_PARAMETER_FIELDS
++    integer, parameter :: PACKED_FEATURE_FIELDS = 25
++    integer, parameter :: PACKED_PARAMETER_FIELDS = 19
+@@ -16 +17 @@ contains
+-    subroutine pack_generic_descriptors(model, fi, fr, status, message)
++    subroutine pack_generic_descriptors(model, fi, fr, status, message, g5_mode)
+@@ -22 +23,3 @@ contains
+-        integer :: c,j,b,o,t,n,ct,ns,groups,k,r,last
++        integer, optional, intent(in) :: g5_mode
++        integer :: c,j,b,o,t,n,ct,ns,groups,k,r,last,q,zeta
++        real(real64) :: binomial
+@@ -27 +30 @@ contains
+-        allocate(fi(PACKED_FEATURE_FIELDS,n),fr(7,n))
++        allocate(fi(PACKED_FEATURE_FIELDS,n),fr(PACKED_PARAMETER_FIELDS,n))
+@@ -51,4 +53,0 @@ contains
+-                if (cfg%g5_evaluation_mode > 1) then
+-                    message = 'OpenMP target: G5 currently supports auto/direct; forced G5 moments are not implemented'
+-                    return
+-                end if
+@@ -109,0 +109,4 @@ contains
++                        fi(22,b) = cfg%g5_evaluation_mode
++                        if (present(g5_mode)) fi(22,b) = g5_mode
++                        fr(19,b) = cfg%maximum_angular_cutoff
++                        if (fi(22,b) < 0 .or. fi(22,b) > 3) return
+@@ -147,0 +151,26 @@ contains
++        ! G5 integer moments: compact only radial groups actually requested.
++        ! Exact integer powers 1..10 use a polynomial; fractional/near-integer
++        ! and higher powers keep the direct formula. Auto retains the original
++        ! per-component angular-neighbor threshold. Fields 22/23/24: mode/group/rep.
++        groups = 0
++        do b = 1,n
++            if (fi(1,b) /= 5 .or. fi(22,b) == 1) cycle
++            zeta = fi(5,b)
++            if (zeta < 1 .or. zeta > 10) cycle
++            if (fr(5,b) /= real(zeta,real64)) cycle
++            do k = 1,b-1
++                if (fi(23,k) == 0 .or. fi(7,k) /= fi(7,b)) cycle
++                fi(23:24,b) = fi(23:24,k)
++                exit
++            end do
++            if (fi(23,b) == 0) then
++                groups = groups+1
++                fi(23:24,b) = [groups,b]
++                fi(25,groups) = b
++            end if
++            binomial = 1
++            do q = 0,zeta
++                fr(8+q,b) = 2.0_real64**(1-zeta)*binomial*fr(4,b)**q
++                binomial = binomial*real(zeta-q,real64)/real(q+1,real64)
++            end do
++        end do
+@@ -157,0 +187,2 @@ contains
++                if (fi(22,b) /= fi(22,k) .or. fr(19,b) /= fr(19,k)) cycle
++                if ((fi(23,b) > 0) .neqv. (fi(23,k) > 0)) cycle
+diff --git a/AccelNetPredictor/src/accelnet_target_kernels.f90 b/AccelNetPredictor/src/accelnet_target_kernels.f90
+index 38bd799..824a58b 100644
+--- a/AccelNetPredictor/src/accelnet_target_kernels.f90
++++ b/AccelNetPredictor/src/accelnet_target_kernels.f90
+@@ -16 +16 @@ contains
+-            radial_cache, jacobian, g4_first, use_moment, &
++            radial_cache, jacobian, g4_first, g5_active, use_moment, &
+@@ -31 +31 @@ contains
+-        integer, contiguous, intent(inout) :: use_moment(:), edge_row(:), g4_first(:,:,:)
++        integer, contiguous, intent(inout) :: use_moment(:), edge_row(:), g4_first(:,:,:), g5_active(:,:)
+@@ -46 +46 @@ contains
+-        !$omp& g, values, deriv, delta, moments, powers, radial_cache, jacobian, g4_first, &
++        !$omp& g, values, deriv, delta, moments, powers, radial_cache, jacobian, g4_first, g5_active, &
+@@ -65,0 +66,6 @@ contains
++                    if (meta(11,s) > 0) then
++                        powers(j,1,:) = 1
++                        do q = 2,meta(2,s)
++                            powers(j,q,:) = powers(j,q-1,:)*geom(1:3,j)
++                        end do
++                    end if
+@@ -77,0 +84,18 @@ contains
++                if (meta(11,s) > 0) then
++                    g5_active(row,:) = 0
++                    fcj = -1; angular_neighbors = 0
++                    do b = 1,dim
++                        if (features(23,b,s) == 0) cycle
++                        if (feature_params(19,b,s) /= fcj) then
++                            fcj = feature_params(19,b,s); angular_neighbors = 0
++                            do j = offsets(row),offsets(row+1)-1
++                                if (geom(4,j) > eps .and. geom(4,j) <= fcj) angular_neighbors = angular_neighbors+1
++                            end do
++                        end if
++                        if (g5_moment_active(features(22,b,s),features(23,b,s),angular_neighbors)) then
++                            g5_active(row,b) = 1
++                            g5_active(row,size(features,2)+features(23,b,s)) = 1
++                        end if
++                    end do
++                    if (all(g5_active(row,1:dim) == 1)) g5_active(row,2*size(features,2)+1) = 1
++                end if
+@@ -205,0 +230,2 @@ contains
++        if (any(meta(11,:) > 0)) call g5_moment_values(device,nrw,meta,nodes,features,feature_params, &
++            local_species,species,centers,offsets,indices,mp,multiplicity,powers,radial_cache,moments,delta,g5_active,g)
+@@ -211 +237 @@ contains
+-                    local_species,species,centers,offsets,indices,geom,radial_cache,g)
++                    local_species,species,centers,offsets,indices,geom,radial_cache,g5_active,g)
+@@ -214 +240 @@ contains
+-                    local_species,species,centers,offsets,indices,geom,radial_cache,g)
++                    local_species,species,centers,offsets,indices,geom,radial_cache,g5_active,g)
+@@ -266,0 +293,3 @@ contains
++                    if (meta(11,s) > 0) then
++                        if (g5_active(row,b) == 1) cycle
++                    end if
+@@ -302,0 +332,2 @@ contains
++        if (any(meta(11,:) > 0)) call g5_moment_adjoints(device,nrw,meta,nodes,features,feature_params, &
++            species,centers,offsets,mp,multiplicity,moments,delta,g5_active,g)
+@@ -401 +432,3 @@ contains
+-            local_species,species,centers,offsets,indices,geom,edge_row,radial_cache,jacobian,g,edge_force)
++            local_species,species,centers,offsets,indices,geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force)
++        if (any(meta(11,:) > 0)) call g5_moment_forces(device,nedges,meta,features,local_species, &
++            species,centers,indices,geom,edge_row,radial_cache,moments,g5_active,edge_force)
+@@ -567 +600,2 @@ contains
+-    subroutine generic_values(device,nrw,meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g)
++    subroutine generic_values(device,nrw,meta,nodes,features,fp,local_species,species,centers,offsets, &
++            indices,geom,radial_cache,g5_active,g)
+@@ -570 +604 @@ contains
+-        integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:)
++        integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:),g5_active(:,:)
+@@ -576 +610 @@ contains
+-        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g) &
++        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g5_active,g) &
+@@ -583,0 +618,3 @@ contains
++                if (meta(11,s) > 0) then
++                    if (g5_active(row,b) == 1) cycle
++                end if
+@@ -627 +664 @@ contains
+-            indices,geom,radial_cache,g)
++            indices,geom,radial_cache,g5_active,g)
+@@ -630 +667 @@ contains
+-        integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:)
++        integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:),g5_active(:,:)
+@@ -636 +673 @@ contains
+-        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g) &
++        !$omp& map(alloc:meta,nodes,features,fp,local_species,species,centers,offsets,indices,geom,radial_cache,g5_active,g) &
+@@ -644,0 +682,3 @@ contains
++                if (meta(11,s) > 0) then
++                    if (g5_active(row,b) == 1) cycle
++                end if
+@@ -705 +745 @@ contains
+-                              indices,geom,edge_row,radial_cache,jacobian,g,edge_force)
++                              indices,geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force)
+@@ -708 +748 @@ contains
+-        integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:),edge_row(:)
++        integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:),edge_row(:),g5_active(:,:)
+@@ -725 +765 @@ contains
+-        !$omp& geom,edge_row,radial_cache,jacobian,g,edge_force) &
++        !$omp& geom,edge_row,radial_cache,jacobian,g5_active,g,edge_force) &
+@@ -729,0 +770,6 @@ contains
++            if (meta(11,s) > 0) then
++                if (g5_active(row,2*size(features,2)+1) == 1) then
++                    edge_force(:,j) = 0
++                    cycle
++                end if
++            end if
+@@ -733,0 +780,3 @@ contains
++                if (meta(11,s) > 0) then
++                    if (g5_active(row,b) == 1) cycle
++                end if
+@@ -790,0 +840,204 @@ contains
++
++    ! Only occupied radial groups are packed. Raw moments survive the NN and
++    ! become coefficients of one contracted polynomial per group and species.
++    subroutine g5_moment_values(device,nrw,meta,nodes,fi,fp,local_species,species,centers,offsets,indices, &
++            mp,multiplicity,powers,radial,moments,contractions,g5_active,g)
++        integer, intent(in) :: device,nrw
++        integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),fi(:,:,:),local_species(:,:),mp(:,:,:)
++        integer, contiguous, intent(in) :: species(:),centers(:),offsets(:),indices(:),g5_active(:,:)
++        real(real64), contiguous, intent(in) :: fp(:,:,:),multiplicity(:,:),powers(:,:,:),radial(:,:,:)
++        real(real64), contiguous, intent(inout) :: moments(:,:,:),contractions(:,:,:),g(:,:)
++        integer :: row,ch,entry,s,ns,group,t,b,j,rgroup,nm,ax,ay,az,q,t1,t2,c1,c2
++        real(real64) :: total,h,mono,correction,sums(0:10)
++        ns = size(meta,2)
++        !$omp target teams distribute parallel do collapse(3) device(device) if(device /= omp_get_initial_device()) &
++        !$omp& map(alloc:meta,fi,local_species,mp,species,centers,offsets,indices,powers,radial,moments,g5_active) &
++        !$omp& private(s,group,t,b,j,rgroup,nm,ax,ay,az,total,h,mono)
++        do row = 1,nrw
++            do ch = 1,maxval(meta(11,:))
++                do entry = 1,size(mp,2)
++                    s = species(centers(row)); nm = meta(9,s)
++                    if (meta(10,s) /= 1 .or. ch > meta(11,s) .or. entry > nm+1) cycle
++                    group = (ch-1)/ns+1; t = mod(ch-1,ns)+1
++                    b = fi(25,group,s); rgroup = fi(7,b,s)
++                    total = 0
++                    if (g5_active(row,size(fi,2)+group) == 0) then
++                        moments(row,entry,ch) = 0
++                        cycle
++                    end if
++                    do j = offsets(row),offsets(row+1)-1
++                        if (local_species(species(indices(j)),s) /= t) cycle
++                        h = radial(j,rgroup,1)
++                        if (entry == nm+1) then
++                            total = total+h*h
++                        else
++                            ax = mp(1,entry,s); ay = mp(2,entry,s); az = mp(3,entry,s)
++                            mono = powers(j,ax+1,1)*powers(j,ay+1,2)*powers(j,az+1,3)
++                            total = total+h*mono
++                        end if
++                    end do
++                    moments(row,entry,ch) = total
++                end do
++            end do
++        end do
++        !$omp end target teams distribute parallel do
++        ! Bilinear moments depend on radial group/species/degree, not on the
++        ! descriptor's lambda/zeta. Reduce them once, then evaluate all inputs.
++        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
++        !$omp& map(alloc:meta,mp,multiplicity,species,centers,moments,contractions) &
++        !$omp& private(s,nm,group,t1,t2,c1,c2,entry,q,sums)
++        do row = 1,nrw
++            do ch = 1,maxval(meta(11,:))*ns
++                s = species(centers(row)); nm = meta(9,s)
++                if (ch > meta(11,s)*ns) cycle
++                group = (ch-1)/(ns*ns)+1
++                t1 = mod((ch-1)/ns,ns)+1; t2 = mod(ch-1,ns)+1
++                c1 = (group-1)*ns+t1; c2 = (group-1)*ns+t2
++                sums = 0
++                do entry = 1,nm
++                    q = mp(4,entry,s)-1
++                    sums(q) = sums(q)+multiplicity(entry,s)*moments(row,entry,c1)*moments(row,entry,c2)
++                end do
++                if (t1 == t2) sums = 0.5_real64*(sums-moments(row,nm+1,c1))
++                contractions(row,1:meta(2,s),ch) = sums(0:meta(2,s)-1)
++            end do
++        end do
++        !$omp end target teams distribute parallel do
++        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
++        !$omp& map(alloc:meta,nodes,fi,fp,species,centers,offsets,contractions,g5_active,g) &
++        !$omp& private(s,nm,group,t1,t2,c1,c2,entry,q,total,correction,ch)
++        do row = 1,nrw
++            do b = 1,size(fi,2)
++                s = species(centers(row))
++                if (b > nodes(1,s)) cycle
++                if (meta(11,s) == 0) cycle
++                if (g5_active(row,b) == 0) cycle
++                nm = meta(9,s); group = fi(23,b,s); t1 = fi(2,b,s); t2 = fi(3,b,s)
++                c1 = (group-1)*ns+t1; c2 = (group-1)*ns+t2
++                ch = ((group-1)*ns+t1-1)*ns+t2
++                total = 0
++                do q = 0,fi(5,b,s)
++                    total = total+fp(8+q,b,s)*contractions(row,q+1,ch)
++                end do
++                g(row,b) = total
++            end do
++        end do
++        !$omp end target teams distribute parallel do
++    end subroutine
++
++    subroutine g5_moment_adjoints(device,nrw,meta,nodes,fi,fp,species,centers,offsets,mp,multiplicity, &
++            moments,contractions,g5_active,g)
++        integer, intent(in) :: device,nrw
++        integer, contiguous, intent(in) :: meta(:,:),nodes(:,:),fi(:,:,:),mp(:,:,:),species(:),centers(:),offsets(:),g5_active(:,:)
++        real(real64), contiguous, intent(in) :: fp(:,:,:),multiplicity(:,:),g(:,:)
++        real(real64), contiguous, intent(inout) :: moments(:,:,:),contractions(:,:,:)
++        integer :: row,ch,entry,s,ns,group,t,b,nm,q,other,t1,t2,pair
++        real(real64) :: total,coefficients(0:10)
++        ns = size(meta,2)
++        ! Contract the NN gradient with angular polynomials once per degree,
++        ! before multiplying by moments. No descriptor scan per monomial/edge.
++        !$omp target teams distribute parallel do collapse(2) device(device) if(device /= omp_get_initial_device()) &
++        !$omp& map(alloc:meta,nodes,fi,fp,species,centers,offsets,contractions,g5_active,g) &
++        !$omp& private(s,group,t1,t2,b,q,coefficients)
++        do row = 1,nrw
++            do pair = 1,maxval(meta(11,:))*ns
++                s = species(centers(row))
++                if (pair > meta(11,s)*ns) cycle
++                group = (pair-1)/(ns*ns)+1
++                t1 = mod((pair-1)/ns,ns)+1; t2 = mod(pair-1,ns)+1
++                coefficients = 0
++                do b = 1,nodes(1,s)
++                    if (fi(23,b,s) /= group) cycle
++                    if (g5_active(row,b) == 0) cycle
++                    if (.not. ((fi(2,b,s) == t1 .and. fi(3,b,s) == t2) .or. &
++                        (fi(2,b,s) == t2 .and. fi(3,b,s) == t1))) cycle
++                    do q = 0,fi(5,b,s)
++                        coefficients(q) = coefficients(q)+g(row,b)*fp(8+q,b,s)
++                    end do
++                end do
++                contractions(row,1:meta(2,s),pair) = coefficients(0:meta(2,s)-1)
++            end do
++        end do
++        !$omp end target teams distribute parallel do
++        !$omp target teams distribute parallel do collapse(3) device(device) if(device /= omp_get_initial_device()) &
++        !$omp& map(alloc:meta,mp,multiplicity,species,centers,moments,contractions) &
++        !$omp& private(s,group,t,nm,q,other,pair,total)
++        do row = 1,nrw
++            do ch = 1,maxval(meta(11,:))
++                do entry = 1,size(mp,2)
++                    s = species(centers(row)); nm = meta(9,s)
++                    if (meta(10,s) /= 1 .or. ch > meta(11,s) .or. entry > nm+1) cycle
++                    group = (ch-1)/ns+1; t = mod(ch-1,ns)+1
++                    total = 0
++                    if (entry == nm+1) then
++                        pair = ((group-1)*ns+t-1)*ns+t
++                        total = sum(contractions(row,1:meta(2,s),pair))
++                    else
++                        q = mp(4,entry,s)
++                        do other = 1,ns
++                            pair = ((group-1)*ns+t-1)*ns+other
++                            total = total+contractions(row,q,pair)*moments(row,entry,(group-1)*ns+other)
++                        end do
++                        total = total*multiplicity(entry,s)
++                    end if
++                    moments(row,entry,meta(11,s)+ch) = total
++                end do
++            end do
++        end do
++        !$omp end target teams distribute parallel do
++    end subroutine
++
++    subroutine g5_moment_forces(device,nedges,meta,fi,local_species,species,centers,indices,geom,edge_row, &
++            radial,moments,g5_active,edge_force)
++        integer, intent(in) :: device,nedges
++        integer, contiguous, intent(in) :: meta(:,:),fi(:,:,:),local_species(:,:),species(:),centers(:),indices(:), &
++            edge_row(:),g5_active(:,:)
++        real(real64), contiguous, intent(in) :: geom(:,:),radial(:,:,:),moments(:,:,:)
++        real(real64), contiguous, intent(inout) :: edge_force(:,:)
++        integer :: j,row,s,ns,t,group,b,ch,rgroup,nm,p,ax,ay,az,entry
++        real(real64) :: u(3),dm(3),f(3),v,hy,hz,dhy,dhz,hyz,h,dh,r,correction
++        ns = size(meta,2)
++        !$omp target teams distribute parallel do device(device) if(device /= omp_get_initial_device()) &
++        !$omp& map(alloc:meta,fi,local_species,species,centers,indices,geom,edge_row,radial,moments,g5_active,edge_force) &
++        !$omp& private(row,s,t,group,b,ch,rgroup,nm,p,ax,ay,az,entry,u,dm,f,v,hy,hz,dhy,dhz,hyz,h,dh,r,correction)
++        do j = 1,nedges
++            row = edge_row(j); s = species(centers(row))
++            if (meta(11,s) == 0) cycle
++            r = geom(4,j)
++            if (r <= eps) cycle
++            t = local_species(species(indices(j)),s)
++            if (t == 0) cycle
++            u = geom(1:3,j); nm = meta(9,s); p = meta(2,s)-1; f = 0
++            do group = 1,meta(11,s)/ns
++                if (g5_active(row,size(fi,2)+group) == 0) cycle
++                b = fi(25,group,s); rgroup = fi(7,b,s)
++                h = radial(j,rgroup,1); dh = radial(j,rgroup,2)
++                if (h == 0 .and. dh == 0) cycle
++                ch = meta(11,s)+(group-1)*ns+t
++                ! Differentiated nested Horner; valid also for zero components.
++                v = 0; dm = 0; entry = nm
++                do ax = p,0,-1
++                    hy = 0; dhy = 0; hyz = 0
++                    do ay = p-ax,0,-1
++                        hz = 0; dhz = 0
++                        do az = p-ax-ay,0,-1
++                            dhz = dhz*u(3)+hz
++                            hz = hz*u(3)+moments(row,entry,ch)
++                            entry = entry-1
++                        end do
++                        dhy = dhy*u(2)+hy
++                        hyz = hyz*u(2)+dhz
++                        hy = hy*u(2)+hz
++                    end do
++                    dm(1) = dm(1)*u(1)+v
++                    dm(2) = dm(2)*u(1)+dhy
++                    dm(3) = dm(3)*u(1)+hyz
++                    v = v*u(1)+hy
++                end do
++                correction = moments(row,nm+1,ch)*h
++                f = f+dh*(v-correction)*u+h*(dm-u*sum(u*dm))/r
++            end do
++            edge_force(:,j) = edge_force(:,j)+f
++        end do
++        !$omp end target teams distribute parallel do
++    end subroutine
+diff --git a/AccelNetPredictor/src/accelnet_target_math.f90 b/AccelNetPredictor/src/accelnet_target_math.f90
+index 2d25d9e..e4b7065 100644
+--- a/AccelNetPredictor/src/accelnet_target_math.f90
++++ b/AccelNetPredictor/src/accelnet_target_math.f90
+@@ -15 +15 @@ module accelnet_target_math
+-    public :: angular_power, angular_value
++    public :: angular_power, angular_value, g5_moment_active
+@@ -17,0 +18,7 @@ contains
++    pure logical function g5_moment_active(mode,group,neighbors) result(active)
++        !$omp declare target
++        integer, intent(in) :: mode,group,neighbors
++        ! Mode 2 keeps the established 16-neighbor threshold; 3 forces moments.
++        active = group > 0 .and. (mode == 3 .or. ((mode == 0 .or. mode == 2) .and. neighbors >= 16))
++    end function
++
+diff --git a/AccelNetPredictor/test/batch_test_support.f90 b/AccelNetPredictor/test/batch_test_support.f90
+index f67e622..35b3aa0 100644
+--- a/AccelNetPredictor/test/batch_test_support.f90
++++ b/AccelNetPredictor/test/batch_test_support.f90
+@@ -7 +7 @@ module batch_test_support
+-    use accelnet_descriptors, only: atomic_structure, descriptor_config, initialize_config
++    use accelnet_descriptors, only: atomic_structure, neighbor_data, descriptor_config, initialize_config
+@@ -20 +20,3 @@ contains
+-        integer :: s, d, l, nw, j, degree, v, pair, sign, t1, t2
++        integer :: s, d, l, nw, j, degree, v, pair, sign, t1, t2, eta_index
++        real(real64), parameter :: scaling_eta(3) = [0.000357_real64,0.028569_real64,0.089277_real64]
++        integer, parameter :: scaling_zeta(3) = [1,2,4]
+@@ -36,0 +39,16 @@ contains
++            case ('g5-scaling')
++                ! Same 54 descriptors as benchmark_g5_scaling.f90.
++                model%maximum_cutoff = 6.5_real64
++                call initialize_behler_config(behler,2)
++                do eta_index = 1,3
++                    do j = 1,3
++                        do pair = 1,3
++                            t1 = merge(2,1,pair == 3); t2 = merge(1,2,pair == 1)
++                            do sign = 1,2
++                                call add_g5(behler,t1,t2,6.5_real64,real(2*sign-3,real64), &
++                                    real(scaling_zeta(j),real64),scaling_eta(eta_index),0.35_real64)
++                            end do
++                        end do
++                    end do
++                end do
++                call add_behler(model%setups(s)%model,behler)
+@@ -124,0 +143,23 @@ contains
++    subroutine make_g5_scaling_neighbors(natoms,count,neighbors)
++        integer, intent(in) :: natoms,count
++        type(neighbor_data), intent(out) :: neighbors
++        integer :: row,j,edge
++        real(real64) :: radius,cp,sp,azimuth
++        if (natoms < 2 .or. mod(natoms,2) /= 0 .or. count < 1) error stop 'invalid fixed environment size'
++        allocate(neighbors%offsets(natoms+1),neighbors%atom_indices(natoms*count), &
++            neighbors%displacements(3,natoms*count))
++        neighbors%offsets = [(1+row*count,row=0,natoms)]
++        do row = 1,natoms
++            do j = 1,count
++                edge = (row-1)*count+j
++                radius = 1.5_real64+3.5_real64*real(mod(7*j,31),real64)/31.0_real64
++                cp = 1.0_real64-2.0_real64*(real(j,real64)-0.5_real64)/real(count,real64)
++                sp = sqrt(max(0.0_real64,1.0_real64-cp*cp))
++                azimuth = 2.39996322972865332_real64*real(j,real64)
++                neighbors%displacements(:,edge) = radius*[sp*cos(azimuth),sp*sin(azimuth),cp]
++                ! The benchmark's global species alternate 1,2 by atom ID.
++                ! Repeated targets are valid CSR images, without an MD lattice.
++                neighbors%atom_indices(edge) = 1+mod(j,natoms)
++            end do
++        end do
++    end subroutine
+diff --git a/AccelNetPredictor/test/test_batch_target.f90 b/AccelNetPredictor/test/test_batch_target.f90
+index 92e9579..d589138 100644
+--- a/AccelNetPredictor/test/test_batch_target.f90
++++ b/AccelNetPredictor/test/test_batch_target.f90
+@@ -52,0 +53,92 @@ program test_batch_target
++    else if (argument == '--g5-moments') then
++        ! Compare shared moments with the independent CPU evaluator across
++        ! cutoffs, mixed integer/fractional powers, group reuse and sparse rows.
++        do v = 1,4
++            select case(v)
++            case(1); argument = 'g5'
++            case(2); argument = 'g5-series'
++            case(3); argument = 'behler'
++            case(4); argument = 'lj-behler'
++            end select
++            do cutoff = 0,9
++                call make_model(trim(argument),model,order=8)
++                do i = 1,2
++                    model%setups(i)%model%behler(1)%config%cutoff_type = cutoff
++                    model%setups(i)%model%behler(1)%config%cutoff_alpha = 0.2_real64
++                end do
++                do mode = 0,3
++                    call model%set_g5_evaluation(mode)
++                    call packed%initialize(model,use_host=host)
++                    call make_structure(8,2,s)
++                    s%positions = 1.03_real64*s%positions; s%lattice = 1.03_real64*s%lattice
++                    s%lattice(1,2) = 0.4_real64
++                    call check(s)
++                    if (mode == 3 .and. cutoff /= 0) call finite_differences(s)
++                end do
++            end do
++            call make_structure(1,2,s)
++            call check(s) ! periodic self images
++            s%pbc = .false.
++            call check(s) ! no neighbors
++        end do
++        do v = 1,5
++            call make_model('g5',model)
++            do i = 1,2
++                model%setups(i)%model = descriptor_model()
++                ! Separate components may request different modes while sharing
++                ! a radial cache; only eligible exact powers enter moments.
++                do n = 1,4
++                    call initialize_behler_config(grouped_config,2,cutoff_type=1)
++                    degree_test = real(n,real64)
++                    if (n == 2) degree_test = 10
++                    if (n == 3) degree_test = 1.5_real64
++                    if (n == 4) degree_test = 11
++                    if (v == 2 .and. n == 2) degree_test = 2+4e-13_real64
++                    if (v == 3 .and. n == 4) degree_test = 16
++                    lambda_test = -1
++                    if (v == 4) lambda_test = 0.7_real64
++                    if (v == 5) lambda_test = 0
++                    call add_g5(grouped_config,1,merge(1,2,mod(n,2) == 0), &
++                        3.4_real64,lambda_test,degree_test,merge(0.2_real64,0.3_real64,n < 3),0.4_real64)
++                    grouped_config%g5_evaluation_mode = 3
++                    if (n == 1 .and. i == 1) grouped_config%g5_evaluation_mode = 1
++                    call add_behler(model%setups(i)%model,grouped_config)
++                end do
++            end do
++            call packed%initialize(model,use_host=host)
++            call make_structure(8,2,s)
++            call check(s)
++            call finite_differences(s)
++            call make_structure(4,2,s)
++            s%pbc = .false.; s%positions = 0
++            s%positions(1,:) = [0.0_real64,0.9_real64,-1.2_real64,1.8_real64]
++            call check(s) ! zero direction components and both angular endpoints
++            call finite_differences(s)
++        end do
++        ! Mixed cutoffs/components: auto counts neighbors inside each component's
++        ! angular cutoff, not the full CSR list or a different component's Rc.
++        call make_model('g5',model)
++        do i = 1,2
++            model%setups(i)%model = descriptor_model()
++            do n = 1,2
++                call initialize_behler_config(grouped_config,2)
++                call add_g5(grouped_config,1,1,real(n+1,real64),1.0_real64,2.0_real64,0.2_real64)
++                call add_g5(grouped_config,1,2,real(n+1,real64),-1.0_real64,4.0_real64,0.2_real64)
++                call add_behler(model%setups(i)%model,grouped_config)
++            end do
++        end do
++        call make_structure(64,2,s)
++        do mode = 0,3
++            call model%set_g5_evaluation(mode)
++            call packed%initialize(model,use_host=host)
++            call check(s)
++        end do
++        ! Mixed central-element algorithms and reload of group/basis capacities.
++        call make_model('g5-series',model,order=4)
++        do mode = 1,3
++            model%setups(1)%model%behler(1)%config%g5_evaluation_mode = mode
++            model%setups(2)%model%behler(1)%config%g5_evaluation_mode = 4-mode
++            call packed%initialize(model,use_host=host)
++            call make_structure(8,2,s)
++            call check(s)
++        end do
+diff --git a/AccelNetPredictor/test/test_target_c.c b/AccelNetPredictor/test/test_target_c.c
+index 7897f06..2db95ad 100644
+--- a/AccelNetPredictor/test/test_target_c.c
++++ b/AccelNetPredictor/test/test_target_c.c
+@@ -20 +20 @@ int main(int argc, char **argv) {
+-        REQUIRE(accelnet_target_create(2,paths,0,iteration%3,&cutoff,&second,error)==0);
++        REQUIRE(accelnet_target_create_modes(2,paths,0,iteration%3,iteration%4,&cutoff,&second,error)==0);
+@@ -34,0 +35 @@ int main(int argc, char **argv) {
++    REQUIRE(accelnet_target_create_modes(2,paths,0,0,99,&cutoff,&second,error)!=0 && !second);
+diff --git a/interfaces/lammps/29Aug2024/GPU/pair_accelnet_gpu.cpp b/interfaces/lammps/29Aug2024/GPU/pair_accelnet_gpu.cpp
+index 3142548..4b10e6a 100644
+--- a/interfaces/lammps/29Aug2024/GPU/pair_accelnet_gpu.cpp
++++ b/interfaces/lammps/29Aug2024/GPU/pair_accelnet_gpu.cpp
+@@ -37,2 +36,0 @@ void PairAccelNetGPU::settings(int narg,char **arg) {
+-  if (g5_evaluation_mode > 1)
+-    error->all(FLERR,"accelnet/gpu currently supports G5 auto/direct only");
+@@ -55,2 +53,2 @@ void PairAccelNetGPU::init_style() {
+-    status = accelnet_target_create(atom->ntypes,const_cast<const char **>(pot_files),
+-        device,chebyshev_evaluation_mode,&cut_global,&target_context,detail);
++    status = accelnet_target_create_modes(atom->ntypes,const_cast<const char **>(pot_files),
++        device,chebyshev_evaluation_mode,g5_evaluation_mode,&cut_global,&target_context,detail);
+diff --git a/interfaces/lammps/29Aug2024/tests/check_gpu.py b/interfaces/lammps/29Aug2024/tests/check_gpu.py
+index 895e363..9a236da 100644
+--- a/interfaces/lammps/29Aug2024/tests/check_gpu.py
++++ b/interfaces/lammps/29Aug2024/tests/check_gpu.py
+@@ -26,0 +27 @@ p.add_argument('--modes', nargs='+', default=['auto'])
++p.add_argument('--g5-mode', choices=['auto','direct','moment'], default='auto')
+@@ -74 +75 @@ replicate {a.replicate} {a.replicate} {a.replicate}
+-pair_style accelnet{'/gpu' if gpu else ''} {mode} {a.golden}/{a.elements[0]}.nn.ascii {a.golden}/{a.elements[1]}.nn.ascii
++pair_style accelnet{'/gpu' if gpu else ''} {mode} {a.golden}/{a.elements[0]}.nn.ascii {a.golden}/{a.elements[1]}.nn.ascii g5 {a.g5_mode if gpu else "direct"}
+@@ -138 +139 @@ for case in a.cases:
+-                entry = dict(case=case, mode=mode, backend=backend, ranks=ranks,
++                entry = dict(case=case, mode=mode, g5_mode=a.g5_mode, backend=backend, ranks=ranks,
+diff --git a/interfaces/lammps/29Aug2024/tests/check_gpu_descriptors.py b/interfaces/lammps/29Aug2024/tests/check_gpu_descriptors.py
+index c004d4c..8cad575 100644
+--- a/interfaces/lammps/29Aug2024/tests/check_gpu_descriptors.py
++++ b/interfaces/lammps/29Aug2024/tests/check_gpu_descriptors.py
+@@ -19,0 +20 @@ p.add_argument('--cases', nargs='+', default=['orthogonal', 'triclinic', 'empty'
++p.add_argument('--g5-mode', choices=['auto','direct','moment'], default='auto')
+@@ -52 +53 @@ for family in ['lj', 'behler', 'n2p2']:
+-                    '--output', str(a.output/family), '--ranks', *map(str, a.ranks), '--cases', *a.cases], check=True)
++                    '--output', str(a.output/family), '--g5-mode', a.g5_mode, '--ranks', *map(str, a.ranks), '--cases', *a.cases], check=True)
