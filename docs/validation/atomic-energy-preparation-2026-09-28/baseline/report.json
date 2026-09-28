@@ -1,0 +1,1070 @@
+{
+  "core": 6,
+  "rounds": 6,
+  "seconds": 0.3,
+  "binaries": {
+    "before": {
+      "path": "/tmp/accelnet-unified-api/before-public-api",
+      "sha256": "4e67f5cab502823a1055f242ac9ffb6590894929bdd6dd8fcb70cfde9b1a2627"
+    },
+    "after": {
+      "path": "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+      "sha256": "d80ccbd9128c43fa44dcd03dd9d92afd8169f2f2dd2c3c6a18babbd4e428d256"
+    }
+  },
+  "rows": [
+    {
+      "family": "aenet",
+      "atoms": 64,
+      "api": "energy",
+      "samples": {
+        "before": [
+          0.005920691039215686,
+          0.005906554450980392,
+          0.005907952274509805,
+          0.005908682941176471,
+          0.005904487921568627,
+          0.006159355530612245
+        ],
+        "after": [
+          0.006287274354166667,
+          0.006279900333333334,
+          0.0062811335625,
+          0.006270962291666667,
+          0.006288626625000001,
+          0.006283067208333333
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        }
+      ],
+      "seconds": {
+        "before": 0.005908317607843138,
+        "after": 0.006282100385416666
+      },
+      "after_over_before": 1.0632638260809373,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 64,
+      "api": "atomic-energy",
+      "samples": {
+        "before": [
+          0.0020569544315068495,
+          0.0020568792328767124,
+          0.0020597016780821917,
+          0.0014741067450980392,
+          0.0014865141782178218,
+          0.001473492480392157
+        ],
+        "after": [
+          0.0022121175661764703,
+          0.0022112741544117647,
+          0.0022078226911764706,
+          0.0016794219999999999,
+          0.001600728904255319,
+          0.001588614888888889
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "64",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 4.433506804410344e-06
+        }
+      ],
+      "seconds": {
+        "before": 0.001771696705547267,
+        "after": 0.0019436223455882352
+      },
+      "after_over_before": 1.0970401082209278,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 192,
+      "api": "energy",
+      "samples": {
+        "before": [
+          0.02192637492857143,
+          0.021917770285714285,
+          0.021908198,
+          0.02191462314285714,
+          0.021952478142857144,
+          0.021903797785714284
+        ],
+        "after": [
+          0.022611759000000002,
+          0.022556839285714284,
+          0.022567321714285715,
+          0.02258145307142857,
+          0.022570073642857146,
+          0.022574690571428573
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        }
+      ],
+      "seconds": {
+        "before": 0.021916196714285713,
+        "after": 0.02257238210714286
+      },
+      "after_over_before": 1.0299406599334557,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 192,
+      "api": "atomic-energy",
+      "samples": {
+        "before": [
+          0.0037891846125000005,
+          0.0037887861125,
+          0.0037893512875,
+          0.004245058154929577,
+          0.0037910070125,
+          0.0037952878250000002
+        ],
+        "after": [
+          0.004083756743243243,
+          0.004084956162162162,
+          0.0040765843108108105,
+          0.004078255054054054,
+          0.004078025513513514,
+          0.004090671864864865
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "192",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 5.910979376373682e-06
+        }
+      ],
+      "seconds": {
+        "before": 0.00379017915,
+        "after": 0.004081005898648649
+      },
+      "after_over_before": 1.0767316628420187,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 512,
+      "api": "energy",
+      "samples": {
+        "before": [
+          0.13081907666666667,
+          0.13010002033333332,
+          0.12992271633333333,
+          0.13016499833333334,
+          0.130058758,
+          0.13016367533333334
+        ],
+        "after": [
+          0.13353291066666667,
+          0.13335624766666668,
+          0.13315126633333332,
+          0.133114742,
+          0.13346345666666667,
+          0.133274634
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 0.0
+        }
+      ],
+      "seconds": {
+        "before": 0.13013184783333331,
+        "after": 0.13331544083333335
+      },
+      "after_over_before": 1.0244643648192673,
+      "performance_passed": true
+    },
+    {
+      "family": "aenet",
+      "atoms": 512,
+      "api": "atomic-energy",
+      "samples": {
+        "before": [
+          0.011935805884615385,
+          0.011942836692307692,
+          0.011944209346153846,
+          0.011946562884615385,
+          0.011935284115384616,
+          0.012019736480000001
+        ],
+        "after": [
+          0.013279257652173913,
+          0.013289844565217392,
+          0.013250149695652174,
+          0.01325611452173913,
+          0.013258887695652173,
+          0.013367284782608697
+        ]
+      },
+      "runs": [
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-aenet-energy-fix/pre-fix-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "after",
+          "max_tolerance_fraction": 1.8842599025255513e-05
+        },
+        {
+          "command": [
+            "/tmp/accelnet-unified-api/before-public-api",
+            "aenet",
+            "/home/nagai/AccelNetGPU/AccelNetTrainer.jl/test/data/fortran_predict",
+            "512",
+            "0.3",
+            "atomic-energy"
+          ],
+          "label": "before",
+          "max_tolerance_fraction": 1.995098720321172e-05
+        }
+      ],
+      "seconds": {
+        "before": 0.011943523019230769,
+        "after": 0.013269072673913043
+      },
+      "after_over_before": 1.1109848118137295,
+      "performance_passed": false
+    }
+  ],
+  "numerical_passed": true,
+  "max_energy_ratio": 1.1,
+  "passed": false
+}

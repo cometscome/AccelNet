@@ -1,6 +1,6 @@
 # AccelNet CPU/GPU speedup methods
 
-**Document version 1.13 — 2026-09-27 (JST).**
+**Document version 1.14 — 2026-09-28 (JST).**
 
 This document records the mathematics, implementation decisions, and measurements
 behind the CPU/GPU optimizations in this working tree. All numerical kernels use
@@ -19,7 +19,7 @@ not bitwise equality.
 | Library version used in the archived measurements through Section 24 | **1.0.1** |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
-| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20, exact high-order moments/threading in Section 21, atomic removal in Section 22, and unified inference APIs in Section 23, and energy-only recovery in Section 24; each validation archive identifies its measured sources |
+| Optimization source revision | `gpu` checkpoint **`1d6985d`** (revision 1.6), followed by the common G5 moments in Section 18 and n2p2 extensions in Section 19 and grouped/LAMMPS evaluation in Section 20, exact high-order moments/threading in Section 21, atomic removal in Section 22, and unified inference APIs in Section 23, and energy-only recovery in Section 24, followed by direct atomic-environment preparation in Section 25; each validation archive identifies its measured sources |
 | LAMMPS | **29 Aug 2024 Update 4**, with this repository's ACCELNET/GPU adapter and triclinic patch |
 | GNU Fortran | **11.4.0**, Ubuntu `11.4.0-1ubuntu1~22.04`; CPU `-O3` |
 | NVIDIA HPC SDK / nvfortran | **25.3 / 25.3-0**; CPU `-fast -O3`; GPU `-mp=gpu -gpu=cc90,cc120` |
@@ -2334,3 +2334,65 @@ and Sections 19--21 for the existing direct implementations and exact G5 scope.
 
 Final numerical checks, paired timings, version identities and limitations are
 recorded in the [energy-only validation report](docs/validation/energy-common-2026-09-27/README.md).
+
+
+## 25. Remove duplicate atomic-energy preparation (revision 1.14)
+
+This change starts from AccelNet **1.1.0**, main `c38c563`. The original CPU
+comparison remains `543b180`; both executables compile OpenMP out. The
+[validation report](docs/validation/atomic-energy-preparation-2026-09-28/README.md)
+records the final paired timings, correctness checks and executable hashes.
+
+### 25.1 The environment and the numerical pipeline are unchanged
+
+For a center at $\mathbf r_i$ with $n$ neighbor image slots, construct
+
+$$\mathbf d_j=\mathbf r_j-\mathbf r_i,\qquad
+\mathrm{species}=[t_i,t_1,\ldots,t_n],$$
+
+$$\mathrm{centers}=[1],\quad \mathrm{offsets}=[1,n+1],\quad
+\mathrm{indices}=[2,3,\ldots,n+1].$$
+
+Each periodic image remains a distinct slot, even when two slots refer to the
+same physical atom. This is the same CSR representation as before. The output
+is still
+
+$$E_i=\mathrm{NN}_{t_i}\!\left(\mathcal N_{t_i}
+\bigl(G(\{\mathbf d_j,t_j\})\bigr)\right)/s_{E,t_i}+b_{E,t_i},$$
+
+with the existing descriptors $G$, input scaling $\mathcal N$, neural network,
+energy scale and reference/shift $b_E$. Direct/moment selection and all
+numerical kernel sources are unchanged by this optimization.
+
+### 25.2 Remove work outside the mathematical kernel
+
+The previous atomic API wrote displacements, indices and species into an
+intermediate environment, cleared an unused force accumulator, and passed that
+environment to the general CSR API. The CSR entry checked the generated index
+structure and copied the same arrays into its resident workspace.
+
+The common `evaluate_atomic_energy_target` entry constructs the canonical CSR
+directly in that workspace, then calls the same `execute_workspace` pipeline.
+It avoids the intermediate writes/reads and the caller's $3(n+1)$ force clear.
+Shape, species, local-environment and version-10 center-lookup validation remain.
+Cache reuse has the same model-immutability contract, and model reloads release
+the old workspace before reuse. The implementation supports both serial CPU
+and OpenMP target, including composite models; it introduces no alternate
+numerical evaluator.
+
+The removed work is $O(n)$ per atomic call. It is visible for energy-only
+inference because there is no force contraction to amortize it. A profile's
+largest absolute stage need not explain a regression relative to another
+implementation: experimental radial-loop rewrites gave less benefit or made
+this workload slower, while eliminating duplicate environment preparation
+recovered most of the gap with unchanged numerical arithmetic.
+
+### 25.3 Validation boundaries
+
+The atomic entry is checked against the independent reference across existing
+Chebyshev/direct/moment and generic/composite cases, followed by force calls on
+the same workspace. Input errors, empty environments, element mappings and
+periodic images are covered. Shifted-coordinate tests use binary-exact shifts
+so an exactly representable hard-cutoff boundary is not rounded across its
+discontinuity. Numerical tolerances and performance acceptance limits are not
+relaxed. Historical reports retain their original results.

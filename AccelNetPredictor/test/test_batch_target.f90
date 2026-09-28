@@ -3,7 +3,7 @@ program test_batch_target
     use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
     use accelnet_batch, only: batch_workspace, evaluate_batch => evaluate_batch_reference
     use accelnet_batch, only: evaluate_batch_default => evaluate_batch
-    use accelnet_batch_target, only: target_model, target_workspace, evaluate_batch_target
+    use accelnet_batch_target, only: target_model, target_workspace, evaluate_batch_target, evaluate_atomic_energy_target
     use accelnet_predictor, only: predictor_model, load_predictor_from_networks, load_predictor_from_n2p2
     use accelnet_descriptors, only: atomic_structure, neighbor_data, build_neighbor_list, read_xsf, &
         descriptor_config, initialize_config
@@ -56,6 +56,7 @@ program test_batch_target
         call make_structure(8,2,s)
         call check(s)
         call finite_differences(s)
+        call check_atomic_errors()
     else if (argument == '--g5-moments') then
         ! Compare shared moments with the independent CPU evaluator across
         ! cutoffs, mixed integer/fractional powers, group reuse and sparse rows.
@@ -673,7 +674,8 @@ contains
         type(atomic_structure), intent(in) :: s
         type(neighbor_data) :: nb
         real(real64) :: e(s%natoms), eg(s%natoms), split_e(s%natoms), f(3,s%natoms), fg(3,s%natoms), w(3,3), wg(3,3)
-        integer :: centers(s%natoms), rows(s%natoms), split, count, j, uploads
+        real(real64) :: atomic_e, origin(3)
+        integer :: centers(s%natoms), rows(s%natoms), split, count, j, uploads, first, last, stat
         centers = [(j,j=1,s%natoms)]
         call build_neighbor_list(s,model%maximum_cutoff,nb,model%minimum_distance)
         f = 0; w = 0
@@ -697,6 +699,21 @@ contains
             eg,fg,work,wg,energy_only=.true.)
         call close_array(eg,e,'energy-only energies')
         call require(all(fg==0.25_real64).and.all(wg==0.5_real64),'energy-only preserves accumulators')
+        ! The atomic entry builds CSR directly in the same workspace. Exercise
+        ! both elements, shifted coordinates, periodic image slots, empty rows,
+        ! composite models and subsequent force calls against the independent
+        ! reference above. Test ordinary model checks and private-cache reuse.
+        ! Binary-exact shifts preserve the exactly representable hard-cutoff
+        ! boundary fixture; decimal shifts can round it across the discontinuity.
+        origin=[0.25_real64,-0.5_real64,0.125_real64]
+        do j=1,min(2,s%natoms)
+            first=nb%offsets(j); last=nb%offsets(j+1)-1
+            call evaluate_atomic_energy_target(packed,s%species(j),s%species(nb%atom_indices(first:last)), &
+                origin,nb%displacements(:,first:last)+spread(origin,2,last-first+1),atomic_e,work, &
+                status=stat,reuse_model=(j>1))
+            call require(stat==0,'atomic energy status')
+            call close_array([atomic_e],e(j:j),'directly prepared atomic energy')
+        end do
         count = work%allocations(); uploads = work%uploads(); split = s%natoms/2
         fg = 0.25_real64; wg = 0.5_real64
         call evaluate_batch_target(packed,s%species,centers(:split),nb%offsets(:split+1),nb%atom_indices, &
@@ -720,6 +737,23 @@ contains
         call evaluate_batch_target(packed,[integer::],[integer::],[1],[integer::], &
             nb%displacements(:,:0),eg(:0),fg(:,:0),work,wg)
         checks = checks+1
+    end subroutine
+
+    subroutine check_atomic_errors()
+        type(target_model) :: uninitialized
+        real(real64) :: energy,origin(3),neighbor(3,1)
+        integer :: stat
+        origin=0; neighbor=1
+        call evaluate_atomic_energy_target(uninitialized,1,[1],origin,neighbor,energy,work,status=stat)
+        call require(stat/=0.and.energy==0,'atomic energy rejects uninitialized model')
+        call evaluate_atomic_energy_target(packed,0,[1],origin,neighbor,energy,work,status=stat)
+        call require(stat/=0.and.energy==0,'atomic energy rejects invalid center species')
+        call evaluate_atomic_energy_target(packed,1,[0],origin,neighbor,energy,work,status=stat)
+        call require(stat/=0.and.energy==0,'atomic energy rejects invalid neighbor species')
+        call evaluate_atomic_energy_target(packed,1,[1],origin,neighbor(:2,:),energy,work,status=stat)
+        call require(stat/=0.and.energy==0,'atomic energy rejects invalid coordinate shape')
+        call evaluate_atomic_energy_target(packed,1,[integer::],origin,neighbor,energy,work,status=stat)
+        call require(stat/=0.and.energy==0,'atomic energy rejects coordinate count mismatch')
     end subroutine
 
     subroutine gpu_eval(s,e,f,w)

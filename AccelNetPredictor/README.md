@@ -13,9 +13,11 @@ See [current descriptor/moment coverage](../docs/implementation-status.md),
 mixed descriptor families are supported. The independent former evaluator is
 available as `evaluate_batch_reference` in
 [legacy/cpu-reference](../legacy/cpu-reference/README.md); production inference
-has no legacy fallback.
+has no legacy fallback. Standalone low-level descriptor/NN compatibility APIs
+still use retained reference implementations; the common-code claim applies
+to production potential inference, not every utility or API wrapper.
 
-## Build and command-line prediction
+## CPU build and command-line prediction
 
 Commands in this README assume the working directory is `AccelNetPredictor/`.
 The standalone build writes executables directly under `build/`. A build from
@@ -23,15 +25,26 @@ the repository root writes them under `build/bin/`; see the
 [root quick start](../README.md#cpu-quick-start). Build the descriptors with the
 same Fortran compiler as the predictor.
 
+The default is serial CPU evaluation. Requirements are CMake 3.20+, a Fortran
+2008 compiler and a C compiler; GNU Fortran 11/13 are covered by CI. No GPU,
+CUDA, MPI or BLAS installation is needed for this library build. Some tests
+use Python; optional upstream n2p2 C++ reference tests need a C++ compiler.
+
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-  -DN2P2_SCALING_EXECUTABLE=
-cmake --build build -j
-ctest --test-dir build -LE performance --output-on-failure
+  -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_C_COMPILER=gcc \
+  -DACCELNET_BUILD_OPENMP_TARGET=OFF -DN2P2_SCALING_EXECUTABLE=
+cmake --build build --parallel
+ctest --test-dir build -LE "gpu|performance" --output-on-failure
 ```
 
 Set `N2P2_SCALING_EXECUTABLE` to a compatible local `nnp-scaling` executable
 to enable the optional upstream descriptor comparison.
+
+The ordinary CLI and object/atomic/SFB/batch APIs remain serial even when the
+optional target library is built. `OMP_NUM_THREADS` does not parallelize those
+entry points. See the separate [CPU OpenMP](#cpu-openmp-threading) and
+[GPU](#gpu-build-and-execution) sections for explicit backend selection.
 
 Energy-only CLI:
 
@@ -175,6 +188,84 @@ build/accelnet-predict-benchmark --n2p2 /path/to/model structure.xsf 1000 moment
 ```
 
 Model loading and XSF parsing are outside the reported in-memory API timings.
+
+## CPU OpenMP threading
+
+Build the optional `AccelNet::Target` library with GNU Fortran host OpenMP.
+These commands still start in `AccelNetPredictor/`, so test executables are
+directly inside the build directory:
+
+```sh
+cmake -S . -B build-openmp -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_C_COMPILER=gcc \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=OFF \
+  -DACCELNET_OPENMP_TARGET_FLAGS="-fopenmp -foffload=disable -ffree-line-length-none" \
+  -DN2P2_SCALING_EXECUTABLE=
+cmake --build build-openmp --parallel
+OMP_NUM_THREADS=1 build-openmp/test_batch_target --host --quick
+OMP_NUM_THREADS=8 OMP_PLACES=cores OMP_PROC_BIND=close \
+  build-openmp/test_batch_target --host --quick
+OMP_NUM_THREADS=1 ctest --test-dir build-openmp -L target-host --output-on-failure
+```
+
+Link `AccelNet::Target`, use `accelnet_batch_target`, and initialize the packed
+model with `call packed%initialize(model, use_host=.true.)` before calling
+`evaluate_batch_target`. See [declarations and lifetime](../docs/openmp-target.md#api-and-lifetime).
+This selects threaded CPU execution without requiring a GPU. The default
+initialization requires a GPU instead. `ACCELNET_TARGET_SERIAL=ON` disables
+OpenMP and is for serial benchmarking, not threaded execution.
+
+There is no threaded CLI switch or LAMMPS `accelnet/omp` pair style.
+LAMMPS `accelnet` uses one serial common-kernel instance per MPI rank; follow
+the [LAMMPS CPU guide](../interfaces/lammps/README.md#cpu-build-and-run).
+
+## GPU build and execution
+
+The validated NVIDIA configuration uses **NVIDIA HPC SDK 25.3 `nvfortran`**,
+the SDK's **CUDA 12.8** runtime/toolkit, and a compatible NVIDIA driver.
+H100 NVL and RTX PRO 6000 Blackwell have been tested. `nvcc` alone cannot
+compile these Fortran OpenMP target kernels; ordinary GNU `-fopenmp` alone
+is not this NVIDIA offload configuration. AMD/Intel GPU execution and other
+Fortran offload toolchains are not validated here.
+
+For an H100, from `AccelNetPredictor/`:
+
+```sh
+export NVHPC_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/25.3
+cmake -S . -B build-gpu -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_Fortran_COMPILER="$NVHPC_ROOT/compilers/bin/nvfortran" \
+  -DCMAKE_C_COMPILER=gcc \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=OFF \
+  -DACCELNET_OPENMP_TARGET_FLAGS="-mp=gpu -gpu=cc90" \
+  -DACCELNET_DESCRIPTORS_BUILD_N2P2_REFERENCE=OFF \
+  -DN2P2_SCALING_EXECUTABLE=
+cmake --build build-gpu --parallel
+nvidia-smi --query-gpu=name,uuid --format=csv
+# Replace with the UUID of the intended device:
+export CUDA_VISIBLE_DEVICES=GPU-REPLACE-WITH-YOUR-DEVICE-UUID
+export OMP_TARGET_OFFLOAD=MANDATORY
+export OMP_NUM_THREADS=1
+build-gpu/test_batch_target --quick
+ctest --test-dir build-gpu -L gpu --output-on-failure
+```
+
+Use `cc120` for the tested Blackwell GPU or `cc90,cc120` for both architectures.
+The recipe disables optional external n2p2 C++ reference tests, avoiding a
+mixed host-C++/NVHPC link; bundled correctness tests remain enabled.
+Adjust SDK paths and architecture flags to your hardware. Keep compiler
+families in separate build directories and use matching Fortran module files.
+
+Applications link `AccelNet::Target` and use the Fortran target API or
+`accelnet_target.h`. `call packed%initialize(model)` selects GPU execution
+and rejects unintended CPU fallback. The [target guide](../docs/openmp-target.md)
+describes device selection, CSR input, workspaces and energy-only evaluation.
+The usual `accelnet-predict` CLI has no GPU option.
+
+LAMMPS GPU use additionally requires **NVHPC `nvc++`**, the CUDA toolkit and
+`PKG_GPU=ON`, `GPU_API=cuda`, `GPU_PREC=double`. The
+[LAMMPS GPU guide](../interfaces/lammps/README.md#gpu-build-and-run) gives the
+separate build and `pair_style accelnet/gpu` input; enabling GPU support does
+not redirect `pair_style accelnet` to GPU.
 
 ## Object API
 
@@ -482,8 +573,10 @@ the input order used by the trained neural network and scaling arrays.
 
 ### CPU energy regression and GPU checks
 
+The [revision 1.14 report](../docs/validation/atomic-energy-preparation-2026-09-28/README.md)
+records the latest atomic-energy preparation optimization and regression checks.
 The [revision 1.13 report](../docs/validation/energy-common-2026-09-27/README.md)
-records the latest shared-kernel energy/force checks and performance limits.
+records the preceding shared-kernel energy/force optimization.
 CPU comparisons compile OpenMP out on both sides; setting `OMP_NUM_THREADS=1`
 alone does not remove runtime overhead. To enable the Ti/O energy gate:
 

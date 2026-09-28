@@ -38,6 +38,8 @@ jobs:
             checks: "-fcheck=all -fbacktrace"
     steps:
       - uses: actions/checkout@v4
+      - name: Test LAMMPS installer
+        run: python3 -m unittest discover -s interfaces/lammps/tests -v
       - name: Install compilers and CMake
         run: |
           sudo apt-get update

@@ -1,0 +1,7 @@
+{
+  "interfaces/lammps/29Aug2024/ACCELNET/pair_accelnet.cpp": "db18892b98ec325f026734f4cf7ecdd68e51a60fc742707d0b4c5cd879913aa1",
+  "interfaces/lammps/29Aug2024/GPU/pair_accelnet_gpu.cpp": "fc8bf61e29fc542a1d49237aac816c05181597dc7334aa24bf9f291632b0b3a2",
+  "interfaces/lammps/29Aug2024/lib-gpu/lal_accelnet_ext.cpp": "dd9cc361eb7084ddfd545da402513610b21398438c27cfeea480ac059b3900cc",
+  "AccelNetPredictor/src/accelnet.f90": "07a8bc3d8283cea8bff60be1d4ef7371bc24c016c8a8ead438d916893da636b1",
+  "AccelNetPredictor/src/accelnet_batch_target.f90": "4b9f40ed5d64bf5febc628d3fa0f4b59adad90edc9c8bdaaec8ce51849bfda51"
+}

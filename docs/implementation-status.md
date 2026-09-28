@@ -1,6 +1,6 @@
 # CPU/GPU implementation status
 
-Assessment: 2026-09-27; AccelNet 1.1.0, methods revision 1.13; migration baseline `gpu`
+Assessment: 2026-09-28; AccelNet 1.1.0, methods revision 1.14; migration baseline `gpu`
 checkpoint `543b180`. This describes evaluation of models **inside AccelNet**,
 not GPU support in the upstream ænet or n2p2 programs.
 
@@ -96,6 +96,9 @@ records public API, composite descriptor, lifecycle and performance checks.
 The [revision 1.13 energy-only report](validation/energy-common-2026-09-27/README.md)
 adds species-partitioned Chebyshev moments, padded row storage, energy-only
 checks and an optional CPU energy regression gate.
+The [revision 1.14 atomic-energy report](validation/atomic-energy-preparation-2026-09-28/README.md)
+removes duplicate per-atom environment preparation while retaining the same
+common numerical kernels, and records the new CPU/GPU regression checks.
 
 * [Latest atomic-removal validation](validation/atomic-reduction-2026-09-27/README.md):
   CPU functional/reference tests, host 2/8-thread checks, H100/Blackwell
@@ -118,3 +121,15 @@ is documented in [model compatibility](model-compatibility.md#10-weightedcompact
 Not implemented: potential training, n2p2 4G/Q charge/electrostatic models, or
 approximate moments for compact angular functions. AccelNet-specific extended
 ASCII metadata is not guaranteed to be interpretable by upstream ænet.
+
+
+## Recommended LAMMPS release
+
+The recommended CPU/GPU integration target is **22 Jul 2025 Update 6**,
+pinned as `stable_22Jul2025_update6`. The shared `interfaces/lammps/install.py`
+installs into that release or the retained 29 Aug 2024 Update 4 release.
+Both use the same adapter and numerical kernels. See the
+[build instructions](../interfaces/lammps/README.md) and
+[compatibility validation](validation/lammps-current-2026-09-28/README.md).
+The 2 Sep 2026 candidate passes the investigated CPU cases but needs GPU API
+changes and is not accepted by the installer.

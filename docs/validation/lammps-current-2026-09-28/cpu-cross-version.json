@@ -1,0 +1,308 @@
+[
+  {
+    "version": "stable",
+    "case": "orthogonal",
+    "mode": "auto",
+    "total_energy": 0.0,
+    "virial_pressure": 6.548361852765083e-10,
+    "initial": {
+      "force": 1.5987211554602254e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 1.0769163338864018e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 0.0
+    }
+  },
+  {
+    "version": "stable",
+    "case": "orthogonal",
+    "mode": "direct",
+    "total_energy": 0.0,
+    "virial_pressure": 4.2382453102618456e-10,
+    "initial": {
+      "force": 6.127043317150083e-15,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 9.103828801926284e-15,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 4.440892098500626e-16
+    }
+  },
+  {
+    "version": "stable",
+    "case": "orthogonal",
+    "mode": "moment",
+    "total_energy": 0.0,
+    "virial_pressure": 6.548361852765083e-10,
+    "initial": {
+      "force": 1.5987211554602254e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 1.0769163338864018e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 0.0
+    }
+  },
+  {
+    "version": "stable",
+    "case": "triclinic",
+    "mode": "auto",
+    "total_energy": 0.0,
+    "virial_pressure": 1.2441887520253658e-09,
+    "initial": {
+      "force": 3.197442310920451e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 1.7763568394002505e-15
+    },
+    "final": {
+      "force": 4.671263376110346e-14,
+      "atom_energy": 0.0,
+      "position": 3.552713678800501e-15
+    }
+  },
+  {
+    "version": "stable",
+    "case": "triclinic",
+    "mode": "direct",
+    "total_energy": 0.0,
+    "virial_pressure": 6.348273018375039e-10,
+    "initial": {
+      "force": 2.398081733190338e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 1.7763568394002505e-15
+    },
+    "final": {
+      "force": 3.630429290524262e-14,
+      "atom_energy": 0.0,
+      "position": 3.552713678800501e-15
+    }
+  },
+  {
+    "version": "stable",
+    "case": "triclinic",
+    "mode": "moment",
+    "total_energy": 0.0,
+    "virial_pressure": 1.2441887520253658e-09,
+    "initial": {
+      "force": 3.197442310920451e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 1.7763568394002505e-15
+    },
+    "final": {
+      "force": 4.671263376110346e-14,
+      "atom_energy": 0.0,
+      "position": 3.552713678800501e-15
+    }
+  },
+  {
+    "version": "stable",
+    "case": "empty",
+    "mode": "auto",
+    "total_energy": 0.0,
+    "virial_pressure": 3.183231456205249e-11,
+    "initial": {
+      "force": 1.1962653090336062e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 1.2323475573339238e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    }
+  },
+  {
+    "version": "stable",
+    "case": "empty",
+    "mode": "direct",
+    "total_energy": 0.0,
+    "virial_pressure": 2.9103830456733704e-11,
+    "initial": {
+      "force": 4.773959005888173e-15,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 0.0
+    },
+    "final": {
+      "force": 6.217248937900877e-15,
+      "atom_energy": 0.0,
+      "position": 0.0
+    }
+  },
+  {
+    "version": "stable",
+    "case": "empty",
+    "mode": "moment",
+    "total_energy": 0.0,
+    "virial_pressure": 3.183231456205249e-11,
+    "initial": {
+      "force": 1.1962653090336062e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 1.2323475573339238e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    }
+  },
+  {
+    "version": "rc",
+    "case": "orthogonal",
+    "mode": "auto",
+    "total_energy": 0.0,
+    "virial_pressure": 6.548361852765083e-10,
+    "initial": {
+      "force": 1.5987211554602254e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 1.0769163338864018e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 0.0
+    }
+  },
+  {
+    "version": "rc",
+    "case": "orthogonal",
+    "mode": "direct",
+    "total_energy": 0.0,
+    "virial_pressure": 4.2382453102618456e-10,
+    "initial": {
+      "force": 6.127043317150083e-15,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 9.103828801926284e-15,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 4.440892098500626e-16
+    }
+  },
+  {
+    "version": "rc",
+    "case": "orthogonal",
+    "mode": "moment",
+    "total_energy": 0.0,
+    "virial_pressure": 6.548361852765083e-10,
+    "initial": {
+      "force": 1.5987211554602254e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 1.0769163338864018e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 0.0
+    }
+  },
+  {
+    "version": "rc",
+    "case": "triclinic",
+    "mode": "auto",
+    "total_energy": 0.0,
+    "virial_pressure": 1.2441887520253658e-09,
+    "initial": {
+      "force": 3.197442310920451e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 1.7763568394002505e-15
+    },
+    "final": {
+      "force": 4.671263376110346e-14,
+      "atom_energy": 0.0,
+      "position": 3.552713678800501e-15
+    }
+  },
+  {
+    "version": "rc",
+    "case": "triclinic",
+    "mode": "direct",
+    "total_energy": 0.0,
+    "virial_pressure": 6.348273018375039e-10,
+    "initial": {
+      "force": 2.398081733190338e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 1.7763568394002505e-15
+    },
+    "final": {
+      "force": 3.630429290524262e-14,
+      "atom_energy": 0.0,
+      "position": 3.552713678800501e-15
+    }
+  },
+  {
+    "version": "rc",
+    "case": "triclinic",
+    "mode": "moment",
+    "total_energy": 0.0,
+    "virial_pressure": 1.2441887520253658e-09,
+    "initial": {
+      "force": 3.197442310920451e-14,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 1.7763568394002505e-15
+    },
+    "final": {
+      "force": 4.671263376110346e-14,
+      "atom_energy": 0.0,
+      "position": 3.552713678800501e-15
+    }
+  },
+  {
+    "version": "rc",
+    "case": "empty",
+    "mode": "auto",
+    "total_energy": 0.0,
+    "virial_pressure": 3.183231456205249e-11,
+    "initial": {
+      "force": 1.1962653090336062e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 1.2323475573339238e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    }
+  },
+  {
+    "version": "rc",
+    "case": "empty",
+    "mode": "direct",
+    "total_energy": 0.0,
+    "virial_pressure": 2.9103830456733704e-11,
+    "initial": {
+      "force": 4.773959005888173e-15,
+      "atom_energy": 5.684341886080802e-14,
+      "position": 0.0
+    },
+    "final": {
+      "force": 6.217248937900877e-15,
+      "atom_energy": 0.0,
+      "position": 0.0
+    }
+  },
+  {
+    "version": "rc",
+    "case": "empty",
+    "mode": "moment",
+    "total_energy": 0.0,
+    "virial_pressure": 3.183231456205249e-11,
+    "initial": {
+      "force": 1.1962653090336062e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    },
+    "final": {
+      "force": 1.2323475573339238e-14,
+      "atom_energy": 0.0,
+      "position": 0.0
+    }
+  }
+]

@@ -1,0 +1,7 @@
+Building CXX object CMakeFiles/gpu.dir/tmp/accelnet-lammps-current-rc/lib/gpu/lal_accelnet_ext.cpp.o
+"/tmp/accelnet-lammps-current-rc/lib/gpu/lal_accelnet_ext.cpp", line 24: error: class "LAMMPS_AL::Device<double, double>" has no member "particle_split"
+    if (global_device.particle_split() != 1.0) return -8;
+                      ^
+
+1 error detected in the compilation of "/tmp/accelnet-lammps-current-rc/lib/gpu/lal_accelnet_ext.cpp".
+make: *** [CMakeFiles/gpu.dir/build.make:901: CMakeFiles/gpu.dir/tmp/accelnet-lammps-current-rc/lib/gpu/lal_accelnet_ext.cpp.o] Error 2

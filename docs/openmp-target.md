@@ -1,4 +1,4 @@
-# OpenMP target GPU batch evaluation
+# Optional OpenMP host and GPU batch APIs
 
 The optional `AccelNet::Target` library evaluates **Chebyshev, LJ, and Behler
 G1–G5 and n2p2 weighted/compact descriptors, the neural network and its input gradient, force contraction,
@@ -71,8 +71,9 @@ before/after CPU, H100, and LAMMPS timings.
 
 The [generic common-kernel optimization report](validation/generic-common-2026-09-26/README.md)
 records persistent grouped G4/G5 radial caching, value-only helpers, and fused LJ
-components. These improvements apply to both serial CPU and GPU instances; the
-default non-Chebyshev CPU batch still uses the independent established CPU path. The
+components. At the time of that report, the default non-Chebyshev CPU batch
+still used the independent established CPU path. All supported production
+CPU inference now uses the common serial kernels. The
 [Behler contraction report](validation/behler-contraction-2026-09-26/README.md)
 extends this with angular coefficient aggregation fused into the NN stage,
 differentiated Horner for shared integer powers, and local grouped value sums.
@@ -114,30 +115,72 @@ The [G5 moment report](validation/g5-moments-2026-09-27/README.md) compares the
 retained CPU direct/moment implementations with common direct/moment using the
 original G5 scaling fixture, rather than changing the model between methods.
 
-## Build and test on H100
+## CPU OpenMP build
+
+The ordinary CPU build is documented in the [root README](../README.md#cpu-quick-start).
+It needs no OpenMP runtime. For explicit **host threading**, start from the
+repository root and use a separate build directory:
 
 ```sh
-cmake -S . -B build-target \
-  -DCMAKE_Fortran_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/25.3/compilers/bin/nvfortran \
-  -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON \
-  -DACCELNET_BUILD_OPENMP_TARGET=ON \
-  -DACCELNET_OPENMP_TARGET_FLAGS="-mp=gpu -gpu=cc90,cc120"
-cmake --build build-target --parallel --target test_batch_target accelnet-target-benchmark
-# List GPU UUIDs, then choose the intended physical device explicitly.
-nvidia-smi --query-gpu=name,uuid --format=csv
-export CUDA_VISIBLE_DEVICES=GPU-2644154d-7268-af42-6631-59e1f3c6e7f3
-ctest --test-dir build-target -R predictor_target --output-on-failure
+cmake -S . -B build-host-omp -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_C_COMPILER=gcc \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=OFF \
+  -DACCELNET_OPENMP_TARGET_FLAGS="-fopenmp -foffload=disable -ffree-line-length-none" \
+  -DN2P2_SCALING_EXECUTABLE=
+cmake --build build-host-omp --parallel
+OMP_NUM_THREADS=1 build-host-omp/bin/test_batch_target --host --quick
+OMP_NUM_THREADS=8 OMP_PLACES=cores OMP_PROC_BIND=close \
+  build-host-omp/bin/test_batch_target --host --quick
+OMP_NUM_THREADS=1 ctest --test-dir build-host-omp -L target-host --output-on-failure
 ```
 
-The target flags apply to the optional GPU library and its consumers' link
-steps only. Use an appropriate compiler and offload flags on other platforms.
-The example embeds H100 (`cc90`) and Blackwell (`cc120`) code; `-gpu=cc90`
-suffices for H100 alone. Replace the example H100 UUID with your device's UUID.
-CUDA ordinal order can differ from `nvidia-smi` index order on mixed-GPU hosts.
-GNU Fortran 11 compiles this source with `-fopenmp`, but that alone does not
-enable GPU execution: a working offload compiler/runtime and device are required.
-The default backend rejects missing GPUs, invalid device IDs and CPU fallback.
-Explicit `use_host=.true.` also works with a GNU `-fopenmp` build without a GPU.
+GNU Fortran 11.4 has been tested with these flags. Link `AccelNet::Target` and
+initialize with `use_host=.true.` as below; default initialization requires a
+GPU. The ordinary CLI/object/atomic/SFB/batch APIs and LAMMPS `accelnet` remain
+serial within each caller/MPI rank. `OMP_NUM_THREADS` alone does not switch
+them to this backend. Do not run GPU-labelled tests on a host-only build.
+
+## GPU build and test on H100
+
+Requirements: CMake 3.20+, a C compiler, **NVIDIA HPC SDK `nvfortran`**, a
+compatible NVIDIA driver and a supported NVIDIA GPU. The tested toolchain is
+NVHPC 25.3 with SDK CUDA 12.8. `nvcc` alone cannot compile Fortran offload;
+GNU `-fopenmp` alone is not the validated NVIDIA GPU build. Other offload
+compilers and AMD/Intel GPUs have not been validated. LAMMPS additionally needs
+`nvc++` and the CUDA development toolkit; see its [GPU build guide](../interfaces/lammps/README.md#gpu-build-and-run).
+
+From the repository root:
+
+```sh
+export NVHPC_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/25.3
+cmake -S . -B build-target \
+  -DCMAKE_Fortran_COMPILER="$NVHPC_ROOT/compilers/bin/nvfortran" \
+  -DCMAKE_C_COMPILER=gcc -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=OFF \
+  -DACCELNET_OPENMP_TARGET_FLAGS="-mp=gpu -gpu=cc90" \
+  -DACCELNET_DESCRIPTORS_BUILD_N2P2_REFERENCE=OFF \
+  -DN2P2_SCALING_EXECUTABLE=
+cmake --build build-target --parallel
+nvidia-smi --query-gpu=name,uuid --format=csv
+# Replace with the intended physical device's UUID:
+export CUDA_VISIBLE_DEVICES=GPU-REPLACE-WITH-YOUR-DEVICE-UUID
+export OMP_TARGET_OFFLOAD=MANDATORY
+export OMP_NUM_THREADS=1
+build-target/bin/test_batch_target --quick
+ctest --test-dir build-target -L gpu --output-on-failure
+```
+
+The target flags apply to the optional target library and its consumers' link
+steps. Use `cc120` for the tested Blackwell GPU, or `cc90,cc120` for a binary
+containing both H100 and Blackwell code. Adjust SDK paths to your installation.
+Optional upstream n2p2 C++ reference tests are disabled here to avoid mixing
+the host C++ linker with NVHPC Fortran objects; run them in the GNU CPU build.
+Bundled GPU correctness tests remain enabled. Use separate build directories
+when switching compilers. CUDA ordinal order
+can differ from `nvidia-smi` index order on mixed-GPU hosts. Default initialization
+rejects missing GPUs, invalid device IDs and CPU fallback. Explicit
+`use_host=.true.` selects the CPU backend instead. Building this library does
+not add a GPU switch to the ordinary CLI or redirect its CPU API calls.
 
 The default self-contained test checks synthetic models. Set
 `ACCELNET_PREDICTOR_GOLDEN_DIR` to the directory containing `Ti.nn.ascii`,
@@ -206,8 +249,9 @@ The evaluation stages are:
 
 1. Compute neighbor geometry/radial descriptors and choose the angular method.
    For G4/G5 rows, fill shared radial-group values/derivatives in the same stage.
-2. In moment mode, construct moments in parallel over both atoms and monomials,
-   then form angular descriptors using the CPU model's polynomial coefficients.
+2. In moment mode, construct moments with independent center/species or
+   center/monomial/group work, depending on the descriptor family, then form
+   angular descriptors using the packed polynomial coefficients.
 3. For G4, accumulate descriptor values and edge Jacobians together in one
    center/pair/descriptor traversal, reusing cutoff, exponential and angular factors
    within each descriptor owner. GPU owners independently evaluate pair geometry.
@@ -255,8 +299,8 @@ least the number of monomials, `(p+1)*(p+2)*(p+3)/6`, with `p=angular_order`.
 This initial work estimate was checked against direct/moment timing sweeps; it
 is not a guarantee of the fastest method on every GPU/model. With no override,
 the CPU config's `evaluation_mode` is retained (normally auto). Forced modes let
-callers compare methods on their hardware. Original CPU kernels and mode policy
-are unchanged.
+callers compare methods on their hardware. The serial CPU and target instances
+use the same numerical kernels and eligibility policy.
 
 ## Correctness and performance checks
 
@@ -324,8 +368,10 @@ OMP_NUM_THREADS=1 python3 AccelNetPredictor/benchmark/compare_target_backends.py
 
 The script alternates five warmed samples, pins CPU execution to one core,
 compares every energy/force/virial component, and reports target-time/CPU-time.
-It times the established CPU batch path and the identical target source on the
-CPU and GPU, with resident CSR neighbors; GPU timings include transfers.
+It times the ordinary serial CPU batch API and the explicit target API on the
+CPU and GPU, with resident CSR neighbors; GPU timings include transfers. Both
+production paths now compile the common source. Use archived binaries to compare
+against the former independent CPU implementation.
 Neighbor construction and initialization are excluded. `--backends host` also
 works with GNU Fortran plus `-fopenmp`. Measurements from different compilers
 must be reported separately. `--descriptors` tests all new families, all ten
@@ -340,8 +386,10 @@ build with **no `-fopenmp` / `-mp` compiler or link flag**:
 
 ```sh
 cmake -S . -B build-target-serial -DCMAKE_BUILD_TYPE=Release \
-  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=ON
-cmake --build build-target-serial --target test_batch_target accelnet-target-benchmark
+  -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_C_COMPILER=gcc \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=ON \
+  -DN2P2_SCALING_EXECUTABLE=
+cmake --build build-target-serial --parallel
 ctest --test-dir build-target-serial -L target-host --output-on-failure
 python3 AccelNetPredictor/benchmark/compare_target_backends.py \
   --benchmark build-target-serial/bin/accelnet-target-benchmark \
@@ -406,12 +454,16 @@ parallelize those entry points. To exercise the threaded common kernels, build
 
 ```sh
 cmake -S . -B build-host-omp -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_C_COMPILER=gcc \
+  -DN2P2_SCALING_EXECUTABLE= \
   -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=OFF \
   '-DACCELNET_OPENMP_TARGET_FLAGS=-fopenmp -foffload=disable -ffree-line-length-none'
 cmake --build build-host-omp --target accelnet-target-benchmark test_batch_target
 
 cmake -S . -B build-host-serial -DCMAKE_BUILD_TYPE=Release \
-  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=ON
+  -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_C_COMPILER=gcc \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=ON \
+  -DN2P2_SCALING_EXECUTABLE=
 cmake --build build-host-serial --target accelnet-target-benchmark
 
 python3 AccelNetPredictor/benchmark/compare_openmp_host.py \
@@ -481,3 +533,9 @@ requires the Ti/O golden model directory. It checks both energy APIs at 64,
 builds or other benchmarks. See the [validation report](validation/energy-common-2026-09-27/README.md)
 for final measurements and the distinction between original-CPU and previous
 common-GPU baselines.
+
+
+The [revision 1.14 follow-up](validation/atomic-energy-preparation-2026-09-28/README.md)
+removes redundant atomic-API CSR preparation while retaining the same numerical
+kernels. It supersedes the per-atom-energy timings in the revision 1.13 report;
+its scope and validation are recorded separately.

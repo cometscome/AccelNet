@@ -1,7 +1,8 @@
 module accelnet
     use iso_c_binding, only: c_bool, c_char, c_double, c_f_pointer, c_int, c_null_char, c_ptr
     use iso_fortran_env, only: real64
-    use accelnet_batch_target_serial, only: target_model, target_workspace, evaluate_batch_target
+    use accelnet_batch_target_serial, only: target_model, target_workspace, evaluate_batch_target, &
+        evaluate_atomic_energy_target
     use accelnet_descriptors, only: atomic_structure, neighbor_data, descriptor_config, &
         build_neighbor_list, initialize_config, chebyshev_values, &
         CHEBYSHEV_EVALUATION_AUTO, CHEBYSHEV_EVALUATION_DIRECT, CHEBYSHEV_EVALUATION_MOMENT
@@ -475,18 +476,17 @@ contains
         integer(c_int), intent(in) :: type_j(n_j)
         real(c_double), intent(out) :: energy_i
         integer(c_int), intent(out) :: stat
-        real(real64) :: energies(1)
         energy_i=0
-        call prepare_atomic_environment(coo_i,type_i,n_j,coo_j,type_j,stat)
+        call validate_atomic_arguments(type_i,n_j,type_j,stat)
         if (stat/=ACCELNET_OK) return
-        call evaluate_batch_target(global_batch_model,atomic_species(:n_j+1),[1],[1,n_j+1], &
-            atomic_indices(:n_j),atomic_displacements(:,:n_j),energies,atomic_forces(:,:n_j+1), &
-            global_shared_work,status=stat,energy_only=.true.,reuse_model=.true.)
+        call prepare_atomic_model(stat)
+        if (stat/=ACCELNET_OK) return
+        call evaluate_atomic_energy_target(global_batch_model,type_i,type_j,coo_i,coo_j,energy_i, &
+            global_shared_work,status=stat,reuse_model=.true.)
         if (stat/=0) then
             stat=ACCELNET_ERR_ARGUMENT
             return
         end if
-        energy_i=energies(1)
     end subroutine accelnet_atomic_energy
 
     subroutine accelnet_atomic_energy_and_forces(coo_i, type_i, index_i, n_j, coo_j, type_j, &
@@ -605,21 +605,25 @@ contains
                 return
             end if
         end if
-        if (.not.batch_cache_valid) then
-            call global_shared_work%release()
-            call global_batch_model%initialize(global_model,use_host=.true.,status=batch_packed_status)
-            batch_cache_valid=.true.
-        end if
-        if (batch_packed_status/=0) then
-            stat=ACCELNET_ERR_ARGUMENT
-            return
-        end if
+        call prepare_atomic_model(stat)
+        if (stat/=ACCELNET_OK) return
         atomic_species(1)=type_i; atomic_species(2:n_j+1)=type_j
         do j=1,n_j
             atomic_indices(j)=j+1
             atomic_displacements(:,j)=coo_j(:,j)-coo_i
         end do
         atomic_forces(:,:n_j+1)=0
+    end subroutine
+
+    subroutine prepare_atomic_model(stat)
+        integer(c_int), intent(out) :: stat
+        stat=ACCELNET_OK
+        if (.not.batch_cache_valid) then
+            call global_shared_work%release()
+            call global_batch_model%initialize(global_model,use_host=.true.,status=batch_packed_status)
+            batch_cache_valid=.true.
+        end if
+        if (batch_packed_status/=0) stat=ACCELNET_ERR_ARGUMENT
     end subroutine
 
     subroutine validate_atomic_arguments(type_i, n_j, type_j, stat)

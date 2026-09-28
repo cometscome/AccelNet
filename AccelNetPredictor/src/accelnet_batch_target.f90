@@ -17,6 +17,7 @@ module accelnet_batch_target
     implicit none
     private
     public :: target_model, target_workspace, target_profile, evaluate_batch_target, evaluate_lammps_target
+    public :: evaluate_atomic_energy_target
 
     type :: target_profile
         real(real64) :: prepare = 0, upload = 0, descriptors = 0, network = 0, forces = 0, download = 0, total = 0
@@ -650,6 +651,70 @@ contains
         call execute_workspace(model,work,nrw,size(species),nedges,energies,forces,virial,timing,energy_only,descriptor_values)
         timing%total = omp_get_wtime()-started
         if (present(profile)) profile = timing
+    end subroutine
+
+    ! Build the single-center CSR directly in the resident workspace. Atomic
+    ! energy callers do not need an intermediate CSR or force accumulator;
+    ! all descriptor and network arithmetic still goes through execute_workspace.
+    ! As in evaluate_batch_target, reuse_model is only valid while the model is
+    ! unchanged; release work before mutating a model used with that promise.
+    subroutine evaluate_atomic_energy_target(model,center_species,neighbor_species,center,neighbors,energy,work, &
+                                            status,message,reuse_model)
+        type(target_model), intent(in) :: model
+        integer, intent(in) :: center_species,neighbor_species(:)
+        real(real64), intent(in) :: center(3),neighbors(:,:)
+        real(real64), intent(out) :: energy
+        type(target_workspace), intent(inout) :: work
+        integer, optional, intent(out) :: status
+        character(len=*), optional, intent(out) :: message
+        logical, optional, intent(in) :: reuse_model
+        real(real64) :: energies(1),unused_forces(3,1)
+        type(target_profile) :: timing
+        integer :: n,j,s,part
+        energy=0
+        if (present(status)) status=0
+        if (present(message)) message=''
+        if (.not.allocated(model%meta)) then
+            call target_failure('OpenMP target: initialize target_model first',status,message)
+            return
+        end if
+        n=size(neighbor_species); s=center_species
+        if (size(neighbors,1)/=3 .or. size(neighbors,2)/=n) then
+            call target_failure('OpenMP target: wrong displacement shape',status,message)
+            return
+        end if
+        if (s<1 .or. s>size(model%meta,2) .or. &
+            any(neighbor_species<1) .or. any(neighbor_species>size(model%meta,2))) then
+            call target_failure('OpenMP target: species out of range',status,message)
+            return
+        end if
+        if (any(model%local_species(neighbor_species,s)==0)) then
+            call target_failure('OpenMP target: neighbor species absent from model environment',status,message)
+            return
+        end if
+        if (model%meta(4,s)==10 .and. model%meta(3,s)==1 .and. n<model%meta(7,s)) then
+            call target_failure('OpenMP target: too few neighbors for version 10 center lookup',status,message)
+            return
+        end if
+        if (allocated(model%parts)) then
+            do part=1,size(model%parts)
+                if (model%parts(part)%meta(4,s)/=10 .or. model%parts(part)%meta(3,s)/=1) cycle
+                if (n>=model%parts(part)%meta(7,s)) cycle
+                call target_failure('common: too few neighbors for component version 10 lookup',status,message)
+                return
+            end do
+        end if
+        call prepare_workspace(model,work,1,n+1,n,reuse_model)
+        work%species(1)=s; work%species(2:n+1)=neighbor_species
+        work%centers(1)=1; work%offsets(1:2)=[1,n+1]
+        do j=1,n
+            work%indices(j)=j+1
+            work%dr(:,j)=neighbors(:,j)-center
+        end do
+        call upload_inputs(model%device,n+1,1,n,work%species,work%centers,work%offsets,work%indices,work%dr)
+        unused_forces=0
+        call execute_workspace(model,work,1,n+1,n,energies,unused_forces,timing=timing,energy_only=.true.)
+        energy=energies(1)
     end subroutine
 
     subroutine target_failure(text,status,message)

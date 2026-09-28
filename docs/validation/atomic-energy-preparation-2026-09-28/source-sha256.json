@@ -1,0 +1,8 @@
+{
+  "AccelNetPredictor/src/accelnet.f90": "07a8bc3d8283cea8bff60be1d4ef7371bc24c016c8a8ead438d916893da636b1",
+  "AccelNetPredictor/src/accelnet_batch_target.f90": "4b9f40ed5d64bf5febc628d3fa0f4b59adad90edc9c8bdaaec8ce51849bfda51",
+  "AccelNetPredictor/src/accelnet_target_kernels.f90": "24b954c30397a5cf62e0dab3edc703b18327cf0abf7220e4fd5a9f5e5e34087a",
+  "AccelNetPredictor/test/test_batch_target.f90": "c133a6f1383ec7010de6f8eecc8b5b7d54ad69e132024ef5541f8f7902c6f533",
+  "AccelNetPredictor/benchmark/compare_public_apis.py": "6edaea0c241a846890e75695f03a3ca0004fb2a6f92fb7008ec927442739c1f1",
+  "AccelNetPredictor/benchmark/public_api_benchmark.f90": "1774057dbd659a0d579e5ff17aa13c08064035d4c793aceca2f96763e718ddac"
+}
