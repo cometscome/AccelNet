@@ -1,14 +1,14 @@
 # AccelNet
 
+**New in 1.1.0:** Shared CPU/GPU kernels, expanded n2p2 support, and LAMMPS 22 Jul 2025 Update 6 integration — [details](changes.md).
+
 AccelNet is a Fortran library and command-line toolkit for evaluating
 machine-learning interatomic potentials from **ænet and n2p2**. It computes
 energies, analytic forces and configurational virials, provides Fortran/C APIs,
 and integrates with LAMMPS on CPU and GPU. It is an inference package; training
 remains in the upstream tools.
 
-**Library version: 1.1.0.** The CPU/GPU methods and validation are documented in
-[speedupmethods.md](speedupmethods.md), revision 1.14. The method is described
-in the [AccelNet paper](https://arxiv.org/abs/2608.03280).
+The method is described in the [AccelNet paper](https://arxiv.org/abs/2608.03280).
 
 ## Start here
 
@@ -381,21 +381,8 @@ Debug/shared builds with runtime checks. It uses bundled/synthetic fixtures;
 it does not run on a GPU. Optional reference comparisons and real-model tests
 are described in the component READMEs.
 
-The [revision 1.13 report](docs/validation/energy-common-2026-09-27/README.md)
-records the `f655fb0` implementation (2026-09-27): 52 CPU tests, 22 bounds/runtime-check tests, 35 GPU tests, 21 LAMMPS
-comparisons, H100 memcheck with zero errors, and host 2/8-thread checks. These
-counts describe that configuration and available external fixtures, not every
-fresh checkout.
-
-The [revision 1.14 atomic-energy report](docs/validation/atomic-energy-preparation-2026-09-28/README.md)
-records the current working-tree checks: 54 CPU tests, 22 bounds/runtime-check
-tests, 35 H100 GPU tests and all four configured performance gates passed.
-The 512-atom Ti/O per-atom-energy slowdown relative to the original CPU was
-reduced from about 11% to 1.4%; 64/192 atoms were about 2% faster in that run.
-Both CPU binaries compile OpenMP out and use identical drivers on one core.
-LAMMPS was not rerun for that API-preparation change; its archived comparisons
-remain identified by their own revisions. These are workload-specific results,
-not a universal CPU/GPU speedup.
+Release-specific changes, validation results and performance measurements are
+collected in [changes.md](changes.md).
 
 Run performance gates separately from correctness tests and competing work:
 
