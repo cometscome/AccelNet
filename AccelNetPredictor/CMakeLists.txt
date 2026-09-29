@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AccelNetPredictor VERSION 1.1.0 LANGUAGES Fortran C)
+project(AccelNetPredictor VERSION 1.1.1 LANGUAGES Fortran C)
 
 set(CMAKE_Fortran_STANDARD 2008)
 set(CMAKE_Fortran_STANDARD_REQUIRED ON)
@@ -151,6 +151,28 @@ if(ACCELNET_BUILD_OPENMP_TARGET)
     endif()
     target_compile_options(AccelNetTarget PRIVATE ${_offload_flags})
     target_link_options(AccelNetTarget PUBLIC ${_offload_flags})
+
+    # A shared-library C ABI consumer must not inherit Fortran module paths,
+    # compiler runtimes selected by CMake, or NVHPC/OpenMP link options.
+    # The shared objects own those dependencies. Native/static consumers keep
+    # using AccelNet::Target with its existing transitive link requirements.
+    if(BUILD_SHARED_LIBS)
+        add_library(AccelNetTargetC INTERFACE)
+        add_library(AccelNet::TargetC ALIAS AccelNetTargetC)
+        target_link_libraries(AccelNetTargetC INTERFACE "$<TARGET_FILE:AccelNetTarget>")
+        target_include_directories(AccelNetTargetC INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        add_dependencies(AccelNetTargetC AccelNetTarget)
+        if(APPLE)
+            set(_c_api_origin "@loader_path")
+        else()
+            set(_c_api_origin "$ORIGIN")
+        endif()
+        foreach(_library IN ITEMS AccelNetTarget AccelNetPredictor AccelNetDescriptors)
+            set_target_properties(${_library} PROPERTIES
+                INSTALL_RPATH "${_c_api_origin};${CMAKE_Fortran_IMPLICIT_LINK_DIRECTORIES}"
+                INSTALL_RPATH_USE_LINK_PATH TRUE)
+        endforeach()
+    endif()
 endif()
 
 add_executable(accelnet-predict app/accelnet_predict.f90)
@@ -217,6 +239,58 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
     target_include_directories(batch_test_support PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/batch-test-modules")
     target_link_libraries(batch_test_support PUBLIC AccelNetPredictor)
     if(ACCELNET_BUILD_OPENMP_TARGET)
+        add_executable(write_target_c_loading_fixtures test/write_target_c_loading_fixtures.f90)
+        target_link_libraries(write_target_c_loading_fixtures PRIVATE batch_test_support)
+        add_executable(test_target_c_loading test/test_target_c_loading.c)
+        target_include_directories(test_target_c_loading PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        if(TARGET AccelNetTargetC)
+            target_link_libraries(test_target_c_loading PRIVATE AccelNet::TargetC)
+        else()
+            target_link_libraries(test_target_c_loading PRIVATE AccelNetTarget)
+            set_target_properties(test_target_c_loading PROPERTIES LINKER_LANGUAGE Fortran)
+            if(CMAKE_Fortran_COMPILER_ID STREQUAL "NVHPC")
+                target_link_options(test_target_c_loading PRIVATE -Mnomain)
+            endif()
+        endif()
+        set(_c_loading_fixtures "${CMAKE_CURRENT_BINARY_DIR}/target-c-loading-fixtures")
+        file(MAKE_DIRECTORY "${_c_loading_fixtures}")
+        add_test(NAME predictor_target_c_loading_fixtures COMMAND write_target_c_loading_fixtures
+            "${_c_loading_fixtures}" "${CMAKE_CURRENT_SOURCE_DIR}/test/data")
+        set_tests_properties(predictor_target_c_loading_fixtures PROPERTIES
+            FIXTURES_SETUP target-c-loading LABELS "target-host;gpu;target-loading")
+        foreach(_location IN ITEMS host gpu)
+            add_test(NAME predictor_target_c_loading_${_location} COMMAND test_target_c_loading
+                "${_c_loading_fixtures}" "${CMAKE_CURRENT_SOURCE_DIR}/test/data" "${_location}")
+            set_tests_properties(predictor_target_c_loading_${_location} PROPERTIES
+                FIXTURES_REQUIRED target-c-loading TIMEOUT 180)
+        endforeach()
+        set_tests_properties(predictor_target_c_loading_host PROPERTIES
+            LABELS "target-host;target-loading" ENVIRONMENT "OMP_NUM_THREADS=1")
+        set_tests_properties(predictor_target_c_loading_gpu PROPERTIES
+            LABELS "gpu;target-loading" ENVIRONMENT "OMP_TARGET_OFFLOAD=MANDATORY")
+        if(BUILD_SHARED_LIBS)
+            find_package(Python3 COMPONENTS Interpreter REQUIRED)
+            add_test(NAME predictor_target_c_errors
+                COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/check_target_c_errors.py"
+                "$<TARGET_FILE:AccelNetTarget>" "${CMAKE_CURRENT_SOURCE_DIR}/test/data")
+            set_tests_properties(predictor_target_c_errors PROPERTIES
+                LABELS "target-host;target-loading" TIMEOUT 120 ENVIRONMENT "OMP_NUM_THREADS=1")
+            find_program(_target_c_gcc NAMES gcc cc)
+            find_program(_target_c_gfortran NAMES gfortran)
+            if(_target_c_gcc AND _target_c_gfortran)
+                foreach(_location IN ITEMS host gpu)
+                    add_test(NAME predictor_target_cmake_${_location}
+                        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/check_cmake_c_api.py"
+                        "${CMAKE_COMMAND}" "${CMAKE_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/.."
+                        "${_c_loading_fixtures}" "${_location}" "${_target_c_gcc}" "${_target_c_gfortran}")
+                    set_tests_properties(predictor_target_cmake_${_location} PROPERTIES
+                        FIXTURES_REQUIRED target-c-loading TIMEOUT 180 ENVIRONMENT "OMP_NUM_THREADS=1"
+                        RESOURCE_LOCK target-c-install)
+                endforeach()
+                set_tests_properties(predictor_target_cmake_host PROPERTIES LABELS "target-host;target-loading")
+                set_tests_properties(predictor_target_cmake_gpu PROPERTIES LABELS "gpu;target-loading")
+            endif()
+        endif()
         add_executable(test_target_c test/test_target_c.c)
         target_include_directories(test_target_c PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
         target_link_libraries(test_target_c PRIVATE AccelNetTarget)
@@ -638,8 +712,25 @@ if(ACCELNET_TARGET_SERIAL AND ACCELNET_PREDICTOR_BUILD_TESTING)
     get_property(_target_all_tests DIRECTORY PROPERTY TESTS)
     foreach(_test IN LISTS _target_all_tests)
         get_test_property(${_test} LABELS _labels)
-        if("gpu" IN_LIST _labels)
+        if("gpu" IN_LIST _labels AND NOT "target-host" IN_LIST _labels)
             set_tests_properties(${_test} PROPERTIES DISABLED TRUE)
         endif()
     endforeach()
+endif()
+
+# Separate package: usable by C-only projects and different Fortran compilers,
+# without loading the native Fortran export set or its dependency packages.
+if(TARGET AccelNetTargetC)
+    configure_package_config_file(cmake/AccelNetCConfig.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}/AccelNetCConfig.cmake"
+        INSTALL_DESTINATION lib/cmake/AccelNetC)
+    write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/AccelNetCConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
+    install(TARGETS AccelNetTarget AccelNetPredictor AccelNetDescriptors
+        LIBRARY DESTINATION lib COMPONENT TargetC
+        RUNTIME DESTINATION bin COMPONENT TargetC)
+    install(FILES include/accelnet_target.h DESTINATION include/accelnet-c COMPONENT TargetC)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/AccelNetCConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/AccelNetCConfigVersion.cmake"
+        DESTINATION lib/cmake/AccelNetC COMPONENT TargetC)
 endif()

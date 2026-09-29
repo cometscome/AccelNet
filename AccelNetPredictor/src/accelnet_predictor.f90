@@ -72,11 +72,20 @@ contains
         end do
     end subroutine predictor_set_g5_evaluation
 
-    subroutine load_predictor_from_n2p2(model_directory, model)
+    subroutine load_predictor_from_n2p2(model_directory, model, status, message)
         character(len=*), intent(in) :: model_directory
         class(predictor_model), intent(out) :: model
-        integer :: species
-        call load_n2p2_model(model_directory, model%networks, model%setups, model%species_names)
+        integer, optional, intent(out) :: status
+        character(len=*), optional, intent(out) :: message
+        integer :: species, stat
+        character(len=512) :: detail
+        call load_n2p2_model(model_directory, model%networks, model%setups, model%species_names, stat, detail)
+        if (present(status)) status = stat
+        if (present(message)) message = detail
+        if (stat /= 0) then
+            if (.not. present(status)) error stop trim(detail)
+            return
+        end if
         do species = 1, size(model%setups)
             model%maximum_cutoff = max(model%maximum_cutoff, model%setups(species)%model%maximum_cutoff)
             model%minimum_distance = min(model%minimum_distance, model%setups(species)%minimum_distance)

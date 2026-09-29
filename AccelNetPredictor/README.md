@@ -261,6 +261,21 @@ and rejects unintended CPU fallback. The [target guide](../docs/openmp-target.md
 describes device selection, CSR input, workspaces and energy-only evaluation.
 The usual `accelnet-predict` CLI has no GPU option.
 
+The target C API also loads n2p2 directories directly with
+`accelnet_target_create_n2p2`, and selects Chebyshev convention 0/1/10 with
+`accelnet_target_create_versioned`. Existing constructors retain version 0.
+`accelnet_target_get_species` exposes the model's species order. See
+[C model loading](../docs/openmp-target.md#c-model-loading) for signatures,
+error behavior and explicit CPU execution with `ACCELNET_TARGET_HOST`.
+Callers using a different Fortran compiler can use `ISO_C_BINDING` at this
+C ABI boundary without importing the GPU library's compiler-specific modules.
+For shared libraries, link the C-only `AccelNet::TargetC` target from
+`find_package(AccelNetC CONFIG REQUIRED)`. This target does not propagate
+NVHPC/OpenMP flags to the caller. The [C-only build and installation guide](../docs/openmp-target.md#c-only-cmake-package)
+also covers serial CPU builds without a GPU SDK. Embedded network paths may
+be supplied in any order, and malformed n2p2 models return diagnostics to the
+C caller without terminating its process.
+
 LAMMPS GPU use additionally requires **NVHPC `nvc++`**, the CUDA toolkit and
 `PKG_GPU=ON`, `GPU_API=cuda`, `GPU_PREC=double`. The
 [LAMMPS GPU guide](../interfaces/lammps/README.md#gpu-build-and-run) gives the

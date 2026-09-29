@@ -189,6 +189,124 @@ Ti/O model test. This directory has the same meaning as in the CPU suite.
 
 ## API and lifetime
 
+### C model loading
+
+`accelnet_target.h` keeps the original `accelnet_target_create` and
+`accelnet_target_create_modes` signatures; both retain Chebyshev version 0.
+Use `accelnet_target_create_versioned` to select convention 0, 1 or 10
+independently of the direct/moment evaluation mode:
+
+```c
+const char *paths[] = {"Si.15-15.ann", "O.15-15.ann"}; /* either file order is accepted */
+void *handle = NULL;
+double cutoff;
+char error[512];
+int status = accelnet_target_create_versioned(2, paths, 0,
+    1, /* Chebyshev version, e.g. for PIMD's bundled aenet */
+    0, /* Chebyshev auto */
+    0, /* G5 auto */
+    &cutoff, &handle, error);
+/* Check status before compute; release with accelnet_target_destroy(handle). */
+```
+
+`.ascii` files and compatible native binary networks use the same readers as
+the Fortran API. The version is not inferred from the model filename or binary
+metadata. Version 10 retains its documented minimum-neighbor requirement.
+
+Supported n2p2 2G model directories can be loaded without converting networks:
+
+```c
+int nspecies;
+int status = accelnet_target_create_n2p2("/path/to/model", 0, 0,
+    &nspecies, &cutoff, &handle, error);
+/* On success, discover the global model order (species IDs are one-based): */
+if (status == 0) {
+    for (int species = 1; species <= nspecies; ++species) {
+        char symbol[17];
+        int query_status = accelnet_target_get_species(handle, species,
+            sizeof(symbol), symbol, error);
+        /* Check query_status and map the application's atoms to these IDs. */
+    }
+}
+```
+
+The third argument selects G5 mode 0--3. n2p2 normalization, scaling, reference
+energies and element-specific networks are preserved. Coordinates and outputs
+use the model's physical units, as with the existing Fortran loader. The species
+query also works on handles created from embedded network files.
+
+All embedded-network constructors accept arbitrary file order and reorder by
+each file's central element. Duplicate/missing elements or inconsistent global
+species tables are rejected. The species IDs returned by the query follow the
+model's global order, not the supplied path order. n2p2 uses atomic-number order.
+
+For all C constructors, a nonnegative device ID requires real GPU execution.
+`ACCELNET_TARGET_HOST` explicitly selects CPU execution of the target API for
+host threading or tests; it is not an automatic fallback. Each handle owns its
+model snapshot and workspace, and must be destroyed independently. Constructors
+set the handle to null and cutoff to zero on returned errors; the n2p2 constructor
+also clears `nspecies`. Pass an empty output handle, not a still-live one.
+Malformed/unsupported n2p2 inputs and missing required weights/scaling files
+return a nonzero status and diagnostic. Partial models and file units are
+released; a failed load does not invalidate other live handles. Fortran callers
+of `load_n2p2_model`, `load_n2p2_setups`, and `load_predictor_from_n2p2` can opt
+into this behavior with optional `status` and `message` outputs. Calls omitting
+`status` retain the existing fatal-error behavior.
+
+The C ABI passes scalars, arrays and opaque handles, so a caller using another
+Fortran compiler can declare `bind(C)` interfaces with `ISO_C_BINDING`. It must
+not consume NVHPC `.mod` files or pass compiler-specific derived types. Build
+the GPU library and its dependencies together with NVHPC and provide their
+runtime libraries when linking/loading the shared library.
+
+### C-only CMake package
+
+For shared builds, `AccelNet::TargetC` is the C ABI target. Native Fortran
+applications may continue using `AccelNet::Target`. The C ABI target supplies
+only the shared object and public C headers; it does not propagate `.mod`
+directories or the library compiler's flags (for example NVHPC's `-mp=gpu`).
+It is available both in-tree and through an independent installed package:
+
+```cmake
+project(my_application LANGUAGES C) # Fortran callers can enable their own compiler.
+find_package(AccelNetC CONFIG REQUIRED)
+target_link_libraries(my_application PRIVATE AccelNet::TargetC)
+```
+
+Configure a serial CPU-only C API library with GNU Fortran, no GPU SDK or
+OpenMP runtime:
+
+```sh
+cmake -S . -B build-c-cpu -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_Fortran_COMPILER=gfortran -DBUILD_SHARED_LIBS=ON \
+  -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=ON
+cmake --build build-c-cpu --target AccelNetTarget --parallel
+cmake --install build-c-cpu --prefix /path/to/accelnet-cpu --component TargetC
+```
+
+The option `ACCELNET_BUILD_OPENMP_TARGET` enables the target API; with
+`ACCELNET_TARGET_SERIAL=ON` its directives/runtime calls are compiled out.
+Select `ACCELNET_TARGET_HOST` when creating a CPU model. For threaded CPU or
+GPU libraries use the corresponding recipes above, with `BUILD_SHARED_LIBS=ON`
+and `ACCELNET_TARGET_SERIAL=OFF`; install the same `TargetC` component. Set
+the caller's `CMAKE_PREFIX_PATH` to that installation. A GPU-capable library
+can also explicitly run on the host; its NVHPC runtime dependency still applies.
+
+The component installs the target/predictor/descriptor shared libraries,
+`include/accelnet-c/accelnet_target.h`, and `lib/cmake/AccelNetC`. Sibling-library
+runtime lookup is relative to the installation, so moving the installation
+does not require its original build directory. The compiler runtimes remain
+external dependencies. Static libraries retain the native link interface;
+the compiler-independent `AccelNetC` package is provided only for shared builds.
+
+`predictor_target_c_loading_host` runs in GNU CI without a GPU;
+`predictor_target_c_loading_gpu` exercises the same C caller on a GPU. Both
+compare atomic energies, forces and all nine virial components against the
+independent CPU reference for versions 0/1/10 and four n2p2 fixtures, including
+scaling/normalization, different element topologies, row subsets and live handles.
+
+### Fortran model loading
+
 ```fortran
 use accelnet_batch_target, only: target_model, target_workspace, evaluate_batch_target
 type(target_model) :: gpu_model

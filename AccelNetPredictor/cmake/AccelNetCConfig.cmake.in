@@ -1,0 +1,14 @@
+@PACKAGE_INIT@
+
+# Intentionally no find_dependency(AccelNetPredictor) or Fortran language
+# requirement. Only the public C header and a shared object cross this boundary.
+set_and_check(AccelNetC_LIBRARY
+    "${PACKAGE_PREFIX_DIR}/lib/@CMAKE_SHARED_LIBRARY_PREFIX@accelnet_target@CMAKE_SHARED_LIBRARY_SUFFIX@")
+set_and_check(AccelNetC_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include/accelnet-c")
+if(NOT TARGET AccelNet::TargetC)
+    add_library(AccelNet::TargetC SHARED IMPORTED)
+    set_target_properties(AccelNet::TargetC PROPERTIES
+        IMPORTED_LOCATION "${AccelNetC_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${AccelNetC_INCLUDE_DIR}")
+endif()
+check_required_components(AccelNetC)

@@ -15,7 +15,7 @@ not bitwise equality.
 
 | Item | Version or identity |
 |---|---|
-| Current AccelNet / AccelNetPredictor release | **1.1.0**, as declared by CMake |
+| Current AccelNet / AccelNetPredictor release | **1.1.1**, as declared by CMake |
 | Library version used in the archived measurements through Section 24 | **1.0.1** |
 | Base Git commit | `c6631460a1bbb990c82e3e0ff5e73c36c52f6f9b` |
 | Base `git describe --tags --always` | `1.0.0-6-gc663146` |
@@ -880,7 +880,7 @@ complete validation log, binary/source identities, and reproduction commands.
 | 1.2 | CPU-style Jacobian experiments; Behler angular coefficient contraction, differentiated Horner, grouped values, and measured force-accumulation choices |
 
 These are documentation revisions, not new AccelNet release numbers; the CMake
-project version at that checkpoint was 1.0.1; the current release is 1.1.0.
+project version at that checkpoint was 1.0.1; the current release is 1.1.1.
 
 ## 13. Reusing the Chebyshev lessons for Behler descriptors
 

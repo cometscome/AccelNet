@@ -34,7 +34,15 @@ int main(int argc, char **argv) {
     REQUIRE(accelnet_target_create(2,paths,0,99,&cutoff,&second,error)!=0 && !second);
     REQUIRE(accelnet_target_create_modes(2,paths,0,0,99,&cutoff,&second,error)!=0 && !second);
     const char *reversed[2]={argv[2],argv[1]};
-    REQUIRE(accelnet_target_create(2,reversed,0,0,&cutoff,&second,error)!=0 && !second);
+    REQUIRE(accelnet_target_create(2,reversed,0,0,&cutoff,&second,error)==0 && second);
+    double e[2],f[6]={0},w[9]={0};
+    REQUIRE(accelnet_target_compute(second,2,2,2,species,centers,offsets,indices,dr,e,f,w,error)==0);
+    for (int i=0;i<2;i++) REQUIRE(fabs(e[i]-reference[i])<1e-10);
+    for (int i=0;i<6;i++) REQUIRE(fabs(f[i]-rf[i])<1e-10);
+    for (int i=0;i<9;i++) REQUIRE(fabs(w[i]-rw[i])<1e-10);
+    accelnet_target_destroy(second); second=NULL;
+    const char *duplicate[2]={argv[1],argv[1]};
+    REQUIRE(accelnet_target_create(2,duplicate,0,0,&cutoff,&second,error)!=0 && !second);
     FILE *bad=fopen("target-invalid.nn.ascii","w");
     REQUIRE(bad!=NULL);
     fputs("4\n56\n",bad); fclose(bad);

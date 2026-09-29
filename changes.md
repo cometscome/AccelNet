@@ -1,5 +1,64 @@
 # Changes
 
+## 1.1.1 — 2026-09-29
+
+### C model loading for CPU and GPU
+
+- Add `accelnet_target_create_n2p2` to load supported n2p2 model directories
+  directly, including their scaling and element-specific weight files, without
+  converting them to ænet networks first.
+- Add `accelnet_target_create_versioned` to select Chebyshev conventions 0, 1,
+  or 10 independently of the DIRECT/MOMENT/AUTO evaluation algorithms.
+  Existing C constructor signatures remain available and retain version 0.
+- Accept embedded ænet/AccelNet network files in any order. Validate the global
+  species table and reject duplicate elements or inconsistent metadata while
+  retaining the model's canonical species IDs.
+- Add `accelnet_target_get_species` so embedding applications can map their
+  element names to the model's one-based species ordering.
+- Add `ACCELNET_TARGET_HOST` (`-1`) for explicit host execution through the same
+  target C API. Nonnegative device IDs require actual GPU execution; requesting
+  an unavailable device does not silently fall back to the CPU. The ordinary
+  library/CLI workflow remains serial CPU by default.
+
+### Shared-library integration across compilers
+
+- Add the standalone `AccelNetC` CMake package and `AccelNet::TargetC` target.
+  C, C++ and Fortran `ISO_C_BINDING` callers can link the shared C ABI without
+  importing compiler-specific Fortran modules or NVHPC/OpenMP compiler flags.
+  This enables, for example, GNU-compiled PIMD to call an NVHPC-compiled
+  AccelNet library for CPU or GPU inference.
+- Provide a `TargetC` install component containing the required shared
+  libraries, C header and CMake package files. It requires
+  `BUILD_SHARED_LIBS=ON` and `ACCELNET_BUILD_OPENMP_TARGET=ON`; use
+  `ACCELNET_TARGET_SERIAL=ON` for a CPU build with OpenMP compiled out.
+- Preserve sibling-library and compiler-runtime search paths in installed
+  shared libraries. The matching compiler runtimes must still be available
+  on the execution machine. Native Fortran/static consumers can continue to
+  use the existing targets.
+- Document model-loading contracts, build/install commands and mixed-compiler
+  consumption in the [target API guide](docs/openmp-target.md#c-model-loading)
+  and [C-only CMake package guide](docs/openmp-target.md#c-only-cmake-package).
+
+### Error handling and regression tests
+
+- Return n2p2 parser errors through the target C API instead of terminating
+  the embedding process. Malformed/unsupported models and missing or invalid
+  weights/scaling return a nonzero status, a diagnostic, a null handle and
+  cleared outputs. Partial loads are cleaned up without invalidating other
+  live handles. Existing Fortran callers retain fatal errors unless they
+  request the new optional status output.
+- Add host/GPU C API comparisons against the independent CPU reference,
+  covering all three Chebyshev conventions, G5 modes, direct n2p2 loading,
+  species queries, unordered networks, row subsets and workspace reuse.
+- Test repeated malformed-model failures followed by successful loads,
+  independent live handles, C-only consumers, installation relocation and
+  GNU Fortran callers linked to NVHPC shared libraries. Run the host loading,
+  error and package checks in the GNU GitHub Actions matrix.
+- Recorded validation: 41 GNU bounds/runtime-checked CPU tests, 9 serial
+  target-host tests and 39 NVHPC host/GPU tests passed; these counts overlap.
+  H100, Blackwell C loading and a GNU Fortran caller using the NVHPC library
+  are covered in the [validation report](docs/validation/target-c-loading-2026-09-28/README.md).
+
 ## 1.1.0 — 2026-09-28
 
 ### Shared CPU/GPU inference

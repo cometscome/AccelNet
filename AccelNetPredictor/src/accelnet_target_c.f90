@@ -1,7 +1,7 @@
 ! Instance-owned C interface for the optional GPU backend.
 module accelnet_target_c
     use iso_c_binding
-    use accelnet_predictor, only: predictor_model, load_predictor_from_network_data
+    use accelnet_predictor, only: predictor_model, load_predictor_from_network_data, load_predictor_from_n2p2
     use aenet_network, only: atomic_network, read_aenet_network
     use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
     use accelnet_batch_target
@@ -10,6 +10,7 @@ module accelnet_target_c
     type :: context
         type(target_model), pointer :: model => null()
         type(target_workspace), pointer :: work => null()
+        character(len=16), allocatable :: species(:)
     end type
 contains
     ! Preserve the existing ABI and its Chebyshev mode argument.
@@ -30,7 +31,18 @@ contains
         type(c_ptr), intent(out) :: handle
         character(c_char), intent(out) :: message(512)
         integer(c_int) :: status
-        type(context), pointer :: ctx
+        status = accelnet_target_create_versioned(nspecies,paths,device,0_c_int,mode,g5_mode,cutoff,handle,message)
+    end function
+
+    function accelnet_target_create_versioned(nspecies,paths,device,version,mode,g5_mode,cutoff,handle,message) &
+        result(status) bind(C)
+        integer(c_int), value :: nspecies,device,mode,g5_mode
+        integer(c_int), value :: version
+        type(c_ptr), intent(in) :: paths(nspecies)
+        real(c_double), intent(out) :: cutoff
+        type(c_ptr), intent(out) :: handle
+        character(c_char), intent(out) :: message(512)
+        integer(c_int) :: status
         type(predictor_model) :: source
         type(atomic_network), allocatable :: nets(:)
         integer :: k, nr, na, kind, env_count, expected_dim
@@ -38,9 +50,14 @@ contains
         real(c_double) :: rc, ac, alpha, middle
         character(c_char), pointer :: path(:)
         character(len=4096), allocatable :: filenames(:)
-        character(len=511) :: detail
+        integer, allocatable :: order(:)
         integer :: i,j,unit,ios
         handle = c_null_ptr; cutoff = 0; message = c_null_char; status = 1
+        call c_message('Invalid or incomplete embedded model metadata',message)
+        if (version /= 0 .and. version /= 1 .and. version /= 10) then
+            call c_message('Chebyshev version must be 0, 1, or 10',message)
+            return
+        end if
         if (nspecies < 1 .or. mode < 0 .or. mode > 2 .or. g5_mode < 0 .or. g5_mode > 3) then
             call c_message('Invalid species count or evaluation mode',message)
             return
@@ -63,6 +80,7 @@ contains
             close(unit)
         end do
         allocate(nets(nspecies))
+        allocate(order(nspecies),source=0)
         do i = 1,nspecies
             call read_aenet_network(trim(filenames(i)),nets(i),ios)
             if (ios /= 0) then
@@ -79,11 +97,29 @@ contains
                 call c_message('Network species count or descriptor metadata is invalid',message)
                 return
             end if
-            if (any(nets(i)%species_names /= nets(1)%species_names) .or. &
-                nets(i)%atomtype /= nets(i)%species_names(i)) then
-                call c_message('Network paths must follow embedded global species ordering',message)
+            if (any(nets(i)%species_names /= nets(1)%species_names)) then
+                call c_message('Networks disagree on embedded global species ordering',message)
                 return
             end if
+            do j=1,nspecies
+                if (count(nets(i)%species_names == nets(i)%species_names(j)) /= 1) then
+                    call c_message('Duplicate embedded model species',message)
+                    return
+                end if
+            end do
+            k=0
+            do j=1,nspecies
+                if (nets(i)%atomtype == nets(1)%species_names(j)) k=j
+            end do
+            if (k == 0) then
+                call c_message('Network element is missing from embedded species',message)
+                return
+            end if
+            if (order(k) /= 0) then
+                call c_message('Duplicate network element',message)
+                return
+            end if
+            order(k)=i
             do k = 1,nspecies
                 if (.not. any(nets(i)%environment_names == nets(i)%species_names(k))) then
                     call c_message('Embedded environment species are incomplete',message)
@@ -185,18 +221,113 @@ contains
                 return
             end if
         end do
-        call load_predictor_from_network_data(nets,source)
+        call load_predictor_from_network_data(nets(order),source,chebyshev_version=version)
+        status = create_context(source,device,mode,g5_mode,cutoff,handle,message)
+    end function
+
+    function accelnet_target_create_n2p2(directory,device,g5_mode,nspecies,cutoff,handle,message) result(status) bind(C)
+        type(c_ptr), value :: directory
+        integer(c_int), value :: device,g5_mode
+        integer(c_int), intent(out) :: nspecies
+        real(c_double), intent(out) :: cutoff
+        type(c_ptr), intent(out) :: handle
+        character(c_char), intent(out) :: message(512)
+        integer(c_int) :: status
+        type(predictor_model) :: source
+        character(c_char), pointer :: path(:)
+        character(len=4096) :: filename
+        character(len=512) :: detail
+        integer :: i,unit,ios
+        status = 1; handle = c_null_ptr; cutoff = 0; nspecies = 0; message = c_null_char
+        if (g5_mode < 0 .or. g5_mode > 3 .or. device < -1) then
+            call c_message('Invalid device or G5 evaluation mode',message)
+            return
+        end if
+        if (.not. c_associated(directory)) then
+            call c_message('Missing n2p2 model directory',message)
+            return
+        end if
+        call c_f_pointer(directory,path,[4096])
+        filename = ''
+        do i = 1,4086 ! leave room for /input.nn and a terminator
+            if (path(i) == c_null_char) exit
+            filename(i:i) = path(i)
+        end do
+        if (i == 1 .or. i > 4086) then
+            call c_message('Empty or overlong n2p2 model directory',message)
+            return
+        end if
+        open(newunit=unit,file=trim(filename)//'/input.nn',status='old',action='read',iostat=ios)
+        if (ios /= 0) then
+            call c_message('Cannot open n2p2 input.nn',message)
+            return
+        end if
+        close(unit)
+        call load_predictor_from_n2p2(trim(filename),source,status,detail)
+        if (status /= 0) then
+            call c_message(detail,message)
+            return
+        end if
+        status = create_context(source,device,0_c_int,g5_mode,cutoff,handle,message)
+        if (status == 0) nspecies = size(source%species_names)
+    end function
+
+    function create_context(source,device,mode,g5_mode,cutoff,handle,message) result(status)
+        type(predictor_model), intent(in) :: source
+        integer(c_int), intent(in) :: device,mode,g5_mode
+        real(c_double), intent(out) :: cutoff
+        type(c_ptr), intent(out) :: handle
+        character(c_char), intent(out) :: message(512)
+        integer(c_int) :: status
+        type(context), pointer :: ctx
+        character(len=511) :: detail
+        status = 1; handle = c_null_ptr; cutoff = 0; message = c_null_char
+        if (device < -1) then
+            call c_message('Invalid device; use a GPU index or ACCELNET_TARGET_HOST',message)
+            return
+        end if
         allocate(ctx)
         allocate(ctx%model,ctx%work)
-        call ctx%model%initialize(source,device,mode,status,detail,g5_mode=g5_mode)
+        call ctx%model%initialize(source,device,mode,status,detail,use_host=(device == -1),g5_mode=g5_mode)
         if (status /= 0) then
             call c_message(detail,message)
             deallocate(ctx%model,ctx%work)
             deallocate(ctx)
             return
         end if
+        ctx%species = source%species_names
         cutoff = source%maximum_cutoff
         handle = c_loc(ctx)
+    end function
+
+    function accelnet_target_get_species(handle,species,capacity,symbol,message) result(status) bind(C)
+        type(c_ptr), value :: handle
+        integer(c_int), value :: species,capacity
+        character(c_char), intent(out) :: symbol(capacity),message(512)
+        integer(c_int) :: status
+        type(context), pointer :: ctx
+        integer :: i,n
+        status = 1; message = c_null_char
+        if (capacity > 0) symbol(1) = c_null_char
+        if (.not. c_associated(handle)) then
+            call c_message('Missing target model handle',message)
+            return
+        end if
+        call c_f_pointer(handle,ctx)
+        if (species < 1 .or. species > size(ctx%species)) then
+            call c_message('Species index is outside the model (one-based)',message)
+            return
+        end if
+        n = len_trim(ctx%species(species))
+        if (capacity <= n) then
+            call c_message('Species buffer is too small (include the null terminator)',message)
+            return
+        end if
+        do i = 1,n
+            symbol(i) = ctx%species(species)(i:i)
+        end do
+        symbol(n+1) = c_null_char
+        status = 0
     end function
 
     subroutine accelnet_target_destroy(handle) bind(C)
@@ -223,7 +354,10 @@ contains
         character(len=511) :: detail
         type(context), pointer :: ctx
         status = 1; message = c_null_char
-        if (.not. c_associated(handle)) return
+        if (.not. c_associated(handle)) then
+            call c_message('Missing target model handle',message)
+            return
+        end if
         call c_f_pointer(handle,ctx)
         call evaluate_batch_target(ctx%model,species,centers,offsets,indices,dr,e,f,ctx%work,w, &
             status=status,message=detail)

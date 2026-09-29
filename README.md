@@ -1,6 +1,6 @@
 # AccelNet
 
-**New in 1.1.0:** Shared CPU/GPU kernels, expanded n2p2 support, and LAMMPS 22 Jul 2025 Update 6 integration — [details](changes.md).
+**New in 1.1.1:** Extend CPU/GPU C model loading and add a compiler-independent shared-library package for applications such as PIMD — [details](changes.md).
 
 AccelNet is a Fortran library and command-line toolkit for evaluating
 machine-learning interatomic potentials from **ænet and n2p2**. It computes

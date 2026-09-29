@@ -1,7 +1,7 @@
 # AccelNet Compatibility with ænet and n2p2 Models
 
 Assessment date: 2026-09-27<br>
-Current AccelNet release: `1.1.0`<br>
+Current AccelNet release: `1.1.1`<br>
 Compatibility assessment baseline: `1.0.1` (methods revision 1.12)<br>
 Reference implementations: ænet `2.0.4`, n2p2 `v2.3.0`
 
