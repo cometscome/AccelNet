@@ -299,6 +299,19 @@ does not require its original build directory. The compiler runtimes remain
 external dependencies. Static libraries retain the native link interface;
 the compiler-independent `AccelNetC` package is provided only for shared builds.
 
+AccelNet 1.1.2 explicitly marks its C entry points public to work around missing
+shared-library exports with GNU Fortran 16.2 (`private` / `bind(C)`,
+[GCC PR126872](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=126872)). Rebuild the
+library after upgrading. On macOS the installed sibling-library search path
+uses `@loader_path`; consumers linked through `AccelNet::TargetC` receive the
+library location through CMake. The relocated-package test executes C and
+Fortran clients without `DYLD_LIBRARY_PATH`, `DYLD_FALLBACK_LIBRARY_PATH` or
+`LD_LIBRARY_PATH` overrides. Compiler runtime libraries must still be installed.
+If a manually linked executable cannot locate a dylib, inspect its load commands
+with `otool -L` and `otool -l`; a runtime search-path failure is separate from
+missing C exports. Shared builds can check the complete public C symbol set with
+`ctest --test-dir build -L c-api --output-on-failure`.
+
 `predictor_target_c_loading_host` runs in GNU CI without a GPU;
 `predictor_target_c_loading_gpu` exercises the same C caller on a GPU. Both
 compare atomic energies, forces and all nine virial components against the

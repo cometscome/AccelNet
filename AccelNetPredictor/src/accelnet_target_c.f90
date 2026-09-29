@@ -7,6 +7,12 @@ module accelnet_target_c
     use accelnet_batch_target
     implicit none
     private
+    ! Keep C entry points public, including with GNU Fortran 16.2 (GCC PR126872).
+    public :: accelnet_target_create, accelnet_target_create_modes
+    public :: accelnet_target_create_versioned, accelnet_target_create_n2p2
+    public :: accelnet_target_get_species, accelnet_target_destroy
+    public :: accelnet_target_compute, accelnet_target_compute_device
+
     type :: context
         type(target_model), pointer :: model => null()
         type(target_workspace), pointer :: work => null()

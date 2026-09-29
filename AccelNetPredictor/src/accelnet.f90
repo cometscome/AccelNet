@@ -87,6 +87,12 @@ module accelnet
     public :: accelnet_sfb_init, accelnet_sfb_final, accelnet_sfb_nvalues
     public :: accelnet_sfb_eval, accelnet_sfb_reconstruct_radial
 
+    ! The C wrappers have distinct Fortran names. Explicit visibility also
+    ! avoids hidden C binding labels with GNU Fortran 16.2 (GCC PR126872).
+    public :: accelnet_init_c, accelnet_init_n2p2_c
+    public :: accelnet_load_potential_c, accelnet_load_potential_ascii_c, accelnet_load_n2p2_c
+    public :: accelnet_convert_atom_types_c, accelnet_sfb_init_c
+
 contains
 
     subroutine accelnet_init(species, stat)

@@ -83,7 +83,7 @@ jobs:
             -DACCELNET_PREDICTOR_GOLDEN_DIR=
           cmake --build build-target-syntax --parallel 2 --target test_batch_target test_target_c_loading write_target_c_loading_fixtures
           ctest --test-dir build-target-syntax --output-on-failure --no-tests=error \
-            -R 'predictor_target_(c_loading_host|c_errors|cmake_host|reject_(host_fallback|uninitialized|unsupported|activation))$' \
+            -R 'predictor_target_(c_exports|c_loading_host|c_errors|cmake_host|reject_(host_fallback|uninitialized|unsupported|activation))$' \
             --output-junit target-syntax-tests.xml
       - name: Save test logs and virial convergence data
         if: always()
@@ -96,5 +96,63 @@ jobs:
             build/**/virial-convergence*.csv
             build-target-syntax/target-syntax-tests.xml
             build-target-syntax/Testing/Temporary/
+          if-no-files-found: warn
+          retention-days: 14
+
+  macos-c-api:
+    name: macOS C ABI / ${{ matrix.os }} / GNU ${{ matrix.compiler }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Intel coverage uses the image's compiler. Homebrew GCC 16 bottles
+          # are available on Apple Silicon; avoid a source bootstrap on Intel.
+          - os: macos-15-intel
+            compiler: 15
+          - os: macos-15
+            compiler: 16
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GNU Fortran 16
+        if: matrix.compiler == 16
+        run: brew install gcc@16
+      - name: Configure shared CPU C API
+        run: |
+          gfortran-${{ matrix.compiler }} --version
+          cmake -S . -B build \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_Fortran_COMPILER=gfortran-${{ matrix.compiler }} \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_Fortran_FLAGS="-fcheck=all -fbacktrace" \
+            -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=ON \
+            -DACCELNET_BUILD_OPENMP_TARGET=ON -DACCELNET_TARGET_SERIAL=ON \
+            -DACCELNET_BUILD_REFERENCE_TESTS=OFF \
+            -DACCELNET_DESCRIPTORS_BUILD_AENET_REFERENCE=OFF \
+            -DACCELNET_DESCRIPTORS_BUILD_N2P2_REFERENCE=OFF \
+            -DACCELNET_PREDICTOR_GOLDEN_DIR=
+      - name: Build C ABI and numerical test dependencies
+        run: >-
+          cmake --build build --parallel 3 --target
+          test_batch_target test_target_c_loading write_target_c_loading_fixtures
+          test_virial test_virial_c test_virial_convergence test_virial_invariants
+          test_n2p2_network test_n2p2_topology test_n2p2_atomic_api test_network_activations
+      - name: Check exports, C linking, relocation, and numerical equivalence
+        run: |
+          env -u DYLD_LIBRARY_PATH -u DYLD_FALLBACK_LIBRARY_PATH \
+            ctest --test-dir build --output-on-failure --no-tests=error \
+            -L 'c-api|target-host' --output-junit c-api-tests.xml
+          ctest --test-dir build --output-on-failure --no-tests=error \
+            -R '^(predictor_(atomic_and_structure_virial|c_virial|virial_convergence_.*|virial_invariants_.*)|n2p2_(model_loader|per_element_topology_and_normalize_nodes|atomic_api_and_input_data)|network_activation_compatibility)$' \
+            --output-junit numerical-tests.xml
+      - name: Save test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-c-api-${{ matrix.os }}-gnu${{ matrix.compiler }}
+          path: |
+            build/*-tests.xml
+            build/Testing/Temporary/
           if-no-files-found: warn
           retention-days: 14

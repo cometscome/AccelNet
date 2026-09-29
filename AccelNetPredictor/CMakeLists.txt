@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AccelNetPredictor VERSION 1.1.1 LANGUAGES Fortran C)
+project(AccelNetPredictor VERSION 1.1.2 LANGUAGES Fortran C)
 
 set(CMAKE_Fortran_STANDARD 2008)
 set(CMAKE_Fortran_STANDARD_REQUIRED ON)
@@ -219,6 +219,19 @@ endif()
 
 if(ACCELNET_PREDICTOR_BUILD_TESTING)
     enable_testing()
+    if(BUILD_SHARED_LIBS)
+        find_package(Python3 COMPONENTS Interpreter REQUIRED)
+        add_test(NAME predictor_c_exports
+            COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/check_c_exports.py"
+            "$<TARGET_FILE:AccelNetPredictor>" "${CMAKE_CURRENT_SOURCE_DIR}/include/accelnet.h")
+        set_tests_properties(predictor_c_exports PROPERTIES LABELS "c-api")
+        if(TARGET AccelNetTarget)
+            add_test(NAME predictor_target_c_exports
+                COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/test/check_c_exports.py"
+                "$<TARGET_FILE:AccelNetTarget>" "${CMAKE_CURRENT_SOURCE_DIR}/include/accelnet_target.h")
+            set_tests_properties(predictor_target_c_exports PROPERTIES LABELS "c-api;target-host")
+        endif()
+    endif()
     option(ACCELNET_TEST_OPENMP_TARGET "Build an opt-in GPU runtime smoke test (not GPU inference)" OFF)
     set(ACCELNET_OPENMP_TARGET_TEST_FLAGS "" CACHE STRING "Compiler/link flags for the GPU runtime test")
     if(ACCELNET_TEST_OPENMP_TARGET)
@@ -276,7 +289,11 @@ if(ACCELNET_PREDICTOR_BUILD_TESTING)
             set_tests_properties(predictor_target_c_errors PROPERTIES
                 LABELS "target-host;target-loading" TIMEOUT 120 ENVIRONMENT "OMP_NUM_THREADS=1")
             find_program(_target_c_gcc NAMES gcc cc)
-            find_program(_target_c_gfortran NAMES gfortran)
+            if(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+                set(_target_c_gfortran "${CMAKE_Fortran_COMPILER}")
+            else()
+                find_program(_target_c_gfortran NAMES gfortran)
+            endif()
             if(_target_c_gcc AND _target_c_gfortran)
                 foreach(_location IN ITEMS host gpu)
                     add_test(NAME predictor_target_cmake_${_location}

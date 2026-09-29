@@ -1,6 +1,6 @@
 # AccelNet
 
-**New in 1.1.1:** Extend CPU/GPU C model loading and add a compiler-independent shared-library package for applications such as PIMD — [details](changes.md).
+**New in 1.1.2:** Fix shared C API visibility with GNU Fortran 16.2 and add macOS export, linking, and relocation regression tests — [details](changes.md).
 
 AccelNet is a Fortran library and command-line toolkit for evaluating
 machine-learning interatomic potentials from **ænet and n2p2**. It computes

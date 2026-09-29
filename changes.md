@@ -1,5 +1,44 @@
 # Changes
 
+## 1.1.2 — 2026-09-29
+
+### Shared C API visibility
+
+- Explicitly declare all eight target C entry points in `accelnet_target_c`
+  public, including the constructors, species query, destructor and host/device
+  compute functions. This addresses the missing shared-library symbols reported
+  with GNU Fortran 16.2.0 on Intel macOS when a `private` module contains
+  `bind(C)` procedures ([GCC PR126872](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=126872)).
+- Apply the same declaration to the seven distinct C wrappers in the ordinary
+  CPU API: initialization, n2p2 initialization/loading, network loading, ASCII
+  loading, atom-type conversion and symmetry-function basis initialization.
+  Internal helpers remain private. C names, signatures, model formats and
+  numerical algorithms are unchanged; this is a source visibility workaround.
+
+### Portability regression tests
+
+- Check every function and exported variable declared in both public C headers
+  against the built shared libraries, including entry points not called by the
+  existing numerical tests. Group these checks under the `c-api` CTest label.
+- Test relocated C-only CMake packages and independent C/GNU Fortran callers
+  with library-path environment overrides removed at execution time. These
+  tests check the installed runtime search paths separately from symbol export.
+- Use the configured GNU Fortran compiler for the independent caller test,
+  including versioned compiler commands such as `gfortran-16` on macOS.
+- Add macOS CI for Intel with GNU Fortran 15 and Apple Silicon with Homebrew
+  GNU Fortran 16, covering shared C exports, linking, model loading, numerical
+  equivalence and relocated installation. Exact compiler versions are logged
+  by each run; this does not assert an Intel/GNU 16.2 run has already passed.
+- Update all CMake project versions and the model-converter Julia package to
+  1.1.2, along with the current-release documentation.
+
+Validation on Linux: GNU Fortran 11.4 passed 33 ordinary CPU tests and 11
+serial target/C API tests; NVHPC 25.3 with an H100 NVL passed 41 target/GPU/C API
+tests. Both compiler builds passed relocated C and GNU Fortran client tests
+without library-path environment overrides. A negative control confirmed that
+the export checker rejects hidden functions and variables. macOS CI has been
+added but was not executed on the local Linux machine.
+
 ## 1.1.1 — 2026-09-29
 
 ### C model loading for CPU and GPU
